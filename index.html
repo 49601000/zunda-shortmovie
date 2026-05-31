@@ -1,0 +1,1432 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Project Launcher</title>
+  <style>
+    :root {
+      --bg-a: #081119;
+      --bg-b: #102236;
+      --bg-c: #1a3a44;
+      --panel: rgba(8, 20, 30, 0.84);
+      --line: rgba(99, 217, 188, 0.36);
+      --ink: #f2f8f7;
+      --sub: #a8c4c2;
+      --accent: #63d9bc;
+      --ok: #93f5c7;
+      --warn: #ffca76;
+      --danger: #ff8f8f;
+      --shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+      background:
+        radial-gradient(140% 120% at 0% 0%, rgba(99, 217, 188, 0.2) 0%, rgba(99, 217, 188, 0) 44%),
+        radial-gradient(120% 120% at 100% 0%, rgba(255, 202, 118, 0.1) 0%, rgba(255, 202, 118, 0) 46%),
+        linear-gradient(135deg, var(--bg-a) 0%, var(--bg-b) 45%, var(--bg-c) 100%);
+      padding: 20px 16px 28px;
+    }
+
+    .wrap {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      line-height: 1.35;
+    }
+
+    h1 { font-size: clamp(1.35rem, 2.8vw, 2rem); }
+    h2 { font-size: 1.06rem; margin-bottom: 8px; }
+    h3 { font-size: 0.94rem; margin-bottom: 6px; }
+
+    p {
+      margin: 0;
+      color: var(--sub);
+      line-height: 1.55;
+    }
+
+    .hero {
+      display: grid;
+      gap: 10px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 11px;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #05342e;
+      background: linear-gradient(135deg, var(--accent), #84f5db);
+      cursor: pointer;
+      transition: transform 160ms ease, filter 160ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+
+    button.secondary {
+      color: #d8ece8;
+      border: 1px solid rgba(168, 196, 194, 0.34);
+      background: rgba(8, 20, 30, 0.75);
+    }
+
+    button:disabled {
+      opacity: 0.58;
+      cursor: default;
+      transform: none;
+    }
+
+    .meta-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 0.84rem;
+      color: var(--sub);
+      font-weight: 700;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(168, 196, 194, 0.35);
+      background: rgba(8, 20, 30, 0.9);
+      color: var(--ink);
+      padding: 10px 11px;
+      font: inherit;
+      font-size: 0.91rem;
+    }
+
+    textarea {
+      min-height: 220px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .row {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 360px;
+      align-items: start;
+    }
+
+    .note {
+      font-size: 0.84rem;
+      color: var(--sub);
+      line-height: 1.5;
+      border: 1px solid rgba(168, 196, 194, 0.27);
+      border-radius: 12px;
+      background: rgba(8, 20, 30, 0.6);
+      padding: 11px;
+    }
+
+    .status {
+      margin-top: 8px;
+      min-height: 1.2em;
+      font-size: 0.88rem;
+      color: var(--sub);
+    }
+
+    .status.ok { color: var(--ok); }
+    .status.warn { color: var(--warn); }
+    .status.error { color: var(--danger); }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.88rem;
+    }
+
+    .step-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    }
+
+    .step-btn {
+      width: 100%;
+      text-align: left;
+      min-height: 58px;
+      white-space: normal;
+    }
+
+    .file-list {
+      margin: 0;
+      margin-top: 10px;
+      padding-left: 18px;
+      display: grid;
+      gap: 4px;
+      color: #d7ebe8;
+      font-size: 0.88rem;
+    }
+
+    .file-list li {
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 8px;
+      border-bottom: 1px solid rgba(168, 196, 194, 0.22);
+      vertical-align: top;
+    }
+
+    th {
+      font-size: 0.82rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: #d4ece8;
+    }
+
+    .empty {
+      padding: 16px 10px;
+      color: var(--sub);
+    }
+
+    @media (max-width: 920px) {
+      .row { grid-template-columns: 1fr; }
+      button { width: 100%; }
+      .actions { flex-direction: column; }
+      .actions button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card hero">
+      <h1>Index Launcher: 会話ログ → 動画素材JSON</h1>
+      <p>会話ログを貼り付け/読込して、`summary → hook → slide → scene → sub_scene → render` を段階生成します。</p>
+      <div class="actions">
+        <button id="pickWorkspaceBtn" type="button">ワークスペースを選択</button>
+        <button id="reloadBtn" class="secondary" type="button" disabled>projects/ 一覧を再読込</button>
+      </div>
+      <p id="workspaceStatus" class="status">未接続です。まずワークスペースを選択してください。</p>
+    </section>
+
+    <section class="card">
+      <h2>新規プロジェクト作成</h2>
+      <div class="row">
+        <div>
+          <div class="meta-grid">
+            <div class="field">
+              <label for="titleInput">タイトル</label>
+              <input id="titleInput" type="text" placeholder="例: 認知的不協和" />
+            </div>
+            <div class="field">
+              <label for="statusInput">初期ステータス</label>
+              <select id="statusInput">
+                <option value="draft">draft</option>
+                <option value="processing">processing</option>
+                <option value="review">review</option>
+                <option value="completed">completed</option>
+                <option value="archived">archived</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="nextIdPreview">次に採番されるID（4桁）</label>
+              <input id="nextIdPreview" class="mono" type="text" value="----" readonly />
+            </div>
+          </div>
+          <div class="actions">
+            <button id="createProjectBtn" type="button" disabled>新規プロジェクトを作成</button>
+          </div>
+          <p id="createStatus" class="status"></p>
+        </div>
+        <aside class="note">
+          <h3>作成される構成</h3>
+          <div class="mono">projects/{id}/meta.json</div>
+          <div class="mono">projects/{id}/raw/raw_conversation.txt</div>
+          <div class="mono">projects/{id}/pipeline/01-summary_spec-v01.json</div>
+          <div class="mono">projects/{id}/pipeline/02-hook_spec-v01.json</div>
+          <div class="mono">projects/{id}/pipeline/03-slide_spec-v01.json</div>
+          <div class="mono">projects/{id}/pipeline/04-scene_spec-v01.json</div>
+          <div class="mono">projects/{id}/pipeline/05-sub_scene_spec-v01.json</div>
+          <div class="mono">projects/{id}/pipeline/06-voice_manifest-v01.json</div>
+          <div class="mono">projects/{id}/outputs/slide/</div>
+          <div class="mono">projects/{id}/outputs/audio/</div>
+          <div class="mono">projects/{id}/outputs/video/render-v01.json</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>パイプライン実行</h2>
+      <div class="meta-grid">
+        <div class="field">
+          <label for="projectSelect">対象プロジェクト</label>
+          <select id="projectSelect" disabled>
+            <option value="">未選択</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:10px;">
+        <label for="conversationInput">raw_conversation 入力</label>
+        <textarea id="conversationInput" placeholder="ここに会話ログを貼り付け"></textarea>
+      </div>
+
+      <div class="actions">
+        <input id="conversationFile" type="file" accept=".txt,.json,text/plain,application/json" />
+      </div>
+
+      <div class="step-grid" style="margin-top: 10px;">
+        <button id="btnLoadConversation" type="button" class="step-btn" disabled>1. 会話を読み込む</button>
+        <button id="btnSummary" type="button" class="step-btn" disabled>2. ① summary_spec 作成</button>
+        <button id="btnHook" type="button" class="step-btn" disabled>3. ② hook_spec 作成</button>
+        <button id="btnSlide" type="button" class="step-btn" disabled>4. ③ slide_spec 作成</button>
+        <button id="btnScene" type="button" class="step-btn" disabled>5. ④ scene_spec 作成</button>
+        <button id="btnSubScene" type="button" class="step-btn" disabled>6. ⑤ sub_scene_spec 作成</button>
+        <button id="btnRender" type="button" class="step-btn" disabled>7. ⑥ render-v01.json 作成</button>
+      </div>
+
+      <p id="pipelineStatus" class="status">対象プロジェクトを選ぶと実行できます。</p>
+      <ul id="generatedFiles" class="file-list"></ul>
+    </section>
+
+    <section class="card">
+      <h2>projects/ 一覧（meta.json 読み込み）</h2>
+      <p id="listSummary" class="status">まだ読み込みされていません。</p>
+      <div id="projectTableWrap">
+        <p class="empty">ワークスペース接続後に一覧表示されます。</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const STATUS_VALUES = ["draft", "processing", "review", "completed", "archived"];
+    const META_FILENAME = "meta.json";
+
+    let workspaceHandle = null;
+    let projectRows = [];
+
+    function nowIso() {
+      return new Date().toISOString();
+    }
+
+    function todayYmd() {
+      return new Date().toLocaleDateString("sv-SE");
+    }
+
+    function toSec(value, fallback) {
+      const n = Number(value);
+      if (!Number.isFinite(n) || n <= 0) return fallback;
+      return Math.round(n * 100) / 100;
+    }
+
+    function charLen(text) {
+      return [...String(text || "")].length;
+    }
+
+    function escapeRegex(value) {
+      return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function setStatus(id, message, tone = "") {
+      const el = document.getElementById(id);
+      el.textContent = message;
+      el.className = "status" + (tone ? " " + tone : "");
+    }
+
+    function appendGenerated(path, detail = "") {
+      const ul = document.getElementById("generatedFiles");
+      const li = document.createElement("li");
+      li.innerHTML = `<span class="mono">${escapeHtml(path)}</span>${detail ? ` - ${escapeHtml(detail)}` : ""}`;
+      ul.prepend(li);
+      while (ul.children.length > 24) ul.removeChild(ul.lastChild);
+    }
+
+    function clearGenerated() {
+      document.getElementById("generatedFiles").innerHTML = "";
+    }
+
+    function normalizeStatus(status) {
+      return STATUS_VALUES.includes(status) ? status : "draft";
+    }
+
+    function sanitizeTitle(title) {
+      const trimmed = String(title || "").trim();
+      return trimmed || "Untitled";
+    }
+
+    function nextProjectId(projects) {
+      if (!projects.length) return "0000";
+      const max = projects.reduce((acc, row) => {
+        const base = /^\d{4}$/.test(row.sourceFolder || "") ? Number(row.sourceFolder) : Number(row.id || 0);
+        if (!Number.isFinite(base)) return acc;
+        return Math.max(acc, base);
+      }, -1);
+      const next = max + 1;
+      if (next > 9999) throw new Error("4桁連番の上限 9999 に達しました。");
+      return String(next).padStart(4, "0");
+    }
+
+    async function verifyPermission(handle, mode) {
+      const options = { mode };
+      if ((await handle.queryPermission(options)) === "granted") return true;
+      return (await handle.requestPermission(options)) === "granted";
+    }
+
+    async function writeText(fileHandle, text) {
+      const writable = await fileHandle.createWritable();
+      await writable.write(String(text));
+      await writable.close();
+    }
+
+    async function writeJson(fileHandle, data) {
+      await writeText(fileHandle, JSON.stringify(data, null, 2) + "\n");
+    }
+
+    async function readText(fileHandle) {
+      const file = await fileHandle.getFile();
+      return file.text();
+    }
+
+    async function readJson(fileHandle) {
+      const text = await readText(fileHandle);
+      return JSON.parse(text);
+    }
+
+    async function fileExists(dirHandle, name) {
+      try {
+        await dirHandle.getFileHandle(name);
+        return true;
+      } catch (_err) {
+        return false;
+      }
+    }
+
+    async function getProjectsDirHandle(create) {
+      if (!workspaceHandle) throw new Error("ワークスペース未接続です。");
+      return workspaceHandle.getDirectoryHandle("projects", { create });
+    }
+
+    async function ensureDir(baseDir, name) {
+      return baseDir.getDirectoryHandle(name, { create: true });
+    }
+
+    async function getProjectHandles(projectId) {
+      const projectsDir = await getProjectsDirHandle(true);
+      const projectDir = await projectsDir.getDirectoryHandle(projectId, { create: true });
+      const rawDir = await ensureDir(projectDir, "raw");
+      const pipelineDir = await ensureDir(projectDir, "pipeline");
+      const outputsDir = await ensureDir(projectDir, "outputs");
+      const slideDir = await ensureDir(outputsDir, "slide");
+      const audioDir = await ensureDir(outputsDir, "audio");
+      const videoDir = await ensureDir(outputsDir, "video");
+      return { projectDir, rawDir, pipelineDir, outputsDir, slideDir, audioDir, videoDir };
+    }
+
+    function initialPipelineJson(projectId, kind) {
+      if (kind === "summary") {
+        return {
+          project_id: projectId,
+          source: "raw_conversation.txt",
+          title: "",
+          summary: "",
+          main_topic: "",
+          key_points: [],
+          emotional_flow: [],
+          usable_lines: [],
+          created_at: nowIso()
+        };
+      }
+      if (kind === "hook") {
+        return {
+          project_id: projectId,
+          source: "01-summary_spec-v01.json",
+          hooks: [
+            { id: "hook_a", text: "", intent: "疑問型", duration_sec: 2 },
+            { id: "hook_b", text: "", intent: "断言型", duration_sec: 2 },
+            { id: "hook_c", text: "", intent: "違和感型", duration_sec: 2 }
+          ],
+          selected_hook_id: "hook_a"
+        };
+      }
+      if (kind === "slide") {
+        return {
+          project_id: projectId,
+          source: "01-summary_spec-v01.json",
+          slides: [
+            { slide_id: "slide_01", role: "problem", title: "", body: "", visual_intent: "", duration_sec: 8 },
+            { slide_id: "slide_02", role: "development", title: "", body: "", visual_intent: "", duration_sec: 10 },
+            { slide_id: "slide_03", role: "landing", title: "", body: "", visual_intent: "", duration_sec: 8 }
+          ]
+        };
+      }
+      if (kind === "scene") {
+        return {
+          project_id: projectId,
+          source: "raw_conversation.txt",
+          scenes: []
+        };
+      }
+      if (kind === "sub_scene") {
+        return {
+          project_id: projectId,
+          source: "04-scene_spec-v01.json",
+          sub_scenes: []
+        };
+      }
+      if (kind === "voice_manifest") {
+        return {
+          project_id: projectId,
+          source: "05-sub_scene_spec-v01.json",
+          voices: []
+        };
+      }
+      return { project_id: projectId };
+    }
+
+    async function ensureProjectStructure(projectDirHandle, projectId, title, status) {
+      const today = todayYmd();
+      const meta = {
+        id: projectId,
+        title,
+        created_at: today,
+        updated_at: today,
+        status
+      };
+
+      const metaHandle = await projectDirHandle.getFileHandle(META_FILENAME, { create: true });
+      await writeJson(metaHandle, meta);
+
+      const rawDir = await ensureDir(projectDirHandle, "raw");
+      if (!(await fileExists(rawDir, "raw_conversation.txt"))) {
+        const rawHandle = await rawDir.getFileHandle("raw_conversation.txt", { create: true });
+        await writeText(rawHandle, "");
+      }
+
+      const pipelineDir = await ensureDir(projectDirHandle, "pipeline");
+      const seeds = [
+        ["01-summary_spec-v01.json", "summary"],
+        ["02-hook_spec-v01.json", "hook"],
+        ["03-slide_spec-v01.json", "slide"],
+        ["04-scene_spec-v01.json", "scene"],
+        ["05-sub_scene_spec-v01.json", "sub_scene"],
+        ["06-voice_manifest-v01.json", "voice_manifest"]
+      ];
+
+      for (const [fileName, kind] of seeds) {
+        if (await fileExists(pipelineDir, fileName)) continue;
+        const handle = await pipelineDir.getFileHandle(fileName, { create: true });
+        await writeJson(handle, initialPipelineJson(projectId, kind));
+      }
+
+      const outputsDir = await ensureDir(projectDirHandle, "outputs");
+      await ensureDir(outputsDir, "slide");
+      await ensureDir(outputsDir, "audio");
+      await ensureDir(outputsDir, "video");
+    }
+
+    async function readMetaFromProject(projectDirHandle, folderName) {
+      try {
+        const metaHandle = await projectDirHandle.getFileHandle(META_FILENAME);
+        const parsed = await readJson(metaHandle);
+        const idCandidate = String(parsed.id || "");
+        const normalizedId = /^\d{1,4}$/.test(idCandidate) ? idCandidate.padStart(4, "0") : folderName;
+        return {
+          id: normalizedId,
+          title: sanitizeTitle(parsed.title),
+          created_at: parsed.created_at || "-",
+          updated_at: parsed.updated_at || "-",
+          status: normalizeStatus(parsed.status),
+          sourceFolder: folderName
+        };
+      } catch (_err) {
+        return {
+          id: folderName,
+          title: "(meta.json 読み込み失敗)",
+          created_at: "-",
+          updated_at: "-",
+          status: "draft",
+          sourceFolder: folderName
+        };
+      }
+    }
+
+    async function touchProjectUpdatedAt(projectId) {
+      const { projectDir } = await getProjectHandles(projectId);
+      try {
+        const metaHandle = await projectDir.getFileHandle(META_FILENAME);
+        const meta = await readJson(metaHandle);
+        meta.updated_at = todayYmd();
+        await writeJson(metaHandle, meta);
+      } catch (_err) {
+      }
+    }
+
+    async function loadProjects() {
+      const projectsDir = await getProjectsDirHandle(false);
+      const rows = [];
+      for await (const [name, handle] of projectsDir.entries()) {
+        if (handle.kind !== "directory") continue;
+        if (!/^\d{4}$/.test(name)) continue;
+        const meta = await readMetaFromProject(handle, name);
+        rows.push(meta);
+      }
+      rows.sort((a, b) => Number(a.id) - Number(b.id));
+      projectRows = rows;
+      renderProjects();
+      renderNextId();
+      renderProjectSelector();
+      syncPipelineButtons();
+    }
+
+    function renderProjects() {
+      const wrap = document.getElementById("projectTableWrap");
+      if (!projectRows.length) {
+        wrap.innerHTML = '<p class="empty">projects/ に対象プロジェクトがありません。新規作成してください。</p>';
+        setStatus("listSummary", "0件: 新規作成待ち", "warn");
+        return;
+      }
+
+      const rowsHtml = projectRows.map((row) => {
+        return `
+          <tr>
+            <td class="mono">${row.id}</td>
+            <td>${escapeHtml(row.title)}</td>
+            <td class="mono">${row.created_at}</td>
+            <td class="mono">${row.updated_at}</td>
+            <td>${escapeHtml(row.status)}</td>
+            <td class="mono">${row.sourceFolder}</td>
+          </tr>
+        `;
+      }).join("");
+
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Created</th>
+              <th>Updated</th>
+              <th>Status</th>
+              <th>Folder</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      `;
+      setStatus("listSummary", `${projectRows.length}件を表示中`, "ok");
+    }
+
+    function renderNextId() {
+      const input = document.getElementById("nextIdPreview");
+      try {
+        input.value = nextProjectId(projectRows);
+      } catch (_err) {
+        input.value = "OVER";
+      }
+    }
+
+    function renderProjectSelector() {
+      const select = document.getElementById("projectSelect");
+      const current = select.value;
+      const hasWorkspace = Boolean(workspaceHandle);
+      select.disabled = !hasWorkspace || projectRows.length === 0;
+      select.innerHTML = "";
+      const blank = document.createElement("option");
+      blank.value = "";
+      blank.textContent = projectRows.length ? "プロジェクトを選択" : "未選択";
+      select.appendChild(blank);
+      for (const row of projectRows) {
+        const opt = document.createElement("option");
+        opt.value = row.id;
+        opt.textContent = `${row.id} - ${row.title}`;
+        select.appendChild(opt);
+      }
+      if (projectRows.some((r) => r.id === current)) {
+        select.value = current;
+      } else if (projectRows.length) {
+        select.value = projectRows[projectRows.length - 1].id;
+      }
+    }
+
+    function selectedProjectId() {
+      return document.getElementById("projectSelect").value || "";
+    }
+
+    function syncPipelineButtons() {
+      const enabled = Boolean(workspaceHandle && selectedProjectId());
+      const ids = [
+        "btnLoadConversation",
+        "btnSummary",
+        "btnHook",
+        "btnSlide",
+        "btnScene",
+        "btnSubScene",
+        "btnRender"
+      ];
+      for (const id of ids) {
+        document.getElementById(id).disabled = !enabled;
+      }
+      if (enabled) {
+        setStatus("pipelineStatus", `実行対象: projects/${selectedProjectId()}`, "ok");
+      } else if (workspaceHandle) {
+        setStatus("pipelineStatus", "対象プロジェクトを選択してください。", "warn");
+      }
+    }
+
+    function parseVersionName(name, stem, ext) {
+      const pattern = new RegExp(`^${escapeRegex(stem)}-v(\\d{2})${escapeRegex(ext)}$`);
+      const m = String(name).match(pattern);
+      if (!m) return null;
+      const v = Number(m[1]);
+      if (!Number.isFinite(v)) return null;
+      return { version: v, name };
+    }
+
+    async function findNextVersionedName(dirHandle, stem, ext = ".json") {
+      let max = 0;
+      for await (const [name, handle] of dirHandle.entries()) {
+        if (handle.kind !== "file") continue;
+        const parsed = parseVersionName(name, stem, ext);
+        if (!parsed) continue;
+        max = Math.max(max, parsed.version);
+      }
+      const next = max + 1;
+      return `${stem}-v${String(next).padStart(2, "0")}${ext}`;
+    }
+
+    async function findLatestVersionedName(dirHandle, stem, ext = ".json") {
+      let best = null;
+      for await (const [name, handle] of dirHandle.entries()) {
+        if (handle.kind !== "file") continue;
+        const parsed = parseVersionName(name, stem, ext);
+        if (!parsed) continue;
+        if (!best || parsed.version > best.version) best = parsed;
+      }
+      return best;
+    }
+
+    async function readLatestVersionedJson(dirHandle, stem) {
+      const latest = await findLatestVersionedName(dirHandle, stem, ".json");
+      if (!latest) throw new Error(`${stem}-vNN.json が見つかりません。`);
+      const handle = await dirHandle.getFileHandle(latest.name);
+      const data = await readJson(handle);
+      return { name: latest.name, data, version: latest.version };
+    }
+
+    async function writeNextVersionedJson(dirHandle, stem, payload) {
+      const fileName = await findNextVersionedName(dirHandle, stem, ".json");
+      const handle = await dirHandle.getFileHandle(fileName, { create: true });
+      await writeJson(handle, payload);
+      return fileName;
+    }
+
+    async function findLatestRawConversation(rawDir) {
+      let best = null;
+      for await (const [name, handle] of rawDir.entries()) {
+        if (handle.kind !== "file") continue;
+        if (name === "raw_conversation.txt") {
+          const score = { version: 1, name };
+          if (!best || score.version >= best.version) best = score;
+          continue;
+        }
+        const m = name.match(/^raw_conversation-v(\d{2})\.txt$/);
+        if (!m) continue;
+        const version = Number(m[1]);
+        if (!Number.isFinite(version)) continue;
+        if (!best || version > best.version) best = { version, name };
+      }
+      if (!best) throw new Error("raw/raw_conversation.txt が見つかりません。まず会話を読み込んでください。");
+      const handle = await rawDir.getFileHandle(best.name);
+      return { name: best.name, text: await readText(handle), version: best.version };
+    }
+
+    async function nextRawConversationName(rawDir) {
+      const baseExists = await fileExists(rawDir, "raw_conversation.txt");
+      if (!baseExists) return "raw_conversation.txt";
+      let max = 1;
+      for await (const [name, handle] of rawDir.entries()) {
+        if (handle.kind !== "file") continue;
+        const m = name.match(/^raw_conversation-v(\d{2})\.txt$/);
+        if (!m) continue;
+        const version = Number(m[1]);
+        if (!Number.isFinite(version)) continue;
+        max = Math.max(max, version);
+      }
+      return `raw_conversation-v${String(max + 1).padStart(2, "0")}.txt`;
+    }
+
+    function parseUtterances(rawText) {
+      const lines = String(rawText || "")
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean);
+
+      const utterances = [];
+      for (const line of lines) {
+        const m = line.match(/^([^:：]{1,24})[：:]\s*(.+)$/);
+        if (m) {
+          utterances.push({ speaker: m[1].trim(), text: m[2].trim() });
+        } else {
+          utterances.push({ speaker: "speaker", text: line });
+        }
+      }
+      return utterances;
+    }
+
+    function emotionOf(text) {
+      const s = String(text || "");
+      if (/!|！|すご|最高|嬉|やった|神/.test(s)) return "excited";
+      if (/\?|？|なんで|なぜ|ほんま|マジ/.test(s)) return "curious";
+      if (/不安|怖|しんど|ムズ|やば/.test(s)) return "anxious";
+      if (/なるほど|たしか|理解|つまり|そうか/.test(s)) return "understanding";
+      return "neutral";
+    }
+
+    function estimateDuration(text, min = 1.2, max = 6) {
+      const c = Math.max(1, charLen(text));
+      const sec = c / 6.2;
+      const bounded = Math.max(min, Math.min(max, sec));
+      return Math.round(bounded * 100) / 100;
+    }
+
+    function extractKeywords(rawText) {
+      const stop = new Set([
+        "これ", "それ", "あれ", "こと", "ため", "よう", "して", "いる", "ある", "ない", "する", "なる",
+        "です", "ます", "でも", "とか", "ので", "から", "まで", "より", "もう", "ちょっと", "ほんと", "まじ",
+        "the", "and", "with", "for", "that", "this", "you", "are", "was", "were"
+      ]);
+      const tokens = String(rawText || "")
+        .toLowerCase()
+        .replace(/[\r\n]/g, " ")
+        .replace(/["'“”‘’()\[\]{}<>【】「」『』、,。.!！?？:：;；\/\\]/g, " ")
+        .split(/\s+/)
+        .map((t) => t.trim())
+        .filter((t) => t && t.length >= 2 && !stop.has(t));
+
+      const freq = new Map();
+      for (const t of tokens) freq.set(t, (freq.get(t) || 0) + 1);
+      return [...freq.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8)
+        .map((v) => v[0]);
+    }
+
+    function pickKeyLines(utterances, count = 4) {
+      if (!utterances.length) return [];
+      const lines = utterances.map((u) => `${u.speaker}: ${u.text}`);
+      if (lines.length <= count) return lines;
+      const selected = [];
+      for (let i = 0; i < count; i += 1) {
+        const idx = Math.floor((i * (lines.length - 1)) / (count - 1));
+        selected.push(lines[idx]);
+      }
+      return [...new Set(selected)];
+    }
+
+    function buildSummarySpec(projectId, sourceName, rawText) {
+      const utterances = parseUtterances(rawText);
+      const keywords = extractKeywords(rawText);
+      const speakers = [...new Set(utterances.map((u) => u.speaker))].slice(0, 5);
+      const keyLines = pickKeyLines(utterances, 4);
+      const usableLines = keyLines.map((line) => line.replace(/^speaker:\s*/i, "")).slice(0, 5);
+      const mainTopic = keywords[0] || (utterances[0] ? utterances[0].text.slice(0, 14) : "conversation");
+      const titleSeed = utterances[0] ? utterances[0].text : mainTopic;
+      const title = `${titleSeed.slice(0, 28)}${charLen(titleSeed) > 28 ? "…" : ""}`;
+      const summary = utterances.length
+        ? `全${utterances.length}発話。主な登場は${speakers.join("・") || "speaker"}。テーマは「${mainTopic}」で、${keywords.slice(1, 3).join(" / ") || "意図と感情のズレ"}が会話の軸。`
+        : "会話ログが空のため、summaryを作成できませんでした。";
+
+      const emotionalFlow = keyLines.map((line, index) => ({
+        order: index + 1,
+        line,
+        emotion: emotionOf(line)
+      }));
+
+      return {
+        project_id: projectId,
+        source: sourceName,
+        title,
+        summary,
+        main_topic: mainTopic,
+        key_points: keyLines,
+        emotional_flow: emotionalFlow,
+        usable_lines: usableLines,
+        created_at: nowIso()
+      };
+    }
+
+    function buildHookSpec(projectId, summaryName, summarySpec) {
+      const topic = String(summarySpec.main_topic || summarySpec.title || "この会話").trim();
+      return {
+        project_id: projectId,
+        source: summaryName,
+        hooks: [
+          {
+            id: "hook_a",
+            text: `${topic}、その理解で本当に合ってる？`,
+            intent: "疑問型",
+            duration_sec: 2
+          },
+          {
+            id: "hook_b",
+            text: `${topic}は順番を変えるだけで結果が変わる。`,
+            intent: "断言型",
+            duration_sec: 2
+          },
+          {
+            id: "hook_c",
+            text: `${topic}、正解っぽいほど遠回りになる。`,
+            intent: "違和感型",
+            duration_sec: 2
+          }
+        ],
+        selected_hook_id: "hook_a"
+      };
+    }
+
+    function buildSlideSpec(projectId, summaryName, summarySpec) {
+      const lines = Array.isArray(summarySpec.key_points) && summarySpec.key_points.length
+        ? summarySpec.key_points
+        : Array.isArray(summarySpec.usable_lines) ? summarySpec.usable_lines : [];
+
+      const slideCount = lines.length >= 3 ? 3 : 2;
+      const baseBody = [summarySpec.summary || "", ...lines].filter(Boolean);
+      const first = baseBody.slice(0, 2).join("\n");
+      const second = baseBody.slice(2, 4).join("\n") || summarySpec.summary || "";
+      const third = baseBody.slice(4, 6).join("\n") || (lines[lines.length - 1] || summarySpec.main_topic || "");
+
+      const slides = [
+        {
+          slide_id: "slide_01",
+          role: "problem",
+          title: `${summarySpec.main_topic || "テーマ"}の課題`,
+          body: first || summarySpec.summary || "",
+          visual_intent: "違和感・問題提起を強調する構図",
+          duration_sec: 8
+        },
+        {
+          slide_id: "slide_02",
+          role: "development",
+          title: "なぜそうなるか",
+          body: second || "背景と展開を提示",
+          visual_intent: "対比・因果が見える構図",
+          duration_sec: 10
+        }
+      ];
+
+      if (slideCount === 3) {
+        slides.push({
+          slide_id: "slide_03",
+          role: "landing",
+          title: "結論と持ち帰り",
+          body: third || "結論を短く提示",
+          visual_intent: "解決・納得感を示す構図",
+          duration_sec: 8
+        });
+      }
+
+      return {
+        project_id: projectId,
+        source: summaryName,
+        slides
+      };
+    }
+
+    function mapSceneToSlide(index, totalScenes, slideIds) {
+      if (!slideIds.length) return "slide_01";
+      if (totalScenes <= 1) return slideIds[0];
+      const ratio = index / totalScenes;
+      const slideIndex = Math.min(slideIds.length - 1, Math.floor(ratio * slideIds.length));
+      return slideIds[slideIndex] || slideIds[slideIds.length - 1];
+    }
+
+    function buildSceneSpec(projectId, rawName, rawText, slideSpec) {
+      const utterances = parseUtterances(rawText);
+      const slideIds = (slideSpec.slides || []).map((s) => s.slide_id);
+      const scenes = utterances.map((u, idx) => ({
+        scene_id: `scene_${String(idx + 1).padStart(3, "0")}`,
+        slide_id: mapSceneToSlide(idx, utterances.length, slideIds),
+        speaker: u.speaker,
+        text: u.text,
+        emotion: emotionOf(u.text),
+        duration_sec: estimateDuration(u.text, 1.6, 6)
+      }));
+
+      return {
+        project_id: projectId,
+        source: rawName,
+        scenes
+      };
+    }
+
+    function splitChunkHard(text, maxChars) {
+      const chars = [...String(text || "")];
+      const out = [];
+      for (let i = 0; i < chars.length; i += maxChars) {
+        out.push(chars.slice(i, i + maxChars).join(""));
+      }
+      return out;
+    }
+
+    function splitTextForSubScene(text, minChars = 10, maxChars = 18) {
+      const raw = String(text || "").trim();
+      if (!raw) return [""];
+      const parts = raw.match(/[^。！？!?、，,]+[。！？!?、，,]?/g) || [raw];
+      const chunks = [];
+      let buf = "";
+
+      for (const part of parts) {
+        const candidate = (buf + part).trim();
+        if (!buf) {
+          buf = part;
+          continue;
+        }
+        if (charLen(candidate) <= maxChars) {
+          buf = candidate;
+        } else {
+          chunks.push(buf.trim());
+          buf = part;
+        }
+      }
+      if (buf.trim()) chunks.push(buf.trim());
+
+      const normalized = [];
+      for (const chunk of chunks) {
+        const len = charLen(chunk);
+        if (len <= maxChars) {
+          normalized.push(chunk);
+        } else {
+          normalized.push(...splitChunkHard(chunk, maxChars));
+        }
+      }
+
+      if (normalized.length >= 2) {
+        for (let i = 0; i < normalized.length - 1; i += 1) {
+          const current = normalized[i];
+          const next = normalized[i + 1];
+          if (charLen(current) < minChars && charLen(next) + charLen(current) <= maxChars) {
+            normalized[i + 1] = current + next;
+            normalized[i] = "";
+          }
+        }
+      }
+
+      return normalized.map((x) => x.trim()).filter(Boolean);
+    }
+
+    function buildSubSceneSpec(projectId, sceneName, sceneSpec) {
+      const subScenes = [];
+      let clock = 0;
+
+      for (const scene of sceneSpec.scenes || []) {
+        const chunks = splitTextForSubScene(scene.text, 10, 18);
+        const totalChars = chunks.reduce((sum, chunk) => sum + Math.max(1, charLen(chunk)), 0);
+        const baseDuration = toSec(scene.duration_sec, estimateDuration(scene.text, 1.4, 6));
+        let consumed = 0;
+
+        chunks.forEach((chunk, idx) => {
+          const partChars = Math.max(1, charLen(chunk));
+          let duration = Math.round((baseDuration * (partChars / totalChars)) * 100) / 100;
+          duration = Math.max(0.7, duration);
+          if (idx === chunks.length - 1) {
+            duration = Math.max(0.6, Math.round((baseDuration - consumed) * 100) / 100);
+          }
+          consumed += duration;
+
+          subScenes.push({
+            sub_scene_id: `${scene.scene_id}_${String(idx + 1).padStart(2, "0")}`,
+            scene_id: scene.scene_id,
+            slide_id: scene.slide_id,
+            speaker: scene.speaker,
+            text: chunk,
+            display_mode: "replace",
+            char_count: partChars,
+            start_sec: Math.round(clock * 100) / 100,
+            duration_sec: duration
+          });
+
+          clock += duration;
+        });
+      }
+
+      return {
+        project_id: projectId,
+        source: sceneName,
+        sub_scenes: subScenes
+      };
+    }
+
+    async function readVoiceManifestOrDefault(projectId, pipelineDir, subSceneName) {
+      const latest = await findLatestVersionedName(pipelineDir, "06-voice_manifest", ".json");
+      if (!latest) {
+        return {
+          fileName: "(auto)",
+          data: {
+            project_id: projectId,
+            source: subSceneName,
+            voices: []
+          }
+        };
+      }
+      const handle = await pipelineDir.getFileHandle(latest.name);
+      const data = await readJson(handle);
+      if (!Array.isArray(data.voices)) data.voices = [];
+      return { fileName: latest.name, data };
+    }
+
+    async function listAudioFiles(audioDir) {
+      const names = new Set();
+      for await (const [name, handle] of audioDir.entries()) {
+        if (handle.kind === "file") names.add(name);
+      }
+      return names;
+    }
+
+    function findVoiceById(voices, subSceneId) {
+      return voices.find((v) => v && v.sub_scene_id === subSceneId) || null;
+    }
+
+    function buildRenderSpec(projectId, hookSpec, slideSpec, subSceneSpec, voiceManifest, audioNames) {
+      const selectedId = hookSpec.selected_hook_id || (hookSpec.hooks && hookSpec.hooks[0] && hookSpec.hooks[0].id);
+      const selectedHook = (hookSpec.hooks || []).find((h) => h.id === selectedId) || (hookSpec.hooks || [])[0] || {};
+      const voices = Array.isArray(voiceManifest.voices) ? voiceManifest.voices : [];
+
+      let clock = 0;
+      const timeline = (subSceneSpec.sub_scenes || []).map((sub) => {
+        const voice = findVoiceById(voices, sub.sub_scene_id);
+        const fallbackAudio = `${sub.sub_scene_id}.wav`;
+        const defaultAudioPath = audioNames.has(fallbackAudio) ? `outputs/audio/${fallbackAudio}` : "";
+        const duration = toSec(voice && voice.duration_sec, toSec(sub.duration_sec, 1));
+
+        const item = {
+          sub_scene_id: sub.sub_scene_id,
+          slide_id: sub.slide_id,
+          speaker: sub.speaker,
+          text: sub.text,
+          audio_file: (voice && voice.audio_file) ? voice.audio_file : defaultAudioPath,
+          start_sec: Math.round(clock * 100) / 100,
+          duration_sec: duration
+        };
+        clock += duration;
+        return item;
+      });
+
+      return {
+        project_id: projectId,
+        version: "v01",
+        hook: selectedHook,
+        slides: Array.isArray(slideSpec.slides) ? slideSpec.slides : [],
+        sub_scenes: Array.isArray(subSceneSpec.sub_scenes) ? subSceneSpec.sub_scenes : [],
+        voices,
+        timeline
+      };
+    }
+
+    async function connectWorkspace() {
+      if (!window.showDirectoryPicker) {
+        throw new Error("このブラウザは File System Access API をサポートしていません。");
+      }
+
+      const handle = await window.showDirectoryPicker({ mode: "readwrite" });
+      const writable = await verifyPermission(handle, "readwrite");
+      if (!writable) {
+        throw new Error("ワークスペースへの書き込み許可が必要です。");
+      }
+
+      workspaceHandle = handle;
+      document.getElementById("reloadBtn").disabled = false;
+      document.getElementById("createProjectBtn").disabled = false;
+      document.getElementById("projectSelect").disabled = false;
+      setStatus("workspaceStatus", "接続済み: projects/ を読み込みます。", "ok");
+      await ensureProjectsRootExists();
+      await loadProjects();
+      clearGenerated();
+    }
+
+    async function ensureProjectsRootExists() {
+      await getProjectsDirHandle(true);
+    }
+
+    async function createProject() {
+      if (!workspaceHandle) {
+        setStatus("createStatus", "先にワークスペースを選択してください。", "warn");
+        return;
+      }
+
+      const writable = await verifyPermission(workspaceHandle, "readwrite");
+      if (!writable) {
+        setStatus("createStatus", "書き込み権限がありません。", "error");
+        return;
+      }
+
+      const title = sanitizeTitle(document.getElementById("titleInput").value);
+      const status = normalizeStatus(document.getElementById("statusInput").value);
+
+      let projectId;
+      try {
+        projectId = nextProjectId(projectRows);
+      } catch (err) {
+        setStatus("createStatus", err.message || "採番に失敗しました。", "error");
+        return;
+      }
+
+      try {
+        const projectsDir = await getProjectsDirHandle(true);
+        const projectDir = await projectsDir.getDirectoryHandle(projectId, { create: true });
+        await ensureProjectStructure(projectDir, projectId, title, status);
+        setStatus("createStatus", `作成完了: projects/${projectId}/`, "ok");
+        document.getElementById("titleInput").value = "";
+        await loadProjects();
+      } catch (err) {
+        setStatus("createStatus", `作成失敗: ${err.message || err}`, "error");
+      }
+    }
+
+    function extractConversationFromJson(value) {
+      if (typeof value === "string") return value;
+      if (Array.isArray(value)) {
+        const lines = value.map((item) => {
+          if (typeof item === "string") return item;
+          if (item && typeof item === "object") {
+            const speaker = item.speaker || item.role || item.name || "speaker";
+            const text = item.text || item.content || item.message || "";
+            return `${speaker}: ${text}`.trim();
+          }
+          return "";
+        }).filter(Boolean);
+        return lines.join("\n");
+      }
+      if (value && typeof value === "object") {
+        if (typeof value.raw_conversation === "string") return value.raw_conversation;
+        if (typeof value.conversation === "string") return value.conversation;
+        if (Array.isArray(value.messages)) {
+          return value.messages.map((m) => {
+            const role = m.role || m.speaker || "speaker";
+            const content = m.content || m.text || "";
+            return `${role}: ${content}`;
+          }).join("\n");
+        }
+      }
+      return JSON.stringify(value, null, 2);
+    }
+
+    async function onConversationFileSelected(event) {
+      const input = event.target;
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const text = await file.text();
+      let normalized = text;
+      if (/\.json$/i.test(file.name)) {
+        try {
+          normalized = extractConversationFromJson(JSON.parse(text));
+        } catch (_err) {
+          normalized = text;
+        }
+      }
+      document.getElementById("conversationInput").value = normalized;
+      setStatus("pipelineStatus", `ファイル読込: ${file.name}`, "ok");
+      input.value = "";
+    }
+
+    async function runStep(stepName, runner) {
+      const projectId = selectedProjectId();
+      if (!workspaceHandle || !projectId) {
+        setStatus("pipelineStatus", "ワークスペース接続とプロジェクト選択が必要です。", "warn");
+        return;
+      }
+
+      try {
+        setStatus("pipelineStatus", `${stepName} 実行中...`, "warn");
+        const created = await runner(projectId);
+        await touchProjectUpdatedAt(projectId);
+        await loadProjects();
+        setStatus("pipelineStatus", `${stepName} 完了`, "ok");
+        for (const item of created) {
+          appendGenerated(item.path, item.note || "");
+        }
+      } catch (err) {
+        setStatus("pipelineStatus", `${stepName} 失敗: ${err.message || err}`, "error");
+      }
+    }
+
+    async function stepLoadConversation(projectId) {
+      const text = document.getElementById("conversationInput").value.trim();
+      if (!text) throw new Error("会話ログが空です。textarea か txt/json から入力してください。");
+      const { rawDir } = await getProjectHandles(projectId);
+      const fileName = await nextRawConversationName(rawDir);
+      const handle = await rawDir.getFileHandle(fileName, { create: true });
+      await writeText(handle, text + "\n");
+      return [{ path: `projects/${projectId}/raw/${fileName}`, note: "raw_conversation 保存" }];
+    }
+
+    async function stepSummary(projectId) {
+      const { rawDir, pipelineDir } = await getProjectHandles(projectId);
+      const raw = await findLatestRawConversation(rawDir);
+      const summary = buildSummarySpec(projectId, raw.name, raw.text);
+      const fileName = await writeNextVersionedJson(pipelineDir, "01-summary_spec", summary);
+      return [{ path: `projects/${projectId}/pipeline/${fileName}`, note: `source=${raw.name}` }];
+    }
+
+    async function stepHook(projectId) {
+      const { pipelineDir } = await getProjectHandles(projectId);
+      const summary = await readLatestVersionedJson(pipelineDir, "01-summary_spec");
+      const hook = buildHookSpec(projectId, summary.name, summary.data);
+      const fileName = await writeNextVersionedJson(pipelineDir, "02-hook_spec", hook);
+      return [{ path: `projects/${projectId}/pipeline/${fileName}`, note: `source=${summary.name}` }];
+    }
+
+    async function stepSlide(projectId) {
+      const { pipelineDir, slideDir } = await getProjectHandles(projectId);
+      const summary = await readLatestVersionedJson(pipelineDir, "01-summary_spec");
+      const slideSpec = buildSlideSpec(projectId, summary.name, summary.data);
+      const pipelineName = await writeNextVersionedJson(pipelineDir, "03-slide_spec", slideSpec);
+      const created = [{ path: `projects/${projectId}/pipeline/${pipelineName}`, note: `source=${summary.name}` }];
+
+      for (const slide of slideSpec.slides) {
+        let outputName = `${slide.slide_id}.json`;
+        if (await fileExists(slideDir, outputName)) {
+          outputName = await findNextVersionedName(slideDir, slide.slide_id, ".json");
+        }
+        const handle = await slideDir.getFileHandle(outputName, { create: true });
+        await writeJson(handle, slide);
+        created.push({ path: `projects/${projectId}/outputs/slide/${outputName}`, note: `${slide.slide_id} 個別保存` });
+      }
+
+      return created;
+    }
+
+    async function stepScene(projectId) {
+      const { rawDir, pipelineDir } = await getProjectHandles(projectId);
+      const raw = await findLatestRawConversation(rawDir);
+      const slideSpec = await readLatestVersionedJson(pipelineDir, "03-slide_spec");
+      const sceneSpec = buildSceneSpec(projectId, raw.name, raw.text, slideSpec.data);
+      const fileName = await writeNextVersionedJson(pipelineDir, "04-scene_spec", sceneSpec);
+      return [{ path: `projects/${projectId}/pipeline/${fileName}`, note: `source=${raw.name}, slide=${slideSpec.name}` }];
+    }
+
+    async function stepSubScene(projectId) {
+      const { pipelineDir } = await getProjectHandles(projectId);
+      const sceneSpec = await readLatestVersionedJson(pipelineDir, "04-scene_spec");
+      const subSceneSpec = buildSubSceneSpec(projectId, sceneSpec.name, sceneSpec.data);
+      const fileName = await writeNextVersionedJson(pipelineDir, "05-sub_scene_spec", subSceneSpec);
+      return [{ path: `projects/${projectId}/pipeline/${fileName}`, note: `source=${sceneSpec.name}` }];
+    }
+
+    async function stepRender(projectId) {
+      const { pipelineDir, videoDir, audioDir } = await getProjectHandles(projectId);
+      const hookSpec = await readLatestVersionedJson(pipelineDir, "02-hook_spec");
+      const slideSpec = await readLatestVersionedJson(pipelineDir, "03-slide_spec");
+      const subSceneSpec = await readLatestVersionedJson(pipelineDir, "05-sub_scene_spec");
+      const voiceManifest = await readVoiceManifestOrDefault(projectId, pipelineDir, subSceneSpec.name);
+      const audioNames = await listAudioFiles(audioDir);
+
+      const renderSpec = buildRenderSpec(
+        projectId,
+        hookSpec.data,
+        slideSpec.data,
+        subSceneSpec.data,
+        voiceManifest.data,
+        audioNames
+      );
+
+      const renderName = await findNextVersionedName(videoDir, "render", ".json");
+      const renderHandle = await videoDir.getFileHandle(renderName, { create: true });
+      await writeJson(renderHandle, renderSpec);
+
+      return [{
+        path: `projects/${projectId}/outputs/video/${renderName}`,
+        note: `hook=${hookSpec.name}, slide=${slideSpec.name}, sub_scene=${subSceneSpec.name}, voice=${voiceManifest.fileName}`
+      }];
+    }
+
+    async function bootstrap() {
+      document.getElementById("pickWorkspaceBtn").addEventListener("click", async () => {
+        try {
+          await connectWorkspace();
+        } catch (err) {
+          setStatus("workspaceStatus", err.message || "接続に失敗しました。", "error");
+        }
+      });
+
+      document.getElementById("reloadBtn").addEventListener("click", async () => {
+        if (!workspaceHandle) return;
+        try {
+          await loadProjects();
+          setStatus("workspaceStatus", "projects/ 一覧を再読込しました。", "ok");
+        } catch (err) {
+          setStatus("workspaceStatus", err.message || "再読込に失敗しました。", "error");
+        }
+      });
+
+      document.getElementById("createProjectBtn").addEventListener("click", createProject);
+      document.getElementById("projectSelect").addEventListener("change", () => {
+        clearGenerated();
+        syncPipelineButtons();
+      });
+      document.getElementById("conversationFile").addEventListener("change", onConversationFileSelected);
+
+      document.getElementById("btnLoadConversation").addEventListener("click", () => runStep("会話を読み込む", stepLoadConversation));
+      document.getElementById("btnSummary").addEventListener("click", () => runStep("summary_spec 作成", stepSummary));
+      document.getElementById("btnHook").addEventListener("click", () => runStep("hook_spec 作成", stepHook));
+      document.getElementById("btnSlide").addEventListener("click", () => runStep("slide_spec 作成", stepSlide));
+      document.getElementById("btnScene").addEventListener("click", () => runStep("scene_spec 作成", stepScene));
+      document.getElementById("btnSubScene").addEventListener("click", () => runStep("sub_scene_spec 作成", stepSubScene));
+      document.getElementById("btnRender").addEventListener("click", () => runStep("render-v01.json 作成", stepRender));
+
+      renderNextId();
+      syncPipelineButtons();
+    }
+
+    bootstrap();
+  </script>
+</body>
+</html>
