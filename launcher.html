@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ショート動画制作ランチャー（Current Spec）</title>
+  <style>
+    :root {
+      --bg-a: #0b1220;
+      --bg-b: #0e1728;
+      --bg-c: #102038;
+      --panel: rgba(14, 22, 36, 0.86);
+      --line: rgba(111, 215, 255, 0.24);
+      --ink: #eaf0fb;
+      --sub: #9db0ce;
+      --accent: #6fd7ff;
+      --accent-2: #3ea7da;
+      --ok: #95f0a0;
+      --warn: #ffd183;
+      --shadow: 0 20px 56px rgba(0, 0, 0, 0.3);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+      background:
+        radial-gradient(110% 120% at 0% 0%, rgba(111, 215, 255, 0.16) 0%, rgba(111, 215, 255, 0) 48%),
+        radial-gradient(110% 130% at 100% 0%, rgba(149, 240, 160, 0.07) 0%, rgba(149, 240, 160, 0) 56%),
+        linear-gradient(140deg, var(--bg-a) 0%, var(--bg-b) 44%, var(--bg-c) 100%);
+      padding: 20px 16px 30px;
+    }
+
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero, .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero { padding: 20px; }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.36rem, 2.65vw, 1.98rem);
+      letter-spacing: 0.02em;
+    }
+    p {
+      margin: 0;
+      line-height: 1.68;
+      color: var(--sub);
+    }
+
+    .heroActions {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .card {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 232px;
+    }
+
+    .tag {
+      display: inline-flex;
+      width: fit-content;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      color: #def4ff;
+      background: rgba(111, 215, 255, 0.12);
+      border: 1px solid rgba(111, 215, 255, 0.28);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.08rem;
+      line-height: 1.4;
+    }
+
+    code {
+      padding: 0 0.35em;
+      border-radius: 0.38em;
+      background: rgba(111, 215, 255, 0.12);
+      color: #e5f7ff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.88em;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: auto;
+      min-height: 42px;
+      border-radius: 12px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      transition: transform 150ms ease, filter 150ms ease;
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .btn:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    .btn.ghost {
+      width: auto;
+      margin-top: 0;
+      padding: 10px 14px;
+      border: 1px solid rgba(157, 176, 206, 0.28);
+      background: rgba(15, 23, 42, 0.78);
+      color: #e4edf9;
+    }
+
+    .code {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(111, 215, 255, 0.2);
+      background: rgba(8, 13, 20, 0.66);
+      color: #daf0ff;
+      font-size: 0.9rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .run-config {
+      margin-top: 10px;
+      display: grid;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(111, 215, 255, 0.2);
+      background: rgba(8, 13, 20, 0.52);
+    }
+
+    .run-inline {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .run-input {
+      width: 88px;
+      border-radius: 10px;
+      border: 1px solid rgba(157, 176, 206, 0.38);
+      background: rgba(11, 18, 32, 0.9);
+      color: var(--ink);
+      padding: 8px 10px;
+      font: inherit;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .status {
+      min-height: 1.2em;
+      font-size: 0.88rem;
+      color: var(--sub);
+      margin: 0;
+    }
+
+    .status.ok { color: var(--ok); }
+    .status.warn { color: var(--warn); }
+
+    .footer {
+      text-align: center;
+      font-size: 0.86rem;
+      color: var(--sub);
+      padding-top: 2px;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <h1>ショート動画制作ランチャー（Current Spec）</h1>
+      <p>現在の推奨フローは「STEP1 Scene作成 → STEP2 WAV生成 → STEP3 画像+WAV統合の最終調整 → STEP4 render」です。旧 Timing Adjuster 導線は含めていません。</p>
+      <div class="heroActions">
+        <button class="btn ghost" type="button" id="copyMainPipelineBtn">推奨パイプラインをコピー</button>
+        <button class="btn ghost" type="button" id="clearStorageBtn">保存データをクリア</button>
+      </div>
+      <p class="status" id="lastOpenedState"></p>
+      <div class="run-config">
+        <div class="run-inline">
+          <strong>保存先</strong>
+          <code id="outputPathLabel">output/000/</code>
+        </div>
+        <div class="run-inline">
+          <label for="runIdInput">Run ID</label>
+          <input id="runIdInput" class="run-input" type="text" value="000" />
+          <button class="btn ghost" type="button" id="setRun000Btn">000に戻す</button>
+          <button class="btn ghost" type="button" id="setRunAutoBtn">AUTO採番</button>
+        </div>
+        <p class="status" id="runIdStatus">この Run ID で output/000/ に保存します。</p>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <span class="tag">Step 1 Scene</span>
+        <h2>Scene Renderer v1</h2>
+        <p>通常シーン + Hookシーンを含む <code>svrs_scene_render_spec</code> を作成・編集。Hookは <code>scene_type: "hook"</code> として統合管理。</p>
+        <a class="btn" href="./scene-renderer-v1.html" target="_blank" rel="noopener noreferrer">scene-renderer-v1.html を開く</a>
+      </article>
+
+      <article class="card">
+        <span class="tag">Step 2 WAV</span>
+        <h2>WAV生成（複数キャラ）</h2>
+        <p>scene_render_spec をもとに複数キャラの VOICEVOX 生成を行います。Run ID、保存先、initial/publish のコマンドコピーは専用ページ側で管理します。</p>
+        <a class="btn" href="./voicevox-multi-character-v1.html" target="_blank" rel="noopener noreferrer">voicevox-multi-character-v1.html を開く</a>
+      </article>
+
+      <article class="card">
+        <span class="tag">Step 3 Movie</span>
+        <h2>Movie adjust Tool</h2>
+        <p>旧来の voice_control 調整UIです。必要時のみ利用してください。STEP3ツールとして利用し、後日仕様を更新予定です。</p>
+        <div class="actions">
+          <a class="btn" href="./voicevox-control-panel.html" target="_blank" rel="noopener noreferrer">voicevox-control-panel.html</a>
+        </div>
+        <p class="code" id="cmdDev">npm run scene-remotion:dev</p>
+        <div class="actions">
+          <button class="btn ghost" type="button" id="copyDevBtn">dev をコピー</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="tag">Step 4 Render</span>
+        <h2>書き出し (render)</h2>
+        <p>STEP3の統合確認が完了したら render を実行して動画を書き出します。必要ならWAV生成+dev+renderをまとめてコピーできます。</p>
+        <p class="code" id="cmdRender">npm run scene-remotion:render</p>
+        <div class="actions">
+          <button class="btn ghost" type="button" id="copyRenderBtn">render をコピー</button>
+          <button class="btn ghost" type="button" id="copyAllBtn">4つまとめてコピー</button>
+        </div>
+        <p class="status" id="commandStatus"></p>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <span class="tag">Utility A</span>
+        <h2>Dialogue Pipeline Tools</h2>
+        <p><code>svrs_script_blueprint → svrs_dialogue_base → svrs_dialogue_rendered</code> を生成する補助ツール群です。</p>
+        <div class="actions">
+          <a class="btn" href="./script-engine-v1.html" target="_blank" rel="noopener noreferrer">script-engine-v1.html</a>
+          <a class="btn" href="./dialogue-generator-v1.html" target="_blank" rel="noopener noreferrer">dialogue-generator-v1.html</a>
+          <a class="btn" href="./dialogue-renderer-v1.html" target="_blank" rel="noopener noreferrer">dialogue-renderer-v1.html</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="tag">Utility B</span>
+        <h2>Script / Video Tools</h2>
+        <p>別系統の台本・動画仕様編集。用途に応じて <code>svrs_script_spec</code> / <code>svrs_video_spec</code> を扱います。</p>
+        <div class="actions">
+          <a class="btn" href="./script-forge-v2.html" target="_blank" rel="noopener noreferrer">script-forge-v2.html</a>
+          <a class="btn" href="./video_factory.html" target="_blank" rel="noopener noreferrer">video_factory.html</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="tag">Utility C</span>
+        <h2>Mock Tools</h2>
+        <p>Hook/Scene の見た目モック調整用ツールです。</p>
+        <div class="actions">
+          <a class="btn" href="./mock/hook-player-mock-v1.html" target="_blank" rel="noopener noreferrer">hook-player-mock</a>
+          <a class="btn" href="./mock/scene-player-mock-v1.html" target="_blank" rel="noopener noreferrer">scene-player-mock</a>
+        </div>
+      </article>
+    </section>
+
+    <p class="footer">Renderer path priority: SCENE_REMOTION_APP_PATH → ../remotion-renderer → ./remotion-renderer-v1</p>
+  </main>
+
+  <script>
+    const LAST_OPENED_KEY = "svrs_launcher_last_opened";
+    const OUTPUT_RUN_ID_KEY = "svrs_output_run_id";
+    const CMD_INITIAL = "npm run scene-remotion:voicevox:initial";
+    const CMD_PUBLISH = "npm run scene-remotion:voicevox:publish";
+    const CMD_DEV = "npm run scene-remotion:dev";
+    const CMD_RENDER = "npm run scene-remotion:render";
+    const PROJECT_STORAGE_KEYS = [
+      "svrs_hook_visual_spec",
+      "svrs_scene_render_spec",
+      "scene_renderer_v1_state",
+      "svrs_script_blueprint",
+      "svrs_dialogue_base",
+      "svrs_dialogue_rendered",
+      "dialogue_generator_v1_state",
+      "dialogue_renderer_v1_state",
+      "svrs_script_spec",
+      "svrs_video_spec",
+      "svrs_metaphor_spec",
+      "script_forge_v2_state",
+      "video_factory_state_v1",
+      OUTPUT_RUN_ID_KEY,
+      LAST_OPENED_KEY
+    ];
+
+    function setStatus(message, tone) {
+      const el = document.getElementById("commandStatus");
+      el.textContent = message;
+      el.className = "status" + (tone ? " " + tone : "");
+    }
+
+    function renderLastOpened() {
+      const last = localStorage.getItem(LAST_OPENED_KEY);
+      const el = document.getElementById("lastOpenedState");
+      el.textContent = last ? "前回開いたページ: " + last : "前回開いたページ: なし";
+    }
+
+    function normalizeRunId(raw) {
+      const trimmed = String(raw ?? "").trim();
+      if (!trimmed) return "000";
+      if (trimmed.toLowerCase() === "auto") return "auto";
+      const digits = trimmed.replace(/\D/g, "");
+      if (!digits) return "000";
+      return digits.slice(0, 6).padStart(3, "0");
+    }
+
+    function getRunId() {
+      return normalizeRunId(localStorage.getItem(OUTPUT_RUN_ID_KEY));
+    }
+
+    function buildRunScopedCommand(baseCommand) {
+      const runId = getRunId();
+      return `$env:SCENE_OUTPUT_RUN_ID="${runId}"\n${baseCommand}`;
+    }
+
+    function buildRunScopedPipeline() {
+      return [CMD_INITIAL, CMD_PUBLISH, CMD_DEV, CMD_RENDER]
+        .map((cmd) => buildRunScopedCommand(cmd))
+        .join("\n\n");
+    }
+
+    function renderRunIdUi(message) {
+      const runId = normalizeRunId(document.getElementById("runIdInput").value);
+      const input = document.getElementById("runIdInput");
+      const label = document.getElementById("outputPathLabel");
+      const state = document.getElementById("runIdStatus");
+      input.value = runId;
+      if (runId === "auto") {
+        label.textContent = "output/<auto-number>/";
+        state.textContent = message || "AUTO採番モードです。実行時に output/000, 001... の次番号が選ばれます。";
+      } else {
+        label.textContent = `output/${runId}/`;
+        state.textContent = message || `この Run ID で output/${runId}/ に保存します。`;
+      }
+      state.className = "status";
+      localStorage.setItem(OUTPUT_RUN_ID_KEY, runId);
+    }
+
+    async function copyCommand(command, successMessage) {
+      try {
+        await navigator.clipboard.writeText(command);
+        setStatus(successMessage, "ok");
+      } catch (_err) {
+        setStatus("コピーに失敗しました。ブラウザ権限を確認してください。", "warn");
+      }
+    }
+
+    function clearProjectStorage() {
+      const shouldDelete = window.confirm("このプロジェクト関連の保存データを削除しますか？");
+      if (!shouldDelete) return;
+      PROJECT_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+      setStatus("保存データを削除しました。", "ok");
+      renderLastOpened();
+      document.getElementById("runIdInput").value = "000";
+      renderRunIdUi("Run ID を初期値 000 に戻しました。");
+    }
+
+    document.querySelectorAll("a.btn[href$='.html']").forEach((link) => {
+      link.addEventListener("click", () => {
+        localStorage.setItem(LAST_OPENED_KEY, link.getAttribute("href") || "");
+      });
+    });
+
+    document.getElementById("copyDevBtn").addEventListener("click", () => {
+      copyCommand(buildRunScopedCommand(CMD_DEV), "dev コマンドをコピーしました。");
+    });
+    document.getElementById("copyRenderBtn").addEventListener("click", () => {
+      copyCommand(buildRunScopedCommand(CMD_RENDER), "render コマンドをコピーしました。");
+    });
+    document.getElementById("copyAllBtn").addEventListener("click", () => {
+      copyCommand(buildRunScopedPipeline(), "WAV生成+dev+renderの4コマンドをまとめてコピーしました。");
+    });
+    document.getElementById("copyMainPipelineBtn").addEventListener("click", () => {
+      copyCommand(buildRunScopedPipeline(), "推奨パイプラインをコピーしました。");
+    });
+    document.getElementById("clearStorageBtn").addEventListener("click", clearProjectStorage);
+    document.getElementById("runIdInput").addEventListener("change", () => {
+      renderRunIdUi();
+    });
+    document.getElementById("runIdInput").addEventListener("blur", () => {
+      renderRunIdUi();
+    });
+    document.getElementById("setRun000Btn").addEventListener("click", () => {
+      document.getElementById("runIdInput").value = "000";
+      renderRunIdUi("Run ID を 000 に設定しました。");
+    });
+    document.getElementById("setRunAutoBtn").addEventListener("click", () => {
+      document.getElementById("runIdInput").value = "auto";
+      renderRunIdUi("Run ID を AUTO採番モードに設定しました。");
+    });
+    const storedRunId = localStorage.getItem(OUTPUT_RUN_ID_KEY);
+    if (storedRunId) {
+      document.getElementById("runIdInput").value = normalizeRunId(storedRunId);
+    }
+    renderRunIdUi();
+    renderLastOpened();
+  </script>
+</body>
+</html>

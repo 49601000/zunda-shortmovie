@@ -1,0 +1,1385 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Metaphor Engine v2 (Split)</title>
+  <style>
+    :root {
+      --bg:#0f172a;
+      --panel:rgba(15,23,42,.82);
+      --ink:#e8ecf8;
+      --sub:#94a3b8;
+      --line:rgba(139,92,246,.2);
+      --accent:#8b5cf6;
+      --accent-dark:#6d28d9;
+      --ok:#67e3ad;
+      --err:#ff7aa8;
+      --warn:#ffc46d;
+      --shadow:0 20px 50px rgba(0,0,0,.25);
+      --radius:18px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      background:
+        radial-gradient(100% 120% at 0% 0%, rgba(124,58,237,.26) 0%, rgba(124,58,237,0) 46%),
+        radial-gradient(120% 130% at 100% 0%, rgba(14,165,233,.08) 0%, rgba(14,165,233,0) 52%),
+        linear-gradient(135deg, #1a103d 0%, #0f172a 45%, #031a2e 100%);
+      overflow-x: hidden;
+    }
+    header{
+      position:sticky;
+      top:0;
+      z-index:40;
+      border-bottom:1px solid rgba(139,92,246,.22);
+      background:linear-gradient(90deg, #5B21B6 0%, #4C1D95 35%, #1E1B4B 70%, #0F172A 100%);
+      box-shadow:0 12px 32px rgba(0,0,0,.28);
+      backdrop-filter:blur(8px);
+    }
+    .topbar{
+      min-height:66px;
+      padding:8px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      min-width:0;
+    }
+    .topbarLeft{display:flex; align-items:center; min-width:0; gap:14px; flex:1;}
+    .brandMark{
+      width:40px;
+      height:40px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(160deg, #552fb0, #3b277f);
+      border:1px solid rgba(173,148,255,.35);
+      color:#f3edff;
+      font-weight:800;
+    }
+    .brandText{font-size:18px; font-weight:800; color:#f8fafc; white-space:nowrap;}
+    .topbarDivider{width:1px; height:28px; background:rgba(154,164,202,.4); flex:none;}
+    .topbarTitle{font-size:16px; font-weight:800; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;}
+    .topbarVersion{font-size:12px; font-weight:800; color:#c4b5fd; letter-spacing:.04em; opacity:.9; white-space:nowrap;}
+
+    main { padding: 18px 22px 34px; }
+    .wrap {
+      width: min(100%, 1180px);
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+    h1, h2, h3 { margin: 0 0 10px; }
+    p { margin: 0; color: var(--sub); line-height: 1.6; }
+
+    .flow-row {
+      margin-top: 12px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .chip {
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,.22);
+      background: #0b1220;
+      padding: 10px;
+      text-align: center;
+      font-weight: 700;
+      font-size: .9rem;
+      color: #ddd6fe;
+    }
+    .chip.current {
+      background: #ddd6fe;
+      color: #1e1b4b;
+      border-color: #c4b5fd;
+      box-shadow: 0 0 0 2px rgba(196,181,253,.25) inset;
+    }
+
+    .main-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 1fr 1fr;
+    }
+    .field-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .field { display: grid; gap: 6px; min-width: 0; }
+    label {
+      font-size: .85rem;
+      color: var(--sub);
+      font-weight: 700;
+      letter-spacing: .01em;
+    }
+    textarea,
+    input,
+    select {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,.28);
+      background: #0b1220;
+      color: var(--ink);
+      padding: 10px 12px;
+      font-size: .92rem;
+      outline: none;
+      min-width: 0;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 110px;
+      line-height: 1.45;
+    }
+    textarea[readonly],
+    input[readonly] {
+      background: #0a1020;
+      border-style: dashed;
+    }
+    textarea:focus,
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(139,92,246,.17);
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: .86rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .18s ease, filter .18s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: scale(.98); filter: brightness(.95); }
+    button.pressed {
+      transform: scale(.97);
+      filter: brightness(1.06);
+      box-shadow: 0 0 0 3px rgba(196,181,253,.24);
+    }
+    .primary { background: var(--accent); color: #fff; }
+    .secondary { background: #dcd9ff; color: #111827; }
+    .ghost {
+      background: #1f2a44;
+      color: var(--ink);
+      border: 1px solid rgba(148,163,184,.25);
+    }
+    .warn { background: var(--warn); color: #3b2400; }
+    .status {
+      min-height: 1.2em;
+      margin-top: 8px;
+      font-size: .84rem;
+      color: var(--sub);
+    }
+    .status.ok { color: var(--ok); }
+    .status.error { color: var(--err); }
+    .guide {
+      margin-bottom: 8px;
+      font-size: .84rem;
+      color: var(--sub);
+    }
+    .gate-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .gate-card {
+      border: 1px solid rgba(148,163,184,.2);
+      border-radius: 12px;
+      padding: 12px;
+      background: #0b1220;
+    }
+    .hidden { display: none; }
+    pre {
+      margin: 0;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,.25);
+      background: #0b1220;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 240px;
+      overflow: auto;
+      font-size: .85rem;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 1024px) {
+      .main-grid, .field-grid, .gate-grid, .flow-row { grid-template-columns: 1fr; }
+      .row button { width: 100%; }
+      .topbar{padding:8px 12px;}
+      .brandText{font-size:14px;}
+      .topbarTitle{font-size:12px;}
+      .topbarVersion{font-size:10px;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="topbarLeft">
+        <div class="brandMark">MF</div>
+        <div class="brandText">Metaphor Engine</div>
+        <div class="topbarDivider"></div>
+        <div class="topbarTitle">Theme Assist Spec を受け取り比喩を確定</div>
+      </div>
+      <div class="topbarVersion">v2 split</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <section class="card">
+        <h1>Metaphor Engine v2</h1>
+        <p>Theme Assistで作った補完specを読み込み、比喩・roast・script_seed・hook_seedを確定します。</p>
+        <div class="flow-row" aria-label="pipeline">
+          <div class="chip">Theme Assist</div>
+          <div class="chip current" aria-current="step">Metaphor Engine</div>
+          <div class="chip">Blueprint</div>
+          <div class="chip">Dialogue</div>
+          <div class="chip">Slide</div>
+          <div class="chip">Scene</div>
+        </div>
+      </section>
+
+      <section class="main-grid">
+        <div class="card">
+          <h2>1) Theme Assist Spec 読み込みと調整</h2>
+          <p class="guide">Theme Assist UIはこのページにはありません。読み込んだspecを使って最終選択だけを行います。</p>
+
+          <div class="row">
+            <button id="loadThemeAssistBtn" class="primary" type="button">Load from Theme Assist</button>
+            <button id="sampleBtn" class="secondary" type="button">サンプル投入</button>
+            <button id="resetBtn" class="ghost" type="button">Reset</button>
+          </div>
+
+          <p class="guide" style="margin-top:10px;">Manual Theme Assist Spec Paste</p>
+          <textarea id="themeAssistPaste" placeholder="svrs_theme_assist_spec を手動貼り付け"></textarea>
+          <div class="row">
+            <button id="applyPastedThemeAssistBtn" class="ghost" type="button">手動貼り付けを反映</button>
+          </div>
+          <div id="themeAssistStatus" class="status" aria-live="polite"></div>
+
+          <h3 style="margin-top:12px;">Theme（読み込み値）</h3>
+          <div class="field-grid">
+            <div class="field">
+              <label for="themeId">theme_id</label>
+              <input id="themeId" type="text" readonly />
+            </div>
+            <div class="field">
+              <label for="themeName">theme_name</label>
+              <input id="themeName" type="text" readonly />
+            </div>
+            <div class="field">
+              <label for="psychConcept">psychological_concept</label>
+              <input id="psychConcept" type="text" readonly />
+            </div>
+            <div class="field">
+              <label for="shortDefinition">short_definition</label>
+              <input id="shortDefinition" type="text" readonly />
+            </div>
+            <div class="field">
+              <label for="viewerSituation">viewer_situation</label>
+              <input id="viewerSituation" type="text" readonly />
+            </div>
+            <div class="field">
+              <label for="targetEmotion">target_emotion</label>
+              <input id="targetEmotion" type="text" readonly />
+            </div>
+            <div class="field">
+              <label for="targetDomain">target_domain（補完値）</label>
+              <input id="targetDomain" type="text" readonly />
+            </div>
+          </div>
+
+          <h3 style="margin-top:12px;">Alignment Check（読み込み値）</h3>
+          <div class="field-grid">
+            <div class="field">
+              <label for="alignmentUserIntent">user_intent</label>
+              <input id="alignmentUserIntent" type="text" readonly />
+            </div>
+            <div class="field">
+              <label for="alignmentWhyFits">why_this_metaphor_fits</label>
+              <input id="alignmentWhyFits" type="text" readonly />
+            </div>
+            <div class="field">
+              <label for="alignmentMustKeep">must_keep（1行1要素）</label>
+              <textarea id="alignmentMustKeep" readonly></textarea>
+            </div>
+            <div class="field">
+              <label for="alignmentMustAvoid">must_avoid（1行1要素）</label>
+              <textarea id="alignmentMustAvoid" readonly></textarea>
+            </div>
+          </div>
+
+          <h3 style="margin-top:12px;">最終選択</h3>
+          <div class="field-grid">
+            <div class="field">
+              <label for="roastAi">roast_ai</label>
+              <select id="roastAi">
+                <option value="gpt_roast">gpt_roast</option>
+                <option value="claude_roast">claude_roast</option>
+                <option value="grok_roast" selected>grok_roast</option>
+                <option value="gemini_roast">gemini_roast</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="metaphorMaterial">metaphor_material</label>
+              <select id="metaphorMaterial">
+                <option value="">（未選択）Theme Assist候補を読み込んでください</option>
+                <option value="__custom__">カスタム</option>
+              </select>
+            </div>
+            <div class="field hidden" id="customMaterialWrap">
+              <label for="customMaterial">metaphor_material(custom)</label>
+              <input id="customMaterial" type="text" placeholder="例: 期限切れ牛乳" />
+            </div>
+            <div class="field">
+              <label for="metaphorGoal">metaphor_goal</label>
+              <select id="metaphorGoal">
+                <option value="explain">explain</option>
+                <option value="roast">roast</option>
+                <option value="compress" selected>compress</option>
+                <option value="make_funny">make_funny</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="sourceDomain">source_domain（必要なら）</label>
+              <select id="sourceDomain">
+                <option value="">（任意）未選択</option>
+                <option value="__custom__">カスタム</option>
+              </select>
+            </div>
+            <div class="field hidden" id="customSourceWrap">
+              <label for="customSource">source_domain(custom)</label>
+              <input id="customSource" type="text" placeholder="例: 食べ物" />
+            </div>
+            <div class="field">
+              <label for="roastAngle">roast_angle（候補から）</label>
+              <select id="roastAngle">
+                <option value="">（任意）未選択</option>
+                <option value="__custom__">カスタム</option>
+              </select>
+            </div>
+            <div class="field hidden" id="customRoastAngleWrap">
+              <label for="customRoastAngle">roast_angle(custom)</label>
+              <input id="customRoastAngle" type="text" placeholder="例: 現実逃避を刺す" />
+            </div>
+          </div>
+
+          <h3 style="margin-top:12px;">Gateチェック入力</h3>
+          <div class="gate-grid">
+            <div class="field gate-card">
+              <label for="gateStructure">structure_mapping</label>
+              <select id="gateStructure">
+                <option value="ok" selected>ok</option>
+                <option value="review">review</option>
+                <option value="ng">ng</option>
+              </select>
+            </div>
+            <div class="field gate-card">
+              <label for="gateImage">image_power</label>
+              <select id="gateImage">
+                <option value="ok" selected>ok</option>
+                <option value="review">review</option>
+                <option value="ng">ng</option>
+              </select>
+            </div>
+            <div class="field gate-card">
+              <label for="gateMappingBug">mapping_bug</label>
+              <select id="gateMappingBug">
+                <option value="ok" selected>ok</option>
+                <option value="review">review</option>
+                <option value="ng">ng</option>
+              </select>
+            </div>
+            <div class="field gate-card">
+              <label for="gateCulture">culture_share</label>
+              <select id="gateCulture">
+                <option value="ok" selected>ok</option>
+                <option value="review">review</option>
+                <option value="ng">ng</option>
+              </select>
+            </div>
+            <div class="field gate-card">
+              <label for="gateTooLong">too_long</label>
+              <select id="gateTooLong">
+                <option value="ok" selected>ok</option>
+                <option value="review">review</option>
+                <option value="ng">ng</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <button id="buildPromptBtn" class="primary" type="button">Prompt生成</button>
+            <button id="copyPromptBtn" class="ghost" type="button">Copy Prompt</button>
+          </div>
+          <div id="status" class="status" aria-live="polite"></div>
+        </div>
+
+        <div class="card">
+          <h2>2) Prompt / Parse / Save</h2>
+          <p class="guide">ゴール: 後工程がそのまま使える <code>svrs_metaphor_spec</code> を確定して保存する。</p>
+
+          <p class="guide">STEP 1: Prompt生成</p>
+          <textarea id="promptArea" readonly placeholder="Prompt生成後に表示"></textarea>
+
+          <p class="guide" style="margin-top:10px;">STEP 2: LLM返答貼り付け</p>
+          <textarea id="llmOutput" placeholder="ここにLLM返答を貼り付け"></textarea>
+          <div class="row">
+            <button id="parseBtn" class="ghost" type="button">JSON抽出/パース</button>
+          </div>
+
+          <p class="guide" style="margin-top:10px;">STEP 3: metaphor_spec確認</p>
+          <textarea id="metaphorSpecArea" placeholder="最終JSON"></textarea>
+
+          <div class="row">
+            <button id="copyJsonBtn" class="ghost" type="button">Copy JSON</button>
+            <button id="saveBtn" class="warn" type="button">Save to Next Step</button>
+          </div>
+          <div id="saveStatus" class="status" aria-live="polite"></div>
+
+          <div class="row">
+            <button id="nextScriptEngineBtn" class="primary" type="button">次のSTEPへ: Script Engine</button>
+            <button id="nextScriptForgeBtn" class="secondary" type="button">別ルート: Script Forge</button>
+          </div>
+
+          <h3 style="margin-top:12px;">読み込み中の Theme Assist Spec</h3>
+          <pre id="themeAssistPreview">（未読み込み）</pre>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = "metaphor_engine_v2_state";
+      const THEME_ASSIST_KEY = "svrs_theme_assist_spec";
+      const NEXT_KEY = "svrs_metaphor_spec";
+
+      const el = {
+        loadThemeAssistBtn: document.getElementById("loadThemeAssistBtn"),
+        sampleBtn: document.getElementById("sampleBtn"),
+        resetBtn: document.getElementById("resetBtn"),
+        themeAssistPaste: document.getElementById("themeAssistPaste"),
+        applyPastedThemeAssistBtn: document.getElementById("applyPastedThemeAssistBtn"),
+        themeAssistStatus: document.getElementById("themeAssistStatus"),
+        themeAssistPreview: document.getElementById("themeAssistPreview"),
+
+        themeId: document.getElementById("themeId"),
+        themeName: document.getElementById("themeName"),
+        psychConcept: document.getElementById("psychConcept"),
+        shortDefinition: document.getElementById("shortDefinition"),
+        viewerSituation: document.getElementById("viewerSituation"),
+        targetEmotion: document.getElementById("targetEmotion"),
+        targetDomain: document.getElementById("targetDomain"),
+        alignmentUserIntent: document.getElementById("alignmentUserIntent"),
+        alignmentMustKeep: document.getElementById("alignmentMustKeep"),
+        alignmentMustAvoid: document.getElementById("alignmentMustAvoid"),
+        alignmentWhyFits: document.getElementById("alignmentWhyFits"),
+
+        roastAi: document.getElementById("roastAi"),
+        metaphorMaterial: document.getElementById("metaphorMaterial"),
+        customMaterialWrap: document.getElementById("customMaterialWrap"),
+        customMaterial: document.getElementById("customMaterial"),
+        metaphorGoal: document.getElementById("metaphorGoal"),
+        sourceDomain: document.getElementById("sourceDomain"),
+        customSourceWrap: document.getElementById("customSourceWrap"),
+        customSource: document.getElementById("customSource"),
+        roastAngle: document.getElementById("roastAngle"),
+        customRoastAngleWrap: document.getElementById("customRoastAngleWrap"),
+        customRoastAngle: document.getElementById("customRoastAngle"),
+
+        gateStructure: document.getElementById("gateStructure"),
+        gateImage: document.getElementById("gateImage"),
+        gateMappingBug: document.getElementById("gateMappingBug"),
+        gateCulture: document.getElementById("gateCulture"),
+        gateTooLong: document.getElementById("gateTooLong"),
+
+        buildPromptBtn: document.getElementById("buildPromptBtn"),
+        copyPromptBtn: document.getElementById("copyPromptBtn"),
+        parseBtn: document.getElementById("parseBtn"),
+        copyJsonBtn: document.getElementById("copyJsonBtn"),
+        saveBtn: document.getElementById("saveBtn"),
+        nextScriptEngineBtn: document.getElementById("nextScriptEngineBtn"),
+        nextScriptForgeBtn: document.getElementById("nextScriptForgeBtn"),
+
+        promptArea: document.getElementById("promptArea"),
+        llmOutput: document.getElementById("llmOutput"),
+        metaphorSpecArea: document.getElementById("metaphorSpecArea"),
+        status: document.getElementById("status"),
+        saveStatus: document.getElementById("saveStatus")
+      };
+
+      const roastStyleMap = {
+        gpt_roast: {
+          angle: "合理性と期待値で冷酷に査定する",
+          line: [
+            "期待値マイナスに居座るの、ただの延命です。",
+            "感情で保有して、数字で負けてます。",
+            "意思決定のコストを見積もれていません。"
+          ]
+        },
+        claude_roast: {
+          angle: "自己正当化と防衛反応を静かに刺す",
+          line: [
+            "その理屈、痛みを避けるための言い訳です。",
+            "失敗を認めないほど、判断が遅れます。",
+            "守っているのは資産より自尊心かもしれません。"
+          ]
+        },
+        grok_roast: {
+          angle: "TL感覚の毒舌で公開処刑する",
+          line: [
+            "現実逃避で草。",
+            "それ、腐った牛乳まだ飲める理論です。",
+            "損切りじゃなくて賞味期限切れです。"
+          ]
+        },
+        gemini_roast: {
+          angle: "飛躍比喩で混乱させつつ妙に刺す",
+          line: [
+            "沈むエスカレーターで上がる練習してます。",
+            "地図ない砂漠でショートカット主張してる感じ。",
+            "理屈の翼で重力に勝とうとしてます。"
+          ]
+        }
+      };
+
+      const SAMPLE_THEME_ASSIST_SPEC = {
+        meta: {
+          version: "theme_assist_v1",
+          handoff_target: "metaphor-engine-v2.html",
+          created_by: "theme-assist-v1.html"
+        },
+        theme: {
+          theme_id: "loss_aversion",
+          theme_name: "損失回避",
+          psychological_concept: "loss aversion",
+          short_definition: "損を確定する痛みを、利益の喜びより強く感じやすい傾向",
+          viewer_situation: "含み損の株を売れない",
+          target_emotion: "ワイやん",
+          target_domain: "損失を確定したくない心理"
+        },
+        candidates: {
+          metaphor_material_candidates: ["腐った牛乳", "沈没船", "壊れたスマホ", "元カノ", "サ終ゲーム"],
+          source_domain_candidates: ["投資", "食べ物", "デジタル機器", "人間関係"],
+          roast_angle_candidates: ["現実逃避を刺す", "自己正当化を刺す", "損切りできない状態を笑う"],
+          hook_seed_candidates: {
+            self_hook: "なんでクソ株って売れないのだ？",
+            pain_hook: "あなたの脳、損を盛ります",
+            quiz_hook: "この株、売れる？売れない？"
+          }
+        },
+        notes: {
+          current_direction: "損失回避を投資文脈で身近に刺す方向",
+          open_questions: ["視聴者を投資未経験者まで広げるか"],
+          user_decisions_needed: ["metaphor_materialの第1候補をどれにするか"],
+          alignment_check: {
+            user_intent: "投資で含み損を損切りできない心理を扱う",
+            must_keep: ["投資文脈", "損切り", "損を確定したくない心理"],
+            must_avoid: ["恋愛中心に寄せすぎる", "ただの未練話にする", "心理学的に不正確な断定"],
+            why_this_metaphor_fits: "腐った牛乳は『もうダメだと分かっているのに捨てられない』構造が、含み損を認められない心理と対応する"
+          }
+        }
+      };
+
+      let themeAssistSpec = null;
+      let candidateState = {
+        material: [],
+        source: [],
+        roastAngle: []
+      };
+
+      function status(msg, isError, target) {
+        const node = target || el.status;
+        node.textContent = msg || "";
+        node.classList.remove("ok", "error");
+        if (msg) node.classList.add(isError ? "error" : "ok");
+      }
+
+      function wireButtonFeedback() {
+        document.querySelectorAll("button").forEach(function (button) {
+          button.addEventListener("click", function () {
+            if (button.disabled) return;
+            button.classList.add("pressed");
+            window.setTimeout(function () { button.classList.remove("pressed"); }, 160);
+          });
+        });
+      }
+
+      function openNextStep(path) {
+        window.open(path, "_blank", "noopener");
+        status("次のSTEPを新しいタブで開きました。", false, el.saveStatus);
+      }
+
+      function normalizeLine(text, fallback) {
+        const t = String(text || "").replace(/\s+/g, " ").trim();
+        return t || fallback;
+      }
+
+      function shortText(text, max) {
+        const t = normalizeLine(text, "");
+        if (!t) return "";
+        if (t.length <= max) return t;
+        return t.slice(0, max);
+      }
+
+      function parseJson(text) {
+        try {
+          return JSON.parse(text);
+        } catch (_err) {
+          return null;
+        }
+      }
+
+      function extractJsonObject(text) {
+        if (!text) return null;
+        const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+        const candidate = fenceMatch ? fenceMatch[1] : text;
+        const start = candidate.indexOf("{");
+        const end = candidate.lastIndexOf("}");
+        if (start === -1 || end === -1 || end <= start) return null;
+        return parseJson(candidate.slice(start, end + 1));
+      }
+
+      function sanitizeStringArray(arr, max) {
+        if (!Array.isArray(arr)) return [];
+        const out = [];
+        arr.forEach(function (raw) {
+          const v = normalizeLine(raw, "");
+          if (!v || out.indexOf(v) >= 0 || v === "__custom__") return;
+          out.push(v);
+        });
+        return out.slice(0, max || 8);
+      }
+
+      function normalizeThemeAssistSpec(raw) {
+        const src = raw && typeof raw === "object" ? raw : {};
+        const t = src.theme && typeof src.theme === "object" ? src.theme : {};
+        const c = src.candidates && typeof src.candidates === "object" ? src.candidates : {};
+        const n = src.notes && typeof src.notes === "object" ? src.notes : {};
+        const a = n.alignment_check && typeof n.alignment_check === "object" ? n.alignment_check : {};
+        const themeName = normalizeLine(t.theme_name || src.theme_name, "損失回避");
+        const shortDefinition = normalizeLine(
+          t.short_definition || src.short_definition,
+          "損を確定する痛みを、利益の喜びより強く感じやすい傾向"
+        );
+        const material = sanitizeStringArray(c.metaphor_material_candidates || src.metaphor_material_candidates, 8);
+        const source = sanitizeStringArray(c.source_domain_candidates || src.source_domain_candidates, 8);
+        const roastAngle = sanitizeStringArray(c.roast_angle_candidates || src.roast_angle_candidates, 8);
+        const hook = c.hook_seed_candidates || src.hook_seed_candidates || {};
+
+        return {
+          meta: {
+            version: "theme_assist_v1",
+            handoff_target: "metaphor-engine-v2.html",
+            created_by: "theme-assist-v1.html"
+          },
+          theme: {
+            theme_id: normalizeLine(t.theme_id || src.theme_id, "loss_aversion"),
+            theme_name: themeName,
+            psychological_concept: normalizeLine(t.psychological_concept || src.psychological_concept, "loss aversion"),
+            short_definition: shortDefinition,
+            viewer_situation: normalizeLine(t.viewer_situation || src.viewer_situation, "含み損の株を売れない"),
+            target_emotion: normalizeLine(t.target_emotion || src.target_emotion, "ワイやん"),
+            target_domain: normalizeLine(t.target_domain || src.target_domain, "認知バイアス")
+          },
+          candidates: {
+            metaphor_material_candidates: material,
+            source_domain_candidates: source,
+            roast_angle_candidates: roastAngle,
+            hook_seed_candidates: {
+              self_hook: normalizeLine(hook.self_hook, ""),
+              pain_hook: normalizeLine(hook.pain_hook, ""),
+              quiz_hook: normalizeLine(hook.quiz_hook, "")
+            }
+          },
+          notes: {
+            current_direction: normalizeLine(n.current_direction, ""),
+            open_questions: sanitizeStringArray(n.open_questions, 8),
+            user_decisions_needed: sanitizeStringArray(n.user_decisions_needed, 8),
+            alignment_check: {
+              user_intent: normalizeLine(a.user_intent, ""),
+              must_keep: sanitizeStringArray(a.must_keep, 8),
+              must_avoid: sanitizeStringArray(a.must_avoid, 8),
+              why_this_metaphor_fits: normalizeLine(a.why_this_metaphor_fits, "")
+            }
+          }
+        };
+      }
+
+      function validateThemeAssistSpec(spec) {
+        const errors = [];
+        if (!spec || typeof spec !== "object") return { ok: false, errors: ["root object が必要です"] };
+        if (!spec.theme || typeof spec.theme !== "object") errors.push("theme が不足しています");
+        if (!spec.candidates || typeof spec.candidates !== "object") errors.push("candidates が不足しています");
+
+        const theme = spec.theme || {};
+        ["theme_id", "theme_name", "psychological_concept", "short_definition", "viewer_situation", "target_emotion", "target_domain"]
+          .forEach(function (key) {
+            if (typeof theme[key] !== "string" || !theme[key].trim()) errors.push("theme." + key + " が不足しています");
+          });
+        if (typeof theme.theme_id === "string" && !/^[a-z]+(?:_[a-z0-9]+)*$/.test(theme.theme_id)) {
+          errors.push("theme.theme_id は英小文字snake_caseで指定してください");
+        }
+
+        const candidates = spec.candidates || {};
+        if (!Array.isArray(candidates.metaphor_material_candidates) || candidates.metaphor_material_candidates.length < 1) {
+          errors.push("candidates.metaphor_material_candidates は1件以上必要です");
+        }
+        const hook = candidates.hook_seed_candidates;
+        if (!hook || typeof hook !== "object") {
+          errors.push("candidates.hook_seed_candidates が不足しています");
+        } else {
+          ["self_hook", "pain_hook", "quiz_hook"].forEach(function (key) {
+            if (typeof hook[key] !== "string" || !hook[key].trim()) errors.push("candidates.hook_seed_candidates." + key + " が不足しています");
+          });
+        }
+        return { ok: errors.length === 0, errors: errors };
+      }
+
+      function renderAlignmentCheck(alignment) {
+        const data = alignment && typeof alignment === "object" ? alignment : {};
+        el.alignmentUserIntent.value = normalizeLine(data.user_intent, "");
+        el.alignmentMustKeep.value = Array.isArray(data.must_keep) ? data.must_keep.join("\n") : "";
+        el.alignmentMustAvoid.value = Array.isArray(data.must_avoid) ? data.must_avoid.join("\n") : "";
+        el.alignmentWhyFits.value = normalizeLine(data.why_this_metaphor_fits, "");
+      }
+
+      function renderSelectOptions(selectNode, list, placeholderLabel, selectedValue) {
+        const safe = sanitizeStringArray(list, 8);
+        selectNode.innerHTML = "";
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = placeholderLabel;
+        selectNode.appendChild(placeholder);
+
+        safe.forEach(function (item) {
+          const option = document.createElement("option");
+          option.value = item;
+          option.textContent = item;
+          selectNode.appendChild(option);
+        });
+
+        const custom = document.createElement("option");
+        custom.value = "__custom__";
+        custom.textContent = "カスタム";
+        selectNode.appendChild(custom);
+
+        const values = [""].concat(safe).concat(["__custom__"]);
+        selectNode.value = values.indexOf(selectedValue) >= 0 ? selectedValue : "";
+      }
+
+      function syncCustomFields() {
+        const materialCustom = el.metaphorMaterial.value === "__custom__";
+        el.customMaterialWrap.classList.toggle("hidden", !materialCustom);
+        el.customMaterial.disabled = !materialCustom;
+
+        const sourceCustom = el.sourceDomain.value === "__custom__";
+        el.customSourceWrap.classList.toggle("hidden", !sourceCustom);
+        el.customSource.disabled = !sourceCustom;
+
+        const roastCustom = el.roastAngle.value === "__custom__";
+        el.customRoastAngleWrap.classList.toggle("hidden", !roastCustom);
+        el.customRoastAngle.disabled = !roastCustom;
+      }
+
+      function currentMetaphorMaterial() {
+        if (!el.metaphorMaterial.value) return "";
+        if (el.metaphorMaterial.value !== "__custom__") return el.metaphorMaterial.value;
+        return normalizeLine(el.customMaterial.value, "");
+      }
+
+      function currentSourceDomain() {
+        if (!el.sourceDomain.value) return "";
+        if (el.sourceDomain.value !== "__custom__") return el.sourceDomain.value;
+        return normalizeLine(el.customSource.value, "");
+      }
+
+      function currentRoastAngle() {
+        if (!el.roastAngle.value) return roastStyleMap[el.roastAi.value].angle;
+        if (el.roastAngle.value !== "__custom__") return el.roastAngle.value;
+        return normalizeLine(el.customRoastAngle.value, roastStyleMap[el.roastAi.value].angle);
+      }
+
+      function applyThemeAssistSpec(spec) {
+        themeAssistSpec = spec;
+        const t = spec.theme;
+        const c = spec.candidates;
+        candidateState.material = sanitizeStringArray(c.metaphor_material_candidates, 8);
+        candidateState.source = sanitizeStringArray(c.source_domain_candidates, 8);
+        candidateState.roastAngle = sanitizeStringArray(c.roast_angle_candidates, 8);
+
+        el.themeId.value = t.theme_id;
+        el.themeName.value = t.theme_name;
+        el.psychConcept.value = t.psychological_concept;
+        el.shortDefinition.value = t.short_definition;
+        el.viewerSituation.value = t.viewer_situation;
+        el.targetEmotion.value = t.target_emotion;
+        el.targetDomain.value = t.target_domain;
+
+        renderSelectOptions(el.metaphorMaterial, candidateState.material, "（未選択）比喩素材候補から選ぶ", "");
+        renderSelectOptions(el.sourceDomain, candidateState.source, "（任意）未選択", "");
+        renderSelectOptions(el.roastAngle, candidateState.roastAngle, "（任意）未選択", "");
+        renderAlignmentCheck(spec.notes && spec.notes.alignment_check ? spec.notes.alignment_check : null);
+        syncCustomFields();
+
+        el.themeAssistPreview.textContent = JSON.stringify(spec, null, 2);
+      }
+
+      function getHookCandidates() {
+        if (!themeAssistSpec || !themeAssistSpec.candidates) return null;
+        const h = themeAssistSpec.candidates.hook_seed_candidates;
+        if (!h || !h.self_hook || !h.pain_hook || !h.quiz_hook) return null;
+        return {
+          self_hook: h.self_hook,
+          pain_hook: h.pain_hook,
+          quiz_hook: h.quiz_hook
+        };
+      }
+
+      function getAlignmentCheck() {
+        const fallback = {
+          user_intent: "",
+          must_keep: [],
+          must_avoid: [],
+          why_this_metaphor_fits: ""
+        };
+        if (!themeAssistSpec || !themeAssistSpec.notes || !themeAssistSpec.notes.alignment_check) return fallback;
+        const a = themeAssistSpec.notes.alignment_check;
+        return {
+          user_intent: normalizeLine(a.user_intent, ""),
+          must_keep: sanitizeStringArray(a.must_keep, 8),
+          must_avoid: sanitizeStringArray(a.must_avoid, 8),
+          why_this_metaphor_fits: normalizeLine(a.why_this_metaphor_fits, "")
+        };
+      }
+
+      function getFormData() {
+        return {
+          theme_id: normalizeLine(el.themeId.value, "loss_aversion"),
+          theme_name: normalizeLine(el.themeName.value, "損失回避"),
+          psychological_concept: normalizeLine(el.psychConcept.value, "loss aversion"),
+          short_definition: normalizeLine(el.shortDefinition.value, "損を確定する痛みを利益の喜びより強く感じやすい傾向"),
+          viewer_situation: normalizeLine(el.viewerSituation.value, "含み損の株を売れない"),
+          target_emotion: normalizeLine(el.targetEmotion.value, "ワイやん"),
+          roast_ai: el.roastAi.value,
+          roast_angle: currentRoastAngle(),
+          metaphor_goal: el.metaphorGoal.value,
+          metaphor_material: normalizeLine(currentMetaphorMaterial(), "未選択"),
+          source_domain: normalizeLine(currentSourceDomain(), ""),
+          target_domain: normalizeLine(el.targetDomain.value, "認知バイアス"),
+          alignment_check: getAlignmentCheck(),
+          quality_check: {
+            structure_mapping: el.gateStructure.value,
+            image_power: el.gateImage.value,
+            mapping_bug: el.gateMappingBug.value,
+            culture_share: el.gateCulture.value,
+            too_long: el.gateTooLong.value
+          }
+        };
+      }
+
+      function buildDefaultSpec(data) {
+        const roastLines = roastStyleMap[data.roast_ai].line;
+        const situationNoun = shortText(data.viewer_situation, 24);
+        const themeShort = shortText(data.theme_name, 14);
+        const isLossAversion = data.theme_id === "loss_aversion" || data.theme_name === "損失回避";
+        const hook = getHookCandidates();
+        const material = data.metaphor_material !== "未選択" ? data.metaphor_material : "期限切れ牛乳";
+
+        return {
+          meta: {
+            version: "metaphor_v2",
+            created_by: "metaphor-engine-v2.html"
+          },
+          theme: {
+            theme_id: data.theme_id,
+            theme_name: data.theme_name,
+            psychological_concept: data.psychological_concept,
+            short_definition: data.short_definition,
+            viewer_situation: data.viewer_situation,
+            target_emotion: data.target_emotion
+          },
+          roast: {
+            roast_ai: data.roast_ai,
+            roast_angle: data.roast_angle,
+            roast_metaphor: isLossAversion
+              ? material + "をまだ飲めると言い張る"
+              : situationNoun + "は、" + material + "を抱えたまま延命する状態",
+            roast_line_candidates: roastLines
+          },
+          script_seed: {
+            zundamon_misunderstanding: isLossAversion ? "売らなければ負けじゃないのだ！" : "ワイだけは助かるのだ！",
+            metan_definition: isLossAversion
+              ? "今日は損失回避よ。損を確定する痛みを、人は実際以上に強く感じやすいの。"
+              : "今日は" + data.theme_name + "よ。" + data.short_definition,
+            collapse_reaction: "やめるのだ…"
+          },
+          hook_seed: {
+            self_hook: hook ? hook.self_hook : themeShort + "ってなんでやらかす？",
+            pain_hook: hook ? hook.pain_hook : "あなたの脳、" + themeShort + "を盛ります",
+            quiz_hook: hook ? hook.quiz_hook : themeShort + "、今切る？切らない？"
+          },
+          quality_check: {
+            structure_mapping: data.quality_check.structure_mapping,
+            image_power: data.quality_check.image_power,
+            mapping_bug: data.quality_check.mapping_bug,
+            culture_share: data.quality_check.culture_share,
+            too_long: data.quality_check.too_long
+          },
+          notes: {
+            alignment_check: {
+              user_intent: data.alignment_check.user_intent,
+              must_keep: data.alignment_check.must_keep,
+              must_avoid: data.alignment_check.must_avoid,
+              why_this_metaphor_fits: data.alignment_check.why_this_metaphor_fits
+            }
+          }
+        };
+      }
+
+      function buildPrompt(data) {
+        return [
+          "あなたは Metaphor Engine v2 です。心理学ショート用に比喩・毒舌翻訳・seedを作成してください。",
+          "",
+          "【目的】",
+          "- 心理学テーマを短く説明する",
+          "- 視聴者がやりがちな誤解を1つ作る",
+          "- めたんが説明する正しい定義を作る",
+          "- AI査定官が刺す比喩を1発で使える短さで作る",
+          "- 比喩はGateチェックを通す",
+          "- 文化共有が弱い比喩を避ける",
+          "- 長すぎる比喩を避ける",
+          "- 出力はJSONのみ",
+          "",
+          "【入力】",
+          JSON.stringify({
+            theme_id: data.theme_id,
+            theme_name: data.theme_name,
+            psychological_concept: data.psychological_concept,
+            short_definition: data.short_definition,
+            viewer_situation: data.viewer_situation,
+            target_emotion: data.target_emotion,
+            roast_ai: data.roast_ai,
+            roast_angle: data.roast_angle,
+            metaphor_goal: data.metaphor_goal,
+            metaphor_material: data.metaphor_material,
+            source_domain: data.source_domain,
+            target_domain: data.target_domain,
+            alignment_check: data.alignment_check,
+            gate_seed: data.quality_check
+          }, null, 2),
+          "",
+          "【Alignment Check】",
+          "以下はユーザー意図からズレないための制約です。最優先で守ってください。",
+          "- user_intent: " + data.alignment_check.user_intent,
+          "- must_keep: " + JSON.stringify(data.alignment_check.must_keep),
+          "- must_avoid: " + JSON.stringify(data.alignment_check.must_avoid),
+          "- why_this_metaphor_fits: " + data.alignment_check.why_this_metaphor_fits,
+          "",
+          "【必須JSONフォーマット】",
+          JSON.stringify(buildDefaultSpec(data), null, 2),
+          "",
+          "制約:",
+          "- roast_line_candidates は3本",
+          "- script_seed と hook_seed を必ず含める",
+          "- quality_check は structure_mapping/image_power/mapping_bug/culture_share/too_long を必ず含む",
+          "- must_keep に含まれる要素は必ず維持する",
+          "- must_avoid に含まれる方向へ寄せすぎない",
+          "- roast_metaphor は why_this_metaphor_fits と矛盾しないようにする",
+          "- 面白さよりも user_intent との整合を優先する",
+          "- JSON以外の文を出さない"
+        ].join("\n");
+      }
+
+      function validateMetaphorSpecShape(spec) {
+        const errors = [];
+        const reqRoot = ["meta", "theme", "roast", "script_seed", "hook_seed", "quality_check"];
+        if (!spec || typeof spec !== "object") return { ok: false, errors: ["root object が必要です"] };
+        reqRoot.forEach(function (key) {
+          if (!spec[key] || typeof spec[key] !== "object") errors.push(key + " が不足しています");
+        });
+        if (spec.meta && spec.meta.version !== "metaphor_v2") {
+          errors.push("meta.version は metaphor_v2 である必要があります");
+        }
+        ["theme_id", "theme_name", "psychological_concept", "short_definition", "viewer_situation", "target_emotion"]
+          .forEach(function (key) {
+            if (!spec.theme || typeof spec.theme[key] !== "string" || !spec.theme[key].trim()) {
+              errors.push("theme." + key + " が不足しています");
+            }
+          });
+        if (!spec.roast || typeof spec.roast.roast_ai !== "string") errors.push("roast.roast_ai が不足しています");
+        if (!spec.roast || typeof spec.roast.roast_metaphor !== "string") errors.push("roast.roast_metaphor が不足しています");
+        if (!spec.roast || !Array.isArray(spec.roast.roast_line_candidates) || spec.roast.roast_line_candidates.length < 1) {
+          errors.push("roast.roast_line_candidates は1件以上必要です");
+        }
+        ["zundamon_misunderstanding", "metan_definition", "collapse_reaction"].forEach(function (key) {
+          if (!spec.script_seed || typeof spec.script_seed[key] !== "string") errors.push("script_seed." + key + " が不足しています");
+        });
+        ["self_hook", "pain_hook", "quiz_hook"].forEach(function (key) {
+          if (!spec.hook_seed || typeof spec.hook_seed[key] !== "string") errors.push("hook_seed." + key + " が不足しています");
+        });
+        ["structure_mapping", "image_power", "mapping_bug", "culture_share", "too_long"].forEach(function (key) {
+          if (!spec.quality_check || typeof spec.quality_check[key] !== "string") errors.push("quality_check." + key + " が不足しています");
+        });
+        return { ok: errors.length === 0, errors: errors };
+      }
+
+      function normalizeMetaphorSpec(parsed, fallbackData) {
+        const base = buildDefaultSpec(fallbackData);
+        const out = parsed && typeof parsed === "object" ? parsed : {};
+        out.meta = out.meta && typeof out.meta === "object" ? out.meta : {};
+        out.meta.version = "metaphor_v2";
+        out.meta.created_by = "metaphor-engine-v2.html";
+        out.theme = Object.assign({}, base.theme, out.theme || {});
+        out.roast = Object.assign({}, base.roast, out.roast || {});
+        out.script_seed = Object.assign({}, base.script_seed, out.script_seed || {});
+        out.hook_seed = Object.assign({}, base.hook_seed, out.hook_seed || {});
+        out.quality_check = Object.assign({}, base.quality_check, out.quality_check || {});
+        out.notes = Object.assign({}, base.notes || {}, out.notes || {});
+        out.notes.alignment_check = Object.assign(
+          {},
+          base.notes && base.notes.alignment_check ? base.notes.alignment_check : {},
+          out.notes && out.notes.alignment_check ? out.notes.alignment_check : {}
+        );
+        if (!Array.isArray(out.roast.roast_line_candidates)) out.roast.roast_line_candidates = base.roast.roast_line_candidates;
+        out.roast.roast_line_candidates = out.roast.roast_line_candidates.slice(0, 3);
+        return out;
+      }
+
+      async function copyText(text, okMsg) {
+        if (!text || !text.trim()) {
+          status("コピー対象が空です。", true, el.saveStatus);
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(text);
+          status(okMsg, false, el.saveStatus);
+        } catch (_err) {
+          status("コピーに失敗しました。", true, el.saveStatus);
+        }
+      }
+
+      function saveState() {
+        const state = {
+          themeAssistPaste: el.themeAssistPaste.value,
+          themeAssistSpec: themeAssistSpec,
+          candidateState: candidateState,
+          themeId: el.themeId.value,
+          themeName: el.themeName.value,
+          psychConcept: el.psychConcept.value,
+          shortDefinition: el.shortDefinition.value,
+          viewerSituation: el.viewerSituation.value,
+          targetEmotion: el.targetEmotion.value,
+          targetDomain: el.targetDomain.value,
+          roastAi: el.roastAi.value,
+          metaphorMaterial: el.metaphorMaterial.value,
+          customMaterial: el.customMaterial.value,
+          metaphorGoal: el.metaphorGoal.value,
+          sourceDomain: el.sourceDomain.value,
+          customSource: el.customSource.value,
+          roastAngle: el.roastAngle.value,
+          customRoastAngle: el.customRoastAngle.value,
+          gateStructure: el.gateStructure.value,
+          gateImage: el.gateImage.value,
+          gateMappingBug: el.gateMappingBug.value,
+          gateCulture: el.gateCulture.value,
+          gateTooLong: el.gateTooLong.value,
+          promptArea: el.promptArea.value,
+          llmOutput: el.llmOutput.value,
+          metaphorSpecArea: el.metaphorSpecArea.value
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function loadState() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        try {
+          const s = JSON.parse(raw);
+          if (typeof s.themeAssistPaste === "string") el.themeAssistPaste.value = s.themeAssistPaste;
+          if (s.themeAssistSpec && typeof s.themeAssistSpec === "object") {
+            const n = normalizeThemeAssistSpec(s.themeAssistSpec);
+            const v = validateThemeAssistSpec(n);
+            if (v.ok) applyThemeAssistSpec(n);
+          }
+          if (s.candidateState && typeof s.candidateState === "object") {
+            candidateState = {
+              material: sanitizeStringArray(s.candidateState.material, 8),
+              source: sanitizeStringArray(s.candidateState.source, 8),
+              roastAngle: sanitizeStringArray(s.candidateState.roastAngle, 8)
+            };
+          }
+          if (!themeAssistSpec) {
+            renderSelectOptions(el.metaphorMaterial, candidateState.material, "（未選択）Theme Assist候補を読み込んでください", "");
+            renderSelectOptions(el.sourceDomain, candidateState.source, "（任意）未選択", "");
+            renderSelectOptions(el.roastAngle, candidateState.roastAngle, "（任意）未選択", "");
+          }
+
+          if (typeof s.themeId === "string") el.themeId.value = s.themeId;
+          if (typeof s.themeName === "string") el.themeName.value = s.themeName;
+          if (typeof s.psychConcept === "string") el.psychConcept.value = s.psychConcept;
+          if (typeof s.shortDefinition === "string") el.shortDefinition.value = s.shortDefinition;
+          if (typeof s.viewerSituation === "string") el.viewerSituation.value = s.viewerSituation;
+          if (typeof s.targetEmotion === "string") el.targetEmotion.value = s.targetEmotion;
+          if (typeof s.targetDomain === "string") el.targetDomain.value = s.targetDomain;
+          if (typeof s.roastAi === "string") el.roastAi.value = s.roastAi;
+          if (typeof s.metaphorMaterial === "string") el.metaphorMaterial.value = s.metaphorMaterial;
+          if (typeof s.customMaterial === "string") el.customMaterial.value = s.customMaterial;
+          if (typeof s.metaphorGoal === "string") el.metaphorGoal.value = s.metaphorGoal;
+          if (typeof s.sourceDomain === "string") el.sourceDomain.value = s.sourceDomain;
+          if (typeof s.customSource === "string") el.customSource.value = s.customSource;
+          if (typeof s.roastAngle === "string") el.roastAngle.value = s.roastAngle;
+          if (typeof s.customRoastAngle === "string") el.customRoastAngle.value = s.customRoastAngle;
+          if (typeof s.gateStructure === "string") el.gateStructure.value = s.gateStructure;
+          if (typeof s.gateImage === "string") el.gateImage.value = s.gateImage;
+          if (typeof s.gateMappingBug === "string") el.gateMappingBug.value = s.gateMappingBug;
+          if (typeof s.gateCulture === "string") el.gateCulture.value = s.gateCulture;
+          if (typeof s.gateTooLong === "string") el.gateTooLong.value = s.gateTooLong;
+          if (typeof s.promptArea === "string") el.promptArea.value = s.promptArea;
+          if (typeof s.llmOutput === "string") el.llmOutput.value = s.llmOutput;
+          if (typeof s.metaphorSpecArea === "string") el.metaphorSpecArea.value = s.metaphorSpecArea;
+        } catch (_err) {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+        syncCustomFields();
+      }
+
+      function loadFromThemeAssistStorageAction() {
+        const raw = localStorage.getItem(THEME_ASSIST_KEY);
+        if (!raw) {
+          status("svrs_theme_assist_spec が見つかりません。", true, el.themeAssistStatus);
+          return;
+        }
+        const parsed = parseJson(raw);
+        if (!parsed) {
+          status("svrs_theme_assist_spec のJSONが不正です。", true, el.themeAssistStatus);
+          return;
+        }
+        const normalized = normalizeThemeAssistSpec(parsed);
+        const validation = validateThemeAssistSpec(normalized);
+        if (!validation.ok) {
+          status("Theme Assist Specエラー: " + validation.errors.join(" / "), true, el.themeAssistStatus);
+          return;
+        }
+        applyThemeAssistSpec(normalized);
+        el.themeAssistPaste.value = JSON.stringify(normalized, null, 2);
+        saveState();
+        status("Theme Assist Specを読み込みました。", false, el.themeAssistStatus);
+      }
+
+      function applyPastedThemeAssistAction() {
+        const raw = el.themeAssistPaste.value.trim();
+        if (!raw) {
+          status("手動貼り付け欄が空です。", true, el.themeAssistStatus);
+          return;
+        }
+        const parsed = extractJsonObject(raw);
+        if (!parsed) {
+          status("Theme Assist SpecのJSON抽出に失敗しました。", true, el.themeAssistStatus);
+          return;
+        }
+        const normalized = normalizeThemeAssistSpec(parsed);
+        const validation = validateThemeAssistSpec(normalized);
+        if (!validation.ok) {
+          status("Theme Assist Specエラー: " + validation.errors.join(" / "), true, el.themeAssistStatus);
+          return;
+        }
+        applyThemeAssistSpec(normalized);
+        saveState();
+        status("手動貼り付けspecを反映しました。", false, el.themeAssistStatus);
+      }
+
+      function applySampleAction() {
+        applyThemeAssistSpec(SAMPLE_THEME_ASSIST_SPEC);
+        el.themeAssistPaste.value = JSON.stringify(SAMPLE_THEME_ASSIST_SPEC, null, 2);
+        el.roastAi.value = "grok_roast";
+        el.metaphorGoal.value = "roast";
+        renderSelectOptions(el.metaphorMaterial, candidateState.material, "（未選択）比喩素材候補から選ぶ", "腐った牛乳");
+        renderSelectOptions(el.sourceDomain, candidateState.source, "（任意）未選択", "投資");
+        renderSelectOptions(el.roastAngle, candidateState.roastAngle, "（任意）未選択", "現実逃避を刺す");
+        el.customMaterial.value = "";
+        el.customSource.value = "";
+        el.customRoastAngle.value = "";
+        el.gateStructure.value = "ok";
+        el.gateImage.value = "ok";
+        el.gateMappingBug.value = "ok";
+        el.gateCulture.value = "ok";
+        el.gateTooLong.value = "ok";
+        syncCustomFields();
+        const data = getFormData();
+        el.metaphorSpecArea.value = JSON.stringify(buildDefaultSpec(data), null, 2);
+        saveState();
+        status("サンプルを投入しました。", false, el.themeAssistStatus);
+      }
+
+      function resetAction() {
+        themeAssistSpec = null;
+        candidateState = { material: [], source: [], roastAngle: [] };
+        el.themeAssistPaste.value = "";
+        el.themeAssistPreview.textContent = "（未読み込み）";
+        renderAlignmentCheck(null);
+        el.themeId.value = "";
+        el.themeName.value = "";
+        el.psychConcept.value = "";
+        el.shortDefinition.value = "";
+        el.viewerSituation.value = "";
+        el.targetEmotion.value = "";
+        el.targetDomain.value = "";
+        renderSelectOptions(el.metaphorMaterial, [], "（未選択）Theme Assist候補を読み込んでください", "");
+        renderSelectOptions(el.sourceDomain, [], "（任意）未選択", "");
+        renderSelectOptions(el.roastAngle, [], "（任意）未選択", "");
+        el.customMaterial.value = "";
+        el.customSource.value = "";
+        el.customRoastAngle.value = "";
+        el.promptArea.value = "";
+        el.llmOutput.value = "";
+        el.metaphorSpecArea.value = "";
+        localStorage.removeItem(STORAGE_KEY);
+        syncCustomFields();
+        status("入力状態をリセットしました。", false, el.themeAssistStatus);
+      }
+
+      function buildPromptAction() {
+        const data = getFormData();
+        if (!data.theme_name || !data.short_definition) {
+          status("先にTheme Assist Specを読み込んでください。", true);
+          return;
+        }
+        if (!data.metaphor_material || data.metaphor_material === "未選択") {
+          status("metaphor_material を選択してください。", true);
+          return;
+        }
+        el.promptArea.value = buildPrompt(data);
+        if (!el.metaphorSpecArea.value.trim()) {
+          el.metaphorSpecArea.value = JSON.stringify(buildDefaultSpec(data), null, 2);
+        }
+        saveState();
+        status("Promptを生成しました。", false);
+      }
+
+      function parseLlmOutputAction() {
+        const raw = el.llmOutput.value.trim();
+        if (!raw) {
+          status("LLM返答が空です。", true);
+          return;
+        }
+        const parsed = extractJsonObject(raw);
+        if (!parsed) {
+          status("JSON抽出に失敗しました。", true);
+          return;
+        }
+        const normalized = normalizeMetaphorSpec(parsed, getFormData());
+        const validation = validateMetaphorSpecShape(normalized);
+        if (!validation.ok) {
+          status("metaphor_spec の構造が不足しています: " + validation.errors.join(" / "), true);
+          return;
+        }
+        el.metaphorSpecArea.value = JSON.stringify(normalized, null, 2);
+        saveState();
+        status("JSONを抽出して metaphor_spec に反映しました。", false);
+      }
+
+      function saveToNextStep() {
+        const raw = el.metaphorSpecArea.value.trim();
+        if (!raw) {
+          status("metaphor_spec が空です。", true, el.saveStatus);
+          return;
+        }
+        const parsed = parseJson(raw);
+        if (!parsed) {
+          status("metaphor_spec JSONが不正です。", true, el.saveStatus);
+          return;
+        }
+        const normalized = normalizeMetaphorSpec(parsed, getFormData());
+        const validation = validateMetaphorSpecShape(normalized);
+        if (!validation.ok) {
+          status("metaphor_spec の構造エラー: " + validation.errors.join(" / "), true, el.saveStatus);
+          return;
+        }
+        localStorage.setItem(NEXT_KEY, JSON.stringify(normalized));
+        el.metaphorSpecArea.value = JSON.stringify(normalized, null, 2);
+        saveState();
+        status("svrs_metaphor_spec をlocalStorageに保存完了しました。", false, el.saveStatus);
+      }
+
+      [
+        el.themeAssistPaste,
+        el.roastAi,
+        el.metaphorMaterial,
+        el.customMaterial,
+        el.metaphorGoal,
+        el.sourceDomain,
+        el.customSource,
+        el.roastAngle,
+        el.customRoastAngle,
+        el.gateStructure,
+        el.gateImage,
+        el.gateMappingBug,
+        el.gateCulture,
+        el.gateTooLong,
+        el.promptArea,
+        el.llmOutput,
+        el.metaphorSpecArea
+      ].forEach(function (node) {
+        node.addEventListener("input", saveState);
+        node.addEventListener("change", saveState);
+      });
+
+      [el.metaphorMaterial, el.sourceDomain, el.roastAngle].forEach(function (node) {
+        node.addEventListener("change", syncCustomFields);
+      });
+
+      el.loadThemeAssistBtn.addEventListener("click", loadFromThemeAssistStorageAction);
+      el.applyPastedThemeAssistBtn.addEventListener("click", applyPastedThemeAssistAction);
+      el.sampleBtn.addEventListener("click", applySampleAction);
+      el.resetBtn.addEventListener("click", resetAction);
+      el.buildPromptBtn.addEventListener("click", buildPromptAction);
+      el.copyPromptBtn.addEventListener("click", function () {
+        copyText(el.promptArea.value, "Promptをコピーしました。");
+      });
+      el.parseBtn.addEventListener("click", parseLlmOutputAction);
+      el.copyJsonBtn.addEventListener("click", function () {
+        copyText(el.metaphorSpecArea.value, "metaphor_spec JSONをコピーしました。");
+      });
+      el.saveBtn.addEventListener("click", saveToNextStep);
+      el.nextScriptEngineBtn.addEventListener("click", function () {
+        openNextStep("./script-engine-v1.html");
+      });
+      el.nextScriptForgeBtn.addEventListener("click", function () {
+        openNextStep("./script-forge-v2.html");
+      });
+
+      wireButtonFeedback();
+      renderSelectOptions(el.metaphorMaterial, [], "（未選択）Theme Assist候補を読み込んでください", "");
+      renderSelectOptions(el.sourceDomain, [], "（任意）未選択", "");
+      renderSelectOptions(el.roastAngle, [], "（任意）未選択", "");
+      renderAlignmentCheck(null);
+      loadState();
+      syncCustomFields();
+    })();
+  </script>
+</body>
+</html>

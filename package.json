@@ -1,0 +1,24 @@
+{
+  "name": "short-video-v2",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Orchestrator project that reuses psych-short-renderer",
+  "scripts": {
+    "dev": "npm run scene-remotion:dev",
+    "renderer:dev": "node scripts/run-renderer.mjs dev",
+    "renderer:render": "node scripts/run-renderer.mjs render",
+    "renderer:voicevox": "node scripts/run-renderer.mjs voicevox",
+    "renderer:help": "node scripts/run-renderer.mjs",
+    "scene-remotion:dev": "node scripts/run-scene-remotion.mjs dev",
+    "scene-remotion:render": "node scripts/run-scene-remotion.mjs render",
+    "scene-remotion:voicevox:initial": "node scripts/run-scene-remotion.mjs voicevox:initial",
+    "scene-remotion:voicevox:publish": "node scripts/run-scene-remotion.mjs voicevox:publish",
+    "scene-remotion:sync-spec": "node scripts/sync-scene-render-spec.mjs",
+    "scene-remotion:render:runid": "node scripts/run-scene-render-by-runid.mjs",
+    "scene-remotion:voicevox:batch": "node scripts/run-voicevox-batch.mjs",
+    "scene-remotion:audio:sync": "node scripts/sync-run-audio-to-shared-assets.mjs",
+    "scene-remotion:voicevox": "node scripts/run-scene-remotion.mjs voicevox",
+    "scene-remotion:typecheck": "node scripts/run-scene-remotion.mjs typecheck",
+    "voicevox:proxy": "node scripts/voicevox-cors-proxy.mjs"
+  }
+}

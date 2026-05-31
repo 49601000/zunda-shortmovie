@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/engine_registry.schema.json",
+  "engines": [
+    {
+      "id": "gpt_roast",
+      "path": "../engines/roast/gpt_roast.json",
+      "display_name": "GPT",
+      "engine_role": "roast_engine"
+    },
+    {
+      "id": "claude_roast",
+      "path": "../engines/roast/claude_roast.json",
+      "display_name": "Claude",
+      "engine_role": "roast_engine"
+    },
+    {
+      "id": "grok_roast",
+      "path": "../engines/roast/grok_roast.json",
+      "display_name": "Grok",
+      "engine_role": "roast_engine"
+    },
+    {
+      "id": "gemini_roast",
+      "path": "../engines/roast/gemini_roast.json",
+      "display_name": "Gemini",
+      "engine_role": "roast_engine"
+    },
+    {
+      "id": "zundamon_engine",
+      "path": "../engines/characters/zundamon_engine.json",
+      "display_name": "ずんだもん",
+      "engine_role": "misunderstanding_engine"
+    },
+    {
+      "id": "metan_engine",
+      "path": "../engines/characters/metan_engine.json",
+      "display_name": "四国めたん",
+      "engine_role": "explanation_engine"
+    }
+  ]
+}

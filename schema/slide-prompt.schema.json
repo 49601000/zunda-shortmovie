@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schema/slide-prompt.schema.json",
+  "title": "Slide Prompt Spec v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "meta",
+    "source_spec",
+    "settings",
+    "slide_content",
+    "preset",
+    "negative_constraints",
+    "generated_prompt"
+  ],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "created_by"],
+      "properties": {
+        "version": { "const": "slide_prompt_builder_v1" },
+        "created_by": { "type": "string", "minLength": 1 }
+      }
+    },
+    "source_spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metaphor_spec", "script_blueprint"],
+      "properties": {
+        "metaphor_spec": { "type": "object" },
+        "script_blueprint": { "type": "object" }
+      }
+    },
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preset_id", "slide_type", "target_use", "aspect_context", "language"],
+      "properties": {
+        "preset_id": { "const": "slide_canvas_whiteboard_v1" },
+        "slide_type": {
+          "type": "string",
+          "enum": [
+            "concept_explainer",
+            "comparison_chart",
+            "flow_diagram",
+            "bias_visual",
+            "metaphor_visual",
+            "quiz_card"
+          ]
+        },
+        "target_use": { "const": "center_slide_asset" },
+        "aspect_context": { "type": "string", "minLength": 1 },
+        "language": { "type": "string", "minLength": 1 }
+      }
+    },
+    "slide_content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["topic", "title", "core_message", "recommended_visual"],
+      "properties": {
+        "topic": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "core_message": { "type": "string", "minLength": 1 },
+        "metaphor": { "type": "string" },
+        "recommended_visual": { "type": "string", "minLength": 1 }
+      }
+    },
+    "preset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "preset_id",
+        "canvas_type",
+        "frame",
+        "base_color",
+        "frame_color",
+        "corner_radius",
+        "safe_margin",
+        "usage"
+      ],
+      "properties": {
+        "preset_id": { "const": "slide_canvas_whiteboard_v1" },
+        "canvas_type": { "type": "string", "minLength": 1 },
+        "frame": { "type": "string", "minLength": 1 },
+        "base_color": { "const": "#FAFAF6" },
+        "frame_color": { "const": "#C0C0C0" },
+        "corner_radius": { "type": "string", "minLength": 1 },
+        "safe_margin": { "type": "string", "minLength": 1 },
+        "usage": { "type": "string", "minLength": 1 }
+      }
+    },
+    "negative_constraints": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "generated_prompt": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

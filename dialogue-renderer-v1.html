@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dialogue Renderer v1</title>
+  <style>
+    :root {
+      --bg:#0f172a;
+      --panel:rgba(15,23,42,.82);
+      --ink:#e8ecf8;
+      --sub:#94a3b8;
+      --line:rgba(139,92,246,.2);
+      --accent:#8b5cf6;
+      --accent-dark:#6d28d9;
+      --ok:#67e3ad;
+      --warn:#ffc46d;
+      --danger:#ff7aa8;
+      --surface:#0b1220;
+      --shadow:0 20px 50px rgba(0,0,0,.25);
+      --radius:18px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { width:100%; max-width:100%; overflow-x:hidden; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      background:
+        radial-gradient(100% 120% at 0% 0%, rgba(124,58,237,.26) 0%, rgba(124,58,237,0) 46%),
+        radial-gradient(120% 130% at 100% 0%, rgba(14,165,233,.08) 0%, rgba(14,165,233,0) 52%),
+        linear-gradient(135deg, #1a103d 0%, #0f172a 45%, #031a2e 100%);
+      overflow-x: hidden;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:40;
+      border-bottom:1px solid rgba(139,92,246,.22);
+      background:linear-gradient(90deg, #5B21B6 0%, #4C1D95 35%, #1E1B4B 70%, #0F172A 100%);
+      box-shadow:0 12px 32px rgba(0,0,0,.28);
+      backdrop-filter:blur(8px);
+    }
+    .topbar{
+      min-height:66px;
+      padding:8px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      min-width:0;
+    }
+    .topbarLeft{display:flex; align-items:center; min-width:0; gap:14px; flex:1;}
+    .brandMark{
+      width:40px; height:40px; border-radius:12px; display:grid; place-items:center;
+      background:linear-gradient(160deg, #552fb0, #3b277f);
+      border:1px solid rgba(173,148,255,.35);
+      box-shadow:0 8px 20px rgba(20,14,50,.45);
+      color:#f3edff; font-size:16px; line-height:1;
+    }
+    .brandText{font-size:18px; font-weight:800; color:#f8fafc; white-space:nowrap;}
+    .topbarDivider{width:1px; height:28px; background:rgba(154,164,202,.4); flex:none;}
+    .topbarTitle{font-size:16px; font-weight:800; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;}
+    .topbarVersion{font-size:12px; font-weight:800; color:#c4b5fd; letter-spacing:.04em; opacity:.9; white-space:nowrap;}
+
+    main { padding: 18px 22px 34px; }
+    .wrap {
+      width: min(100%, 1240px);
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+    .main-grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: 0.95fr 1.25fr;
+      min-width: 0;
+    }
+    .stack > .card + .card { margin-top: 12px; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+    h1 { margin: 0 0 8px; font-size: clamp(1.3rem, 2.4vw, 2rem); line-height: 1.3; }
+    .sub {
+      margin: 0 0 16px;
+      color: var(--sub);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+    .section {
+      margin: 0 0 8px;
+      color: var(--sub);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: 0.82rem;
+    }
+    .field { margin-bottom: 12px; }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--sub);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+    select, textarea, input[type="text"] {
+      width: 100%;
+      color: var(--ink);
+      background: var(--surface);
+      border: 1px solid rgba(148,163,184,.28);
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline: none;
+      font-size: 0.92rem;
+    }
+    select:focus, textarea:focus, input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(139,92,246,.17);
+    }
+    textarea { min-height: 120px; resize: vertical; line-height: 1.45; }
+    textarea[readonly] { background: #0a1020; border-style: dashed; }
+    pre {
+      margin: 0;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,.25);
+      background: var(--surface);
+      max-height: 280px;
+      overflow: auto;
+      font-size: 0.84rem;
+      line-height: 1.42;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #dce6f8;
+    }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.86rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .18s ease, filter .18s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: scale(.98); filter: brightness(.95); }
+    button.pressed {
+      transform: scale(.97);
+      filter: brightness(1.06);
+      box-shadow: 0 0 0 3px rgba(196,181,253,.24);
+    }
+    button:focus-visible {
+      outline: 2px solid rgba(196,181,253,.92);
+      outline-offset: 2px;
+    }
+    button:disabled { opacity: .6; cursor: default; transform: none; }
+    button.secondary { background: #dcd9ff; color: #111827; }
+    button.ghost { background: #1f2a44; color: var(--ink); border: 1px solid rgba(148,163,184,.25); }
+    button.warn { background: var(--warn); color: #2b1800; }
+    button.danger { background: var(--danger); color: #2c0810; }
+    .status {
+      min-height: 1.1em;
+      margin-top: 8px;
+      color: var(--sub);
+      font-size: 0.82rem;
+    }
+    .status.ok { color: var(--ok); }
+    .status.error { color: var(--danger); }
+    .warn-note {
+      margin-top: 8px;
+      color: var(--warn);
+      font-size: 0.84rem;
+      line-height: 1.4;
+      min-height: 1.2em;
+    }
+    .guide-note {
+      margin: 0 0 8px;
+      color: var(--sub);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+    .scene-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .scene-card {
+      border: 1px solid rgba(148,163,184,.25);
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(11,18,32,.88);
+    }
+    .scene-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .scene-title {
+      margin: 0;
+      font-size: .92rem;
+      font-weight: 800;
+      color: #ddd6fe;
+    }
+    .scene-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .84rem;
+      color: var(--ink);
+      font-weight: 700;
+    }
+    .scene-toggle input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #8b5cf6;
+    }
+    .scene-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .source-line {
+      margin: 0;
+      font-size: .82rem;
+      color: var(--sub);
+      line-height: 1.4;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px dashed rgba(148,163,184,.3);
+      background: rgba(15,23,42,.7);
+    }
+    .scene-line {
+      min-height: 86px;
+    }
+    .flow-row {
+      margin-top: 12px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      align-items: stretch;
+    }
+    .chip {
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,.22);
+      background: #0b1220;
+      padding: 10px;
+      text-align: center;
+      font-weight: 700;
+      font-size: .86rem;
+      color: #ddd6fe;
+    }
+    .chip.current {
+      background: #ddd6fe;
+      color: #1e1b4b;
+      border-color: #c4b5fd;
+      box-shadow: 0 0 0 2px rgba(196,181,253,.25) inset;
+    }
+    @media (max-width: 980px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .row button { width: 100%; }
+      .flow-row { grid-template-columns: 1fr; }
+      .scene-grid { grid-template-columns: 1fr; }
+      .topbar{padding:8px 12px;}
+      .brandText{font-size:14px;}
+      .topbarTitle{font-size:12px;}
+      .topbarVersion{font-size:10px;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="topbarLeft">
+        <div class="brandMark">DR</div>
+        <div class="brandText">Dialogue Renderer</div>
+        <div class="topbarDivider"></div>
+        <div class="topbarTitle">Dialogue Base → Dialogue Rendered 生成</div>
+      </div>
+      <div class="topbarVersion">v1</div>
+    </div>
+  </header>
+
+  <main>
+  <div class="wrap">
+    <section class="card">
+      <h1>Dialogue Renderer v1</h1>
+      <p class="sub">Dialogue Baseを入力に、speakerごとの口調と演出を付与した最終セリフを生成する。</p>
+      <div class="flow-row" aria-label="pipeline">
+        <div class="chip">Theme &amp; Metaphor</div>
+        <div class="chip">Blueprint</div>
+        <div class="chip">Dialogue</div>
+        <div class="chip current" aria-current="step">Style Render</div>
+        <div class="chip">Slide</div>
+        <div class="chip">Scene</div>
+      </div>
+      <div class="row">
+        <button id="loadBtn">Load from Dialogue Generator</button>
+        <button id="sampleBtn" class="secondary">サンプル投入</button>
+      </div>
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="main-grid">
+      <section class="stack">
+        <div class="card">
+        <p class="section">Loaded Dialogue Base</p>
+        <pre id="loadedSpec">未読込</pre>
+      </div>
+
+      <div class="card">
+        <details>
+          <summary class="section">Manual Dialogue Base Paste（クリックで開く）</summary>
+          <textarea id="manualSpec" placeholder="Dialogue Base JSONを貼り付け"></textarea>
+          <div class="row">
+            <button id="applyManualBtn" class="ghost">Apply Manual JSON</button>
+          </div>
+        </details>
+      </div>
+
+      <div class="card">
+        <p class="section">Settings</p>
+        <div class="field">
+          <label for="maxScreenChars">max_screen_text_chars</label>
+          <input id="maxScreenChars" type="text" value="28">
+        </div>
+        <div class="field">
+          <label for="ttsReady">tts_ready</label>
+          <select id="ttsReady">
+            <option value="true" selected>true</option>
+            <option value="false">false</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="screenPolicy">screen_text_policy</label>
+          <input id="screenPolicy" type="text" value="short_one_message">
+        </div>
+        <div class="field">
+          <label for="voicePolicy">voice_text_policy</label>
+          <input id="voicePolicy" type="text" value="natural_short_speech">
+        </div>
+        <div id="warning" class="warn-note"></div>
+      </div>
+      </section>
+
+      <section class="stack">
+        <div class="card">
+        <p class="section">1) Generate Rendered Dialogue Prompt</p>
+        <p class="guide-note">生成ボタンでLLM向けプロンプトを作成。Copyでクリップボードにコピーできます。</p>
+        <textarea id="promptArea" readonly placeholder="① Generate Rendered Dialogue Prompt を押す"></textarea>
+        <div class="row">
+          <button id="generatePromptBtn">Generate Rendered Dialogue Prompt</button>
+          <button id="copyPromptBtn" class="secondary">Copy Prompt</button>
+          <button id="resetBtn" class="danger">Reset</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="section">2) LLM Output Paste</p>
+        <textarea id="llmOutput" placeholder="② LLMの返答を貼り付け"></textarea>
+        <div class="row">
+          <button id="parseBtn" class="ghost">Parse JSON</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="section">3) DIALOGUE RENDERED確認・微調整</p>
+        <p class="guide-note">Parse後の rendered_dialogues を sceneカードで編集し、この内容を次STEPへ渡します。</p>
+        <div id="sceneCards" class="scene-list"></div>
+        <div class="row">
+          <button id="validateJsonBtn" class="secondary">Validate JSON</button>
+          <button id="copyJsonBtn" class="ghost">Copy JSON</button>
+          <button id="saveBtn" class="warn">Save to Next Step</button>
+        </div>
+        <div class="row">
+          <button id="nextStepBtn" type="button">次のSTEPへ: Slide Prompt Builder</button>
+        </div>
+        <div id="renderedStatus" class="status"></div>
+        <div id="lengthWarning" class="warn-note"></div>
+        </div>
+      </section>
+    </section>
+  </div>
+  </main>
+
+  <script>
+    (function () {
+      const INPUT_KEY = "svrs_dialogue_base";
+      const OUTPUT_KEY = "svrs_dialogue_rendered";
+      const STATE_KEY = "dialogue_renderer_v1_state";
+      const CHARACTER_PRESETS = [
+        { value: "zundamon_engine", label: "ずんだもん [zundamon_engine]" },
+        { value: "metan_engine", label: "メタン [metan_engine]" },
+        { value: "gpt_roast", label: "GPT Roast [gpt_roast]" },
+        { value: "claude_roast", label: "Claude Roast [claude_roast]" },
+        { value: "grok_roast", label: "Grok Roast [grok_roast]" },
+        { value: "gemini_roast", label: "Gemini Roast [gemini_roast]" }
+      ];
+      const STYLE_PRESETS = [
+        { value: "normal", label: "ノーマル" },
+        { value: "calm", label: "Calm" },
+        { value: "sharp", label: "Sharp" },
+        { value: "cute", label: "Cute" },
+        { value: "dry", label: "Dry" }
+      ];
+
+      const el = {
+        loadBtn: document.getElementById("loadBtn"),
+        sampleBtn: document.getElementById("sampleBtn"),
+        status: document.getElementById("status"),
+        warning: document.getElementById("warning"),
+        loadedSpec: document.getElementById("loadedSpec"),
+        manualSpec: document.getElementById("manualSpec"),
+        applyManualBtn: document.getElementById("applyManualBtn"),
+        maxScreenChars: document.getElementById("maxScreenChars"),
+        ttsReady: document.getElementById("ttsReady"),
+        screenPolicy: document.getElementById("screenPolicy"),
+        voicePolicy: document.getElementById("voicePolicy"),
+        promptArea: document.getElementById("promptArea"),
+        generatePromptBtn: document.getElementById("generatePromptBtn"),
+        copyPromptBtn: document.getElementById("copyPromptBtn"),
+        resetBtn: document.getElementById("resetBtn"),
+        llmOutput: document.getElementById("llmOutput"),
+        parseBtn: document.getElementById("parseBtn"),
+        sceneCards: document.getElementById("sceneCards"),
+        validateJsonBtn: document.getElementById("validateJsonBtn"),
+        copyJsonBtn: document.getElementById("copyJsonBtn"),
+        saveBtn: document.getElementById("saveBtn"),
+        nextStepBtn: document.getElementById("nextStepBtn"),
+        renderedStatus: document.getElementById("renderedStatus"),
+        lengthWarning: document.getElementById("lengthWarning")
+      };
+
+      let dialogueBase = null;
+      let editedDialogueRendered = null;
+
+      const SAMPLE_DIALOGUE_BASE = {
+        meta: {
+          version: "dialogue_generator_v1",
+          created_by: "dialogue-generator-v1.html"
+        },
+        source_spec: {
+          script_blueprint: {}
+        },
+        settings: {
+          base_language: "ja",
+          style: "neutral",
+          max_base_text_chars: 40
+        },
+        dialogues: [
+          {
+            id: "dlg_001",
+            source_segment_id: "seg_001",
+            time: "0-2",
+            role: "hook",
+            speaker: "zundamon_engine",
+            base_text: "なんでクソ株って売れないのか",
+            event: "normal"
+          },
+          {
+            id: "dlg_002",
+            source_segment_id: "seg_002",
+            time: "2-6",
+            role: "misunderstanding",
+            speaker: "zundamon_engine",
+            base_text: "売らなければ負けじゃない",
+            event: "normal"
+          },
+          {
+            id: "dlg_003",
+            source_segment_id: "seg_003",
+            time: "6-13",
+            role: "explanation",
+            speaker: "metan_engine",
+            base_text: "それは損失回避です。損を確定する痛みを実際以上に重く感じる傾向です",
+            event: "normal"
+          },
+          {
+            id: "dlg_004",
+            source_segment_id: "seg_004",
+            time: "13-17",
+            role: "roast",
+            speaker: "grok_roast",
+            base_text: "現実逃避です",
+            event: "ai_trigger"
+          },
+          {
+            id: "dlg_005",
+            source_segment_id: "seg_005",
+            time: "17-22",
+            role: "collapse",
+            speaker: "zundamon_engine",
+            base_text: "やめてください",
+            event: "normal"
+          }
+        ]
+      };
+
+      function status(msg, isError) {
+        el.status.textContent = msg || "";
+        el.status.classList.remove("ok", "error");
+        if (msg) el.status.classList.add(isError ? "error" : "ok");
+      }
+
+      function wireButtonFeedback() {
+        document.querySelectorAll("button").forEach(function (button) {
+          button.addEventListener("click", function () {
+            if (button.disabled) return;
+            button.classList.add("pressed");
+            window.setTimeout(function () {
+              button.classList.remove("pressed");
+            }, 160);
+          });
+        });
+      }
+
+      function openNextStep(path) {
+        window.open(path, "_blank", "noopener");
+        status("次のSTEPを新しいタブで開きました。", false);
+      }
+
+      function parseJson(raw) {
+        try {
+          return JSON.parse(raw);
+        } catch (_err) {
+          return null;
+        }
+      }
+
+      function deepCopy(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      function pad3(num) {
+        return String(num).padStart(3, "0");
+      }
+
+      function getRoleLabel(role) {
+        if (role === "hook") return "Hook";
+        if (role === "misunderstanding") return "Misunderstanding";
+        if (role === "explanation") return "Explanation";
+        if (role === "roast") return "Roast";
+        if (role === "collapse") return "Collapse";
+        return role || "Scene";
+      }
+
+      function setRenderedStatus(msg, isError) {
+        if (!el.renderedStatus) return;
+        el.renderedStatus.textContent = msg || "";
+        el.renderedStatus.classList.remove("ok", "error");
+        if (msg) el.renderedStatus.classList.add(isError ? "error" : "ok");
+      }
+
+      function getDialogueBaseCount() {
+        const sourceDialogs = dialogueBase && Array.isArray(dialogueBase.dialogues) ? dialogueBase.dialogues : [];
+        return sourceDialogs.length;
+      }
+
+      function getRenderedCountWarning(spec) {
+        if (!spec || typeof spec !== "object" || !Array.isArray(spec.rendered_dialogues)) return "";
+        const expected = getDialogueBaseCount();
+        const actual = spec.rendered_dialogues.length;
+        if (actual === expected) return "";
+        return "警告: rendered_dialogues.length (" + actual + ") と dialogue_base.dialogues.length (" + expected + ") が不一致です。";
+      }
+
+      function updateRenderedCountWarning(spec) {
+        if (!el.lengthWarning) return;
+        el.lengthWarning.textContent = getRenderedCountWarning(spec);
+      }
+
+      function normalizeLine(text, fallback) {
+        const t = String(text || "").replace(/\s+/g, " ").trim();
+        return t || fallback;
+      }
+
+      function normalizeSceneId(sceneId, idx) {
+        return normalizeLine(sceneId, "scene_" + pad3(idx + 1));
+      }
+
+      function toSpeedScale(raw, fallback) {
+        const n = Number(raw);
+        if (!Number.isFinite(n) || n <= 0) return fallback;
+        return Math.round(n * 100) / 100;
+      }
+
+      function toPositiveInt(raw, fallback) {
+        const n = Number(raw);
+        if (!Number.isFinite(n) || n <= 0) return fallback;
+        return Math.round(n);
+      }
+
+      function extractJsonObject(text) {
+        if (!text) return null;
+        const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+        const candidate = fenced ? fenced[1] : text;
+        const start = candidate.indexOf("{");
+        const end = candidate.lastIndexOf("}");
+        if (start === -1 || end === -1 || end <= start) return null;
+        return parseJson(candidate.slice(start, end + 1));
+      }
+
+      function renderLoaded() {
+        el.loadedSpec.textContent = dialogueBase ? JSON.stringify(dialogueBase, null, 2) : "未読込";
+      }
+
+      function escapeHtml(text) {
+        return String(text)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function buildCharacterOptions(currentValue) {
+        const seen = {};
+        const options = [];
+        CHARACTER_PRESETS.forEach(function (item) {
+          if (seen[item.value]) return;
+          seen[item.value] = true;
+          options.push(item);
+        });
+        if (currentValue && !seen[currentValue]) {
+          options.push({ value: currentValue, label: currentValue + " [custom]" });
+        }
+        return options;
+      }
+
+      function buildStyleOptions(currentValue) {
+        const seen = {};
+        const options = [];
+        STYLE_PRESETS.forEach(function (item) {
+          if (seen[item.value]) return;
+          seen[item.value] = true;
+          options.push(item);
+        });
+        if (currentValue && !seen[currentValue]) {
+          options.push({ value: currentValue, label: currentValue + " [custom]" });
+        }
+        return options;
+      }
+
+      function normalizeRenderedForEditor(spec) {
+        if (!spec || typeof spec !== "object") return null;
+        const out = deepCopy(spec);
+        const rendered = Array.isArray(out.rendered_dialogues) ? out.rendered_dialogues : [];
+        const maxChars = out.settings && Number.isFinite(Number(out.settings.max_screen_text_chars))
+          ? Math.max(8, Math.min(80, Math.round(Number(out.settings.max_screen_text_chars))))
+          : getSettings().max_screen_text_chars;
+
+        out.rendered_dialogues = rendered.map(function (scene, idx) {
+          const src = scene && typeof scene === "object" ? scene : {};
+          const role = normalizeLine(src.role, "hook");
+          const appliedCharacter = normalizeLine(src.applied_character, normalizeLine(src.speaker, "zundamon_engine"));
+          const meta = speakerMeta(appliedCharacter);
+          const voice = normalizeLine(src.voice, normalizeLine(src.screen_text, normalizeLine(src.base_text, "")));
+          return Object.assign({}, src, {
+            scene_id: normalizeSceneId(src.scene_id || src.source_segment_id || src.id, idx),
+            render_enabled: typeof src.render_enabled === "boolean" ? src.render_enabled : true,
+            applied_character: appliedCharacter,
+            style: normalizeLine(src.style, "normal"),
+            speedScale: toSpeedScale(src.speedScale, 1),
+            source: normalizeLine(src.source, src.source_segment_id || src.source_dialogue_id || ("scene_" + pad3(idx + 1))),
+            role: role,
+            speaker: appliedCharacter,
+            speaker_name: normalizeLine(src.speaker_name, meta.speaker_name),
+            speaker_color: normalizeLine(src.speaker_color, meta.speaker_color),
+            voice: voice,
+            screen_text: clipScreenText(normalizeLine(src.screen_text, voice), maxChars)
+          });
+        });
+
+        return out;
+      }
+
+      function renderSceneCards() {
+        if (!el.sceneCards) return;
+        const rendered = editedDialogueRendered && Array.isArray(editedDialogueRendered.rendered_dialogues)
+          ? editedDialogueRendered.rendered_dialogues
+          : [];
+        if (rendered.length === 0) {
+          el.sceneCards.innerHTML = "<p class=\"guide-note\">③ Parse JSON後にsceneカードが表示されます。</p>";
+          return;
+        }
+        el.sceneCards.innerHTML = rendered.map(function (scene, idx) {
+          const sceneId = normalizeSceneId(scene.scene_id || scene.source_segment_id || scene.id, idx);
+          const role = normalizeLine(scene.role, "scene");
+          const source = normalizeLine(scene.source, scene.source_segment_id || scene.source_dialogue_id || "");
+          const characterOptions = buildCharacterOptions(scene.applied_character || scene.speaker).map(function (opt) {
+            const selected = opt.value === (scene.applied_character || scene.speaker) ? " selected" : "";
+            return "<option value=\"" + escapeHtml(opt.value) + "\"" + selected + ">" + escapeHtml(opt.label) + "</option>";
+          }).join("");
+          const styleOptions = buildStyleOptions(scene.style).map(function (opt) {
+            const selected = opt.value === scene.style ? " selected" : "";
+            return "<option value=\"" + escapeHtml(opt.value) + "\"" + selected + ">" + escapeHtml(opt.label) + "</option>";
+          }).join("");
+          return [
+            "<section class=\"scene-card\" data-scene-idx=\"" + idx + "\">",
+            "<div class=\"scene-head\">",
+            "<p class=\"scene-title\">" + escapeHtml(sceneId) + " (" + escapeHtml(getRoleLabel(role)) + ")</p>",
+            "<label class=\"scene-toggle\">",
+            "<input type=\"checkbox\" data-field=\"render_enabled\"" + (scene.render_enabled ? " checked" : "") + ">",
+            "このsceneをレンダーする",
+            "</label>",
+            "</div>",
+            "<div class=\"scene-grid\">",
+            "<div class=\"field\"><label>scene_id</label><input type=\"text\" data-field=\"scene_id\" value=\"" + escapeHtml(sceneId) + "\"></div>",
+            "<div class=\"field\"><label>適用キャラ</label><select data-field=\"applied_character\">" + characterOptions + "</select></div>",
+            "<div class=\"field\"><label>スタイル</label><select data-field=\"style\">" + styleOptions + "</select></div>",
+            "<div class=\"field\"><label>speedScale</label><input type=\"number\" data-field=\"speedScale\" step=\"0.01\" min=\"0.1\" max=\"3\" value=\"" + escapeHtml(String(toSpeedScale(scene.speedScale, 1))) + "\"></div>",
+            "</div>",
+            "<div class=\"field\"><label>セリフ</label><textarea class=\"scene-line\" data-field=\"voice\">" + escapeHtml(normalizeLine(scene.voice, "")) + "</textarea></div>",
+            "<p class=\"source-line\">source: " + escapeHtml(source || "-") + "</p>",
+            "</section>"
+          ].join("");
+        }).join("");
+      }
+
+      function setEditedDialogueRendered(spec) {
+        editedDialogueRendered = normalizeRenderedForEditor(spec);
+        renderSceneCards();
+        updateRenderedCountWarning(editedDialogueRendered);
+      }
+
+      function updateSceneAt(index, updater) {
+        if (!editedDialogueRendered || !Array.isArray(editedDialogueRendered.rendered_dialogues)) return;
+        const rendered = editedDialogueRendered.rendered_dialogues;
+        if (index < 0 || index >= rendered.length) return;
+        const nextRendered = rendered.map(function (scene, idx) {
+          if (idx !== index) return scene;
+          return updater(Object.assign({}, scene), idx);
+        });
+        editedDialogueRendered = Object.assign({}, editedDialogueRendered, { rendered_dialogues: nextRendered });
+      }
+
+      function handleSceneFieldChange(index, field, rawValue, isCheckbox) {
+        const settings = getSettings();
+        updateSceneAt(index, function (scene, idx) {
+          if (field === "render_enabled") {
+            scene.render_enabled = !!isCheckbox;
+            return scene;
+          }
+          if (field === "scene_id") {
+            scene.scene_id = normalizeSceneId(rawValue, idx);
+            return scene;
+          }
+          if (field === "applied_character") {
+            const value = normalizeLine(rawValue, scene.speaker || "zundamon_engine");
+            const meta = speakerMeta(value);
+            scene.applied_character = value;
+            scene.speaker = value;
+            scene.speaker_name = meta.speaker_name;
+            scene.speaker_color = meta.speaker_color;
+            return scene;
+          }
+          if (field === "style") {
+            scene.style = normalizeLine(rawValue, "normal");
+            return scene;
+          }
+          if (field === "speedScale") {
+            scene.speedScale = toSpeedScale(rawValue, 1);
+            return scene;
+          }
+          if (field === "voice") {
+            const voice = String(rawValue || "").trim();
+            scene.voice = voice;
+            scene.screen_text = clipScreenText(voice, settings.max_screen_text_chars);
+            return scene;
+          }
+          return scene;
+        });
+        updateRenderedCountWarning(editedDialogueRendered);
+        saveState();
+      }
+
+      function validateDialogueBase(spec) {
+        return !!(spec && Array.isArray(spec.dialogues));
+      }
+
+      function applySample() {
+        dialogueBase = JSON.parse(JSON.stringify(SAMPLE_DIALOGUE_BASE));
+        el.manualSpec.value = JSON.stringify(dialogueBase, null, 2);
+        renderLoaded();
+        saveState();
+        status("サンプルDialogue Baseを投入しました。", false);
+      }
+
+      function loadFromStorage() {
+        const raw = localStorage.getItem(INPUT_KEY);
+        if (!raw) {
+          status("svrs_dialogue_base が見つかりません。Manual Dialogue Base Paste を使ってください。", true);
+          return;
+        }
+        const parsed = parseJson(raw);
+        if (!validateDialogueBase(parsed)) {
+          status("svrs_dialogue_base の形式が不足しています。", true);
+          return;
+        }
+        dialogueBase = parsed;
+        renderLoaded();
+        saveState();
+        status("Dialogue Baseを読み込みました。", false);
+      }
+
+      function applyManual() {
+        const raw = el.manualSpec.value.trim();
+        if (!raw) {
+          status("貼り付けJSONが空です。", true);
+          return;
+        }
+        const parsed = parseJson(raw);
+        if (!validateDialogueBase(parsed)) {
+          status("JSONが不正か、dialoguesが不足しています。", true);
+          return;
+        }
+        dialogueBase = parsed;
+        renderLoaded();
+        saveState();
+        status("手動JSONを適用しました。", false);
+      }
+
+      function getSettings() {
+        const maxScreenChars = Math.max(8, Math.min(80, toPositiveInt(el.maxScreenChars.value, 28)));
+        el.maxScreenChars.value = String(maxScreenChars);
+        return {
+          max_screen_text_chars: maxScreenChars,
+          tts_ready: el.ttsReady.value === "true",
+          screen_text_policy: normalizeLine(el.screenPolicy.value, "short_one_message"),
+          voice_text_policy: normalizeLine(el.voicePolicy.value, "natural_short_speech")
+        };
+      }
+
+      function ensureSentenceEnd(text, suffix) {
+        const clean = normalizeLine(text, "");
+        if (!clean) return suffix;
+        if (/[。！？!?]$/.test(clean)) return clean;
+        return clean + suffix;
+      }
+
+      function renderBySpeaker(baseText, speaker) {
+        const text = normalizeLine(baseText, "説明します");
+        if (speaker === "zundamon_engine") {
+          if (/[?？]$/.test(text)) return text.replace(/[?？]+$/, "のだ？");
+          if (/のだ[。！!?？]?$/.test(text)) return ensureSentenceEnd(text, "！");
+          return ensureSentenceEnd(text + "のだ", "！");
+        }
+        if (speaker === "metan_engine") {
+          let out = text.replace(/です[。]?$/, "よ");
+          if (!/[よね]$/.test(out)) out = out + "よ";
+          return ensureSentenceEnd(out, "。");
+        }
+        if (speaker === "gpt_roast") {
+          if (/非合理/.test(text)) return ensureSentenceEnd(text, "。");
+          return "非合理です。";
+        }
+        if (speaker === "claude_roast") {
+          if (/防衛/.test(text)) return ensureSentenceEnd(text, "。");
+          return "それ、自分を守るためですよね。";
+        }
+        if (speaker === "grok_roast") {
+          if (/草/.test(text)) return ensureSentenceEnd(text, "。");
+          return text.replace(/です[。]?$/, "") + "で草。";
+        }
+        if (speaker === "gemini_roast") {
+          if (/NFT/.test(text)) return ensureSentenceEnd(text, "。");
+          return "では損失をNFT化しましょう。";
+        }
+        return ensureSentenceEnd(text, "。");
+      }
+
+      function speakerMeta(speaker) {
+        if (speaker === "zundamon_engine") return { speaker_name: "ずんだもん", speaker_color: "green" };
+        if (speaker === "metan_engine") return { speaker_name: "メタン", speaker_color: "blue" };
+        return { speaker_name: "AI", speaker_color: "red" };
+      }
+
+      function clipScreenText(text, maxChars) {
+        const normalized = normalizeLine(text, "");
+        if (normalized.length <= maxChars) return normalized;
+        return normalized.slice(0, maxChars);
+      }
+
+      function fallbackRenderedDialogue(dlg, idx, settings) {
+        const rendered = renderBySpeaker(dlg.base_text, dlg.speaker);
+        const meta = speakerMeta(dlg.speaker);
+        const out = {
+          id: "rdlg_" + String(idx + 1).padStart(3, "0"),
+          source_dialogue_id: normalizeLine(dlg.id, "dlg_" + String(idx + 1).padStart(3, "0")),
+          source_segment_id: normalizeLine(dlg.source_segment_id, "seg_" + String(idx + 1).padStart(3, "0")),
+          time: normalizeLine(dlg.time, idx + "-" + (idx + 2)),
+          role: normalizeLine(dlg.role, "hook"),
+          speaker: normalizeLine(dlg.speaker, "zundamon_engine"),
+          speaker_name: meta.speaker_name,
+          speaker_color: meta.speaker_color,
+          base_text: normalizeLine(dlg.base_text, "説明します"),
+          screen_text: clipScreenText(rendered, settings.max_screen_text_chars),
+          voice: ensureSentenceEnd(rendered, "。"),
+          event: dlg.role === "roast" ? "ai_trigger" : "normal"
+        };
+        if (out.role === "roast") {
+          out.monolith = {
+            mode: "sound_only",
+            display_text: "SOUND ONLY"
+          };
+          out.effects = [
+            "grayscale_characters",
+            "darken_slide",
+            "slight_flicker"
+          ];
+        }
+        return out;
+      }
+
+      function buildBaseRendered(settings) {
+        const dialogs = dialogueBase && Array.isArray(dialogueBase.dialogues) ? dialogueBase.dialogues : [];
+        return {
+          meta: {
+            version: "dialogue_renderer_v1",
+            created_by: "dialogue-renderer-v1.html"
+          },
+          source_spec: {
+            dialogue_base: dialogueBase || {}
+          },
+          settings: settings,
+          rendered_dialogues: dialogs.map(function (dlg, idx) {
+            return fallbackRenderedDialogue(dlg, idx, settings);
+          })
+        };
+      }
+
+      function sanitizeRendered(input, fallback, settings, idx) {
+        const src = input && typeof input === "object" ? input : {};
+        const speaker = normalizeLine(src.speaker, fallback.speaker);
+        const role = normalizeLine(src.role, fallback.role);
+        const baseText = normalizeLine(src.base_text, fallback.base_text);
+        const rendered = renderBySpeaker(baseText, speaker);
+        const meta = speakerMeta(speaker);
+
+        const out = {
+          id: normalizeLine(src.id, fallback.id || ("rdlg_" + String(idx + 1).padStart(3, "0"))),
+          source_dialogue_id: normalizeLine(src.source_dialogue_id, fallback.source_dialogue_id),
+          source_segment_id: normalizeLine(src.source_segment_id, fallback.source_segment_id),
+          time: normalizeLine(src.time, fallback.time),
+          role: role,
+          speaker: speaker,
+          speaker_name: normalizeLine(src.speaker_name, meta.speaker_name),
+          speaker_color: normalizeLine(src.speaker_color, meta.speaker_color),
+          base_text: baseText,
+          screen_text: clipScreenText(normalizeLine(src.screen_text, rendered), settings.max_screen_text_chars),
+          voice: ensureSentenceEnd(normalizeLine(src.voice, rendered), "。"),
+          event: role === "roast" ? "ai_trigger" : "normal"
+        };
+
+        if (role === "roast") {
+          out.monolith = {
+            mode: "sound_only",
+            display_text: "SOUND ONLY"
+          };
+          out.effects = [
+            "grayscale_characters",
+            "darken_slide",
+            "slight_flicker"
+          ];
+        }
+        return out;
+      }
+
+      function enforceConstraints(candidate, settings) {
+        const base = buildBaseRendered(settings);
+        const out = Object.assign({}, base, candidate && typeof candidate === "object" ? candidate : {});
+        const candidateMeta = candidate && candidate.meta && typeof candidate.meta === "object" ? candidate.meta : {};
+        const candidateSourceSpec = candidate && candidate.source_spec && typeof candidate.source_spec === "object" ? candidate.source_spec : {};
+        out.meta = Object.assign({}, base.meta, candidateMeta);
+        out.source_spec = Object.assign({}, candidateSourceSpec, { dialogue_base: dialogueBase || {} });
+        out.settings = settings;
+
+        const incoming = Array.isArray(out.rendered_dialogues)
+          ? out.rendered_dialogues
+          : Array.isArray(out.dialogues) ? out.dialogues : [];
+        const sourceDialogs = dialogueBase && Array.isArray(dialogueBase.dialogues) ? dialogueBase.dialogues : [];
+
+        out.rendered_dialogues = sourceDialogs.map(function (dlg, idx) {
+          const fallback = base.rendered_dialogues[idx] || fallbackRenderedDialogue(dlg, idx, settings);
+          const bySource = incoming.find(function (r) { return r && r.source_dialogue_id === dlg.id; });
+          const byRole = incoming.find(function (r) { return r && r.role === dlg.role; });
+          const byIndex = incoming[idx];
+          return sanitizeRendered(bySource || byRole || byIndex, fallback, settings, idx);
+        });
+
+        return out;
+      }
+
+      function validateRendered(spec) {
+        const errors = [];
+        if (!spec || typeof spec !== "object") return { ok: false, errors: ["root object が必要です"] };
+        if (!Array.isArray(spec.rendered_dialogues)) errors.push("rendered_dialogues が必要です");
+        const rendered = Array.isArray(spec.rendered_dialogues) ? spec.rendered_dialogues : [];
+        const sourceDialogs = dialogueBase && Array.isArray(dialogueBase.dialogues) ? dialogueBase.dialogues : [];
+        if (rendered.length !== sourceDialogs.length) errors.push("rendered_dialogues.length は dialogue_base.dialogues.length と一致必須");
+
+        rendered.forEach(function (rdlg, idx) {
+          if (!rdlg || typeof rdlg !== "object") {
+            errors.push("rendered_dialogues[" + idx + "] がobjectではありません");
+            return;
+          }
+          ["id", "source_dialogue_id", "source_segment_id", "time", "role", "speaker", "speaker_name", "speaker_color", "base_text", "screen_text", "voice", "event"].forEach(function (key) {
+            if (typeof rdlg[key] !== "string" || !rdlg[key].trim()) errors.push("rendered_dialogues[" + idx + "]." + key + " が不足");
+          });
+          if (rdlg.role === "roast") {
+            if (rdlg.event !== "ai_trigger") errors.push("roast.event は ai_trigger 固定");
+            if (!rdlg.monolith || rdlg.monolith.mode !== "sound_only") errors.push("roast.monolith.mode は sound_only 固定");
+            const effects = Array.isArray(rdlg.effects) ? rdlg.effects : [];
+            ["grayscale_characters", "darken_slide", "slight_flicker"].forEach(function (name) {
+              if (effects.indexOf(name) === -1) errors.push("roast.effects に " + name + " が必要");
+            });
+          } else {
+            if (rdlg.event !== "normal") errors.push("non-roast.event は normal 固定");
+            if (Object.prototype.hasOwnProperty.call(rdlg, "monolith")) errors.push("normal dialogueに monolith は不要");
+            if (Object.prototype.hasOwnProperty.call(rdlg, "effects")) errors.push("normal dialogueに effects は不要");
+          }
+        });
+        return { ok: errors.length === 0, errors: errors };
+      }
+
+      function buildPrompt() {
+        if (!dialogueBase) {
+          status("先にDialogue Baseを読み込んでください。", true);
+          return false;
+        }
+        const settings = getSettings();
+        const draft = buildBaseRendered(settings);
+        const prompt = [
+          "以下の dialogue_base を入力として dialogue_rendered JSON を生成してください。",
+          "",
+          "【目的】",
+          "- Dialogue Rendererとしてspeakerごとの口調に変換する",
+          "- この段階で初めて screen_text / voice を作る",
+          "",
+          "【speaker style rules】",
+          "- zundamon_engine: 語尾「のだ」、短文、アホかわいい",
+          "- metan_engine: 冷静、簡潔、教師寄り、「〜よ」「〜ね」を自然に",
+          "- gpt_roast: 冷静・合理・淡々",
+          "- claude_roast: 静か・精神分析",
+          "- grok_roast: 毒舌・短文、「草」を自然に",
+          "- gemini_roast: 飛躍比喩、妙に刺さる",
+          "",
+          "【必須ルール】",
+          "- rendered_dialogues.length は dialogue_base.dialogues.length と一致",
+          "- 各要素に id/source_dialogue_id/source_segment_id/time/role/speaker/speaker_name/speaker_color/base_text/screen_text/voice/event",
+          "- roast だけ monolith.mode = sound_only",
+          "- roast だけ effects = grayscale_characters,darken_slide,slight_flicker",
+          "- screen_text は短く、voice は自然な読み上げ文",
+          "",
+          "【設定値】",
+          JSON.stringify(settings, null, 2),
+          "",
+          "【dialogue_base】",
+          JSON.stringify(dialogueBase, null, 2),
+          "",
+          "【出力フォーマット（厳守）】",
+          JSON.stringify(draft, null, 2),
+          "",
+          "JSONのみを返答してください。"
+        ].join("\n");
+
+        el.promptArea.value = prompt;
+        setEditedDialogueRendered(draft);
+        setRenderedStatus("", false);
+        saveState();
+        status("Rendered Dialogue Promptを生成しました。", false);
+        return true;
+      }
+
+      function parseOutput() {
+        if (!dialogueBase) {
+          status("先にDialogue Baseを読み込んでください。", true);
+          return;
+        }
+        const raw = el.llmOutput.value.trim();
+        if (!raw) {
+          status("LLM Output Paste が空です。", true);
+          return;
+        }
+        const settings = getSettings();
+        const parsed = extractJsonObject(raw);
+        if (!parsed) {
+          status("JSONを抽出できませんでした。", true);
+          return;
+        }
+        const fixed = enforceConstraints(parsed, settings);
+        const result = validateRendered(fixed);
+        if (!result.ok) {
+          status("構造エラー: " + result.errors.join(" / "), true);
+          return;
+        }
+        setEditedDialogueRendered(fixed);
+        setRenderedStatus("JSON OK", false);
+        saveState();
+        status("Dialogue Rendered JSONを解析しました。", false);
+      }
+
+      async function copyText(text, okMessage) {
+        if (!text) {
+          status("コピー対象がありません。", true);
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(text);
+          status(okMessage, false);
+        } catch (_err) {
+          status("コピーに失敗しました。", true);
+        }
+      }
+
+      function validateEditedJson(showSuccess) {
+        if (!dialogueBase) {
+          setRenderedStatus("先にDialogue Baseを読み込んでください。", true);
+          updateRenderedCountWarning(null);
+          return null;
+        }
+        if (!editedDialogueRendered || typeof editedDialogueRendered !== "object") {
+          setRenderedStatus("Sceneカードデータがありません。Parse JSONを実行してください。", true);
+          updateRenderedCountWarning(null);
+          return null;
+        }
+        updateRenderedCountWarning(editedDialogueRendered);
+        const result = validateRendered(editedDialogueRendered);
+        if (!result.ok) {
+          setRenderedStatus("構造エラー: " + result.errors.join(" / "), true);
+          return null;
+        }
+        if (showSuccess) setRenderedStatus("JSON OK", false);
+        return editedDialogueRendered;
+      }
+
+      function saveToNextStep(options) {
+        if (!dialogueBase) {
+          status("先にDialogue Baseを読み込んでください。", true);
+          return false;
+        }
+        const parsed = validateEditedJson(false);
+        if (!parsed) {
+          status("保存前のJSON検証に失敗しました。", true);
+          return false;
+        }
+        localStorage.setItem(OUTPUT_KEY, JSON.stringify(parsed));
+        saveState();
+        if (!options || !options.silent) {
+          status("svrs_dialogue_rendered をlocalStorageに保存しました。", false);
+        }
+        return true;
+      }
+
+      function updateWarning() {
+        if (!dialogueBase) {
+          el.warning.textContent = "注意: dialogue_base が未読込です。";
+          return;
+        }
+        el.warning.textContent = Array.isArray(dialogueBase.dialogues) ? "" : "注意: dialogues が不足しています。";
+      }
+
+      function saveState() {
+        const state = {
+          dialogueBase: dialogueBase,
+          manualSpec: el.manualSpec.value,
+          maxScreenChars: el.maxScreenChars.value,
+          ttsReady: el.ttsReady.value,
+          screenPolicy: el.screenPolicy.value,
+          voicePolicy: el.voicePolicy.value,
+          promptArea: el.promptArea.value,
+          llmOutput: el.llmOutput.value,
+          editedDialogueRendered: editedDialogueRendered
+        };
+        localStorage.setItem(STATE_KEY, JSON.stringify(state));
+        updateWarning();
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STATE_KEY);
+          if (!raw) return;
+          const s = JSON.parse(raw);
+          if (s.dialogueBase) dialogueBase = s.dialogueBase;
+          if (typeof s.manualSpec === "string") el.manualSpec.value = s.manualSpec;
+          if (typeof s.maxScreenChars === "string") el.maxScreenChars.value = s.maxScreenChars;
+          if (typeof s.ttsReady === "string") el.ttsReady.value = s.ttsReady;
+          if (typeof s.screenPolicy === "string") el.screenPolicy.value = s.screenPolicy;
+          if (typeof s.voicePolicy === "string") el.voicePolicy.value = s.voicePolicy;
+          if (typeof s.promptArea === "string") el.promptArea.value = s.promptArea;
+          if (typeof s.llmOutput === "string") el.llmOutput.value = s.llmOutput;
+          if (s.editedDialogueRendered && typeof s.editedDialogueRendered === "object") {
+            setEditedDialogueRendered(s.editedDialogueRendered);
+          } else if (typeof s.renderedArea === "string") {
+            const parsed = parseJson(s.renderedArea);
+            if (parsed) setEditedDialogueRendered(parsed);
+          }
+          renderLoaded();
+        } catch (_err) {
+          localStorage.removeItem(STATE_KEY);
+        }
+      }
+
+      function resetAll() {
+        dialogueBase = null;
+        el.loadedSpec.textContent = "未読込";
+        el.manualSpec.value = "";
+        el.maxScreenChars.value = "28";
+        el.ttsReady.value = "true";
+        el.screenPolicy.value = "short_one_message";
+        el.voicePolicy.value = "natural_short_speech";
+        el.promptArea.value = "";
+        el.llmOutput.value = "";
+        setEditedDialogueRendered(null);
+        setRenderedStatus("", false);
+        updateRenderedCountWarning(null);
+        el.warning.textContent = "";
+        localStorage.removeItem(STATE_KEY);
+        localStorage.removeItem(OUTPUT_KEY);
+        status("リセットしました。", false);
+      }
+
+      [
+        el.manualSpec,
+        el.maxScreenChars,
+        el.ttsReady,
+        el.screenPolicy,
+        el.voicePolicy,
+        el.llmOutput
+      ].forEach(function (node) {
+        node.addEventListener("input", saveState);
+        node.addEventListener("change", saveState);
+      });
+      el.sceneCards.addEventListener("input", function (evt) {
+        const target = evt.target;
+        if (!target || !target.dataset || !target.dataset.field) return;
+        if (target.type === "checkbox") return;
+        const card = target.closest("[data-scene-idx]");
+        if (!card) return;
+        const idx = Number(card.getAttribute("data-scene-idx"));
+        if (!Number.isFinite(idx)) return;
+        handleSceneFieldChange(idx, target.dataset.field, target.value, false);
+      });
+      el.sceneCards.addEventListener("change", function (evt) {
+        const target = evt.target;
+        if (!target || !target.dataset || !target.dataset.field) return;
+        const card = target.closest("[data-scene-idx]");
+        if (!card) return;
+        const idx = Number(card.getAttribute("data-scene-idx"));
+        if (!Number.isFinite(idx)) return;
+        if (target.type === "checkbox") {
+          handleSceneFieldChange(idx, target.dataset.field, "", !!target.checked);
+          return;
+        }
+        handleSceneFieldChange(idx, target.dataset.field, target.value, false);
+      });
+
+      el.loadBtn.addEventListener("click", loadFromStorage);
+      el.sampleBtn.addEventListener("click", applySample);
+      el.applyManualBtn.addEventListener("click", applyManual);
+      el.generatePromptBtn.addEventListener("click", buildPrompt);
+      el.copyPromptBtn.addEventListener("click", function () {
+        if (buildPrompt()) copyText(el.promptArea.value, "Promptをコピーしました。");
+      });
+      el.parseBtn.addEventListener("click", parseOutput);
+      el.validateJsonBtn.addEventListener("click", function () {
+        validateEditedJson(true);
+      });
+      el.copyJsonBtn.addEventListener("click", function () {
+        if (!editedDialogueRendered) {
+          status("コピー対象がありません。", true);
+          return;
+        }
+        copyText(JSON.stringify(editedDialogueRendered, null, 2), "JSONをコピーしました。");
+      });
+      el.saveBtn.addEventListener("click", saveToNextStep);
+      el.nextStepBtn.addEventListener("click", function () {
+        if (!saveToNextStep({ silent: true })) return;
+        openNextStep("./slide-prompt-builder-v1.html");
+      });
+      el.resetBtn.addEventListener("click", resetAll);
+
+      wireButtonFeedback();
+      renderSceneCards();
+      loadState();
+      if (!dialogueBase) loadFromStorage();
+      updateWarning();
+    })();
+  </script>
+</body>
+</html>

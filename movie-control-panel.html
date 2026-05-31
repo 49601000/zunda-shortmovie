@@ -1,0 +1,3584 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Movie Control Panel v1</title>
+  <style>
+    :root {
+      --bg: #0c1017;
+      --panel: #151d2a;
+      --panel-2: #1b2638;
+      --line: #2b3750;
+      --text: #e7edf8;
+      --muted: #93a4c0;
+      --accent: #63c9ff;
+      --ok: #8fe48d;
+      --warn: #ffd183;
+      --danger: #ff8196;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 18px;
+      color: var(--text);
+      font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+      background:
+        radial-gradient(1200px 640px at 10% -30%, rgba(99, 201, 255, 0.12), transparent 62%),
+        radial-gradient(1000px 480px at 95% -30%, rgba(143, 228, 141, 0.08), transparent 62%),
+        #0c1017;
+    }
+
+    .wrap {
+      max-width: 1600px;
+      margin: 0 auto;
+      display: grid;
+      gap: 12px;
+    }
+
+    .card {
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      padding: 14px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.24rem;
+      letter-spacing: 0.02em;
+    }
+
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .section-title {
+      margin: 0 0 8px;
+      font-weight: 800;
+      font-size: 0.94rem;
+    }
+
+    .collapse > summary {
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .collapse > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .collapse > summary::after {
+      content: "▼";
+      font-size: 0.76rem;
+      color: var(--muted);
+      transform: rotate(-90deg);
+      transition: transform 120ms ease;
+    }
+
+    .collapse[open] > summary::after {
+      transform: rotate(0deg);
+    }
+
+    .collapse[open] > summary {
+      margin-bottom: 8px;
+    }
+
+    .hint {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .row {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #071018;
+      background: var(--accent);
+    }
+
+    button.secondary { background: #dceaff; color: #0f1828; }
+    button.ghost { background: #253349; color: var(--text); border: 1px solid var(--line); }
+    button.warn { background: #ffcf7f; color: #2b1800; }
+
+    .status {
+      margin-top: 8px;
+      min-height: 1.2em;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+    .status.ok { color: var(--ok); }
+    .status.warn { color: var(--warn); }
+    .status.error { color: var(--danger); }
+
+    input, select, textarea {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #0f1623;
+      color: var(--text);
+      padding: 8px 10px;
+      outline: none;
+      font-size: 0.88rem;
+    }
+
+    textarea {
+      min-height: 170px;
+      resize: vertical;
+      line-height: 1.45;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .split {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .grid-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .item {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(15, 22, 34, 0.78);
+      padding: 10px;
+    }
+
+    .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .badge {
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 0.76rem;
+      color: #dbe9ff;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .fields {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 0.76rem;
+      color: var(--muted);
+    }
+    .field.span-2 { grid-column: span 2; }
+    .field.check-field {
+      display: flex;
+      align-items: center;
+      padding-top: 20px;
+    }
+    .field.check-field label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      cursor: pointer;
+      user-select: none;
+    }
+    .field.check-field input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+      accent-color: var(--accent);
+      transform: scale(1.05);
+    }
+
+    .voice-text {
+      margin-top: 8px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #0f1623;
+      padding: 8px;
+      min-height: 40px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.86rem;
+      line-height: 1.4;
+    }
+    .scene-texts {
+      margin-top: 8px;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr 1fr;
+    }
+    .scene-texts textarea {
+      min-height: 90px;
+      font-size: 0.84rem;
+    }
+    .scene-texts label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.76rem;
+      color: var(--muted);
+    }
+    .inner-card {
+      margin-top: 8px;
+      border: 1px solid rgba(126, 176, 255, 0.55);
+      border-radius: 10px;
+      background:
+        linear-gradient(180deg, rgba(88, 138, 224, 0.2), rgba(42, 70, 122, 0.16)),
+        rgba(10, 18, 34, 0.72);
+      padding: 8px 10px;
+    }
+    .inner-card-title {
+      margin: 0;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #e5f0ff;
+    }
+    .inner-card-body {
+      margin-top: 6px;
+    }
+    .inner-card-collapse > summary::after {
+      color: #cfe4ff;
+    }
+
+    .code {
+      margin-top: 8px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #0b1220;
+      padding: 10px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.84rem;
+    }
+
+    @media (max-width: 1200px) {
+      .split { grid-template-columns: 1fr; }
+      .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .scene-texts { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <h1>Movie Control Panel v1</h1>
+      <p class="sub">scene_render_spec を1画面で調整し、HOOK/sceneの開始時間・持続時間、セリフ、VOICEVOXのキャラ/スタイル/speedを統合編集します。保存したJSONをそのままRemotionに読み込ませる前提です。</p>
+      <div class="row">
+        <label for="engineUrlInput">VOICEVOX endpoint</label>
+        <input id="engineUrlInput" style="max-width:340px" value="http://127.0.0.1:5510" />
+        <button id="saveSystemBtn" class="secondary">システム設定保存</button>
+        <button id="fetchSpeakersBtn">/speakers 取得</button>
+      </div>
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="card">
+      <p class="section-title">①Input scene_render_spec JSON</p>
+      <p class="hint">推奨パス: <code>./output/&lt;runid&gt;/spec/svrs_scene_render_spec.json</code>（loadボタンは localStorageキー <code>svrs_scene_render_spec</code> を読み込み）</p>
+      <div class="row">
+        <button id="loadBtn">svrs_scene_render_spec 読み込み</button>
+        <button id="loadManualBtn" class="ghost">貼り付けJSON読み込み</button>
+      </div>
+      <textarea id="jsonInput" placeholder="scene_render_spec JSON を貼り付け"></textarea>
+    </section>
+
+    <section class="card">
+      <p class="section-title">②Picture JSON 連携（HOOK / SCENE パーツ割当）</p>
+      <p class="hint">推奨パス: <code>./schema/picture.json</code>（schema読込ボタンはこのファイルを参照）</p>
+      <div class="row">
+        <button id="loadPictureFromSchemaBtn" class="secondary">schema/picture.json 読み込み</button>
+        <button id="pickPictureFileBtn" class="ghost">picture.json ファイル選択</button>
+        <button id="applyPictureBtn">現在のsceneへ反映</button>
+      </div>
+      <textarea id="pictureJsonInput" placeholder="picture.json を貼り付け"></textarea>
+      <div class="row">
+        <button id="applyPictureManualBtn" class="ghost">貼り付けpicture.jsonを反映</button>
+      </div>
+      <p id="pictureSummary" class="hint">picture.json 未読込</p>
+      <input id="pictureFileInput" type="file" accept="application/json,.json" style="display:none" />
+    </section>
+
+    <section class="card">
+      <p class="section-title">③Batch JSON (for WAV generation)</p>
+      <p class="hint">保存先パス: <code>./output/&lt;runid&gt;/audio/voicevox-batch-spec-&lt;runid&gt;.json</code>（VOICEVOX batch実行時の参照先）</p>
+      <div class="row">
+        <button id="buildBatchBtn">一括WAV用JSONを生成</button>
+        <button id="saveBatchBtn" class="secondary">一括WAV用JSONを保存</button>
+      </div>
+      <textarea id="batchOutput" readonly></textarea>
+    </section>
+
+    <section class="card">
+      <p class="section-title">④Output scene_render_spec JSON（timeline + voice反映）</p>
+      <p class="hint">保存先パス: <code>./output/&lt;runid&gt;/spec/svrs_scene_render_spec.json</code>（saveボタンは localStorageキー <code>svrs_scene_render_spec</code> にも保存）</p>
+      <div class="row">
+        <button id="saveSpecBtn">svrs_scene_render_spec に保存</button>
+        <button id="saveSpecFileBtn" class="secondary">output/<runid>/spec にJSON保存</button>
+        <button id="copySpecBtn" class="ghost">Spec JSONコピー</button>
+      </div>
+      <textarea id="jsonOutput" readonly></textarea>
+    </section>
+
+    <section class="card">
+      <p class="section-title">⑤Terminal Command（動画生成）</p>
+      <div class="row">
+        <button id="copyBatchCmdBtn" class="warn">batch実行コマンドをコピー</button>
+        <button id="copyPublishCmdBtn" class="ghost">書き出し前に npm run dev でスタジオ確認</button>
+        <button id="copyRenderCmdBtn" class="ghost">render実行コマンドをコピー</button>
+      </div>
+      <p class="hint">ブラウザからnpm実行はできないため、コマンドコピーしてターミナルで実行します。Run IDは launcher の設定値を参照します。</p>
+      <pre id="batchCmdPreview" class="code"></pre>
+    </section>
+
+    <section class="card">
+      <details class="collapse">
+        <summary class="section-title">Character Map (Project Defaults)</summary>
+        <p class="hint">初期キャラは「ずんだもん / 四国メタン / AI（天の声）」。style は /speakers の結果から選びます。デフォルト speedScale は <strong>1.25</strong>。</p>
+        <div id="characterGrid" class="grid-list"></div>
+        <div class="row">
+          <button id="saveDefaultsBtn" class="secondary">Character Map を既定値保存</button>
+        </div>
+      </details>
+    </section>
+
+    <section class="card">
+      <details class="collapse" open>
+        <summary class="section-title">Shared Assets（scene part候補）</summary>
+        <div class="row">
+          <button id="pickSharedAssetsRootBtn" class="secondary">shared-assets ルート選択</button>
+          <button id="refreshSharedAssetsBtn" class="ghost">候補を再読込</button>
+        </div>
+        <div class="fields">
+          <div class="field span-2">
+            <label for="sharedAssetsRootView">選択中ルート</label>
+            <input id="sharedAssetsRootView" readonly value="(未選択)" />
+          </div>
+        </div>
+        <div class="fields">
+          <div class="field"><label for="sharedAssetsSubBackgroundInput">背景サブフォルダ</label><input id="sharedAssetsSubBackgroundInput" value="images/backgrounds"></div>
+          <div class="field"><label for="sharedAssetsSubBgmInput">BGMサブフォルダ</label><input id="sharedAssetsSubBgmInput" value="audio/bgm"></div>
+          <div class="field"><label for="sharedAssetsSubMonolithInput">モノリスサブフォルダ</label><input id="sharedAssetsSubMonolithInput" value="images/monolith"></div>
+          <div class="field"><label for="sharedAssetsSubDialogInput">ダイアログ枠サブフォルダ</label><input id="sharedAssetsSubDialogInput" value="images/logboard"></div>
+          <div class="field span-2"><label for="sharedAssetsSubLeftCharInput">左キャラサブフォルダ</label><input id="sharedAssetsSubLeftCharInput" value="images/characters/metan"></div>
+          <div class="field span-2"><label for="sharedAssetsSubRightCharInput">右キャラサブフォルダ</label><input id="sharedAssetsSubRightCharInput" value="images/characters/zundamon, images/frames"></div>
+        </div>
+        <p class="hint">推奨: `MyAntigravity/02_hobby/shared-assets` を選択（`MyAntigravity` を選んでも自動解決）。サブフォルダはカンマ区切りで複数指定できます（例: `images/characters/zundamon, images/frames`）。背景/BGMプルダウンもこの取得結果をSOTとして更新されます。</p>
+      </details>
+    </section>
+
+    <section class="card">
+      <details class="collapse" open>
+        <summary class="section-title">BACKGROUN</summary>
+        <div class="field">
+          <label for="backgroundPngInput">top-level background（assets/background/*.png）</label>
+          <select id="backgroundPngInput"></select>
+        </div>
+        <p class="hint">通常はここで全体背景を固定します。特定segmentのみ変える場合は各sceneの `background_override` を有効化してください。</p>
+        <div class="fields">
+          <div class="field">
+            <label for="bgmSelect">BGMファイル（public/audio/bgm/*.mp3）</label>
+            <select id="bgmSelect"></select>
+          </div>
+          <div class="field span-2">
+            <label for="bgmVolumeInput">BGM音量（ナレーションとのバランス）</label>
+            <div class="row" style="margin-top:0">
+              <input id="bgmVolumeInput" type="range" min="0" max="1" step="0.01" value="0.2" />
+              <div class="badge" id="bgmVolumeValue">20%</div>
+            </div>
+          </div>
+        </div>
+        <p class="hint">動画の尺がBGMより長い場合は自動でループ再生します。</p>
+      </details>
+    </section>
+
+    <section class="card">
+      <div class="head" style="margin-bottom:6px">
+        <p class="section-title">Hook/Scenes</p>
+        <button id="applyScenesToSpecBtn" class="secondary">手動でscene_render_spec JSONに反映</button>
+      </div>
+      <div class="fields">
+        <div class="field span-2">
+          <label for="sharedAssetsSubSlideInput">スライド候補サブフォルダ（runid別）</label>
+          <input id="sharedAssetsSubSlideInput" value="" placeholder="assets/images/frames/slide/[runid]" />
+        </div>
+      </div>
+      <p class="hint">各sceneで「Render ON/OFF」「start_sec」「duration_sec」「セリフ」「キャラクター → スタイル → speedScale」に加え、HOOK/SCENEごとのパーツ画像割当を編集できます。HOOK scene には文言確定フレームもあり、必要なら dialog/voice に確定反映できます。</p>
+      <div id="sceneGrid" class="grid-list"></div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = "svrs_scene_render_spec";
+      const HOOK_SPEC_KEY = "svrs_hook_visual_spec";
+      const CHAR_DEFAULTS_KEY = "svrs_voice_character_defaults_v3";
+      const BATCH_JSON_KEY = "svrs_voicevox_batch_spec";
+      const OUTPUT_RUN_ID_KEY = "svrs_output_run_id";
+      const SYSTEM_SETTINGS_KEY = "svrs_voicevox_system_settings_v1";
+      const SPEAKERS_CACHE_KEY = "svrs_voicevox_speakers_cache_v1";
+      const CMD_BATCH = "npm run scene-remotion:voicevox:batch";
+      const CMD_SYNC_AUDIO = "npm run scene-remotion:audio:sync";
+      const CMD_DEV = "npm run dev";
+      const CMD_RENDER = "npm run scene-remotion:render";
+      let BACKGROUND_PNG_FILES = [
+        "classroom-daytime.png",
+        "classroom-evening.png",
+        "classroom-evening2.png"
+      ];
+      let BGM_MP3_FILES = [
+        "BGM-lofi.mp3",
+        "BGM-piano.mp3"
+      ];
+
+      const DEFAULT_SPEED_SCALE = 1.25;
+      const DEFAULT_VOICE_CONTROL = {
+        speaker_id: 3,
+        speedScale: DEFAULT_SPEED_SCALE,
+        pitchScale: 0,
+        intonationScale: 1,
+        volumeScale: 1,
+        prePhonemeLength: 0.1,
+        postPhonemeLength: 0.1,
+        pauseLength: null,
+        pauseLengthScale: 1
+      };
+
+      const CHARACTER_TEMPLATES = {
+        zundamon: {
+          display_name: "ずんだもん",
+          aliases: ["zundamon", "zundamon_engine", "ずんだもん"],
+          fallback_speaker_name: "ずんだもん"
+        },
+        metan: {
+          display_name: "四国メタン",
+          aliases: ["metan", "metan_engine", "四国メタン", "四国めたん"],
+          fallback_speaker_name: "四国めたん"
+        },
+        ankomon: {
+          display_name: "AI（天の声）",
+          aliases: ["ankomon", "grok_roast", "ai", "AI", "AI（天の声）", "天の声", "あんこもん"],
+          fallback_speaker_name: "あんこもん"
+        }
+      };
+      const CHARACTER_ENGINE_BY_ID = {
+        metan: "metan_engine",
+        zundamon: "zundamon_engine",
+        ankomon: "ankomon_engine"
+      };
+      const LIP_SYNC_ASSET_STATES = ["idle", "mouth_closed", "mouth_half", "mouth_open", "frozen"];
+      const SCENE_EFFECT_GRAYSCALE_EXCEPT_MONOLITH = "grayscale_except_monolith";
+      const SCENE_ASSET_DEFAULTS = {
+        background: ["backgrounds/classroom-daytime.png"],
+        slide: ["slide/000/001.png"],
+        monolith: ["monolith/monolith-0.png"],
+        dialog_box: ["logboard/logboard-BK.png"],
+        character_left: ["characters/metan/metan-0.png"],
+        character_right: ["characters/zundamon/zundamon-normal-0001.png"]
+      };
+      const SHARED_ASSET_SUBDIR_DEFAULTS = {
+        background: "images/backgrounds",
+        bgm: "audio/bgm",
+        slide: "",
+        monolith: "images/monolith",
+        dialog_box: "images/logboard",
+        character_left: "images/characters/metan",
+        character_right: "images/characters/zundamon, images/frames"
+      };
+      const SCREEN_TEXT_STYLE_DEFAULTS = {
+        font_size: 72,
+        font_family: "Noto Sans JP Bold",
+        color: "#ffffff",
+        line_break_mode: "auto",
+        line_chars: 18
+      };
+      const SCREEN_TEXT_COLOR_PRESETS = [
+        { label: "白（標準）", value: "#FFFFFF" },
+        { label: "ずんだもん（ノーマル）", value: "#86D654" },
+        { label: "ずんだもん（強調）", value: "#A6FF6B" },
+        { label: "ずんだもん（落ち着き）", value: "#6CB84A" },
+        { label: "めたん（ノーマル）", value: "#FF5CA3" },
+        { label: "めたん（落ち着き）", value: "#EB74AA" },
+        { label: "めたん（強調）", value: "#FF46B4" }
+      ];
+      const HOOK_TEXT_STYLE_DEFAULTS = {
+        top: {
+          fill_color: "#303030",
+          outline_color: "#ffffff",
+          outline_scale: 1.06,
+          fill_visible: false
+        },
+        main: {
+          fill_color: "#e60012",
+          outline_color: "#ffffff",
+          outline_scale: 1.06,
+          fill_visible: true
+        },
+        sub: {
+          fill_color: "#303030",
+          outline_color: "#ffffff",
+          outline_scale: 1.06,
+          fill_visible: false
+        }
+      };
+
+      const el = {
+        engineUrlInput: document.getElementById("engineUrlInput"),
+        saveSystemBtn: document.getElementById("saveSystemBtn"),
+        fetchSpeakersBtn: document.getElementById("fetchSpeakersBtn"),
+        loadBtn: document.getElementById("loadBtn"),
+        loadManualBtn: document.getElementById("loadManualBtn"),
+        loadPictureFromSchemaBtn: document.getElementById("loadPictureFromSchemaBtn"),
+        pickPictureFileBtn: document.getElementById("pickPictureFileBtn"),
+        applyPictureBtn: document.getElementById("applyPictureBtn"),
+        applyPictureManualBtn: document.getElementById("applyPictureManualBtn"),
+        saveSpecBtn: document.getElementById("saveSpecBtn"),
+        saveSpecFileBtn: document.getElementById("saveSpecFileBtn"),
+        copySpecBtn: document.getElementById("copySpecBtn"),
+        saveDefaultsBtn: document.getElementById("saveDefaultsBtn"),
+        buildBatchBtn: document.getElementById("buildBatchBtn"),
+        saveBatchBtn: document.getElementById("saveBatchBtn"),
+        applyScenesToSpecBtn: document.getElementById("applyScenesToSpecBtn"),
+        copyBatchCmdBtn: document.getElementById("copyBatchCmdBtn"),
+        copyPublishCmdBtn: document.getElementById("copyPublishCmdBtn"),
+        copyRenderCmdBtn: document.getElementById("copyRenderCmdBtn"),
+        pickSharedAssetsRootBtn: document.getElementById("pickSharedAssetsRootBtn"),
+        refreshSharedAssetsBtn: document.getElementById("refreshSharedAssetsBtn"),
+        sharedAssetsRootView: document.getElementById("sharedAssetsRootView"),
+        sharedAssetsSubBackgroundInput: document.getElementById("sharedAssetsSubBackgroundInput"),
+        sharedAssetsSubBgmInput: document.getElementById("sharedAssetsSubBgmInput"),
+        sharedAssetsSubSlideInput: document.getElementById("sharedAssetsSubSlideInput"),
+        sharedAssetsSubMonolithInput: document.getElementById("sharedAssetsSubMonolithInput"),
+        sharedAssetsSubDialogInput: document.getElementById("sharedAssetsSubDialogInput"),
+        sharedAssetsSubLeftCharInput: document.getElementById("sharedAssetsSubLeftCharInput"),
+        sharedAssetsSubRightCharInput: document.getElementById("sharedAssetsSubRightCharInput"),
+        backgroundPngInput: document.getElementById("backgroundPngInput"),
+        bgmSelect: document.getElementById("bgmSelect"),
+        bgmVolumeInput: document.getElementById("bgmVolumeInput"),
+        bgmVolumeValue: document.getElementById("bgmVolumeValue"),
+        status: document.getElementById("status"),
+        jsonInput: document.getElementById("jsonInput"),
+        jsonOutput: document.getElementById("jsonOutput"),
+        pictureJsonInput: document.getElementById("pictureJsonInput"),
+        pictureSummary: document.getElementById("pictureSummary"),
+        pictureFileInput: document.getElementById("pictureFileInput"),
+        batchOutput: document.getElementById("batchOutput"),
+        batchCmdPreview: document.getElementById("batchCmdPreview"),
+        characterGrid: document.getElementById("characterGrid"),
+        sceneGrid: document.getElementById("sceneGrid")
+      };
+
+      let spec = null;
+      let speakersCatalog = [];
+      let characters = {};
+      let sceneSettings = {};
+      let batchSpec = null;
+      let pictureSpec = null;
+      let backgroundPng = "";
+      let bgmFile = "";
+      let bgmVolume = 0.2;
+      let bgmLoop = true;
+      let sceneCollapseState = {};
+      let sharedAssetsRootDirHandle = null;
+      let sharedAssetsRootLabel = "";
+      let sharedAssetFileCatalog = {
+        background: [],
+        bgm: [],
+        slide: [],
+        monolith: [],
+        dialog_box: [],
+        character_left: [],
+        character_right: []
+      };
+
+      const setStatus = function (text, mode) {
+        el.status.textContent = text || "";
+        el.status.classList.remove("ok", "warn", "error");
+        if (mode) el.status.classList.add(mode);
+      };
+
+      const parseJson = function (raw) {
+        try {
+          let text = String(raw == null ? "" : raw);
+          if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+          const fenced = text.match(/^\s*```(?:json)?\s*([\s\S]*?)\s*```\s*$/i);
+          if (fenced) text = fenced[1];
+          return JSON.parse(text);
+        } catch (_err) {
+          return null;
+        }
+      };
+
+      const readFileAsText = function (file) {
+        return new Promise(function (resolve, reject) {
+          const reader = new FileReader();
+          reader.onload = function () { resolve(String(reader.result || "")); };
+          reader.onerror = function () { reject(new Error("file read failed")); };
+          reader.readAsText(file);
+        });
+      };
+
+      const deepClone = function (value) {
+        return JSON.parse(JSON.stringify(value));
+      };
+
+      const escapeHtml = function (value) {
+        return String(value || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      };
+
+      const normalizeNumber = function (value, fallback) {
+        const n = Number(value);
+        return Number.isFinite(n) ? n : fallback;
+      };
+
+      const roundSec = function (value) {
+        return Math.round(Number(value) * 1000) / 1000;
+      };
+
+      const normalizeSeconds = function (value, fallback) {
+        const n = Number(value);
+        if (!Number.isFinite(n)) return fallback;
+        return Math.max(0, roundSec(n));
+      };
+
+      const parseTimeRange = function (raw, fallbackStart, fallbackDuration) {
+        const txt = String(raw || "").trim();
+        const m = txt.match(/^(-?\d+(?:\.\d+)?)\s*-\s*(-?\d+(?:\.\d+)?)$/);
+        if (!m) {
+          return {
+            start_sec: normalizeSeconds(fallbackStart, 0),
+            duration_sec: Math.max(0.1, normalizeSeconds(fallbackDuration, 2))
+          };
+        }
+        const start = normalizeSeconds(Number(m[1]), normalizeSeconds(fallbackStart, 0));
+        const end = normalizeSeconds(Number(m[2]), start + Math.max(0.1, normalizeSeconds(fallbackDuration, 2)));
+        const duration = Math.max(0.1, roundSec(end - start));
+        return {
+          start_sec: start,
+          duration_sec: duration
+        };
+      };
+
+      const formatTimeRange = function (startSec, durationSec) {
+        const start = normalizeSeconds(startSec, 0);
+        const duration = Math.max(0.1, normalizeSeconds(durationSec, 2));
+        const end = roundSec(start + duration);
+        return String(start) + "-" + String(end);
+      };
+
+      const normalizeBackgroundRef = function (background) {
+        if (typeof background !== "string") return "";
+        const trimmed = background.trim();
+        if (!trimmed || trimmed === "none") return "";
+        const normalized = trimmed.replace(/\\/g, "/");
+        const m = normalized.match(/assets\/background\/(.+\.(?:png|jpe?g|webp|avif))$/i);
+        if (m && m[1]) return m[1];
+        if (/\.(png|jpe?g|webp|avif)$/i.test(normalized)) {
+          const parts = normalized.split("/");
+          return parts[parts.length - 1];
+        }
+        return "";
+      };
+
+      const normalizeBgmRef = function (bgm) {
+        if (typeof bgm !== "string") return "";
+        const trimmed = bgm.trim();
+        if (!trimmed || trimmed === "none") return "";
+        const normalized = trimmed.replace(/\\/g, "/");
+        const m = normalized.match(/audio\/bgm\/(.+\.mp3)$/i);
+        if (m && m[1]) return m[1];
+        if (/\.mp3$/i.test(normalized)) {
+          const parts = normalized.split("/");
+          return parts[parts.length - 1];
+        }
+        return "";
+      };
+
+      const normalizeBgmVolume = function (value, fallback) {
+        const n = Number(value);
+        if (!Number.isFinite(n)) return fallback;
+        return Math.max(0, Math.min(1, n));
+      };
+
+      const normalizeScreenTextFontSize = function (value, fallback) {
+        const n = Number(value);
+        if (!Number.isFinite(n)) return fallback;
+        return Math.max(12, Math.min(200, Math.round(n)));
+      };
+
+      const normalizeHexColor = function (value, fallback) {
+        const raw = String(value || "").trim();
+        if (/^#([0-9a-fA-F]{6})$/.test(raw)) return raw.toLowerCase();
+        if (/^#([0-9a-fA-F]{3})$/.test(raw)) {
+          return "#" + raw.slice(1).split("").map(function (ch) { return ch + ch; }).join("").toLowerCase();
+        }
+        return fallback;
+      };
+
+      const normalizeScreenTextFontFamily = function (value, fallback) {
+        const text = String(value || "").trim();
+        return text || fallback;
+      };
+
+      const normalizeScreenTextLineBreakMode = function (value) {
+        return String(value || "").trim() === "line_chars" ? "line_chars" : "auto";
+      };
+
+      const normalizeScreenTextLineChars = function (value, fallback) {
+        const n = Number(value);
+        if (!Number.isFinite(n)) return fallback;
+        return Math.max(1, Math.min(120, Math.round(n)));
+      };
+
+      const normalizeHookOutlineScale = function (value, fallback) {
+        const n = Number(value);
+        if (!Number.isFinite(n)) return fallback;
+        return Math.max(1, Math.min(1.3, Math.round(n * 100) / 100));
+      };
+
+      const renderScreenTextColorPresetOptions = function (selectedColor) {
+        const normalizedSelected = normalizeHexColor(selectedColor, SCREEN_TEXT_STYLE_DEFAULTS.color);
+        const rows = SCREEN_TEXT_COLOR_PRESETS.map(function (preset) {
+          const value = normalizeHexColor(preset.value, SCREEN_TEXT_STYLE_DEFAULTS.color);
+          const sel = value === normalizedSelected ? " selected" : "";
+          return '<option value="' + escapeHtml(value) + '"' + sel + ">" + escapeHtml(preset.label + " (" + value.toUpperCase() + ")") + "</option>";
+        });
+        return rows.join("");
+      };
+
+      const renderBackgroundOptions = function (selected) {
+        const items = [""].concat(Array.isArray(BACKGROUND_PNG_FILES) ? BACKGROUND_PNG_FILES : []);
+        return items.map(function (name) {
+          if (!name) return '<option value="">(未選択)</option>';
+          const sel = selected === name ? " selected" : "";
+          return '<option value="' + escapeHtml(name) + '"' + sel + ">" + escapeHtml(name) + "</option>";
+        }).join("");
+      };
+
+      const renderBgmOptions = function (selected) {
+        const items = [""].concat(Array.isArray(BGM_MP3_FILES) ? BGM_MP3_FILES : []);
+        return items.map(function (name) {
+          if (!name) return '<option value="">(BGMなし)</option>';
+          const sel = selected === name ? " selected" : "";
+          return '<option value="' + escapeHtml(name) + '"' + sel + ">" + escapeHtml(name) + "</option>";
+        }).join("");
+      };
+
+      const applyBackgroundFileList = function (files, options) {
+        const selected = options && typeof options.selected === "string" ? options.selected : "";
+        const normalizedFiles = Array.isArray(files)
+          ? files.filter(function (file) { return /\.(png|jpe?g|webp|avif)$/i.test(String(file || "")); })
+          : [];
+        BACKGROUND_PNG_FILES = normalizedFiles.slice().sort(function (a, b) {
+          return String(a).localeCompare(String(b), "ja");
+        });
+        el.backgroundPngInput.innerHTML = renderBackgroundOptions(selected);
+      };
+
+      const applyBgmFileList = function (files, options) {
+        const selected = options && typeof options.selected === "string" ? options.selected : "";
+        const normalizedFiles = Array.isArray(files)
+          ? files.filter(function (file) { return /\.mp3$/i.test(String(file || "")); })
+          : [];
+        BGM_MP3_FILES = normalizedFiles.slice().sort(function (a, b) {
+          return String(a).localeCompare(String(b), "ja");
+        });
+        el.bgmSelect.innerHTML = renderBgmOptions(selected);
+      };
+
+      const resolveBackgroundFromSpec = function (rawSpec) {
+        const topLevelBackground = normalizeBackgroundRef(rawSpec && rawSpec.background);
+        if (topLevelBackground) return topLevelBackground;
+        return normalizeBackgroundRef(rawSpec && rawSpec.settings && rawSpec.settings.background);
+      };
+
+      const resolveBgmSettingsFromSpec = function (rawSpec) {
+        const audio = rawSpec && rawSpec.audio && typeof rawSpec.audio === "object" ? rawSpec.audio : {};
+        const specBgm = rawSpec && rawSpec.bgm && typeof rawSpec.bgm === "object" ? rawSpec.bgm : {};
+        const bgmFileFromObject = normalizeBgmRef(specBgm.src || audio.bgm || "");
+        const volumeCandidate = Number.isFinite(Number(audio.bgm_volume))
+          ? Number(audio.bgm_volume)
+          : Number(specBgm.volume);
+        const loopCandidate = typeof audio.bgm_loop === "boolean"
+          ? audio.bgm_loop
+          : (typeof specBgm.loop === "boolean" ? specBgm.loop : true);
+        return {
+          bgmFile: bgmFileFromObject,
+          bgmVolume: normalizeBgmVolume(volumeCandidate, 0.2),
+          bgmLoop: Boolean(loopCandidate)
+        };
+      };
+
+      const normalizeImageRef = function (value) {
+        if (typeof value !== "string") return "";
+        return value.trim().replace(/\\/g, "/");
+      };
+
+      const getDefaultSlideSubdirByRunId = function () {
+        const runId = getRunId();
+        return "assets/images/frames/slide/" + runId + ", images/frames/slide/" + runId;
+      };
+
+      const normalizeSubdirRef = function (value) {
+        const normalized = normalizeImageRef(value || "");
+        return normalized.replace(/^\/+/, "").replace(/\/+$/, "");
+      };
+
+      const parseSubdirList = function (raw) {
+        const seen = new Set();
+        const out = [];
+        String(raw || "")
+          .split(/[,\n]/g)
+          .map(function (v) { return normalizeSubdirRef(v); })
+          .filter(function (v) { return !!v; })
+          .forEach(function (v) {
+            if (seen.has(v)) return;
+            seen.add(v);
+            out.push(v);
+          });
+        return out;
+      };
+
+      const getSharedAssetsSubdirConfigFromUi = function () {
+        return {
+          background: String(el.sharedAssetsSubBackgroundInput && el.sharedAssetsSubBackgroundInput.value || SHARED_ASSET_SUBDIR_DEFAULTS.background),
+          bgm: String(el.sharedAssetsSubBgmInput && el.sharedAssetsSubBgmInput.value || SHARED_ASSET_SUBDIR_DEFAULTS.bgm),
+          slide: String(el.sharedAssetsSubSlideInput && el.sharedAssetsSubSlideInput.value || getDefaultSlideSubdirByRunId()),
+          monolith: String(el.sharedAssetsSubMonolithInput && el.sharedAssetsSubMonolithInput.value || SHARED_ASSET_SUBDIR_DEFAULTS.monolith),
+          dialog_box: String(el.sharedAssetsSubDialogInput && el.sharedAssetsSubDialogInput.value || SHARED_ASSET_SUBDIR_DEFAULTS.dialog_box),
+          character_left: String(el.sharedAssetsSubLeftCharInput && el.sharedAssetsSubLeftCharInput.value || SHARED_ASSET_SUBDIR_DEFAULTS.character_left),
+          character_right: String(el.sharedAssetsSubRightCharInput && el.sharedAssetsSubRightCharInput.value || SHARED_ASSET_SUBDIR_DEFAULTS.character_right)
+        };
+      };
+
+      const applySharedAssetsSubdirConfigToUi = function (cfg) {
+        const safe = cfg && typeof cfg === "object" ? cfg : {};
+        if (el.sharedAssetsSubBackgroundInput) el.sharedAssetsSubBackgroundInput.value = String(safe.background || SHARED_ASSET_SUBDIR_DEFAULTS.background);
+        if (el.sharedAssetsSubBgmInput) el.sharedAssetsSubBgmInput.value = String(safe.bgm || SHARED_ASSET_SUBDIR_DEFAULTS.bgm);
+        if (el.sharedAssetsSubSlideInput) el.sharedAssetsSubSlideInput.value = String(safe.slide || getDefaultSlideSubdirByRunId());
+        if (el.sharedAssetsSubMonolithInput) el.sharedAssetsSubMonolithInput.value = String(safe.monolith || SHARED_ASSET_SUBDIR_DEFAULTS.monolith);
+        if (el.sharedAssetsSubDialogInput) el.sharedAssetsSubDialogInput.value = String(safe.dialog_box || SHARED_ASSET_SUBDIR_DEFAULTS.dialog_box);
+        if (el.sharedAssetsSubLeftCharInput) el.sharedAssetsSubLeftCharInput.value = String(safe.character_left || SHARED_ASSET_SUBDIR_DEFAULTS.character_left);
+        if (el.sharedAssetsSubRightCharInput) el.sharedAssetsSubRightCharInput.value = String(safe.character_right || SHARED_ASSET_SUBDIR_DEFAULTS.character_right);
+      };
+
+      const resolveDirectoryHandleBySubpath = async function (rootHandle, subpath) {
+        const segments = normalizeSubdirRef(subpath)
+          .split("/")
+          .map(function (v) { return v.trim(); })
+          .filter(function (v) { return !!v; });
+        let current = rootHandle;
+        for (let i = 0; i < segments.length; i += 1) {
+          current = await current.getDirectoryHandle(segments[i], { create: false });
+        }
+        return current;
+      };
+
+      const collectFilesRecursive = async function (dirHandle, relativeBase, pattern) {
+        const out = [];
+        for await (const entry of dirHandle.values()) {
+          if (!entry) continue;
+          if (entry.kind === "file") {
+            if (!(pattern && pattern.test(String(entry.name || "")))) continue;
+            const rel = normalizeSubdirRef(relativeBase + "/" + entry.name);
+            if (rel) out.push(rel);
+            continue;
+          }
+          if (entry.kind === "directory") {
+            const nestedBase = normalizeSubdirRef(relativeBase + "/" + entry.name);
+            const nested = await collectFilesRecursive(entry, nestedBase, pattern);
+            out.push.apply(out, nested);
+          }
+        }
+        return out;
+      };
+
+      const resetSharedAssetFileCatalog = function () {
+        sharedAssetFileCatalog = {
+          background: [],
+          bgm: [],
+          slide: [],
+          monolith: [],
+          dialog_box: [],
+          character_left: [],
+          character_right: []
+        };
+      };
+
+      const pickFileNamesFromPathList = function (paths, pattern) {
+        const out = [];
+        const seen = new Set();
+        (Array.isArray(paths) ? paths : []).forEach(function (path) {
+          const normalized = normalizeImageRef(path || "");
+          if (!normalized) return;
+          const parts = normalized.split("/");
+          const fileName = parts[parts.length - 1] || "";
+          if (!fileName || !pattern.test(fileName) || seen.has(fileName)) return;
+          seen.add(fileName);
+          out.push(fileName);
+        });
+        return out;
+      };
+
+      const syncGlobalMediaFromSharedAssets = function () {
+        const sharedBg = pickFileNamesFromPathList(
+          sharedAssetFileCatalog && sharedAssetFileCatalog.background,
+          /\.(png|jpe?g|webp|avif)$/i
+        );
+        const sharedBgm = pickFileNamesFromPathList(
+          sharedAssetFileCatalog && sharedAssetFileCatalog.bgm,
+          /\.mp3$/i
+        );
+        applyBackgroundFileList(sharedBg, { selected: normalizeBackgroundRef(backgroundPng) });
+        applyBgmFileList(sharedBgm, { selected: normalizeBgmRef(bgmFile) });
+      };
+
+      const renderSharedAssetsRootLabel = function () {
+        if (!el.sharedAssetsRootView) return;
+        el.sharedAssetsRootView.value = sharedAssetsRootLabel || "(未選択)";
+      };
+
+      const refreshSharedAssetFileCatalog = async function () {
+        if (!sharedAssetsRootDirHandle) {
+          resetSharedAssetFileCatalog();
+          renderSharedAssetsRootLabel();
+          if (spec) renderScenes();
+          return;
+        }
+        const cfg = getSharedAssetsSubdirConfigFromUi();
+        const keys = ["background", "bgm", "slide", "monolith", "dialog_box", "character_left", "character_right"];
+        const next = {
+          background: [],
+          bgm: [],
+          slide: [],
+          monolith: [],
+          dialog_box: [],
+          character_left: [],
+          character_right: []
+        };
+        for (let i = 0; i < keys.length; i += 1) {
+          const key = keys[i];
+          const subdirs = parseSubdirList(cfg[key]);
+          for (let j = 0; j < subdirs.length; j += 1) {
+            const subdir = subdirs[j];
+            try {
+              const dir = await resolveDirectoryHandleBySubpath(sharedAssetsRootDirHandle, subdir);
+              const files = await collectFilesRecursive(
+                dir,
+                subdir,
+                key === "bgm" ? /\.mp3$/i : /\.(png|jpe?g|webp|avif)$/i
+              );
+              next[key] = normalizeStringList(next[key].concat(files));
+            } catch (_err) {
+              // Ignore missing subdirs to allow flexible config.
+            }
+          }
+        }
+        sharedAssetFileCatalog = next;
+        syncGlobalMediaFromSharedAssets();
+        renderSharedAssetsRootLabel();
+        if (spec) renderScenes();
+      };
+
+      const normalizeAssetState = function (value) {
+        const text = String(value || "").trim();
+        if (!text) return "idle";
+        return text;
+      };
+
+      const normalizeAssetStates = function (values, fallbackList) {
+        const out = [];
+        const seen = new Set();
+        const source = Array.isArray(values) ? values : [];
+        source.forEach(function (value) {
+          const state = normalizeAssetState(value);
+          if (!state || seen.has(state)) return;
+          seen.add(state);
+          out.push(state);
+        });
+        if (out.length) return out;
+        const fallback = Array.isArray(fallbackList) ? fallbackList : [];
+        return normalizeAssetStates(fallback, ["idle"]);
+      };
+
+      const resolveAssetStateSlot = function (states, index, fallbackState) {
+        const list = normalizeAssetStates(states, [fallbackState]);
+        if (index >= 0 && index < list.length) return list[index];
+        return "";
+      };
+
+      const combineAssetStateSlots = function (slot1, slot2, fallbackState) {
+        const picked = [String(slot1 || "").trim(), String(slot2 || "").trim()]
+          .filter(function (v) { return !!v; });
+        return normalizeAssetStates(picked, [fallbackState]);
+      };
+
+      const combineImageSlots = function (slot1, slot2) {
+        return normalizeStringList([slot1, slot2]);
+      };
+
+      const resolveListSlot = function (values, index) {
+        const list = normalizeStringList(values || []);
+        if (index >= 0 && index < list.length) return list[index];
+        return "";
+      };
+
+      const mapSceneStateToAssetState = function (sceneState) {
+        const raw = String(sceneState || "").trim();
+        if (!raw) return "idle";
+        if (raw === "speaking") return "mouth_closed";
+        if (raw === "grayscale_frozen") return "frozen";
+        if (raw === "idle") return "idle";
+        return raw;
+      };
+
+      const normalizeStringList = function (list) {
+        const out = [];
+        const seen = new Set();
+        (Array.isArray(list) ? list : []).forEach(function (item) {
+          const value = normalizeImageRef(item);
+          if (!value || seen.has(value)) return;
+          seen.add(value);
+          out.push(value);
+        });
+        return out;
+      };
+
+      const normalizeSceneEffectList = function (effects) {
+        const out = [];
+        const seen = new Set();
+        (Array.isArray(effects) ? effects : []).forEach(function (item) {
+          const value = String(item || "").trim();
+          if (!value || seen.has(value)) return;
+          seen.add(value);
+          out.push(value);
+        });
+        return out;
+      };
+
+      const resolveSceneGrayscaleFilterMode = function (scene) {
+        const effects = normalizeSceneEffectList(scene && scene.effects);
+        return effects.indexOf(SCENE_EFFECT_GRAYSCALE_EXCEPT_MONOLITH) >= 0 ? "on" : "off";
+      };
+
+      const applySceneGrayscaleFilterToEffects = function (effects, mode) {
+        const list = normalizeSceneEffectList(effects);
+        if (String(mode || "off") === "on") {
+          if (list.indexOf(SCENE_EFFECT_GRAYSCALE_EXCEPT_MONOLITH) === -1) {
+            list.push(SCENE_EFFECT_GRAYSCALE_EXCEPT_MONOLITH);
+          }
+          return list;
+        }
+        return list.filter(function (fx) {
+          return fx !== SCENE_EFFECT_GRAYSCALE_EXCEPT_MONOLITH;
+        });
+      };
+
+      const getPictureAssetRegistry = function () {
+        return pictureSpec &&
+          pictureSpec.scene &&
+          pictureSpec.scene.asset_registry &&
+          typeof pictureSpec.scene.asset_registry === "object"
+          ? pictureSpec.scene.asset_registry
+          : {};
+      };
+
+      const getPictureAssetPathList = function (group) {
+        const registry = getPictureAssetRegistry();
+        const bucket = registry && typeof registry[group] === "object" ? registry[group] : {};
+        return normalizeStringList(
+          Object.keys(bucket).map(function (key) {
+            return typeof bucket[key] === "string" ? bucket[key] : "";
+          })
+        );
+      };
+
+      const resolveSceneCharacterAssetId = function (scene, side) {
+        const registry = getPictureAssetRegistry();
+        const characters = registry && typeof registry.characters === "object" ? registry.characters : {};
+        const charsNode = scene && scene.composition && scene.composition.characters
+          ? scene.composition.characters
+          : {};
+        const node = charsNode && charsNode[side] ? charsNode[side] : {};
+        const nodeAssetId = String(node && node.asset_id || "").trim();
+        if (nodeAssetId && characters[nodeAssetId] && typeof characters[nodeAssetId] === "object") {
+          return nodeAssetId;
+        }
+        const op = pictureSpec && pictureSpec.scene && pictureSpec.scene.character_operation
+          ? pictureSpec.scene.character_operation
+          : {};
+        const engineMap = op && typeof op.engine_to_character_asset === "object"
+          ? op.engine_to_character_asset
+          : {};
+        const engine = String(node && node.engine || "").trim();
+        const mapped = String(engineMap[engine] || "").trim();
+        if (mapped && characters[mapped] && typeof characters[mapped] === "object") {
+          return mapped;
+        }
+        if (side === "left" && characters.metan) return "metan";
+        if (side === "right" && characters.zundamon) return "zundamon";
+        const keys = Object.keys(characters);
+        return keys.length ? keys[0] : "";
+      };
+
+      const collectCharacterAssetPaths = function (scene, side) {
+        const registry = getPictureAssetRegistry();
+        const characters = registry && typeof registry.characters === "object" ? registry.characters : {};
+        const primaryId = resolveSceneCharacterAssetId(scene, side);
+        const preferred = [];
+        if (primaryId && characters[primaryId] && typeof characters[primaryId] === "object") {
+          const bucket = characters[primaryId];
+          LIP_SYNC_ASSET_STATES.forEach(function (state) {
+            preferred.push(bucket[state]);
+          });
+          Object.keys(bucket).forEach(function (key) {
+            preferred.push(bucket[key]);
+          });
+        }
+        const pooled = [];
+        Object.keys(characters).forEach(function (id) {
+          const bucket = characters[id];
+          if (!bucket || typeof bucket !== "object") return;
+          Object.keys(bucket).forEach(function (k) {
+            pooled.push(bucket[k]);
+          });
+        });
+        return normalizeStringList(preferred.concat(pooled));
+      };
+
+      const buildSelectOptionsHtml = function (selected, values, emptyLabel) {
+        const selectedValue = normalizeImageRef(selected || "");
+        const list = normalizeStringList(values || []);
+        if (selectedValue && list.indexOf(selectedValue) < 0) {
+          list.unshift(selectedValue);
+        }
+        const options = [
+          '<option value="">' + escapeHtml(emptyLabel || "(未指定)") + "</option>"
+        ];
+        list.forEach(function (value) {
+          const sel = selectedValue === value ? " selected" : "";
+          options.push('<option value="' + escapeHtml(value) + '"' + sel + ">" + escapeHtml(value) + "</option>");
+        });
+        return options.join("");
+      };
+
+      const buildScenePartOptionsHtml = function (fieldKey, selected, scene) {
+        const current = normalizeImageRef(selected || "");
+        const shared = sharedAssetFileCatalog && Array.isArray(sharedAssetFileCatalog[fieldKey])
+          ? sharedAssetFileCatalog[fieldKey]
+          : [];
+        if (fieldKey === "background") {
+          return buildSelectOptionsHtml(
+            current,
+            getPictureAssetPathList("backgrounds").concat(shared).concat(SCENE_ASSET_DEFAULTS.background),
+            "(未指定)"
+          );
+        }
+        if (fieldKey === "slide") {
+          return buildSelectOptionsHtml(
+            current,
+            getPictureAssetPathList("slides").concat(shared).concat(SCENE_ASSET_DEFAULTS.slide),
+            "(未指定)"
+          );
+        }
+        if (fieldKey === "monolith") {
+          return buildSelectOptionsHtml(
+            current,
+            getPictureAssetPathList("monolith").concat(shared).concat(SCENE_ASSET_DEFAULTS.monolith),
+            "(未指定)"
+          );
+        }
+        if (fieldKey === "dialog_box") {
+          return buildSelectOptionsHtml(
+            current,
+            getPictureAssetPathList("ui").concat(shared).concat(SCENE_ASSET_DEFAULTS.dialog_box),
+            "(未指定)"
+          );
+        }
+        if (fieldKey === "character_left") {
+          return buildSelectOptionsHtml(
+            current,
+            collectCharacterAssetPaths(scene, "left").concat(shared).concat(SCENE_ASSET_DEFAULTS.character_left),
+            "(未指定)"
+          );
+        }
+        if (fieldKey === "character_right") {
+          return buildSelectOptionsHtml(
+            current,
+            collectCharacterAssetPaths(scene, "right").concat(shared).concat(SCENE_ASSET_DEFAULTS.character_right),
+            "(未指定)"
+          );
+        }
+        return buildSelectOptionsHtml(current, [], "(未指定)");
+      };
+
+      const buildCharacterDiffOptionsHtml = function (side, selected, scene) {
+        const key = side === "left" ? "character_left" : "character_right";
+        const shared = sharedAssetFileCatalog && Array.isArray(sharedAssetFileCatalog[key])
+          ? sharedAssetFileCatalog[key]
+          : [];
+        const defaults = side === "left"
+          ? SCENE_ASSET_DEFAULTS.character_left
+          : SCENE_ASSET_DEFAULTS.character_right;
+        return buildSelectOptionsHtml(
+          normalizeImageRef(selected || ""),
+          collectCharacterAssetPaths(scene, side).concat(shared).concat(defaults),
+          "(なし)"
+        );
+      };
+
+      const buildHookPartOptionsHtml = function (fieldKey, selected, scene) {
+        const current = normalizeImageRef(selected || "");
+        const sharedBg = sharedAssetFileCatalog && Array.isArray(sharedAssetFileCatalog.background)
+          ? sharedAssetFileCatalog.background
+          : [];
+        const sharedDialog = sharedAssetFileCatalog && Array.isArray(sharedAssetFileCatalog.dialog_box)
+          ? sharedAssetFileCatalog.dialog_box
+          : [];
+        const sharedCharsL = sharedAssetFileCatalog && Array.isArray(sharedAssetFileCatalog.character_left)
+          ? sharedAssetFileCatalog.character_left
+          : [];
+        const sharedCharsR = sharedAssetFileCatalog && Array.isArray(sharedAssetFileCatalog.character_right)
+          ? sharedAssetFileCatalog.character_right
+          : [];
+        const allShared = normalizeStringList([].concat(sharedBg, sharedDialog, sharedCharsL, sharedCharsR));
+        if (fieldKey === "hook_background") {
+          return buildSelectOptionsHtml(
+            current,
+            getPictureAssetPathList("backgrounds").concat(sharedBg).concat(SCENE_ASSET_DEFAULTS.background),
+            "(未指定)"
+          );
+        }
+        if (fieldKey === "hook_character") {
+          return buildSelectOptionsHtml(
+            current,
+            collectCharacterAssetPaths(scene, "left")
+              .concat(collectCharacterAssetPaths(scene, "right"))
+              .concat(sharedCharsL)
+              .concat(sharedCharsR),
+            "(未指定)"
+          );
+        }
+        if (fieldKey === "hook_bubble") {
+          return buildSelectOptionsHtml(
+            current,
+            getPictureAssetPathList("ui").concat(sharedDialog).concat(allShared),
+            "(未指定)"
+          );
+        }
+        return buildSelectOptionsHtml(current, allShared, "(未指定)");
+      };
+
+      const buildAssetStateOptionsHtml = function (selected, options) {
+        const opt = options && typeof options === "object" ? options : {};
+        const allowNone = opt.allow_none !== false;
+        const value = String(selected || "").trim();
+        const list = LIP_SYNC_ASSET_STATES.slice();
+        if (value && list.indexOf(value) < 0) list.push(value);
+        const optionsHtml = [];
+        if (allowNone) {
+          optionsHtml.push('<option value=""' + (!value ? " selected" : "") + ">(なし)</option>");
+        }
+        list.forEach(function (state) {
+          const sel = state === value ? " selected" : "";
+          optionsHtml.push('<option value="' + escapeHtml(state) + '"' + sel + ">" + escapeHtml(state) + "</option>");
+        });
+        return optionsHtml.join("");
+      };
+
+      const resolveSpeakerSide = function (scene) {
+        const chars = scene && scene.composition && scene.composition.characters
+          ? scene.composition.characters
+          : {};
+        const leftNode = chars && chars.left ? chars.left : {};
+        const rightNode = chars && chars.right ? chars.right : {};
+        const leftState = String(leftNode.state || "").trim();
+        const rightState = String(rightNode.state || "").trim();
+        if (leftState === "speaking" && rightState !== "speaking") return "left";
+        if (rightState === "speaking" && leftState !== "speaking") return "right";
+        const leftEngine = String(leftNode.engine || "metan_engine").trim();
+        const rightEngine = String(rightNode.engine || "zundamon_engine").trim();
+        const sceneSpeaker = String(scene && scene.speaker || "").trim();
+        if (sceneSpeaker && sceneSpeaker === leftEngine) return "left";
+        if (sceneSpeaker && sceneSpeaker === rightEngine) return "right";
+        return "none";
+      };
+
+      const resolveCharacterAssetState = function (scene, side, speakerSide) {
+        const chars = scene && scene.composition && scene.composition.characters
+          ? scene.composition.characters
+          : {};
+        const node = chars && chars[side] ? chars[side] : {};
+        const explicit = String(node.asset_state || "").trim();
+        if (explicit) return normalizeAssetState(explicit);
+        const sceneState = String(node.state || "").trim();
+        if (sceneState) return normalizeAssetState(mapSceneStateToAssetState(sceneState));
+        if (speakerSide === side) return "mouth_closed";
+        return "idle";
+      };
+
+      const resolveCharacterAssetPathFromState = function (scene, side, state) {
+        const registry = getPictureAssetRegistry();
+        const characters = registry && typeof registry.characters === "object" ? registry.characters : {};
+        const assetId = resolveSceneCharacterAssetId(scene, side);
+        const bucket = assetId && characters[assetId] && typeof characters[assetId] === "object"
+          ? characters[assetId]
+          : null;
+        if (!bucket) return "";
+        const path = normalizeImageRef(bucket[String(state || "").trim()] || "");
+        if (path) return path;
+        return normalizeImageRef(bucket.idle || "");
+      };
+
+      const resolveCharacterStateFromAssetPath = function (scene, side, imagePath) {
+        const registry = getPictureAssetRegistry();
+        const characters = registry && typeof registry.characters === "object" ? registry.characters : {};
+        const assetId = resolveSceneCharacterAssetId(scene, side);
+        const bucket = assetId && characters[assetId] && typeof characters[assetId] === "object"
+          ? characters[assetId]
+          : null;
+        if (!bucket) return "";
+        const target = normalizeImageRef(imagePath || "");
+        if (!target) return "";
+        const keys = Object.keys(bucket);
+        for (let i = 0; i < keys.length; i += 1) {
+          const state = keys[i];
+          if (normalizeImageRef(bucket[state]) === target) return state;
+        }
+        return "";
+      };
+
+      const resolveCharacterDiffImagePaths = function (scene, side, speakerSide) {
+        const chars = scene && scene.composition && scene.composition.characters
+          ? scene.composition.characters
+          : {};
+        const node = chars && chars[side] ? chars[side] : {};
+        const explicit = normalizeStringList(Array.isArray(node.lip_sync_image_paths) ? node.lip_sync_image_paths : []);
+        if (explicit.length) return explicit;
+        const states = normalizeAssetStates(
+          Array.isArray(node.lip_sync_asset_states) ? node.lip_sync_asset_states : [],
+          [resolveCharacterAssetState(scene, side, speakerSide)]
+        );
+        const mapped = normalizeStringList(states.map(function (st) {
+          return resolveCharacterAssetPathFromState(scene, side, st);
+        }));
+        if (mapped.length) return mapped.slice(0, 2);
+        const single = resolveCharacterAssetPathFromState(scene, side, resolveCharacterAssetState(scene, side, speakerSide));
+        return single ? [single] : [];
+      };
+
+      const mapCharacterDiffImagesToStates = function (scene, side, imagePaths) {
+        return normalizeAssetStates(
+          normalizeStringList(imagePaths || []).map(function (p) {
+            return resolveCharacterStateFromAssetPath(scene, side, p);
+          }).filter(function (v) { return !!v; }),
+          []
+        );
+      };
+
+      const resolveHookCharacterDiffImagePaths = function (scene) {
+        const hook = scene && scene.hook_visual && typeof scene.hook_visual === "object" ? scene.hook_visual : {};
+        const character = hook && hook.character && typeof hook.character === "object" ? hook.character : {};
+        const explicit = normalizeStringList(Array.isArray(character.lip_sync_image_paths) ? character.lip_sync_image_paths : []);
+        if (explicit.length) return explicit.slice(0, 2);
+        return [];
+      };
+
+      const resolveCharacterAssetStates = function (scene, side, speakerSide) {
+        const chars = scene && scene.composition && scene.composition.characters
+          ? scene.composition.characters
+          : {};
+        const node = chars && chars[side] ? chars[side] : {};
+        const multiple = Array.isArray(node.lip_sync_asset_states)
+          ? node.lip_sync_asset_states
+          : [];
+        const single = resolveCharacterAssetState(scene, side, speakerSide);
+        return normalizeAssetStates(multiple, [single]);
+      };
+
+      const resolveSideSpeakerEngine = function (scene, side, fallbackCharacterId) {
+        const chars = scene && scene.composition && scene.composition.characters
+          ? scene.composition.characters
+          : {};
+        const node = chars && chars[side] ? chars[side] : {};
+        const fromNode = String(node.engine || "").trim();
+        if (fromNode) return fromNode;
+        const fromFallbackCharacter = String(CHARACTER_ENGINE_BY_ID[String(fallbackCharacterId || "")] || "").trim();
+        if (fromFallbackCharacter) return fromFallbackCharacter;
+        return side === "left" ? "metan_engine" : "zundamon_engine";
+      };
+
+      const buildDefaultHookTexts = function (scene) {
+        const hook = scene && scene.hook_visual && typeof scene.hook_visual === "object" ? scene.hook_visual : {};
+        const texts = hook.texts && typeof hook.texts === "object" ? hook.texts : {};
+        const top = texts.top && typeof texts.top.text === "string" ? texts.top.text : "";
+        const main = texts.main && typeof texts.main.text === "string" ? texts.main.text : "";
+        const sub = texts.sub && typeof texts.sub.text === "string" ? texts.sub.text : "";
+        const bubble = hook.bubble && typeof hook.bubble.text === "string" ? hook.bubble.text : "";
+        return {
+          top: top,
+          main: main,
+          sub: sub,
+          bubble: bubble
+        };
+      };
+
+      const buildDefaultHookTextStyles = function (scene) {
+        const hook = scene && scene.hook_visual && typeof scene.hook_visual === "object" ? scene.hook_visual : {};
+        const texts = hook && hook.texts && typeof hook.texts === "object" ? hook.texts : {};
+        const topNode = texts.top && typeof texts.top === "object" ? texts.top : {};
+        const mainNode = texts.main && typeof texts.main === "object" ? texts.main : {};
+        const subNode = texts.sub && typeof texts.sub === "object" ? texts.sub : {};
+        const resolveLayer = function (node, defaults) {
+          return {
+            fill_color: normalizeHexColor(node.color, defaults.fill_color),
+            outline_color: normalizeHexColor(
+              node.outlineColor != null ? node.outlineColor : node.strokeColor,
+              defaults.outline_color
+            ),
+            outline_scale: normalizeHookOutlineScale(node.outlineScale, defaults.outline_scale),
+            fill_visible: typeof node.fillVisible === "boolean"
+              ? node.fillVisible
+              : (typeof node.emphasis === "boolean" ? node.emphasis : defaults.fill_visible)
+          };
+        };
+        return {
+          top: resolveLayer(topNode, HOOK_TEXT_STYLE_DEFAULTS.top),
+          main: resolveLayer(mainNode, HOOK_TEXT_STYLE_DEFAULTS.main),
+          sub: resolveLayer(subNode, HOOK_TEXT_STYLE_DEFAULTS.sub)
+        };
+      };
+
+      const buildDefaultVisualAssets = function (scene) {
+        const manual = scene && scene.visual_assets && typeof scene.visual_assets === "object" ? scene.visual_assets : {};
+        const composition = scene && scene.composition && typeof scene.composition === "object" ? scene.composition : {};
+        const chars = composition.characters && typeof composition.characters === "object" ? composition.characters : {};
+        const hook = scene && scene.hook_visual && typeof scene.hook_visual === "object" ? scene.hook_visual : {};
+        return {
+          background: normalizeImageRef(manual.background || (composition.background && composition.background.image_path) || ""),
+          slide: normalizeImageRef(manual.slide || (composition.slide_area && composition.slide_area.image_path) || ""),
+          monolith: normalizeImageRef(manual.monolith || (composition.monolith && composition.monolith.image_path) || ""),
+          dialog_box: normalizeImageRef(manual.dialog_box || (composition.dialog_box && composition.dialog_box.image_path) || ""),
+          character_left: normalizeImageRef(manual.character_left || (chars.left && chars.left.image_path) || ""),
+          character_right: normalizeImageRef(manual.character_right || (chars.right && chars.right.image_path) || ""),
+          hook_background: normalizeImageRef(manual.hook_background || (hook.background && hook.background.image_path) || ""),
+          hook_character: normalizeImageRef(manual.hook_character || (hook.character && hook.character.image_path) || ""),
+          hook_bubble: normalizeImageRef(manual.hook_bubble || (hook.bubble && hook.bubble.image_path) || "")
+        };
+      };
+
+      const ensurePictureShape = function (value) {
+        if (!value || typeof value !== "object") return null;
+        if (!value.hook || typeof value.hook !== "object") return null;
+        if (!value.scene || typeof value.scene !== "object") return null;
+        if (!Array.isArray(value.scene.scenes)) return null;
+        return value;
+      };
+
+      const resolvePictureAssetFromRegistry = function (picture, group, key) {
+        const registry = picture && picture.scene && picture.scene.asset_registry && typeof picture.scene.asset_registry === "object"
+          ? picture.scene.asset_registry
+          : {};
+        const bucket = registry[group];
+        if (!bucket || typeof bucket !== "object") return normalizeImageRef(key || "");
+        const raw = bucket[key];
+        if (typeof raw === "string" && raw.trim()) return normalizeImageRef(raw);
+        return normalizeImageRef(key || "");
+      };
+
+      const resolvePictureCharacterAsset = function (picture, sceneRow, side) {
+        const registry = picture && picture.scene && picture.scene.asset_registry && picture.scene.asset_registry.characters
+          ? picture.scene.asset_registry.characters
+          : {};
+        const charOp = picture && picture.scene && picture.scene.character_operation && picture.scene.character_operation.state_mapping
+          ? picture.scene.character_operation.state_mapping
+          : {};
+        const chars = sceneRow && sceneRow.composition && sceneRow.composition.characters
+          ? sceneRow.composition.characters
+          : {};
+        const node = chars && chars[side] ? chars[side] : {};
+        const assetId = String(node.asset_id || "").trim();
+        if (!assetId || !registry[assetId] || typeof registry[assetId] !== "object") return "";
+        const mappedState = String(
+          node.asset_state || charOp[String(node.state || "").trim()] || node.state || "idle"
+        ).trim();
+        return normalizeImageRef(registry[assetId][mappedState] || registry[assetId].idle || "");
+      };
+
+      const hasImageExtRef = function (value) {
+        return /\.(png|jpe?g|webp|avif)$/i.test(String(value || "").trim());
+      };
+
+      const resolveHookCharacterAssetFromPicture = function (picture, rawValue) {
+        const raw = normalizeImageRef(rawValue || "");
+        if (!raw) return "";
+        if (hasImageExtRef(raw)) return raw;
+        const registry = picture && picture.scene && picture.scene.asset_registry && picture.scene.asset_registry.characters
+          ? picture.scene.asset_registry.characters
+          : {};
+        const bucket = registry && typeof registry === "object" ? registry[raw] : null;
+        if (bucket && typeof bucket === "object") {
+          const idle = normalizeImageRef(bucket.idle || "");
+          if (idle && hasImageExtRef(idle)) return idle;
+          const first = Object.keys(bucket)
+            .map(function (k) { return normalizeImageRef(bucket[k]); })
+            .find(function (v) { return hasImageExtRef(v); });
+          if (first) return first;
+        }
+        if (/^zundamon-/i.test(raw)) {
+          const shortKey = normalizeImageRef(raw.replace(/^zundamon-/i, ""));
+          if (shortKey) return "characters/zundamon/" + shortKey + ".png";
+          return "characters/zundamon/zundamon-normal-0000.png";
+        }
+        if (/^metan-/i.test(raw)) {
+          const shortKey = normalizeImageRef(raw.replace(/^metan-/i, ""));
+          if (shortKey) return "characters/metan/" + shortKey + ".png";
+          return "characters/metan/metan-0.png";
+        }
+        return "characters/zundamon/" + raw + ".png";
+      };
+
+      const resolveHookBubbleAssetFromPicture = function (picture, rawValue) {
+        const raw = normalizeImageRef(rawValue || "");
+        if (!raw) return "";
+        if (hasImageExtRef(raw)) return raw;
+        const fromUi = resolvePictureAssetFromRegistry(picture, "ui", raw);
+        if (hasImageExtRef(fromUi)) return fromUi;
+        if (/^hook-speech-balloon$/i.test(raw)) return "parts/Hook-speech-balloon.png";
+        return "parts/" + raw + ".png";
+      };
+
+      const summarizePicture = function (picture) {
+        const hookVersion = picture && picture.hook && picture.hook.meta ? picture.hook.meta.version : "-";
+        const sceneVersion = picture && picture.scene && picture.scene.meta ? picture.scene.meta.version : "-";
+        const sceneCount = picture && picture.scene && Array.isArray(picture.scene.scenes) ? picture.scene.scenes.length : 0;
+        return "picture.json 読込済み: hook=" + String(hookVersion || "-") + " / scene=" + String(sceneVersion || "-") + " / scenes=" + String(sceneCount);
+      };
+
+      const applyPictureToSceneSettings = function () {
+        if (!spec || !Array.isArray(spec.scenes) || !pictureSpec) return;
+        const sourceScenes = pictureSpec.scene.scenes;
+        const hookSource = pictureSpec.hook || {};
+        spec.scenes.forEach(function (scene, index) {
+          if (!sceneSettings[index]) return;
+          const id = getSceneStableId(scene, index);
+          const row = sourceScenes.find(function (s) { return s && s.id === id; }) || sourceScenes[index] || null;
+          const setting = sceneSettings[index];
+          if (!setting.visual_assets) setting.visual_assets = buildDefaultVisualAssets(scene);
+          if (!setting.hook_texts) setting.hook_texts = buildDefaultHookTexts(scene);
+          if (!setting.hook_text_styles) setting.hook_text_styles = buildDefaultHookTextStyles(scene);
+          if (!setting.hook_text_styles.top || typeof setting.hook_text_styles.top !== "object") {
+            setting.hook_text_styles.top = deepClone(HOOK_TEXT_STYLE_DEFAULTS.top);
+          }
+          if (!setting.hook_text_styles.main || typeof setting.hook_text_styles.main !== "object") {
+            setting.hook_text_styles.main = deepClone(HOOK_TEXT_STYLE_DEFAULTS.main);
+          }
+          if (!setting.hook_text_styles.sub || typeof setting.hook_text_styles.sub !== "object") {
+            setting.hook_text_styles.sub = deepClone(HOOK_TEXT_STYLE_DEFAULTS.sub);
+          }
+
+          if (row && row.composition) {
+            const backgroundAssetId = row.composition.background ? row.composition.background.asset_id : "";
+            const slideRef = row.composition.slide_area ? (row.composition.slide_area.content_ref || row.composition.slide_area.asset_id) : "";
+            const monolithRef = row.composition.monolith ? (row.composition.monolith.mode || row.composition.monolith.asset_id) : "";
+            setting.visual_assets.background = resolvePictureAssetFromRegistry(pictureSpec, "backgrounds", backgroundAssetId);
+            setting.visual_assets.slide = resolvePictureAssetFromRegistry(pictureSpec, "slides", slideRef);
+            setting.visual_assets.monolith = resolvePictureAssetFromRegistry(pictureSpec, "monolith", monolithRef);
+            setting.visual_assets.dialog_box = resolvePictureAssetFromRegistry(pictureSpec, "ui", "dialog_box");
+            setting.visual_assets.character_left = resolvePictureCharacterAsset(pictureSpec, row, "left");
+            setting.visual_assets.character_right = resolvePictureCharacterAsset(pictureSpec, row, "right");
+          }
+
+          if (isHookScene(scene)) {
+            const hookTop = hookSource && hookSource.texts && hookSource.texts.top ? hookSource.texts.top.text : "";
+            const hookMain = hookSource && hookSource.texts && hookSource.texts.main ? hookSource.texts.main.text : "";
+            const hookSub = hookSource && hookSource.texts && hookSource.texts.sub ? hookSource.texts.sub.text : "";
+            const hookBubble = hookSource && hookSource.bubble ? hookSource.bubble.text : "";
+            const hookTopNode = hookSource && hookSource.texts && hookSource.texts.top ? hookSource.texts.top : {};
+            const hookMainNode = hookSource && hookSource.texts && hookSource.texts.main ? hookSource.texts.main : {};
+            const hookSubNode = hookSource && hookSource.texts && hookSource.texts.sub ? hookSource.texts.sub : {};
+            setting.hook_texts.top = String(hookTop || setting.hook_texts.top || "");
+            setting.hook_texts.main = String(hookMain || setting.hook_texts.main || "");
+            setting.hook_texts.sub = String(hookSub || setting.hook_texts.sub || "");
+            setting.hook_texts.bubble = String(hookBubble || setting.hook_texts.bubble || "");
+            setting.hook_text_styles.top.fill_color = normalizeHexColor(hookTopNode.color, setting.hook_text_styles.top.fill_color);
+            setting.hook_text_styles.main.fill_color = normalizeHexColor(hookMainNode.color, setting.hook_text_styles.main.fill_color);
+            setting.hook_text_styles.sub.fill_color = normalizeHexColor(hookSubNode.color, setting.hook_text_styles.sub.fill_color);
+            setting.hook_text_styles.top.outline_color = normalizeHexColor(
+              hookTopNode.outlineColor != null ? hookTopNode.outlineColor : hookTopNode.strokeColor,
+              setting.hook_text_styles.top.outline_color
+            );
+            setting.hook_text_styles.main.outline_color = normalizeHexColor(
+              hookMainNode.outlineColor != null ? hookMainNode.outlineColor : hookMainNode.strokeColor,
+              setting.hook_text_styles.main.outline_color
+            );
+            setting.hook_text_styles.sub.outline_color = normalizeHexColor(
+              hookSubNode.outlineColor != null ? hookSubNode.outlineColor : hookSubNode.strokeColor,
+              setting.hook_text_styles.sub.outline_color
+            );
+            setting.hook_text_styles.top.outline_scale = normalizeHookOutlineScale(
+              hookTopNode.outlineScale,
+              setting.hook_text_styles.top.outline_scale
+            );
+            setting.hook_text_styles.main.outline_scale = normalizeHookOutlineScale(
+              hookMainNode.outlineScale,
+              setting.hook_text_styles.main.outline_scale
+            );
+            setting.hook_text_styles.sub.outline_scale = normalizeHookOutlineScale(
+              hookSubNode.outlineScale,
+              setting.hook_text_styles.sub.outline_scale
+            );
+            setting.visual_assets.hook_background = resolvePictureAssetFromRegistry(
+              pictureSpec,
+              "backgrounds",
+              hookSource && hookSource.background ? hookSource.background.asset_id : ""
+            );
+            setting.visual_assets.hook_character = resolveHookCharacterAssetFromPicture(
+              pictureSpec,
+              hookSource && hookSource.character ? hookSource.character.asset_id : ""
+            );
+            setting.visual_assets.hook_bubble = resolveHookBubbleAssetFromPicture(
+              pictureSpec,
+              hookSource && hookSource.bubble ? hookSource.bubble.asset_id : ""
+            );
+          }
+        });
+      };
+
+      const normalizeVoiceControl = function (raw) {
+        const base = Object.assign({}, DEFAULT_VOICE_CONTROL, raw || {});
+        return {
+          speaker_id: normalizeNumber(base.speaker_id, DEFAULT_VOICE_CONTROL.speaker_id),
+          speedScale: normalizeNumber(base.speedScale, DEFAULT_SPEED_SCALE),
+          pitchScale: normalizeNumber(base.pitchScale, DEFAULT_VOICE_CONTROL.pitchScale),
+          intonationScale: normalizeNumber(base.intonationScale, DEFAULT_VOICE_CONTROL.intonationScale),
+          volumeScale: normalizeNumber(base.volumeScale, DEFAULT_VOICE_CONTROL.volumeScale),
+          prePhonemeLength: normalizeNumber(base.prePhonemeLength, DEFAULT_VOICE_CONTROL.prePhonemeLength),
+          postPhonemeLength: normalizeNumber(base.postPhonemeLength, DEFAULT_VOICE_CONTROL.postPhonemeLength),
+          pauseLength: base.pauseLength == null || String(base.pauseLength).trim() === ""
+            ? null
+            : normalizeNumber(base.pauseLength, null),
+          pauseLengthScale: normalizeNumber(base.pauseLengthScale, DEFAULT_VOICE_CONTROL.pauseLengthScale)
+        };
+      };
+
+      const isHookScene = function (scene) {
+        return String(scene && scene.scene_type || "normal") === "hook";
+      };
+
+      const buildDefaultSceneVisibility = function (scenes) {
+        const next = {};
+        (Array.isArray(scenes) ? scenes : []).forEach(function (scene, index) {
+          const id = String(scene && scene.id || ("scene_" + String(index + 1).padStart(3, "0"))).trim();
+          if (!id) return;
+          next[id] = id === "scene_001" ? false : true;
+        });
+        return next;
+      };
+
+      const normalizeRenderControl = function (raw, scenes) {
+        const safe = raw && typeof raw === "object" ? raw : {};
+        const defaultVisibility = buildDefaultSceneVisibility(scenes);
+        const manual = safe.scene_visibility && typeof safe.scene_visibility === "object"
+          ? safe.scene_visibility
+          : {};
+        const visibility = {};
+        Object.keys(defaultVisibility).forEach(function (sceneId) {
+          if (typeof manual[sceneId] === "boolean") {
+            visibility[sceneId] = manual[sceneId];
+            return;
+          }
+          visibility[sceneId] = defaultVisibility[sceneId];
+        });
+        return {
+          hook_enabled: typeof safe.hook_enabled === "boolean" ? safe.hook_enabled : true,
+          default_scene_visibility_policy:
+            typeof safe.default_scene_visibility_policy === "string" && safe.default_scene_visibility_policy.trim()
+              ? safe.default_scene_visibility_policy.trim()
+              : "skip_first_scene_when_hook_exists",
+          scene_visibility: visibility
+        };
+      };
+
+      const ensureSpecShape = function (value) {
+        if (!value || typeof value !== "object") return null;
+        if (!Array.isArray(value.scenes)) return null;
+        const cloned = deepClone(value);
+        if (cloned.scenes.length > 0) {
+          const first = cloned.scenes[0];
+          const firstId = String(first && first.id || "").toLowerCase();
+          const shouldBeHook = firstId === "scene_001" || !!(first && first.hook_visual);
+          if (shouldBeHook) {
+            first.scene_type = "hook";
+            if (!first.hook_visual) {
+              const rawHook = localStorage.getItem(HOOK_SPEC_KEY);
+              const parsedHook = parseJson(rawHook || "");
+              if (parsedHook && typeof parsedHook === "object") {
+                first.hook_visual = parsedHook;
+              }
+            }
+          }
+        }
+        cloned.render_control = normalizeRenderControl(cloned.render_control, cloned.scenes);
+        return cloned;
+      };
+
+      const getVoiceText = function (scene) {
+        const v1 = scene && scene.voice && typeof scene.voice.text === "string" ? scene.voice.text.trim() : "";
+        if (v1) return v1;
+        const v2 = scene && scene.dialog && typeof scene.dialog.voice === "string" ? scene.dialog.voice.trim() : "";
+        if (v2) return v2;
+        const v3 = scene && scene.dialog && typeof scene.dialog.screen_text === "string" ? scene.dialog.screen_text.trim() : "";
+        return v3;
+      };
+
+      const getSceneSpeakerNameHint = function (scene) {
+        const name = scene && scene.dialog && typeof scene.dialog.speaker_name === "string"
+          ? scene.dialog.speaker_name.trim()
+          : "";
+        if (name) return name;
+        const sp = scene && typeof scene.speaker === "string" ? scene.speaker.trim() : "";
+        return sp;
+      };
+
+      const canonicalCharacterId = function (raw) {
+        const text = String(raw || "").trim();
+        if (!text) return "zundamon";
+        const low = text.toLowerCase();
+        const ids = Object.keys(CHARACTER_TEMPLATES);
+        for (let i = 0; i < ids.length; i += 1) {
+          const id = ids[i];
+          const t = CHARACTER_TEMPLATES[id];
+          const matched = t.aliases.some(function (alias) {
+            return alias.toLowerCase() === low || alias === text;
+          });
+          if (matched) return id;
+        }
+        return "zundamon";
+      };
+
+      const getSpeakerByName = function (speakerName) {
+        return speakersCatalog.find(function (s) {
+          return s.name === speakerName;
+        }) || null;
+      };
+
+      const getFirstSpeaker = function () {
+        return speakersCatalog.length ? speakersCatalog[0] : null;
+      };
+
+      const getSpeakerStyles = function (speakerName) {
+        const speaker = getSpeakerByName(speakerName);
+        return speaker && Array.isArray(speaker.styles) ? speaker.styles : [];
+      };
+
+      const resolveSpeakerName = function (preferredName, fallbackName) {
+        if (preferredName && getSpeakerByName(preferredName)) return preferredName;
+        if (fallbackName && getSpeakerByName(fallbackName)) return fallbackName;
+        const first = getFirstSpeaker();
+        return first ? first.name : "";
+      };
+
+      const resolveStyleFromSpeaker = function (speakerName, preferredStyleId, preferredStyleName) {
+        const styles = getSpeakerStyles(speakerName);
+        if (!styles.length) {
+          return { id: 0, name: "", speaker_uuid: "" };
+        }
+        const byId = styles.find(function (st) { return Number(st.id) === Number(preferredStyleId); });
+        if (byId) return byId;
+        const byName = styles.find(function (st) { return String(st.name) === String(preferredStyleName); });
+        if (byName) return byName;
+        return styles[0];
+      };
+
+      const normalizeRunId = function (raw) {
+        const trimmed = String(raw == null ? "" : raw).trim();
+        if (!trimmed) return "000";
+        if (trimmed.toLowerCase() === "auto") return "auto";
+        const digits = trimmed.replace(/\D/g, "");
+        if (!digits) return "000";
+        return digits.slice(0, 6).padStart(3, "0");
+      };
+
+      const getRunId = function () {
+        return normalizeRunId(localStorage.getItem(OUTPUT_RUN_ID_KEY));
+      };
+
+      const getRunOutputDir = function () {
+        const runId = getRunId();
+        if (runId === "auto") return "output/<auto-number>";
+        return "output/" + runId;
+      };
+
+      const getSegmentFileName = function (scene, sceneIndex) {
+        const stableId = getSceneStableId(scene, sceneIndex);
+        const matched = stableId.match(/(\d+)/);
+        const order = matched ? Number.parseInt(matched[1], 10) : (sceneIndex + 1);
+        const safeOrder = Number.isFinite(order) && order > 0 ? order : (sceneIndex + 1);
+        return "seg_" + String(safeOrder).padStart(3, "0") + ".wav";
+      };
+
+      const buildRunScopedCommand = function (baseCommand, options) {
+        const runId = getRunId();
+        const safeOptions = options && typeof options === "object" ? options : {};
+        const skipSpecEnv = safeOptions.withoutSpecEnv === true;
+        const specEnvKey =
+          typeof safeOptions.specEnvKey === "string" && safeOptions.specEnvKey.trim()
+            ? safeOptions.specEnvKey.trim()
+            : "SCENE_RENDER_SPEC_PATH";
+        const isBatchSpec = specEnvKey === "VOICEVOX_BATCH_SPEC_PATH";
+        const specPath = runId === "auto"
+          ? (isBatchSpec
+            ? "output/<auto-number>/audio/voicevox-batch-spec-<auto-number>.json"
+            : "output/<auto-number>/spec/svrs_scene_render_spec.json")
+          : (isBatchSpec
+            ? "output/" + runId + "/audio/voicevox-batch-spec-" + runId + ".json"
+            : "output/" + runId + "/spec/svrs_scene_render_spec.json");
+        const lines = [
+          '$env:SCENE_OUTPUT_RUN_ID="' + runId + '"'
+        ];
+        if (!skipSpecEnv) {
+          lines.push("$env:" + specEnvKey + '="' + specPath + '"');
+        }
+        lines.push(baseCommand);
+        return lines.join("\n");
+      };
+
+      const buildBatchAndSyncCommand = function () {
+        return [
+          buildRunScopedCommand(CMD_BATCH, { specEnvKey: "VOICEVOX_BATCH_SPEC_PATH" }),
+          buildRunScopedCommand(CMD_SYNC_AUDIO, { withoutSpecEnv: true })
+        ].join("\n");
+      };
+
+      const renderCommandPreview = function () {
+        el.batchCmdPreview.textContent = [
+          "[VOICEVOX batch + sync shared-assets/audio]",
+          buildBatchAndSyncCommand(),
+          "",
+          "[Studio Preview (before export)]",
+          buildRunScopedCommand(CMD_DEV),
+          "",
+          "[Render MP4]",
+          buildRunScopedCommand(CMD_RENDER)
+        ].join("\n");
+      };
+
+      const readCharacterDefaults = function () {
+        const raw = localStorage.getItem(CHAR_DEFAULTS_KEY);
+        if (!raw) return {};
+        const parsed = parseJson(raw);
+        if (!parsed || typeof parsed !== "object") return {};
+        return parsed;
+      };
+
+      const writeCharacterDefaults = function () {
+        const payload = { characters: {} };
+        Object.keys(characters).forEach(function (id) {
+          const row = characters[id];
+          payload.characters[id] = {
+            display_name: row.display_name,
+            speedScale: normalizeNumber(row.speedScale, DEFAULT_SPEED_SCALE),
+            voice: {
+              voicevox_speaker_name: row.voice.voicevox_speaker_name,
+              voicevox_style_name: row.voice.voicevox_style_name,
+              voicevox_style_id: row.voice.voicevox_style_id
+            }
+          };
+        });
+        localStorage.setItem(CHAR_DEFAULTS_KEY, JSON.stringify(payload));
+      };
+
+      const readSystemSettings = function () {
+        const raw = localStorage.getItem(SYSTEM_SETTINGS_KEY);
+        const parsed = parseJson(raw || "");
+        if (!parsed || typeof parsed !== "object") {
+          const defaults = deepClone(SHARED_ASSET_SUBDIR_DEFAULTS);
+          defaults.slide = getDefaultSlideSubdirByRunId();
+          return {
+            engine_endpoint: "http://127.0.0.1:5510",
+            use_speakers_cache: true,
+            shared_assets_subdirs: defaults
+          };
+        }
+        const storedSubdirs = parsed.shared_assets_subdirs && typeof parsed.shared_assets_subdirs === "object"
+          ? parsed.shared_assets_subdirs
+          : {};
+        return {
+          engine_endpoint: String(parsed.engine_endpoint || "http://127.0.0.1:5510"),
+          use_speakers_cache: parsed.use_speakers_cache !== false,
+          shared_assets_subdirs: {
+            background: String(storedSubdirs.background || SHARED_ASSET_SUBDIR_DEFAULTS.background),
+            bgm: String(storedSubdirs.bgm || SHARED_ASSET_SUBDIR_DEFAULTS.bgm),
+            slide: String(storedSubdirs.slide || getDefaultSlideSubdirByRunId()),
+            monolith: String(storedSubdirs.monolith || SHARED_ASSET_SUBDIR_DEFAULTS.monolith),
+            dialog_box: String(storedSubdirs.dialog_box || SHARED_ASSET_SUBDIR_DEFAULTS.dialog_box),
+            character_left: String(storedSubdirs.character_left || SHARED_ASSET_SUBDIR_DEFAULTS.character_left),
+            character_right: String(storedSubdirs.character_right || SHARED_ASSET_SUBDIR_DEFAULTS.character_right)
+          }
+        };
+      };
+
+      const writeSystemSettings = function () {
+        const sharedSubdirs = getSharedAssetsSubdirConfigFromUi();
+        const payload = {
+          engine_endpoint: String(el.engineUrlInput.value || "").trim() || "http://127.0.0.1:5510",
+          use_speakers_cache: true,
+          shared_assets_subdirs: {
+            background: String(sharedSubdirs.background || SHARED_ASSET_SUBDIR_DEFAULTS.background),
+            bgm: String(sharedSubdirs.bgm || SHARED_ASSET_SUBDIR_DEFAULTS.bgm),
+            slide: String(sharedSubdirs.slide || getDefaultSlideSubdirByRunId()),
+            monolith: String(sharedSubdirs.monolith || SHARED_ASSET_SUBDIR_DEFAULTS.monolith),
+            dialog_box: String(sharedSubdirs.dialog_box || SHARED_ASSET_SUBDIR_DEFAULTS.dialog_box),
+            character_left: String(sharedSubdirs.character_left || SHARED_ASSET_SUBDIR_DEFAULTS.character_left),
+            character_right: String(sharedSubdirs.character_right || SHARED_ASSET_SUBDIR_DEFAULTS.character_right)
+          },
+          updated_at: new Date().toISOString()
+        };
+        localStorage.setItem(SYSTEM_SETTINGS_KEY, JSON.stringify(payload));
+      };
+
+      const normalizeSpeakersCatalog = function (data) {
+        if (!Array.isArray(data)) return [];
+        return data.map(function (row) {
+          return {
+            name: row.name || "",
+            speaker_uuid: row.speaker_uuid || "",
+            styles: Array.isArray(row.styles)
+              ? row.styles.map(function (st) {
+                  return {
+                    id: Number(st.id),
+                    name: String(st.name || ""),
+                    speaker_uuid: row.speaker_uuid || ""
+                  };
+                }).filter(function (st) { return Number.isFinite(st.id); })
+              : []
+          };
+        }).filter(function (row) { return row.name; });
+      };
+
+      const readSpeakersCache = function () {
+        const raw = localStorage.getItem(SPEAKERS_CACHE_KEY);
+        const parsed = parseJson(raw || "");
+        if (!parsed || typeof parsed !== "object" || !Array.isArray(parsed.speakers)) return null;
+        const catalog = normalizeSpeakersCatalog(parsed.speakers);
+        if (!catalog.length) return null;
+        return {
+          speakers: catalog,
+          fetched_at: parsed.fetched_at || ""
+        };
+      };
+
+      const writeSpeakersCache = function (catalog) {
+        localStorage.setItem(SPEAKERS_CACHE_KEY, JSON.stringify({
+          fetched_at: new Date().toISOString(),
+          speakers: catalog
+        }));
+      };
+
+      const buildCharactersFromTemplates = function () {
+        const saved = readCharacterDefaults();
+        const savedMap = saved && saved.characters && typeof saved.characters === "object"
+          ? saved.characters
+          : {};
+        const next = {};
+        Object.keys(CHARACTER_TEMPLATES).forEach(function (id) {
+          const template = CHARACTER_TEMPLATES[id];
+          const s = savedMap[id] || {};
+          const savedSpeaker = s.voice && s.voice.voicevox_speaker_name ? s.voice.voicevox_speaker_name : "";
+          const preferredSpeaker = id === "ankomon" && (!savedSpeaker || savedSpeaker === "ずんだもん")
+            ? ""
+            : savedSpeaker;
+          const speakerName = resolveSpeakerName(preferredSpeaker, template.fallback_speaker_name);
+          const style = resolveStyleFromSpeaker(
+            speakerName,
+            s.voice && s.voice.voicevox_style_id,
+            s.voice && s.voice.voicevox_style_name
+          );
+          const displayName = id === "ankomon"
+            ? (s.display_name && s.display_name !== "あんこもん" ? s.display_name : "AI（天の声）")
+            : (s.display_name || template.display_name);
+          next[id] = {
+            display_name: displayName,
+            speedScale: normalizeNumber(s.speedScale, DEFAULT_SPEED_SCALE),
+            voice: {
+              voicevox_speaker_name: speakerName,
+              voicevox_style_name: style.name || "",
+              voicevox_style_id: Number(style.id) || 0
+            }
+          };
+        });
+        return next;
+      };
+
+      const buildSceneSettings = function () {
+        const settings = {};
+        spec.scenes.forEach(function (scene, index) {
+          const profile = scene.voice_profile || {};
+          const dialog = scene && scene.dialog && typeof scene.dialog === "object" ? scene.dialog : {};
+          const characterId = canonicalCharacterId(profile.character_id || scene.character_id || getSceneSpeakerNameHint(scene));
+          const character = characters[characterId] || characters.zundamon;
+          const speakerName = character.voice.voicevox_speaker_name;
+          const style = resolveStyleFromSpeaker(
+            speakerName,
+            profile.voicevox_style_id,
+            profile.voicevox_style_name
+          );
+          const parsedTime = parseTimeRange(
+            scene.time,
+            scene.start_sec != null ? scene.start_sec : 0,
+            scene.duration != null
+              ? scene.duration
+              : (scene.duration_sec != null
+                  ? scene.duration_sec
+              : (scene.voice && scene.voice.duration_sec != null ? scene.voice.duration_sec : 2))
+          );
+          const speakerSide = resolveSpeakerSide(scene);
+          settings[index] = {
+            character_id: characterId,
+            voicevox_style_id: Number(style.id) || character.voice.voicevox_style_id || 0,
+            speedScale: Number.isFinite(Number(profile.speedScale))
+              ? Number(profile.speedScale)
+              : normalizeNumber(character.speedScale, DEFAULT_SPEED_SCALE),
+            start_sec: parsedTime.start_sec,
+            duration_sec: parsedTime.duration_sec,
+            voice_text: getVoiceText(scene),
+            screen_text: scene && scene.dialog && typeof scene.dialog.screen_text === "string"
+              ? scene.dialog.screen_text
+              : "",
+            screen_text_font_size: normalizeScreenTextFontSize(
+              dialog.screen_text_font_size != null ? dialog.screen_text_font_size : scene.screen_text_font_size,
+              SCREEN_TEXT_STYLE_DEFAULTS.font_size
+            ),
+            screen_text_font_family: normalizeScreenTextFontFamily(
+              dialog.screen_text_font_family != null ? dialog.screen_text_font_family : scene.font_family,
+              SCREEN_TEXT_STYLE_DEFAULTS.font_family
+            ),
+            screen_text_color: normalizeHexColor(
+              dialog.screen_text_color != null ? dialog.screen_text_color : scene.text_color,
+              SCREEN_TEXT_STYLE_DEFAULTS.color
+            ),
+            screen_text_line_break_mode: normalizeScreenTextLineBreakMode(
+              dialog.screen_text_line_break_mode != null ? dialog.screen_text_line_break_mode : scene.line_break_mode
+            ),
+            screen_text_line_chars: normalizeScreenTextLineChars(
+              dialog.screen_text_line_chars != null ? dialog.screen_text_line_chars : scene.line_chars,
+              SCREEN_TEXT_STYLE_DEFAULTS.line_chars
+            ),
+            use_background_override: normalizeBackgroundRef(scene && scene.background_override) !== "",
+            background_override: normalizeBackgroundRef(scene && scene.background_override),
+            visual_assets: buildDefaultVisualAssets(scene),
+            speaker_side: speakerSide,
+            left_asset_states: resolveCharacterAssetStates(scene, "left", speakerSide),
+            right_asset_states: resolveCharacterAssetStates(scene, "right", speakerSide),
+            left_diff_images: resolveCharacterDiffImagePaths(scene, "left", speakerSide),
+            right_diff_images: resolveCharacterDiffImagePaths(scene, "right", speakerSide),
+            hook_diff_images: resolveHookCharacterDiffImagePaths(scene),
+            hook_texts: buildDefaultHookTexts(scene),
+            hook_text_styles: buildDefaultHookTextStyles(scene),
+            hook_finalize_to_dialog: !!(scene && scene.hook_visual && scene.hook_visual.finalize_to_dialog),
+            grayscale_filter: resolveSceneGrayscaleFilterMode(scene)
+          };
+        });
+        return settings;
+      };
+
+      const getSceneStableId = function (scene, sceneIndex) {
+        if (scene && typeof scene.id === "string" && scene.id.trim()) {
+          return scene.id.trim();
+        }
+        return "scene_" + String(sceneIndex + 1).padStart(3, "0");
+      };
+
+      const getNonHookDisplayOrder = function (sceneIndex) {
+        let order = 0;
+        for (let i = 0; i <= sceneIndex; i += 1) {
+          if (!isHookScene(spec.scenes[i])) order += 1;
+        }
+        return order;
+      };
+
+      const getSceneDisplayLabel = function (scene, sceneIndex) {
+        if (isHookScene(scene)) return getSceneStableId(scene, sceneIndex) + "(Hook)";
+        return "scene_" + String(getNonHookDisplayOrder(sceneIndex) + 1).padStart(3, "0");
+      };
+
+      const getSceneRenderEnabled = function (scene, sceneIndex) {
+        if (!spec) return true;
+        spec.render_control = normalizeRenderControl(spec.render_control, spec.scenes);
+        const sceneId = getSceneStableId(scene, sceneIndex);
+        const value = spec.render_control.scene_visibility[sceneId];
+        return typeof value === "boolean" ? value : true;
+      };
+
+      const setSceneRenderEnabled = function (scene, sceneIndex, enabled) {
+        if (!spec) return;
+        spec.render_control = normalizeRenderControl(spec.render_control, spec.scenes);
+        const sceneId = getSceneStableId(scene, sceneIndex);
+        spec.render_control.scene_visibility[sceneId] = !!enabled;
+      };
+
+      const updateOutputViews = function () {
+        el.jsonOutput.value = spec ? JSON.stringify(spec, null, 2) : "";
+        el.batchOutput.value = batchSpec ? JSON.stringify(batchSpec, null, 2) : "";
+        if (el.bgmVolumeValue) {
+          el.bgmVolumeValue.textContent = Math.round(normalizeBgmVolume(bgmVolume, 0.2) * 100) + "%";
+        }
+      };
+
+      const renderGlobalMediaControls = function () {
+        applyBackgroundFileList(BACKGROUND_PNG_FILES, { selected: normalizeBackgroundRef(backgroundPng) });
+        applyBgmFileList(BGM_MP3_FILES, { selected: normalizeBgmRef(bgmFile) });
+        el.bgmVolumeInput.value = String(normalizeBgmVolume(bgmVolume, 0.2));
+        el.bgmVolumeValue.textContent = Math.round(normalizeBgmVolume(bgmVolume, 0.2) * 100) + "%";
+      };
+
+      const applyGlobalMediaToSpec = function () {
+        if (!spec || typeof spec !== "object") return;
+        const selectedBackground = normalizeBackgroundRef(backgroundPng);
+        if (!spec.settings || typeof spec.settings !== "object") spec.settings = {};
+        if (selectedBackground) {
+          const bgPath = "assets/background/" + selectedBackground;
+          spec.background = bgPath;
+          spec.settings.background = bgPath;
+        } else {
+          if (Object.prototype.hasOwnProperty.call(spec, "background")) delete spec.background;
+          if (Object.prototype.hasOwnProperty.call(spec.settings, "background")) delete spec.settings.background;
+        }
+
+        const selectedBgm = normalizeBgmRef(bgmFile);
+        const volume = normalizeBgmVolume(bgmVolume, 0.2);
+        if (!spec.audio || typeof spec.audio !== "object") spec.audio = {};
+        if (selectedBgm) {
+          const bgmSrc = "/audio/bgm/" + selectedBgm;
+          spec.audio.bgm = bgmSrc;
+          spec.audio.bgm_volume = Number(volume.toFixed(3));
+          spec.audio.bgm_loop = Boolean(bgmLoop);
+          spec.bgm = {
+            src: bgmSrc,
+            volume: Number(volume.toFixed(3)),
+            loop: Boolean(bgmLoop)
+          };
+        } else {
+          spec.audio.bgm = "none";
+          if (Object.prototype.hasOwnProperty.call(spec.audio, "bgm_volume")) delete spec.audio.bgm_volume;
+          if (Object.prototype.hasOwnProperty.call(spec.audio, "bgm_loop")) delete spec.audio.bgm_loop;
+          if (Object.prototype.hasOwnProperty.call(spec, "bgm")) delete spec.bgm;
+        }
+      };
+
+      const segmentBackgroundOptionsHtml = function (selected) {
+        return renderBackgroundOptions(normalizeBackgroundRef(selected));
+      };
+
+      const buildHookFinalText = function (hookTexts) {
+        const safe = hookTexts && typeof hookTexts === "object" ? hookTexts : {};
+        const lines = [safe.top, safe.main, safe.sub]
+          .map(function (v) { return String(v || "").trim(); })
+          .filter(function (v) { return !!v; });
+        return lines.join("\n");
+      };
+
+      const buildPictureLinkage = function () {
+        if (!spec || !Array.isArray(spec.scenes)) return null;
+        const scenes = [];
+        let hook = null;
+        spec.scenes.forEach(function (scene, index) {
+          const setting = sceneSettings[index] || {};
+          const visual = setting.visual_assets && typeof setting.visual_assets === "object"
+            ? setting.visual_assets
+            : buildDefaultVisualAssets(scene);
+          const item = {
+            scene_id: getSceneStableId(scene, index),
+            scene_type: isHookScene(scene) ? "hook" : "scene",
+            assets: {
+              background: normalizeImageRef(visual.background || ""),
+              slide: normalizeImageRef(visual.slide || ""),
+              monolith: normalizeImageRef(visual.monolith || ""),
+              dialog_box: normalizeImageRef(visual.dialog_box || ""),
+              character_left: normalizeImageRef(visual.character_left || ""),
+              character_right: normalizeImageRef(visual.character_right || ""),
+              hook_background: normalizeImageRef(visual.hook_background || ""),
+              hook_character: normalizeImageRef(visual.hook_character || ""),
+              hook_bubble: normalizeImageRef(visual.hook_bubble || "")
+            }
+          };
+          scenes.push(item);
+
+          if (isHookScene(scene)) {
+            const texts = setting.hook_texts && typeof setting.hook_texts === "object"
+              ? setting.hook_texts
+              : buildDefaultHookTexts(scene);
+            hook = {
+              scene_id: item.scene_id,
+              finalize_to_dialog: !!setting.hook_finalize_to_dialog,
+              texts: {
+                top: String(texts.top || ""),
+                main: String(texts.main || ""),
+                sub: String(texts.sub || ""),
+                bubble: String(texts.bubble || "")
+              },
+              assets: {
+                background: item.assets.hook_background,
+                character: item.assets.hook_character,
+                bubble: item.assets.hook_bubble
+              }
+            };
+          }
+        });
+
+        return {
+          version: "picture_linkage_v1",
+          source_picture: pictureSpec && pictureSpec.meta && pictureSpec.meta.version
+            ? String(pictureSpec.meta.version)
+            : "",
+          hook: hook,
+          scenes: scenes
+        };
+      };
+
+      const countSharedAssetFiles = function () {
+        return Object.keys(sharedAssetFileCatalog || {}).reduce(function (sum, key) {
+          const list = sharedAssetFileCatalog && Array.isArray(sharedAssetFileCatalog[key])
+            ? sharedAssetFileCatalog[key]
+            : [];
+          return sum + list.length;
+        }, 0);
+      };
+
+      const pickSharedAssetsRoot = async function () {
+        if (typeof window.showDirectoryPicker !== "function") {
+          setStatus("このブラウザでは shared-assets 連携（File System Access API）が使えません。", "error");
+          return;
+        }
+        try {
+          const selectedDir = await window.showDirectoryPicker({ mode: "readwrite" });
+          let rootDir = selectedDir;
+          let rootLabel = selectedDir.name || "(unknown)";
+          if (String(selectedDir.name || "").toLowerCase() !== "shared-assets") {
+            try {
+              rootDir = await selectedDir.getDirectoryHandle("shared-assets", { create: false });
+              rootLabel = normalizeSubdirRef((selectedDir.name || "") + "/shared-assets");
+            } catch (_err1) {
+              try {
+                const hobbyDir = await selectedDir.getDirectoryHandle("02_hobby", { create: false });
+                rootDir = await hobbyDir.getDirectoryHandle("shared-assets", { create: false });
+                rootLabel = normalizeSubdirRef((selectedDir.name || "") + "/02_hobby/shared-assets");
+              } catch (_err2) {
+                rootLabel = rootLabel + " (shared-assetsとして使用)";
+              }
+            }
+          }
+          sharedAssetsRootDirHandle = rootDir;
+          sharedAssetsRootLabel = rootLabel;
+          await refreshSharedAssetFileCatalog();
+          writeSystemSettings();
+          setStatus("shared-assets 候補を読み込みました。候補数: " + countSharedAssetFiles(), "ok");
+        } catch (err) {
+          if (err && err.name === "AbortError") {
+            setStatus("shared-assets ルート選択をキャンセルしました。", "warn");
+            return;
+          }
+          setStatus("shared-assets ルート選択に失敗しました。", "error");
+        }
+      };
+
+      const refreshSharedAssetsFromUi = async function () {
+        if (!sharedAssetsRootDirHandle) {
+          writeSystemSettings();
+          setStatus("先に shared-assets ルートを選択してください。", "warn");
+          return;
+        }
+        try {
+          await refreshSharedAssetFileCatalog();
+          writeSystemSettings();
+          setStatus("shared-assets 候補を再読込しました。候補数: " + countSharedAssetFiles(), "ok");
+        } catch (_err) {
+          setStatus("shared-assets 候補の再読込に失敗しました。ルートを再選択してください。", "error");
+        }
+      };
+
+      const applySceneSettingsToSpec = function () {
+        spec.render_control = normalizeRenderControl(spec.render_control, spec.scenes);
+        spec.scenes = spec.scenes.map(function (scene, index) {
+          const next = Object.assign({}, scene);
+          const setting = sceneSettings[index];
+          if (!setting) return next;
+          const character = characters[setting.character_id] || characters.zundamon;
+          const speakerName = character.voice.voicevox_speaker_name;
+          const style = resolveStyleFromSpeaker(
+            speakerName,
+            setting.voicevox_style_id,
+            null
+          );
+          const control = normalizeVoiceControl(next.voice_control || {});
+          control.speaker_id = Number(style.id) || control.speaker_id;
+          control.speedScale = normalizeNumber(setting.speedScale, DEFAULT_SPEED_SCALE);
+          const startSec = normalizeSeconds(setting.start_sec, 0);
+          const durationSec = Math.max(0.1, normalizeSeconds(setting.duration_sec, 2));
+          const voiceText = String(setting.voice_text || getVoiceText(scene) || "").trim();
+          const screenText = String(setting.screen_text || "").trim() || voiceText;
+          const screenTextFontSize = normalizeScreenTextFontSize(
+            setting.screen_text_font_size,
+            SCREEN_TEXT_STYLE_DEFAULTS.font_size
+          );
+          const screenTextFontFamily = normalizeScreenTextFontFamily(
+            setting.screen_text_font_family,
+            SCREEN_TEXT_STYLE_DEFAULTS.font_family
+          );
+          const screenTextColor = normalizeHexColor(
+            setting.screen_text_color,
+            SCREEN_TEXT_STYLE_DEFAULTS.color
+          );
+          const screenTextLineBreakMode = normalizeScreenTextLineBreakMode(setting.screen_text_line_break_mode);
+          const screenTextLineChars = normalizeScreenTextLineChars(
+            setting.screen_text_line_chars,
+            SCREEN_TEXT_STYLE_DEFAULTS.line_chars
+          );
+          const visualAssets = setting.visual_assets && typeof setting.visual_assets === "object"
+            ? setting.visual_assets
+            : {};
+          const hookTexts = setting.hook_texts && typeof setting.hook_texts === "object"
+            ? setting.hook_texts
+            : { top: "", main: "", sub: "", bubble: "" };
+          const hookTextStyles = setting.hook_text_styles && typeof setting.hook_text_styles === "object"
+            ? setting.hook_text_styles
+            : buildDefaultHookTextStyles(scene);
+          const hookFinalText = buildHookFinalText(hookTexts);
+          const speakerSide = setting.speaker_side === "left" || setting.speaker_side === "right"
+            ? setting.speaker_side
+            : "none";
+          const leftDiffImages = normalizeStringList(setting.left_diff_images || []);
+          const rightDiffImages = normalizeStringList(setting.right_diff_images || []);
+          const leftFromDiffStates = mapCharacterDiffImagesToStates(scene, "left", leftDiffImages);
+          const rightFromDiffStates = mapCharacterDiffImagesToStates(scene, "right", rightDiffImages);
+          const leftAssetStates = normalizeAssetStates(
+            leftFromDiffStates.length ? leftFromDiffStates : setting.left_asset_states,
+            [speakerSide === "left" ? "mouth_closed" : "idle"]
+          );
+          const rightAssetStates = normalizeAssetStates(
+            rightFromDiffStates.length ? rightFromDiffStates : setting.right_asset_states,
+            [speakerSide === "right" ? "mouth_closed" : "idle"]
+          );
+          const leftAssetState = normalizeAssetState(leftAssetStates[0]);
+          const rightAssetState = normalizeAssetState(rightAssetStates[0]);
+          const grayscaleFilterMode = String(setting.grayscale_filter || "off") === "on" ? "on" : "off";
+
+          if (!next.scene_type) {
+            next.scene_type = "normal";
+          }
+          next.effects = applySceneGrayscaleFilterToEffects(next.effects, grayscaleFilterMode);
+          next.character_id = setting.character_id;
+          next.start_sec = startSec;
+          next.duration = durationSec;
+          next.duration_sec = durationSec;
+          next.time = formatTimeRange(startSec, durationSec);
+          next.voice_control = control;
+          next.voice_profile = {
+            character_id: setting.character_id,
+            voicevox_speaker_name: speakerName,
+            voicevox_style_name: style.name || "",
+            voicevox_style_id: Number(style.id) || 0,
+            speedScale: control.speedScale
+          };
+          if (!next.voice || typeof next.voice !== "object") next.voice = {};
+          next.voice.text = voiceText;
+          next.voice.audio_path = getRunOutputDir() + "/audio/" + getSegmentFileName(next, index);
+          next.voice.duration_sec = durationSec;
+          if (!next.dialog || typeof next.dialog !== "object") next.dialog = {};
+          next.dialog.voice = voiceText || "";
+          next.dialog.screen_text = screenText || "";
+          next.dialog.screen_text_font_size = screenTextFontSize;
+          next.dialog.screen_text_font_family = screenTextFontFamily;
+          next.dialog.screen_text_color = screenTextColor;
+          next.dialog.screen_text_line_break_mode = screenTextLineBreakMode;
+          next.dialog.screen_text_line_chars = screenTextLineChars;
+          // Compatibility: keep legacy top-level keys for downstream tools.
+          next.screen_text_font_size = screenTextFontSize;
+          next.font_family = screenTextFontFamily;
+          next.text_color = screenTextColor;
+          next.line_break_mode = screenTextLineBreakMode;
+          next.line_chars = screenTextLineChars;
+
+          if (!next.visual_assets || typeof next.visual_assets !== "object") next.visual_assets = {};
+          Object.keys(visualAssets).forEach(function (k) {
+            const val = normalizeImageRef(visualAssets[k]);
+            if (val) {
+              next.visual_assets[k] = val;
+            } else if (Object.prototype.hasOwnProperty.call(next.visual_assets, k)) {
+              delete next.visual_assets[k];
+            }
+          });
+
+          if (!next.composition || typeof next.composition !== "object") next.composition = {};
+          if (!next.composition.background || typeof next.composition.background !== "object") next.composition.background = {};
+          if (!next.composition.slide_area || typeof next.composition.slide_area !== "object") next.composition.slide_area = {};
+          if (!next.composition.monolith || typeof next.composition.monolith !== "object") next.composition.monolith = {};
+          if (!next.composition.dialog_box || typeof next.composition.dialog_box !== "object") next.composition.dialog_box = {};
+          if (!next.composition.characters || typeof next.composition.characters !== "object") next.composition.characters = {};
+          if (!next.composition.characters.left || typeof next.composition.characters.left !== "object") next.composition.characters.left = {};
+          if (!next.composition.characters.right || typeof next.composition.characters.right !== "object") next.composition.characters.right = {};
+          const leftEngine = resolveSideSpeakerEngine(next, "left", "metan");
+          const rightEngine = resolveSideSpeakerEngine(next, "right", "zundamon");
+          next.composition.background.image_path = normalizeImageRef(visualAssets.background || "");
+          next.composition.slide_area.image_path = normalizeImageRef(visualAssets.slide || "");
+          next.composition.monolith.image_path = normalizeImageRef(visualAssets.monolith || "");
+          next.composition.dialog_box.image_path = normalizeImageRef(visualAssets.dialog_box || "");
+          next.composition.characters.left.image_path = normalizeImageRef(visualAssets.character_left || "");
+          next.composition.characters.right.image_path = normalizeImageRef(visualAssets.character_right || "");
+          next.composition.characters.left.engine = leftEngine;
+          next.composition.characters.right.engine = rightEngine;
+          next.composition.characters.left.asset_state = leftAssetState;
+          next.composition.characters.right.asset_state = rightAssetState;
+          if (leftDiffImages.length) {
+            next.composition.characters.left.lip_sync_image_paths = deepClone(leftDiffImages);
+          } else if (Object.prototype.hasOwnProperty.call(next.composition.characters.left, "lip_sync_image_paths")) {
+            delete next.composition.characters.left.lip_sync_image_paths;
+          }
+          if (rightDiffImages.length) {
+            next.composition.characters.right.lip_sync_image_paths = deepClone(rightDiffImages);
+          } else if (Object.prototype.hasOwnProperty.call(next.composition.characters.right, "lip_sync_image_paths")) {
+            delete next.composition.characters.right.lip_sync_image_paths;
+          }
+          if (leftAssetStates.length > 1) {
+            next.composition.characters.left.lip_sync_asset_states = deepClone(leftAssetStates);
+          } else if (Object.prototype.hasOwnProperty.call(next.composition.characters.left, "lip_sync_asset_states")) {
+            delete next.composition.characters.left.lip_sync_asset_states;
+          }
+          if (rightAssetStates.length > 1) {
+            next.composition.characters.right.lip_sync_asset_states = deepClone(rightAssetStates);
+          } else if (Object.prototype.hasOwnProperty.call(next.composition.characters.right, "lip_sync_asset_states")) {
+            delete next.composition.characters.right.lip_sync_asset_states;
+          }
+          if (speakerSide === "left") {
+            next.composition.characters.left.state = "speaking";
+            next.composition.characters.right.state = "idle";
+            next.speaker = leftEngine;
+          } else if (speakerSide === "right") {
+            next.composition.characters.left.state = "idle";
+            next.composition.characters.right.state = "speaking";
+            next.speaker = rightEngine;
+          } else {
+            next.composition.characters.left.state = "idle";
+            next.composition.characters.right.state = "idle";
+          }
+
+          if (isHookScene(next)) {
+            if (!next.hook_visual || typeof next.hook_visual !== "object") next.hook_visual = {};
+            if (!next.hook_visual.texts || typeof next.hook_visual.texts !== "object") next.hook_visual.texts = {};
+            if (!next.hook_visual.texts.top || typeof next.hook_visual.texts.top !== "object") next.hook_visual.texts.top = {};
+            if (!next.hook_visual.texts.main || typeof next.hook_visual.texts.main !== "object") next.hook_visual.texts.main = {};
+            if (!next.hook_visual.texts.sub || typeof next.hook_visual.texts.sub !== "object") next.hook_visual.texts.sub = {};
+            if (!next.hook_visual.background || typeof next.hook_visual.background !== "object") next.hook_visual.background = {};
+            if (!next.hook_visual.character || typeof next.hook_visual.character !== "object") next.hook_visual.character = {};
+            if (!next.hook_visual.bubble || typeof next.hook_visual.bubble !== "object") next.hook_visual.bubble = {};
+            next.hook_visual.texts.top.text = String(hookTexts.top || "");
+            next.hook_visual.texts.main.text = String(hookTexts.main || "");
+            next.hook_visual.texts.sub.text = String(hookTexts.sub || "");
+            next.hook_visual.texts.top.color = normalizeHexColor(
+              hookTextStyles.top && hookTextStyles.top.fill_color,
+              HOOK_TEXT_STYLE_DEFAULTS.top.fill_color
+            );
+            next.hook_visual.texts.main.color = normalizeHexColor(
+              hookTextStyles.main && hookTextStyles.main.fill_color,
+              HOOK_TEXT_STYLE_DEFAULTS.main.fill_color
+            );
+            next.hook_visual.texts.sub.color = normalizeHexColor(
+              hookTextStyles.sub && hookTextStyles.sub.fill_color,
+              HOOK_TEXT_STYLE_DEFAULTS.sub.fill_color
+            );
+            next.hook_visual.texts.top.outlineColor = normalizeHexColor(
+              hookTextStyles.top && hookTextStyles.top.outline_color,
+              HOOK_TEXT_STYLE_DEFAULTS.top.outline_color
+            );
+            next.hook_visual.texts.main.outlineColor = normalizeHexColor(
+              hookTextStyles.main && hookTextStyles.main.outline_color,
+              HOOK_TEXT_STYLE_DEFAULTS.main.outline_color
+            );
+            next.hook_visual.texts.sub.outlineColor = normalizeHexColor(
+              hookTextStyles.sub && hookTextStyles.sub.outline_color,
+              HOOK_TEXT_STYLE_DEFAULTS.sub.outline_color
+            );
+            next.hook_visual.texts.top.outlineScale = normalizeHookOutlineScale(
+              hookTextStyles.top && hookTextStyles.top.outline_scale,
+              HOOK_TEXT_STYLE_DEFAULTS.top.outline_scale
+            );
+            next.hook_visual.texts.main.outlineScale = normalizeHookOutlineScale(
+              hookTextStyles.main && hookTextStyles.main.outline_scale,
+              HOOK_TEXT_STYLE_DEFAULTS.main.outline_scale
+            );
+            next.hook_visual.texts.sub.outlineScale = normalizeHookOutlineScale(
+              hookTextStyles.sub && hookTextStyles.sub.outline_scale,
+              HOOK_TEXT_STYLE_DEFAULTS.sub.outline_scale
+            );
+            next.hook_visual.texts.top.fillVisible = false;
+            next.hook_visual.texts.main.fillVisible = true;
+            next.hook_visual.texts.sub.fillVisible = false;
+            next.hook_visual.bubble.text = String(hookTexts.bubble || "");
+            next.hook_visual.background.image_path = normalizeImageRef(visualAssets.hook_background || "");
+            next.hook_visual.character.image_path = normalizeImageRef(visualAssets.hook_character || "");
+            next.hook_visual.bubble.image_path = normalizeImageRef(visualAssets.hook_bubble || "");
+            const hookDiffImages = normalizeStringList(setting.hook_diff_images || []);
+            if (hookDiffImages.length) {
+              next.hook_visual.character.lip_sync_image_paths = deepClone(hookDiffImages);
+            } else if (Object.prototype.hasOwnProperty.call(next.hook_visual.character, "lip_sync_image_paths")) {
+              delete next.hook_visual.character.lip_sync_image_paths;
+            }
+            next.hook_visual.finalize_to_dialog = !!setting.hook_finalize_to_dialog;
+            if (setting.hook_finalize_to_dialog && hookFinalText) {
+              next.dialog.screen_text = hookFinalText;
+              next.dialog.voice = hookFinalText;
+              next.voice.text = hookFinalText;
+            }
+          }
+
+          const bgOverride = setting.use_background_override
+            ? normalizeBackgroundRef(setting.background_override)
+            : "";
+          if (bgOverride) {
+            next.background_override = "assets/background/" + bgOverride;
+          } else if (Object.prototype.hasOwnProperty.call(next, "background_override")) {
+            delete next.background_override;
+          }
+          return next;
+        });
+        spec.picture_linkage = buildPictureLinkage();
+        applyGlobalMediaToSpec();
+      };
+
+      const renderCharacterMap = function () {
+        el.characterGrid.innerHTML = "";
+        Object.keys(characters).forEach(function (id) {
+          const row = characters[id];
+          const styles = getSpeakerStyles(row.voice.voicevox_speaker_name);
+          const card = document.createElement("article");
+          card.className = "item";
+          card.setAttribute("data-character-id", id);
+          card.innerHTML = [
+            '<div class="head">',
+            '<div><strong>' + escapeHtml(row.display_name) + "</strong></div>",
+            '<div class="badge">' + escapeHtml(id) + "</div>",
+            "</div>",
+            '<div class="fields">',
+            '<div class="field"><label>VOICEVOX話者</label><select data-field="voicevox_speaker_name">' +
+              speakersCatalog.map(function (sp) {
+                const sel = row.voice.voicevox_speaker_name === sp.name ? ' selected' : "";
+                return '<option value="' + escapeHtml(sp.name) + '"' + sel + ">" + escapeHtml(sp.name) + "</option>";
+              }).join("") +
+            "</select></div>",
+            '<div class="field"><label>VOICEVOXスタイル</label><select data-field="voicevox_style_id">' +
+              styles.map(function (st) {
+                const sel = Number(row.voice.voicevox_style_id) === Number(st.id) ? ' selected' : "";
+                return '<option value="' + st.id + '"' + sel + ">" + escapeHtml(st.name) + "</option>";
+              }).join("") +
+            "</select></div>",
+            '<div class="field"><label>style id</label><input type="text" readonly value="' + escapeHtml(row.voice.voicevox_style_id) + '"></div>',
+            '<div class="field"><label>default speedScale</label><input data-field="speedScale" type="number" step="0.01" value="' + escapeHtml(row.speedScale) + '"></div>',
+            "</div>"
+          ].join("");
+          el.characterGrid.appendChild(card);
+        });
+      };
+
+      const renderScenes = function () {
+        el.sceneGrid.innerHTML = "";
+        spec.scenes.forEach(function (scene, index) {
+          const setting = sceneSettings[index];
+          if (!setting) return;
+          const hookScene = isHookScene(scene);
+          const visualAssets = setting.visual_assets && typeof setting.visual_assets === "object"
+            ? setting.visual_assets
+            : {};
+          const hookTexts = setting.hook_texts && typeof setting.hook_texts === "object"
+            ? setting.hook_texts
+            : { top: "", main: "", sub: "", bubble: "" };
+          const hookTextStyles = setting.hook_text_styles && typeof setting.hook_text_styles === "object"
+            ? setting.hook_text_styles
+            : buildDefaultHookTextStyles(scene);
+          const character = characters[setting.character_id] || characters.zundamon;
+          const styles = getSpeakerStyles(character.voice.voicevox_speaker_name);
+          const chosenStyle = resolveStyleFromSpeaker(character.voice.voicevox_speaker_name, setting.voicevox_style_id, null);
+          const renderEnabled = getSceneRenderEnabled(scene, index);
+          const leftDiff1 = resolveListSlot(setting.left_diff_images, 0);
+          const leftDiff2 = resolveListSlot(setting.left_diff_images, 1);
+          const rightDiff1 = resolveListSlot(setting.right_diff_images, 0);
+          const rightDiff2 = resolveListSlot(setting.right_diff_images, 1);
+          const hookDiff1 = resolveListSlot(setting.hook_diff_images, 0);
+          const hookDiff2 = resolveListSlot(setting.hook_diff_images, 1);
+          const cardOpen = sceneCollapseState[index] !== false;
+          const card = document.createElement("article");
+          card.className = "item";
+          card.setAttribute("data-scene-index", String(index));
+          card.innerHTML = [
+            '<details class="collapse scene-collapse"' + (cardOpen ? " open" : "") + ' data-scene-index="' + String(index) + '">',
+            '<summary class="head">',
+            '<div><strong>' + escapeHtml(getSceneDisplayLabel(scene, index)) + "</strong></div>",
+            '<div class="badge">' + escapeHtml(String(scene.scene_type || "normal").toUpperCase()) + " / render=" + escapeHtml(renderEnabled ? "ON" : "OFF") + " / t=" + escapeHtml(formatTimeRange(setting.start_sec, setting.duration_sec)) + " / character=" + escapeHtml(setting.character_id) + " / style_id=" + escapeHtml(chosenStyle.id) + "</div>",
+            "</summary>",
+            '<div class="fields">',
+            '<div class="field check-field"><label><input type="checkbox" data-field="scene_enabled"' + (renderEnabled ? " checked" : "") + ">このsceneをレンダーする</label></div>",
+            '<div class="field"><label>start_sec</label><input type="number" step="0.1" min="0" data-field="start_sec" value="' + escapeHtml(setting.start_sec) + '"></div>',
+            '<div class="field"><label>duration_sec</label><input type="number" step="0.1" min="0.1" data-field="duration_sec" value="' + escapeHtml(setting.duration_sec) + '"></div>',
+            '<div class="field"><label>適用キャラ</label><select data-field="character_id">' +
+              Object.keys(characters).map(function (id) {
+                const c = characters[id];
+                const sel = id === setting.character_id ? ' selected' : "";
+                return '<option value="' + escapeHtml(id) + '"' + sel + ">" + escapeHtml(c.display_name + " [" + id + "]") + "</option>";
+              }).join("") +
+            "</select></div>",
+            '<div class="field"><label>スタイル</label><select data-field="voicevox_style_id">' +
+              styles.map(function (st) {
+                const sel = Number(setting.voicevox_style_id) === Number(st.id) ? ' selected' : "";
+                return '<option value="' + st.id + '"' + sel + ">" + escapeHtml(st.name) + "</option>";
+              }).join("") +
+            "</select></div>",
+            '<div class="field"><label>style id</label><input type="text" readonly value="' + escapeHtml(chosenStyle.id) + '"></div>',
+            '<div class="field"><label>speedScale</label><input type="number" step="0.01" data-field="speedScale" value="' + escapeHtml(setting.speedScale) + '"></div>',
+            '<div class="field check-field"><label><input type="checkbox" data-field="use_background_override"' + (setting.use_background_override ? " checked" : "") + ">このsceneだけ背景を変更</label></div>",
+            '<div class="field"><label>background_override（assets/background/*.png）</label><select data-field="background_override"' + (setting.use_background_override ? "" : " disabled") + ">" + segmentBackgroundOptionsHtml(setting.background_override || "") + '</select></div>',
+            '<div class="field"><label>全体グレー（monolith除外）</label><select data-field="grayscale_filter">' +
+              '<option value="off"' + (setting.grayscale_filter === "on" ? "" : " selected") + '>なし</option>' +
+              '<option value="on"' + (setting.grayscale_filter === "on" ? " selected" : "") + '>あり</option>' +
+            "</select></div>",
+            "</div>",
+            '<details class="collapse inner-card inner-card-collapse" open>' +
+              '<summary class="inner-card-title">画面テキスト設定（dialog.screen_text）</summary>' +
+              '<div class="inner-card-body">' +
+                '<div class="scene-texts">' +
+                  '<div><label>セリフ (voice.text)</label><textarea data-field="voice_text">' + escapeHtml(setting.voice_text || "") + "</textarea></div>" +
+                  '<div><label>画面テキスト (dialog.screen_text)</label><textarea data-field="screen_text">' + escapeHtml(setting.screen_text || "") + "</textarea></div>" +
+                "</div>" +
+                '<div class="scene-texts">' +
+                  '<div><label>画面テキスト文字サイズ(px)</label><input type="number" min="12" max="200" step="1" data-field="screen_text_font_size" value="' + escapeHtml(setting.screen_text_font_size) + '"></div>' +
+                  '<div><label>画面テキストフォント</label><input type="text" data-field="screen_text_font_family" value="' + escapeHtml(setting.screen_text_font_family || SCREEN_TEXT_STYLE_DEFAULTS.font_family) + '"></div>' +
+                  '<div><label>画面テキストカラー</label><input type="color" data-field="screen_text_color" value="' + escapeHtml(setting.screen_text_color || SCREEN_TEXT_STYLE_DEFAULTS.color) + '"></div>' +
+                  '<div><label>カラープリセット</label><select data-field="screen_text_color_preset">' + renderScreenTextColorPresetOptions(setting.screen_text_color || SCREEN_TEXT_STYLE_DEFAULTS.color) + "</select></div>" +
+                  '<div><label>改行モード</label><select data-field="screen_text_line_break_mode">' +
+                    '<option value="auto"' + (setting.screen_text_line_break_mode === "line_chars" ? "" : " selected") + '>auto</option>' +
+                    '<option value="line_chars"' + (setting.screen_text_line_break_mode === "line_chars" ? " selected" : "") + '>line_chars</option>' +
+                  "</select></div>" +
+                  '<div><label>改行位置(line_chars)</label><input type="number" min="1" max="120" step="1" data-field="screen_text_line_chars" value="' + escapeHtml(setting.screen_text_line_chars) + '"></div>' +
+                "</div>" +
+              "</div>" +
+            "</details>" +
+            (!hookScene
+              ? (
+                '<details class="collapse inner-card inner-card-collapse" open>' +
+                  '<summary class="inner-card-title">SCENEレイヤー構成</summary>' +
+                  '<div class="inner-card-body">' +
+                    '<div class="scene-texts">' +
+                      '<div><label>背景画像（scene part）</label><select data-field="visual_background">' + buildScenePartOptionsHtml("background", visualAssets.background || "", scene) + "</select></div>" +
+                      '<div><label>スライド画像（scene part）</label><select data-field="visual_slide">' + buildScenePartOptionsHtml("slide", visualAssets.slide || "", scene) + "</select></div>" +
+                      '<div><label>モノリス画像（scene part）</label><select data-field="visual_monolith">' + buildScenePartOptionsHtml("monolith", visualAssets.monolith || "", scene) + "</select></div>" +
+                      '<div><label>ダイアログ枠画像（scene part）</label><select data-field="visual_dialog_box">' + buildScenePartOptionsHtml("dialog_box", visualAssets.dialog_box || "", scene) + "</select></div>" +
+                      '<div><label>左キャラ画像（scene part）</label><select data-field="visual_character_left">' + buildScenePartOptionsHtml("character_left", visualAssets.character_left || "", scene) + "</select></div>" +
+                      '<div><label>右キャラ画像（scene part）</label><select data-field="visual_character_right">' + buildScenePartOptionsHtml("character_right", visualAssets.character_right || "", scene) + "</select></div>" +
+                      '<div><label>左キャラ差分①</label><select data-field="left_asset_state_1">' + buildCharacterDiffOptionsHtml("left", leftDiff1, scene) + "</select></div>" +
+                      '<div><label>右キャラ差分①</label><select data-field="right_asset_state_1">' + buildCharacterDiffOptionsHtml("right", rightDiff1, scene) + "</select></div>" +
+                      '<div><label>左キャラ差分②</label><select data-field="left_asset_state_2">' + buildCharacterDiffOptionsHtml("left", leftDiff2, scene) + "</select></div>" +
+                      '<div><label>右キャラ差分②</label><select data-field="right_asset_state_2">' + buildCharacterDiffOptionsHtml("right", rightDiff2, scene) + "</select></div>" +
+                      '<div><label>話者</label><select data-field="speaker_side">' +
+                        '<option value="left"' + (setting.speaker_side === "left" ? " selected" : "") + '>左キャラ</option>' +
+                        '<option value="right"' + (setting.speaker_side === "right" ? " selected" : "") + '>右キャラ</option>' +
+                        '<option value="other"' + (setting.speaker_side === "other" ? " selected" : "") + '>その他</option>' +
+                        '<option value="none"' + (setting.speaker_side !== "left" && setting.speaker_side !== "right" && setting.speaker_side !== "other" ? " selected" : "") + '>なし</option>' +
+                      "</select></div>" +
+                    "</div>" +
+                  "</div>" +
+                "</details>"
+              )
+              : ""
+            ) +
+            (hookScene
+              ? (
+                '<details class="collapse inner-card inner-card-collapse" open>' +
+                  '<summary class="inner-card-title">HOOK Picture</summary>' +
+                  '<div class="inner-card-body">' +
+                    '<div class="hook-picture-card">' +
+                      '<div class="head"><div><strong>scene1(Hook) Picture</strong></div><div class="badge">hook part x3 + texts.top/main/sub</div></div>' +
+                      '<div class="scene-texts">' +
+                        '<div><label>HOOK背景画像（hook part）</label><select data-field="visual_hook_background">' + buildHookPartOptionsHtml("hook_background", visualAssets.hook_background || "", scene) + "</select></div>" +
+                        '<div><label>HOOKキャラ画像（hook part）</label><select data-field="visual_hook_character">' + buildHookPartOptionsHtml("hook_character", visualAssets.hook_character || "", scene) + "</select></div>" +
+                        '<div><label>HOOK吹き出し画像（hook part）</label><select data-field="visual_hook_bubble">' + buildHookPartOptionsHtml("hook_bubble", visualAssets.hook_bubble || "", scene) + "</select></div>" +
+                        '<div><label>HOOKキャラ差分①</label><select data-field="hook_character_diff_1">' + buildHookPartOptionsHtml("hook_character", hookDiff1, scene) + "</select></div>" +
+                        '<div><label>HOOKキャラ差分②</label><select data-field="hook_character_diff_2">' + buildHookPartOptionsHtml("hook_character", hookDiff2, scene) + "</select></div>" +
+                      "</div>" +
+                      '<div class="scene-texts">' +
+                        '<div><label>texts.top</label><textarea data-field="hook_top_text">' + escapeHtml(hookTexts.top || "") + '</textarea></div>' +
+                        '<div><label>texts.main</label><textarea data-field="hook_main_text">' + escapeHtml(hookTexts.main || "") + '</textarea></div>' +
+                        '<div><label>texts.sub</label><textarea data-field="hook_sub_text">' + escapeHtml(hookTexts.sub || "") + '</textarea></div>' +
+                        '<div><label>texts.top fill color</label><input type="text" data-field="hook_top_fill_color" value="' + escapeHtml(hookTextStyles.top && hookTextStyles.top.fill_color ? hookTextStyles.top.fill_color : HOOK_TEXT_STYLE_DEFAULTS.top.fill_color) + '"></div>' +
+                        '<div><label>texts.top outline color</label><input type="text" data-field="hook_top_outline_color" value="' + escapeHtml(hookTextStyles.top && hookTextStyles.top.outline_color ? hookTextStyles.top.outline_color : HOOK_TEXT_STYLE_DEFAULTS.top.outline_color) + '"></div>' +
+                        '<div><label>texts.top outline scale</label><input type="number" step="0.01" min="1" max="1.3" data-field="hook_top_outline_scale" value="' + escapeHtml(String(hookTextStyles.top && hookTextStyles.top.outline_scale != null ? hookTextStyles.top.outline_scale : HOOK_TEXT_STYLE_DEFAULTS.top.outline_scale)) + '"></div>' +
+                        '<div><label>texts.main fill color</label><input type="text" data-field="hook_main_fill_color" value="' + escapeHtml(hookTextStyles.main && hookTextStyles.main.fill_color ? hookTextStyles.main.fill_color : HOOK_TEXT_STYLE_DEFAULTS.main.fill_color) + '"></div>' +
+                        '<div><label>texts.main outline color</label><input type="text" data-field="hook_main_outline_color" value="' + escapeHtml(hookTextStyles.main && hookTextStyles.main.outline_color ? hookTextStyles.main.outline_color : HOOK_TEXT_STYLE_DEFAULTS.main.outline_color) + '"></div>' +
+                        '<div><label>texts.main outline scale</label><input type="number" step="0.01" min="1" max="1.3" data-field="hook_main_outline_scale" value="' + escapeHtml(String(hookTextStyles.main && hookTextStyles.main.outline_scale != null ? hookTextStyles.main.outline_scale : HOOK_TEXT_STYLE_DEFAULTS.main.outline_scale)) + '"></div>' +
+                        '<div><label>texts.sub fill color</label><input type="text" data-field="hook_sub_fill_color" value="' + escapeHtml(hookTextStyles.sub && hookTextStyles.sub.fill_color ? hookTextStyles.sub.fill_color : HOOK_TEXT_STYLE_DEFAULTS.sub.fill_color) + '"></div>' +
+                        '<div><label>texts.sub outline color</label><input type="text" data-field="hook_sub_outline_color" value="' + escapeHtml(hookTextStyles.sub && hookTextStyles.sub.outline_color ? hookTextStyles.sub.outline_color : HOOK_TEXT_STYLE_DEFAULTS.sub.outline_color) + '"></div>' +
+                        '<div><label>texts.sub outline scale</label><input type="number" step="0.01" min="1" max="1.3" data-field="hook_sub_outline_scale" value="' + escapeHtml(String(hookTextStyles.sub && hookTextStyles.sub.outline_scale != null ? hookTextStyles.sub.outline_scale : HOOK_TEXT_STYLE_DEFAULTS.sub.outline_scale)) + '"></div>' +
+                      "</div>" +
+                    "</div>" +
+                  "</div>" +
+                "</details>"
+              )
+              : ""
+            ) +
+            '<div class="voice-text">time: ' + escapeHtml(formatTimeRange(setting.start_sec, setting.duration_sec)) + " / source voice: " + escapeHtml(String(setting.voice_text || getVoiceText(scene) || "").trim() || "(voice text empty)") + "</div>" +
+            '<div class="hint">source: ' + escapeHtml(scene.id || ("scene_" + String(index + 1).padStart(3, "0"))) + "</div>" +
+            "</details>"
+          ].join("");
+          el.sceneGrid.appendChild(card);
+        });
+      };
+
+      const rebuildAndRender = function () {
+        applySceneSettingsToSpec();
+        renderCharacterMap();
+        renderScenes();
+        updateOutputViews();
+      };
+
+      const buildBatchSpec = function () {
+        applySceneSettingsToSpec();
+        const scenes = [];
+        spec.scenes.forEach(function (scene, index) {
+          if (!getSceneRenderEnabled(scene, index)) {
+            return;
+          }
+          const profile = scene.voice_profile || {};
+          scenes.push({
+            scene_index: index,
+            scene_id: getSceneStableId(scene, index),
+            source_scene_id: scene.id || "scene_" + String(index + 1).padStart(3, "0"),
+            scene_type: String(scene.scene_type || scene.role || "normal"),
+            role: String(scene.role || scene.scene_type || "normal"),
+            event: String(scene.event || "normal"),
+            character_id: profile.character_id || scene.character_id || "zundamon",
+            voice_text: getVoiceText(scene),
+            screen_text: scene && scene.dialog && typeof scene.dialog.screen_text === "string"
+              ? scene.dialog.screen_text
+              : "",
+            time: String(scene.time || ""),
+            start_sec: scene.start_sec != null ? normalizeSeconds(scene.start_sec, 0) : parseTimeRange(scene.time, 0, 2).start_sec,
+            duration_sec: scene.duration != null ? Math.max(0.1, normalizeSeconds(scene.duration, 2)) : parseTimeRange(scene.time, 0, 2).duration_sec,
+            background_override: typeof scene.background_override === "string" ? scene.background_override : "",
+            dialog: deepClone(scene.dialog || {}),
+            visual_assets: deepClone(scene.visual_assets || {}),
+            composition: deepClone(scene.composition || {}),
+            hook_visual: deepClone(scene.hook_visual || {}),
+            voice: {
+              voicevox_speaker_name: profile.voicevox_speaker_name || "",
+              voicevox_style_name: profile.voicevox_style_name || "",
+              voicevox_style_id: Number(profile.voicevox_style_id) || 0
+            },
+            speedScale: Number(profile.speedScale) || DEFAULT_SPEED_SCALE,
+            voice_control: deepClone(scene.voice_control || {})
+          });
+        });
+        batchSpec = {
+          meta: {
+            version: "voicevox_batch_v2",
+            created_at: new Date().toISOString(),
+            source: "svrs_scene_render_spec",
+            run_id: getRunId(),
+            output_dir: getRunOutputDir() + "/"
+          },
+          background: normalizeBackgroundRef(backgroundPng)
+            ? "assets/background/" + normalizeBackgroundRef(backgroundPng)
+            : "",
+          bgm: normalizeBgmRef(bgmFile)
+            ? {
+                src: "/audio/bgm/" + normalizeBgmRef(bgmFile),
+                volume: Number(normalizeBgmVolume(bgmVolume, 0.2).toFixed(3)),
+                loop: Boolean(bgmLoop)
+              }
+            : null,
+          characters: deepClone(characters),
+          render_control: deepClone(spec.render_control || {}),
+          scenes: scenes
+        };
+        localStorage.setItem(BATCH_JSON_KEY, JSON.stringify(batchSpec));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(spec));
+        updateOutputViews();
+      };
+
+      const downloadText = function (name, content, mime) {
+        const blob = new Blob([content], { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      };
+
+      const saveTextWithPicker = async function (name, content, mime) {
+        if (typeof window.showSaveFilePicker === "function") {
+          try {
+            const handle = await window.showSaveFilePicker({
+              suggestedName: name,
+              types: [
+                {
+                  description: "JSON file",
+                  accept: { [mime]: [".json"] }
+                }
+              ]
+            });
+            const writable = await handle.createWritable();
+            await writable.write(content);
+            await writable.close();
+            return { saved: true, mode: "picker" };
+          } catch (err) {
+            if (err && err.name === "AbortError") {
+              return { saved: false, cancelled: true };
+            }
+          }
+        }
+        downloadText(name, content, mime);
+        return { saved: true, mode: "download" };
+      };
+
+      const saveSpecToRunSpecPath = async function () {
+        if (!spec) {
+          setStatus("保存対象のspecがありません。", "error");
+          return;
+        }
+        applySceneSettingsToSpec();
+        const runId = getRunId();
+        if (runId === "auto") {
+          setStatus("runId=auto では spec 保存先が確定しません。固定の数値runId（例: 000）にしてください。", "error");
+          return;
+        }
+        const fileName = "svrs_scene_render_spec.json";
+        const content = JSON.stringify(spec, null, 2) + "\n";
+
+        if (typeof window.showDirectoryPicker !== "function") {
+          const fallbackName = "svrs_scene_render_spec-" + runId + ".json";
+          const result = await saveTextWithPicker(fallbackName, content, "application/json");
+          if (result.cancelled) {
+            setStatus("保存をキャンセルしました。", "warn");
+            return;
+          }
+          setStatus("File System Access API が使えないため、通常保存で " + fallbackName + " を保存しました。", "ok");
+          return;
+        }
+
+        try {
+          const selectedDir = await window.showDirectoryPicker({ mode: "readwrite" });
+          let specDir = null;
+          let savedPathLabel = "";
+
+          if (selectedDir.name === "spec") {
+            specDir = selectedDir;
+            savedPathLabel = "（選択した spec フォルダ）/" + fileName;
+          } else if (selectedDir.name === runId) {
+            specDir = await selectedDir.getDirectoryHandle("spec", { create: true });
+            savedPathLabel = selectedDir.name + "/spec/" + fileName;
+          } else {
+            let outputDir = selectedDir;
+            if (selectedDir.name !== "output") {
+              try {
+                outputDir = await selectedDir.getDirectoryHandle("output", { create: false });
+              } catch (_err) {
+                outputDir = null;
+              }
+            }
+            if (!outputDir) {
+              setStatus("保存先は project root / output / <runid> / spec のいずれかを選んでください。", "error");
+              return;
+            }
+            const runDir = await outputDir.getDirectoryHandle(runId, { create: true });
+            specDir = await runDir.getDirectoryHandle("spec", { create: true });
+            savedPathLabel = "output/" + runId + "/spec/" + fileName;
+          }
+
+          const fileHandle = await specDir.getFileHandle(fileName, { create: true });
+          const writable = await fileHandle.createWritable();
+          await writable.write(content);
+          await writable.close();
+
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(spec));
+          updateOutputViews();
+          setStatus(savedPathLabel + " に保存しました。runId=" + runId, "ok");
+        } catch (err) {
+          if (err && err.name === "AbortError") {
+            setStatus("保存先フォルダ選択をキャンセルしました。", "warn");
+            return;
+          }
+          setStatus("runid specへの保存に失敗しました。フォルダ選択を確認してください。", "error");
+        }
+      };
+
+      const saveBatchToRunAudioPath = async function () {
+        if (!spec) {
+          setStatus("保存対象のspecがありません。", "error");
+          return;
+        }
+        applySceneSettingsToSpec();
+        buildBatchSpec();
+        const runId = getRunId();
+        if (runId === "auto") {
+          setStatus("runId=auto では batch 保存先が確定しません。固定の数値runId（例: 000）にしてください。", "error");
+          return;
+        }
+        const fileName = "voicevox-batch-spec-" + runId + ".json";
+        const content = JSON.stringify(batchSpec, null, 2) + "\n";
+
+        if (typeof window.showDirectoryPicker !== "function") {
+          const fallbackName = "voicevox-batch-spec-" + runId + ".json";
+          const result = await saveTextWithPicker(fallbackName, content, "application/json");
+          if (result.cancelled) {
+            setStatus("保存をキャンセルしました。", "warn");
+            return;
+          }
+          setStatus("File System Access API が使えないため、通常保存で " + fallbackName + " を保存しました。", "ok");
+          return;
+        }
+
+        try {
+          const selectedDir = await window.showDirectoryPicker({ mode: "readwrite" });
+          let audioDir = null;
+          let savedPathLabel = "";
+
+          if (selectedDir.name === "audio") {
+            audioDir = selectedDir;
+            savedPathLabel = "（選択した audio フォルダ）/" + fileName;
+          } else if (selectedDir.name === runId) {
+            audioDir = await selectedDir.getDirectoryHandle("audio", { create: true });
+            savedPathLabel = selectedDir.name + "/audio/" + fileName;
+          } else {
+            let outputDir = selectedDir;
+            if (selectedDir.name !== "output") {
+              try {
+                outputDir = await selectedDir.getDirectoryHandle("output", { create: false });
+              } catch (_err) {
+                outputDir = null;
+              }
+            }
+            if (!outputDir) {
+              setStatus("保存先は project root / output / <runid> / audio のいずれかを選んでください。", "error");
+              return;
+            }
+            const runDir = await outputDir.getDirectoryHandle(runId, { create: true });
+            audioDir = await runDir.getDirectoryHandle("audio", { create: true });
+            savedPathLabel = "output/" + runId + "/audio/" + fileName;
+          }
+
+          const fileHandle = await audioDir.getFileHandle(fileName, { create: true });
+          const writable = await fileHandle.createWritable();
+          await writable.write(content);
+          await writable.close();
+
+          localStorage.setItem(BATCH_JSON_KEY, JSON.stringify(batchSpec));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(spec));
+          updateOutputViews();
+          setStatus(savedPathLabel + " に保存しました。最新のセリフ編集を反映済みです。runId=" + runId, "ok");
+        } catch (err) {
+          if (err && err.name === "AbortError") {
+            setStatus("保存先フォルダ選択をキャンセルしました。", "warn");
+            return;
+          }
+          setStatus("runid batch specへの保存に失敗しました。フォルダ選択を確認してください。", "error");
+        }
+      };
+
+      const copyText = async function (value, okMessage, errMessage) {
+        try {
+          await navigator.clipboard.writeText(value);
+          setStatus(okMessage, "ok");
+        } catch (_err) {
+          setStatus(errMessage, "error");
+        }
+      };
+
+      const loadSpec = function (input, label) {
+        const parsed = ensureSpecShape(input);
+        if (!parsed) {
+          setStatus("scene_render_spec の形式が不正です。", "error");
+          return;
+        }
+        spec = parsed;
+        characters = buildCharactersFromTemplates();
+        sceneSettings = buildSceneSettings();
+        backgroundPng = resolveBackgroundFromSpec(spec);
+        const bgmSettings = resolveBgmSettingsFromSpec(spec);
+        bgmFile = bgmSettings.bgmFile;
+        bgmVolume = bgmSettings.bgmVolume;
+        bgmLoop = bgmSettings.bgmLoop;
+        batchSpec = null;
+        el.jsonInput.value = JSON.stringify(spec, null, 2);
+        if (pictureSpec) {
+          applyPictureToSceneSettings();
+        }
+        renderGlobalMediaControls();
+        rebuildAndRender();
+        setStatus(label + " を読み込みました。", "ok");
+      };
+
+      const loadFromStorage = function () {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          setStatus("svrs_scene_render_spec が見つかりません。", "error");
+          return;
+        }
+        const parsed = parseJson(raw);
+        if (!parsed) {
+          setStatus("svrs_scene_render_spec のJSONが不正です。", "error");
+          return;
+        }
+        loadSpec(parsed, "svrs_scene_render_spec");
+      };
+
+      const loadFromManual = function () {
+        const raw = String(el.jsonInput.value || "").trim();
+        if (!raw) {
+          setStatus("JSONを貼り付けてください。", "error");
+          return;
+        }
+        const parsed = parseJson(raw);
+        if (!parsed) {
+          setStatus("貼り付けJSONの形式が不正です。", "error");
+          return;
+        }
+        loadSpec(parsed, "貼り付けJSON");
+      };
+
+      const reflectPictureSummary = function () {
+        if (!pictureSpec) {
+          el.pictureSummary.textContent = "picture.json 未読込";
+          return;
+        }
+        el.pictureSummary.textContent = summarizePicture(pictureSpec);
+      };
+
+      const applyLoadedPictureToCurrentSpec = function (label) {
+        if (!spec || !Array.isArray(spec.scenes)) {
+          setStatus(label + " を読み込みました。scene_render_spec を先に読み込むと割当を反映できます。", "warn");
+          return;
+        }
+        applyPictureToSceneSettings();
+        rebuildAndRender();
+        setStatus(label + " を反映しました。HOOK/SCENEのパーツ画像割当を更新。", "ok");
+      };
+
+      const consumePictureInput = function (raw, label) {
+        const parsed = parseJson(raw || "");
+        const safe = ensurePictureShape(parsed);
+        if (!safe) {
+          setStatus(label + " の形式が不正です。", "error");
+          return;
+        }
+        pictureSpec = safe;
+        el.pictureJsonInput.value = JSON.stringify(pictureSpec, null, 2);
+        reflectPictureSummary();
+        applyLoadedPictureToCurrentSpec(label);
+      };
+
+      const loadPictureFromSchema = async function () {
+        try {
+          const res = await fetch("schema/picture.json", { cache: "no-store" });
+          if (!res.ok) {
+            throw new Error("schema/picture.json fetch failed: " + res.status);
+          }
+          const raw = await res.text();
+          consumePictureInput(raw, "schema/picture.json");
+        } catch (err) {
+          setStatus("schema/picture.json 読込失敗: " + (err && err.message ? err.message : String(err)), "error");
+        }
+      };
+
+      const pickPictureFile = function () {
+        return new Promise(function (resolve) {
+          const input = el.pictureFileInput;
+          const onChange = function () {
+            input.removeEventListener("change", onChange);
+            resolve(input.files && input.files[0] ? input.files[0] : null);
+            input.value = "";
+          };
+          input.addEventListener("change", onChange);
+          input.click();
+        });
+      };
+
+      const loadPictureFromFile = async function () {
+        try {
+          const file = await pickPictureFile();
+          if (!file) {
+            setStatus("picture.json ファイル選択をキャンセルしました。", "warn");
+            return;
+          }
+          const raw = await readFileAsText(file);
+          consumePictureInput(raw, "picture.json ファイル");
+        } catch (err) {
+          setStatus("picture.json ファイル読込失敗: " + (err && err.message ? err.message : String(err)), "error");
+        }
+      };
+
+      const applyPictureFromManual = function () {
+        const raw = String(el.pictureJsonInput.value || "").trim();
+        if (!raw) {
+          setStatus("picture.json を貼り付けてください。", "error");
+          return;
+        }
+        consumePictureInput(raw, "貼り付けpicture.json");
+      };
+
+      const fetchSpeakers = async function () {
+        const base = String(el.engineUrlInput.value || "").trim().replace(/\/+$/, "");
+        if (!base) {
+          setStatus("VOICEVOX endpoint を入力してください。", "error");
+          return;
+        }
+        setStatus("/speakers 取得中...", "warn");
+        try {
+          const res = await fetch(base + "/speakers");
+          if (!res.ok) {
+            throw new Error("/speakers failed: " + res.status + " " + res.statusText);
+          }
+          const data = await res.json();
+          if (!Array.isArray(data)) {
+            throw new Error("/speakers response is not array");
+          }
+          speakersCatalog = normalizeSpeakersCatalog(data);
+          if (!speakersCatalog.length) {
+            throw new Error("/speakers empty");
+          }
+          writeSystemSettings();
+          writeSpeakersCache(speakersCatalog);
+          if (spec) {
+            characters = buildCharactersFromTemplates();
+            sceneSettings = buildSceneSettings();
+            rebuildAndRender();
+          }
+          setStatus("/speakers を取得しました。話者数: " + speakersCatalog.length, "ok");
+        } catch (err) {
+          setStatus("VOICEVOX /speakers 取得失敗: " + (err && err.message ? err.message : String(err)), "error");
+        }
+      };
+
+      el.characterGrid.addEventListener("change", function (event) {
+        const input = event.target;
+        if (!input || !input.closest) return;
+        const card = input.closest(".item");
+        if (!card) return;
+        const characterId = card.getAttribute("data-character-id");
+        if (!characterId || !characters[characterId]) return;
+        const field = input.getAttribute("data-field");
+        if (!field) return;
+        const row = deepClone(characters[characterId]);
+        if (field === "voicevox_speaker_name") {
+          row.voice.voicevox_speaker_name = String(input.value || "");
+          const st = resolveStyleFromSpeaker(row.voice.voicevox_speaker_name, row.voice.voicevox_style_id, row.voice.voicevox_style_name);
+          row.voice.voicevox_style_id = Number(st.id) || 0;
+          row.voice.voicevox_style_name = st.name || "";
+        } else if (field === "voicevox_style_id") {
+          const style = resolveStyleFromSpeaker(row.voice.voicevox_speaker_name, input.value, null);
+          row.voice.voicevox_style_id = Number(style.id) || 0;
+          row.voice.voicevox_style_name = style.name || "";
+        } else if (field === "speedScale") {
+          row.speedScale = normalizeNumber(input.value, DEFAULT_SPEED_SCALE);
+        }
+        characters[characterId] = row;
+        Object.keys(sceneSettings).forEach(function (idx) {
+          const n = Number(idx);
+          const setting = sceneSettings[n];
+          if (!setting || setting.character_id !== characterId) return;
+          const style = resolveStyleFromSpeaker(row.voice.voicevox_speaker_name, setting.voicevox_style_id, null);
+          setting.voicevox_style_id = Number(style.id) || row.voice.voicevox_style_id;
+        });
+        rebuildAndRender();
+      });
+
+      const updateSceneSettingField = function (input, syncRender) {
+        if (!input || !input.closest) return;
+        const card = input.closest("[data-scene-index]");
+        if (!card) return;
+        const sceneIndex = Number(card.getAttribute("data-scene-index"));
+        if (!Number.isFinite(sceneIndex) || !sceneSettings[sceneIndex]) return;
+        const field = input.getAttribute("data-field");
+        if (!field) return;
+        if (field === "scene_enabled") {
+          const checked = !!input.checked;
+          setSceneRenderEnabled(spec.scenes[sceneIndex], sceneIndex, checked);
+          if (syncRender) rebuildAndRender();
+          return;
+        }
+        const setting = deepClone(sceneSettings[sceneIndex]);
+        if (field === "character_id") {
+          setting.character_id = canonicalCharacterId(input.value);
+          const char = characters[setting.character_id] || characters.zundamon;
+          setting.voicevox_style_id = Number(char.voice.voicevox_style_id) || setting.voicevox_style_id;
+          setting.speedScale = normalizeNumber(setting.speedScale, normalizeNumber(char.speedScale, DEFAULT_SPEED_SCALE));
+        } else if (field === "voicevox_style_id") {
+          setting.voicevox_style_id = normalizeNumber(input.value, setting.voicevox_style_id);
+        } else if (field === "speedScale") {
+          setting.speedScale = normalizeNumber(input.value, DEFAULT_SPEED_SCALE);
+        } else if (field === "speaker_side") {
+          const side = String(input.value || "none").trim();
+          setting.speaker_side =
+            side === "left" || side === "right" || side === "other"
+              ? side
+              : "none";
+        } else if (field === "left_asset_state_1" || field === "left_asset_state_2") {
+          const left1Input = card.querySelector('[data-field="left_asset_state_1"]');
+          const left2Input = card.querySelector('[data-field="left_asset_state_2"]');
+          const left1 = field === "left_asset_state_1"
+            ? String(input.value || "")
+            : (left1Input ? String(left1Input.value || "") : "");
+          const left2 = field === "left_asset_state_2"
+            ? String(input.value || "")
+            : (left2Input ? String(left2Input.value || "") : "");
+          setting.left_diff_images = combineImageSlots(left1, left2);
+        } else if (field === "right_asset_state_1" || field === "right_asset_state_2") {
+          const right1Input = card.querySelector('[data-field="right_asset_state_1"]');
+          const right2Input = card.querySelector('[data-field="right_asset_state_2"]');
+          const right1 = field === "right_asset_state_1"
+            ? String(input.value || "")
+            : (right1Input ? String(right1Input.value || "") : "");
+          const right2 = field === "right_asset_state_2"
+            ? String(input.value || "")
+            : (right2Input ? String(right2Input.value || "") : "");
+          setting.right_diff_images = combineImageSlots(right1, right2);
+        } else if (field === "hook_character_diff_1" || field === "hook_character_diff_2") {
+          const hook1Input = card.querySelector('[data-field="hook_character_diff_1"]');
+          const hook2Input = card.querySelector('[data-field="hook_character_diff_2"]');
+          const hook1 = field === "hook_character_diff_1"
+            ? String(input.value || "")
+            : (hook1Input ? String(hook1Input.value || "") : "");
+          const hook2 = field === "hook_character_diff_2"
+            ? String(input.value || "")
+            : (hook2Input ? String(hook2Input.value || "") : "");
+          setting.hook_diff_images = combineImageSlots(hook1, hook2);
+        } else if (field === "left_asset_state") {
+          setting.left_asset_states = normalizeAssetStates([input.value], [setting.speaker_side === "left" ? "mouth_closed" : "idle"]);
+        } else if (field === "right_asset_state") {
+          setting.right_asset_states = normalizeAssetStates([input.value], [setting.speaker_side === "right" ? "mouth_closed" : "idle"]);
+        } else if (field === "start_sec") {
+          setting.start_sec = normalizeSeconds(input.value, setting.start_sec);
+        } else if (field === "duration_sec") {
+          setting.duration_sec = Math.max(0.1, normalizeSeconds(input.value, setting.duration_sec));
+        } else if (field === "voice_text") {
+          setting.voice_text = String(input.value || "");
+        } else if (field === "screen_text") {
+          setting.screen_text = String(input.value || "");
+        } else if (field === "screen_text_font_size") {
+          setting.screen_text_font_size = normalizeScreenTextFontSize(
+            input.value,
+            normalizeScreenTextFontSize(setting.screen_text_font_size, SCREEN_TEXT_STYLE_DEFAULTS.font_size)
+          );
+        } else if (field === "screen_text_font_family") {
+          setting.screen_text_font_family = normalizeScreenTextFontFamily(
+            input.value,
+            SCREEN_TEXT_STYLE_DEFAULTS.font_family
+          );
+        } else if (field === "screen_text_color") {
+          setting.screen_text_color = normalizeHexColor(
+            input.value,
+            normalizeHexColor(setting.screen_text_color, SCREEN_TEXT_STYLE_DEFAULTS.color)
+          );
+        } else if (field === "screen_text_color_preset") {
+          setting.screen_text_color = normalizeHexColor(
+            input.value,
+            normalizeHexColor(setting.screen_text_color, SCREEN_TEXT_STYLE_DEFAULTS.color)
+          );
+        } else if (field === "screen_text_line_break_mode") {
+          setting.screen_text_line_break_mode = normalizeScreenTextLineBreakMode(input.value);
+        } else if (field === "screen_text_line_chars") {
+          setting.screen_text_line_chars = normalizeScreenTextLineChars(
+            input.value,
+            normalizeScreenTextLineChars(setting.screen_text_line_chars, SCREEN_TEXT_STYLE_DEFAULTS.line_chars)
+          );
+        } else if (field === "use_background_override") {
+          setting.use_background_override = !!input.checked;
+        } else if (field === "background_override") {
+          setting.background_override = normalizeBackgroundRef(String(input.value || ""));
+        } else if (field === "hook_finalize_to_dialog") {
+          setting.hook_finalize_to_dialog = !!input.checked;
+        } else if (field === "grayscale_filter") {
+          setting.grayscale_filter = String(input.value || "off") === "on" ? "on" : "off";
+        } else if (field === "hook_top_text" || field === "hook_main_text" || field === "hook_sub_text" || field === "hook_bubble_text") {
+          if (!setting.hook_texts || typeof setting.hook_texts !== "object") setting.hook_texts = {};
+          if (field === "hook_top_text") setting.hook_texts.top = String(input.value || "");
+          if (field === "hook_main_text") setting.hook_texts.main = String(input.value || "");
+          if (field === "hook_sub_text") setting.hook_texts.sub = String(input.value || "");
+          if (field === "hook_bubble_text") setting.hook_texts.bubble = String(input.value || "");
+        } else if (/^hook_(top|main|sub)_(fill_color|outline_color|outline_scale)$/.test(field)) {
+          const m = field.match(/^hook_(top|main|sub)_(fill_color|outline_color|outline_scale)$/);
+          if (m) {
+            const layer = m[1];
+            const key = m[2];
+            if (!setting.hook_text_styles || typeof setting.hook_text_styles !== "object") {
+              setting.hook_text_styles = buildDefaultHookTextStyles(spec && spec.scenes ? spec.scenes[sceneIndex] : null);
+            }
+            if (!setting.hook_text_styles[layer] || typeof setting.hook_text_styles[layer] !== "object") {
+              setting.hook_text_styles[layer] = deepClone(HOOK_TEXT_STYLE_DEFAULTS[layer] || HOOK_TEXT_STYLE_DEFAULTS.top);
+            }
+            if (key === "fill_color") {
+              setting.hook_text_styles[layer].fill_color = normalizeHexColor(
+                input.value,
+                HOOK_TEXT_STYLE_DEFAULTS[layer].fill_color
+              );
+            } else if (key === "outline_color") {
+              setting.hook_text_styles[layer].outline_color = normalizeHexColor(
+                input.value,
+                HOOK_TEXT_STYLE_DEFAULTS[layer].outline_color
+              );
+            } else if (key === "outline_scale") {
+              setting.hook_text_styles[layer].outline_scale = normalizeHookOutlineScale(
+                input.value,
+                HOOK_TEXT_STYLE_DEFAULTS[layer].outline_scale
+              );
+            }
+          }
+        } else if (field.indexOf("visual_") === 0) {
+          if (!setting.visual_assets || typeof setting.visual_assets !== "object") setting.visual_assets = {};
+          const visualKeyMap = {
+            visual_background: "background",
+            visual_slide: "slide",
+            visual_monolith: "monolith",
+            visual_dialog_box: "dialog_box",
+            visual_character_left: "character_left",
+            visual_character_right: "character_right",
+            visual_hook_background: "hook_background",
+            visual_hook_character: "hook_character",
+            visual_hook_bubble: "hook_bubble"
+          };
+          const mapped = visualKeyMap[field];
+          if (mapped) setting.visual_assets[mapped] = normalizeImageRef(String(input.value || ""));
+        }
+        sceneSettings[sceneIndex] = setting;
+        if (syncRender) {
+          rebuildAndRender();
+          return;
+        }
+        applySceneSettingsToSpec();
+        updateOutputViews();
+      };
+
+      el.sceneGrid.addEventListener("change", function (event) {
+        const input = event.target;
+        if (!input || !input.getAttribute) return;
+        const field = input.getAttribute("data-field");
+        if (!field) return;
+        updateSceneSettingField(input, true);
+      });
+      el.sceneGrid.addEventListener("toggle", function (event) {
+        const details = event.target;
+        if (!details || !details.matches || !details.matches("details.scene-collapse")) return;
+        const sceneIndex = Number(details.getAttribute("data-scene-index"));
+        if (!Number.isFinite(sceneIndex)) return;
+        sceneCollapseState[sceneIndex] = !!details.open;
+      }, true);
+
+      el.sceneGrid.addEventListener("input", function (event) {
+        const input = event.target;
+        if (!input || !input.getAttribute) return;
+        const field = input.getAttribute("data-field");
+        if (!field) return;
+        const isHookText = field === "hook_top_text" || field === "hook_main_text" || field === "hook_sub_text" || field === "hook_bubble_text";
+        const isHookTextStyle = /^hook_(top|main|sub)_(fill_color|outline_color|outline_scale)$/.test(field);
+        const isVisual = field.indexOf("visual_") === 0;
+        if (!(
+          field === "voice_text" ||
+          field === "screen_text" ||
+          field === "screen_text_font_size" ||
+          field === "screen_text_font_family" ||
+          field === "screen_text_color" ||
+          field === "screen_text_line_break_mode" ||
+          field === "screen_text_line_chars" ||
+          field === "start_sec" ||
+          field === "duration_sec" ||
+          field === "speedScale" ||
+          isHookText ||
+          isHookTextStyle ||
+          isVisual
+        )) return;
+        updateSceneSettingField(input, false);
+      });
+
+      el.backgroundPngInput.addEventListener("change", function (event) {
+        backgroundPng = normalizeBackgroundRef(String(event.target.value || ""));
+        if (spec) {
+          applyGlobalMediaToSpec();
+          updateOutputViews();
+        }
+      });
+      el.bgmSelect.addEventListener("change", function (event) {
+        bgmFile = normalizeBgmRef(String(event.target.value || ""));
+        if (spec) {
+          applyGlobalMediaToSpec();
+          updateOutputViews();
+        }
+      });
+      el.bgmVolumeInput.addEventListener("input", function (event) {
+        bgmVolume = normalizeBgmVolume(event.target.value, bgmVolume);
+        el.bgmVolumeValue.textContent = Math.round(bgmVolume * 100) + "%";
+        if (spec) {
+          applyGlobalMediaToSpec();
+          updateOutputViews();
+        }
+      });
+      el.pickSharedAssetsRootBtn.addEventListener("click", pickSharedAssetsRoot);
+      el.refreshSharedAssetsBtn.addEventListener("click", function () {
+        refreshSharedAssetsFromUi();
+      });
+      [
+        el.sharedAssetsSubBackgroundInput,
+        el.sharedAssetsSubBgmInput,
+        el.sharedAssetsSubSlideInput,
+        el.sharedAssetsSubMonolithInput,
+        el.sharedAssetsSubDialogInput,
+        el.sharedAssetsSubLeftCharInput,
+        el.sharedAssetsSubRightCharInput
+      ].forEach(function (input) {
+        if (!input) return;
+        input.addEventListener("change", function () {
+          writeSystemSettings();
+          if (sharedAssetsRootDirHandle) {
+            refreshSharedAssetsFromUi();
+          }
+        });
+      });
+
+      el.fetchSpeakersBtn.addEventListener("click", fetchSpeakers);
+      el.saveSystemBtn.addEventListener("click", function () {
+        writeSystemSettings();
+        setStatus("システム設定を保存しました。", "ok");
+      });
+      el.loadBtn.addEventListener("click", loadFromStorage);
+      el.loadManualBtn.addEventListener("click", loadFromManual);
+      el.loadPictureFromSchemaBtn.addEventListener("click", loadPictureFromSchema);
+      el.pickPictureFileBtn.addEventListener("click", loadPictureFromFile);
+      el.applyPictureBtn.addEventListener("click", function () {
+        if (!pictureSpec) {
+          setStatus("先に picture.json を読み込んでください。", "warn");
+          return;
+        }
+        applyLoadedPictureToCurrentSpec("picture.json");
+      });
+      el.applyPictureManualBtn.addEventListener("click", applyPictureFromManual);
+      el.saveSpecBtn.addEventListener("click", function () {
+        if (!spec) {
+          setStatus("保存対象のspecがありません。", "error");
+          return;
+        }
+        applySceneSettingsToSpec();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(spec));
+        updateOutputViews();
+        setStatus("svrs_scene_render_spec に保存しました。", "ok");
+      });
+      el.saveSpecFileBtn.addEventListener("click", saveSpecToRunSpecPath);
+      el.copySpecBtn.addEventListener("click", function () {
+        copyText(
+          String(el.jsonOutput.value || ""),
+          "Spec JSONをコピーしました。",
+          "Spec JSONコピーに失敗しました。"
+        );
+      });
+      el.saveDefaultsBtn.addEventListener("click", function () {
+        writeCharacterDefaults();
+        setStatus("Character Map の既定値を保存しました。", "ok");
+      });
+      el.buildBatchBtn.addEventListener("click", function () {
+        if (!spec) {
+          setStatus("先にspecを読み込んでください。", "error");
+          return;
+        }
+        buildBatchSpec();
+        setStatus("一括WAV生成用JSONを生成しました。", "ok");
+      });
+      el.applyScenesToSpecBtn.addEventListener("click", function () {
+        if (!spec) {
+          setStatus("先にspecを読み込んでください。", "error");
+          return;
+        }
+        applySceneSettingsToSpec();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(spec));
+        updateOutputViews();
+        setStatus("Hook/Scenes の編集内容を scene_render_spec JSON に反映しました。", "ok");
+      });
+      el.saveBatchBtn.addEventListener("click", saveBatchToRunAudioPath);
+      el.copyBatchCmdBtn.addEventListener("click", function () {
+        copyText(
+          buildBatchAndSyncCommand(),
+          "batch + shared-assets/audio 同期コマンドをコピーしました。ターミナルで実行してください。",
+          "コマンドコピーに失敗しました。"
+        );
+      });
+      el.copyPublishCmdBtn.addEventListener("click", function () {
+        copyText(
+          buildRunScopedCommand(CMD_DEV),
+          "書き出し前のスタジオ確認コマンド（npm run dev）をコピーしました。ターミナルで実行してください。",
+          "コマンドコピーに失敗しました。"
+        );
+      });
+      el.copyRenderCmdBtn.addEventListener("click", function () {
+        copyText(
+          buildRunScopedCommand(CMD_RENDER),
+          "render 実行コマンドをコピーしました。ターミナルで実行してください。",
+          "コマンドコピーに失敗しました。"
+        );
+      });
+
+      const system = readSystemSettings();
+      el.engineUrlInput.value = system.engine_endpoint || "http://127.0.0.1:5510";
+      applySharedAssetsSubdirConfigToUi(system.shared_assets_subdirs || SHARED_ASSET_SUBDIR_DEFAULTS);
+      renderSharedAssetsRootLabel();
+      writeSystemSettings();
+      renderCommandPreview();
+      renderGlobalMediaControls();
+      reflectPictureSummary();
+
+      const cache = system.use_speakers_cache ? readSpeakersCache() : null;
+      if (cache && cache.speakers && cache.speakers.length) {
+        speakersCatalog = cache.speakers;
+        setStatus("キャッシュ済み /speakers を利用します。取得時刻: " + (cache.fetched_at || "unknown"), "ok");
+        loadFromStorage();
+      } else {
+        fetchSpeakers().then(function () {
+          loadFromStorage();
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

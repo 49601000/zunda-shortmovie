@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schema/metaphor.schema.json",
+  "title": "Metaphor Spec v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["meta", "theme", "roast", "script_seed", "hook_seed", "quality_check"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "created_by"],
+      "properties": {
+        "version": { "const": "metaphor_v2" },
+        "created_by": { "type": "string", "minLength": 1 }
+      }
+    },
+    "theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "theme_id",
+        "theme_name",
+        "psychological_concept",
+        "short_definition",
+        "viewer_situation",
+        "target_emotion"
+      ],
+      "properties": {
+        "theme_id": { "type": "string", "minLength": 1 },
+        "theme_name": { "type": "string", "minLength": 1 },
+        "psychological_concept": { "type": "string", "minLength": 1 },
+        "short_definition": { "type": "string", "minLength": 1 },
+        "viewer_situation": { "type": "string", "minLength": 1 },
+        "target_emotion": { "type": "string", "minLength": 1 }
+      }
+    },
+    "roast": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["roast_ai", "roast_angle", "roast_metaphor", "roast_line_candidates"],
+      "properties": {
+        "roast_ai": {
+          "type": "string",
+          "enum": ["gpt_roast", "claude_roast", "grok_roast", "gemini_roast"]
+        },
+        "roast_angle": { "type": "string", "minLength": 1 },
+        "roast_metaphor": { "type": "string", "minLength": 1 },
+        "roast_line_candidates": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "script_seed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["zundamon_misunderstanding", "metan_definition", "collapse_reaction"],
+      "properties": {
+        "zundamon_misunderstanding": { "type": "string", "minLength": 1 },
+        "metan_definition": { "type": "string", "minLength": 1 },
+        "collapse_reaction": { "type": "string", "minLength": 1 }
+      }
+    },
+    "hook_seed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["self_hook", "pain_hook", "quiz_hook"],
+      "properties": {
+        "self_hook": { "type": "string", "minLength": 1 },
+        "pain_hook": { "type": "string", "minLength": 1 },
+        "quiz_hook": { "type": "string", "minLength": 1 }
+      }
+    },
+    "quality_check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["structure_mapping", "image_power", "mapping_bug", "culture_share", "too_long"],
+      "properties": {
+        "structure_mapping": { "type": "string", "minLength": 1 },
+        "image_power": { "type": "string", "minLength": 1 },
+        "mapping_bug": { "type": "string", "minLength": 1 },
+        "culture_share": { "type": "string", "minLength": 1 },
+        "too_long": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Script Engine v1</title>
+  <style>
+    :root {
+      --bg:#0f172a;
+      --panel:rgba(15,23,42,.82);
+      --ink:#e8ecf8;
+      --sub:#94a3b8;
+      --line:rgba(139,92,246,.2);
+      --accent:#8b5cf6;
+      --accent-dark:#6d28d9;
+      --ok:#67e3ad;
+      --warn:#ffc46d;
+      --danger:#ff7aa8;
+      --surface:#0b1220;
+      --shadow:0 20px 50px rgba(0,0,0,.25);
+      --radius:18px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { width:100%; max-width:100%; overflow-x:hidden; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      background:
+        radial-gradient(100% 120% at 0% 0%, rgba(124,58,237,.26) 0%, rgba(124,58,237,0) 46%),
+        radial-gradient(120% 130% at 100% 0%, rgba(14,165,233,.08) 0%, rgba(14,165,233,0) 52%),
+        linear-gradient(135deg, #1a103d 0%, #0f172a 45%, #031a2e 100%);
+      overflow-x: hidden;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:40;
+      border-bottom:1px solid rgba(139,92,246,.22);
+      background:linear-gradient(90deg, #5B21B6 0%, #4C1D95 35%, #1E1B4B 70%, #0F172A 100%);
+      box-shadow:0 12px 32px rgba(0,0,0,.28);
+      backdrop-filter:blur(8px);
+    }
+
+    .topbar{
+      min-height:66px;
+      padding:8px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      min-width:0;
+    }
+    .topbarLeft{display:flex; align-items:center; min-width:0; gap:14px; flex:1;}
+    .brandMark{
+      width:40px; height:40px; border-radius:12px; display:grid; place-items:center;
+      background:linear-gradient(160deg, #552fb0, #3b277f);
+      border:1px solid rgba(173,148,255,.35);
+      box-shadow:0 8px 20px rgba(20,14,50,.45);
+      color:#f3edff; font-size:16px; line-height:1;
+    }
+    .brandText{font-size:18px; font-weight:800; color:#f8fafc; white-space:nowrap;}
+    .topbarDivider{width:1px; height:28px; background:rgba(154,164,202,.4); flex:none;}
+    .topbarTitle{font-size:16px; font-weight:800; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;}
+    .topbarVersion{font-size:12px; font-weight:800; color:#c4b5fd; letter-spacing:.04em; opacity:.9; white-space:nowrap;}
+
+    main { padding: 18px 22px 34px; }
+    .wrap {
+      width: min(100%, 1240px);
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+    .main-grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: 0.95fr 1.25fr;
+      min-width: 0;
+    }
+    .stack > .card + .card { margin-top: 12px; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+    h1 { margin: 0 0 8px; font-size: clamp(1.3rem, 2.4vw, 2rem); line-height: 1.3; }
+    .sub {
+      margin: 0 0 16px;
+      color: var(--sub);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+    .section {
+      margin: 0 0 8px;
+      color: var(--sub);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: 0.82rem;
+    }
+    .field { margin-bottom: 12px; }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--sub);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+    select, textarea, input[type="text"] {
+      width: 100%;
+      color: var(--ink);
+      background: var(--surface);
+      border: 1px solid rgba(148,163,184,.28);
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline: none;
+      font-size: 0.92rem;
+    }
+    select:focus, textarea:focus, input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(139,92,246,.17);
+    }
+    textarea { min-height: 120px; resize: vertical; line-height: 1.45; }
+    textarea[readonly] { background: #0a1020; border-style: dashed; }
+    pre {
+      margin: 0;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,.25);
+      background: var(--surface);
+      max-height: 280px;
+      overflow: auto;
+      font-size: 0.84rem;
+      line-height: 1.42;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #dce6f8;
+    }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.86rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .18s ease, filter .18s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: scale(.98); filter: brightness(.95); }
+    button.pressed {
+      transform: scale(.97);
+      filter: brightness(1.06);
+      box-shadow: 0 0 0 3px rgba(196,181,253,.24);
+    }
+    button:focus-visible {
+      outline: 2px solid rgba(196,181,253,.92);
+      outline-offset: 2px;
+    }
+    button:disabled { opacity: .6; cursor: default; transform: none; }
+    button.secondary { background: #dcd9ff; color: #111827; }
+    button.ghost { background: #1f2a44; color: var(--ink); border: 1px solid rgba(148,163,184,.25); }
+    button.warn { background: var(--warn); color: #2b1800; }
+    button.danger { background: var(--danger); color: #2c0810; }
+    .status {
+      min-height: 1.1em;
+      margin-top: 8px;
+      color: var(--sub);
+      font-size: 0.82rem;
+    }
+    .status.ok { color: var(--ok); }
+    .status.error { color: var(--danger); }
+    .warn-note {
+      margin-top: 8px;
+      color: var(--warn);
+      font-size: 0.84rem;
+      line-height: 1.4;
+      min-height: 1.2em;
+    }
+    .guide-note {
+      margin: 0 0 8px;
+      color: var(--sub);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+    .flow-row {
+      margin-top: 12px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      align-items: stretch;
+    }
+    .chip {
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,.22);
+      background: #0b1220;
+      padding: 10px;
+      text-align: center;
+      font-weight: 700;
+      font-size: .86rem;
+      color: #ddd6fe;
+    }
+    .chip.current {
+      background: #ddd6fe;
+      color: #1e1b4b;
+      border-color: #c4b5fd;
+      box-shadow: 0 0 0 2px rgba(196,181,253,.25) inset;
+    }
+    @media (max-width: 980px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .row button { width: 100%; }
+      .flow-row { grid-template-columns: 1fr; }
+      .topbar{padding:8px 12px;}
+      .brandText{font-size:14px;}
+      .topbarTitle{font-size:12px;}
+      .topbarVersion{font-size:10px;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="topbarLeft">
+        <div class="brandMark">SE</div>
+        <div class="brandText">Script Engine</div>
+        <div class="topbarDivider"></div>
+        <div class="topbarTitle">Metaphor Spec → Script Blueprint 生成</div>
+      </div>
+      <div class="topbarVersion">v1</div>
+    </div>
+  </header>
+
+  <main>
+  <div class="wrap">
+    <section class="card">
+      <h1>Script Engine v1</h1>
+      <p class="sub">Metaphor Specを入力に、完成セリフではなく意味構造のみを持つScript Blueprintを作成する。</p>
+      <div class="flow-row" aria-label="pipeline">
+        <div class="chip">Theme &amp; Metaphor</div>
+        <div class="chip current" aria-current="step">Blueprint</div>
+        <div class="chip">Dialogue</div>
+        <div class="chip">Style Render</div>
+        <div class="chip">Slide</div>
+        <div class="chip">Scene</div>
+      </div>
+      <div class="row">
+        <button id="loadBtn">Load from Metaphor v2</button>
+        <button id="sampleBtn" class="secondary">サンプル投入</button>
+      </div>
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="main-grid">
+      <section class="stack">
+        <div class="card">
+          <p class="section">Loaded Metaphor Spec</p>
+          <pre id="loadedSpec">未読込</pre>
+        </div>
+
+        <div class="card">
+          <details>
+            <summary class="section">Manual Metaphor Spec Paste（クリックで開く）</summary>
+            <textarea id="manualSpec" placeholder="Metaphor Spec JSONを貼り付け"></textarea>
+            <div class="row">
+              <button id="applyManualBtn" class="ghost">Apply Manual JSON</button>
+            </div>
+          </details>
+        </div>
+
+        <div class="card">
+          <p class="section">Settings</p>
+          <div class="field">
+            <label for="targetDurationSec">target_duration_sec（目標尺・秒）</label>
+            <input id="targetDurationSec" type="text" value="22">
+          </div>
+          <div class="field">
+            <label for="maxDurationSec">max_duration_sec（最大尺・秒 / 上限30）</label>
+            <input id="maxDurationSec" type="text" value="30">
+          </div>
+          <div class="field">
+            <label for="structureMode">structure_mode</label>
+            <select id="structureMode">
+              <option value="definition_fool_explain_roast_collapse" selected>definition_fool_explain_roast_collapse</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="roastAi">roast_ai</label>
+            <select id="roastAi">
+              <option value="gpt_roast">gpt_roast</option>
+              <option value="claude_roast">claude_roast</option>
+              <option value="grok_roast" selected>grok_roast</option>
+              <option value="gemini_roast">gemini_roast</option>
+            </select>
+          </div>
+          <div id="warning" class="warn-note"></div>
+        </div>
+      </section>
+
+      <section class="stack">
+        <div class="card">
+          <p class="section">1) Generate Script Blueprint Prompt</p>
+          <p class="guide-note">生成ボタンでLLM向けプロンプトを作成。Copyでクリップボードにコピーできます。</p>
+          <textarea id="promptArea" readonly placeholder="① Generate Script Blueprint Prompt を押す"></textarea>
+          <div class="row">
+            <button id="generatePromptBtn">Generate Script Blueprint Prompt</button>
+            <button id="copyPromptBtn" class="secondary">Copy Prompt</button>
+            <button id="resetBtn" class="danger">Reset</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <p class="section">2) LLM Output Paste</p>
+          <textarea id="llmOutput" placeholder="② LLMの返答を貼り付け"></textarea>
+          <div class="row">
+            <button id="parseBtn" class="ghost">Parse JSON</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <p class="section">3) Script Blueprint確認欄</p>
+          <textarea id="blueprintArea" placeholder="③ Script Blueprint JSONを確認"></textarea>
+          <div class="row">
+            <button id="copyJsonBtn" class="ghost">Copy JSON</button>
+            <button id="saveBtn" class="warn">Save to Next Step</button>
+          </div>
+          <div class="row">
+            <button id="nextStepBtn" type="button">次のSTEPへ: Dialogue Generator</button>
+          </div>
+        </div>
+      </section>
+    </section>
+  </div>
+  </main>
+
+  <script>
+    (function () {
+      const METAPHOR_KEY = "svrs_metaphor_spec";
+      const OUTPUT_KEY = "svrs_script_blueprint";
+      const STATE_KEY = "script_engine_v1_state";
+      const ROLE_ORDER = ["hook", "misunderstanding", "explanation", "roast", "collapse"];
+
+      const el = {
+        loadBtn: document.getElementById("loadBtn"),
+        sampleBtn: document.getElementById("sampleBtn"),
+        status: document.getElementById("status"),
+        warning: document.getElementById("warning"),
+        loadedSpec: document.getElementById("loadedSpec"),
+        manualSpec: document.getElementById("manualSpec"),
+        applyManualBtn: document.getElementById("applyManualBtn"),
+        targetDurationSec: document.getElementById("targetDurationSec"),
+        maxDurationSec: document.getElementById("maxDurationSec"),
+        structureMode: document.getElementById("structureMode"),
+        roastAi: document.getElementById("roastAi"),
+        promptArea: document.getElementById("promptArea"),
+        generatePromptBtn: document.getElementById("generatePromptBtn"),
+        copyPromptBtn: document.getElementById("copyPromptBtn"),
+        resetBtn: document.getElementById("resetBtn"),
+        llmOutput: document.getElementById("llmOutput"),
+        parseBtn: document.getElementById("parseBtn"),
+        blueprintArea: document.getElementById("blueprintArea"),
+        copyJsonBtn: document.getElementById("copyJsonBtn"),
+        saveBtn: document.getElementById("saveBtn"),
+        nextStepBtn: document.getElementById("nextStepBtn")
+      };
+
+      let metaphorSpec = null;
+
+      const SAMPLE_METAPHOR_SPEC = {
+        meta: {
+          version: "metaphor_v2",
+          created_by: "metaphor-v2.html"
+        },
+        theme: {
+          theme_id: "loss_aversion",
+          theme_name: "損失回避",
+          psychological_concept: "loss aversion",
+          short_definition: "損を確定する痛みを、利益の喜びより強く感じやすい傾向",
+          viewer_situation: "含み損の株を売れない",
+          target_emotion: "ワイやん"
+        },
+        roast: {
+          roast_ai: "grok_roast",
+          roast_angle: "現実逃避を公開処刑する",
+          roast_metaphor: "腐った牛乳をまだ飲めると言い張る"
+        }
+      };
+
+      function status(msg, isError) {
+        el.status.textContent = msg || "";
+        el.status.classList.remove("ok", "error");
+        if (msg) el.status.classList.add(isError ? "error" : "ok");
+      }
+
+      function wireButtonFeedback() {
+        document.querySelectorAll("button").forEach(function (button) {
+          button.addEventListener("click", function () {
+            if (button.disabled) return;
+            button.classList.add("pressed");
+            window.setTimeout(function () {
+              button.classList.remove("pressed");
+            }, 160);
+          });
+        });
+      }
+
+      function openNextStep(path) {
+        window.open(path, "_blank", "noopener");
+        status("次のSTEPを新しいタブで開きました。", false);
+      }
+
+      function parseJson(raw) {
+        try {
+          return JSON.parse(raw);
+        } catch (_err) {
+          return null;
+        }
+      }
+
+      function normalizeLine(text, fallback) {
+        const t = String(text || "").replace(/\s+/g, " ").trim();
+        return t || fallback;
+      }
+
+      function toPositiveInt(raw, fallback) {
+        const n = Number(raw);
+        if (!Number.isFinite(n) || n <= 0) return fallback;
+        return Math.round(n);
+      }
+
+      function extractJsonObject(text) {
+        if (!text) return null;
+        const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+        const candidate = fenced ? fenced[1] : text;
+        const start = candidate.indexOf("{");
+        const end = candidate.lastIndexOf("}");
+        if (start === -1 || end === -1 || end <= start) return null;
+        return parseJson(candidate.slice(start, end + 1));
+      }
+
+      function renderLoaded() {
+        el.loadedSpec.textContent = metaphorSpec ? JSON.stringify(metaphorSpec, null, 2) : "未読込";
+      }
+
+      function validateMetaphorSpec(spec) {
+        return !!(spec && typeof spec === "object" && spec.theme && typeof spec.theme === "object");
+      }
+
+      function applySample() {
+        metaphorSpec = JSON.parse(JSON.stringify(SAMPLE_METAPHOR_SPEC));
+        el.manualSpec.value = JSON.stringify(metaphorSpec, null, 2);
+        if (metaphorSpec.roast && metaphorSpec.roast.roast_ai) el.roastAi.value = metaphorSpec.roast.roast_ai;
+        renderLoaded();
+        saveState();
+        status("サンプルMetaphor Specを投入しました。", false);
+      }
+
+      function loadFromStorage() {
+        const raw = localStorage.getItem(METAPHOR_KEY);
+        if (!raw) {
+          status("svrs_metaphor_spec が見つかりません。Manual Metaphor Spec Paste を使ってください。", true);
+          return;
+        }
+        const parsed = parseJson(raw);
+        if (!validateMetaphorSpec(parsed)) {
+          status("svrs_metaphor_spec のJSONが壊れているか、themeが不足しています。", true);
+          return;
+        }
+        metaphorSpec = parsed;
+        if (metaphorSpec.roast && metaphorSpec.roast.roast_ai) el.roastAi.value = metaphorSpec.roast.roast_ai;
+        renderLoaded();
+        saveState();
+        status("Metaphor Specを読み込みました。", false);
+      }
+
+      function applyManual() {
+        const raw = el.manualSpec.value.trim();
+        if (!raw) {
+          status("貼り付けJSONが空です。", true);
+          return;
+        }
+        const parsed = parseJson(raw);
+        if (!validateMetaphorSpec(parsed)) {
+          status("JSONが不正か、themeが不足しています。", true);
+          return;
+        }
+        metaphorSpec = parsed;
+        if (metaphorSpec.roast && metaphorSpec.roast.roast_ai) el.roastAi.value = metaphorSpec.roast.roast_ai;
+        renderLoaded();
+        saveState();
+        status("手動JSONを適用しました。", false);
+      }
+
+      function getSettings() {
+        const targetRaw = toPositiveInt(el.targetDurationSec.value, 22);
+        const maxRaw = toPositiveInt(el.maxDurationSec.value, 30);
+        const maxDuration = Math.min(30, Math.max(1, maxRaw));
+        const targetDuration = Math.min(targetRaw, maxDuration);
+        el.targetDurationSec.value = String(targetDuration);
+        el.maxDurationSec.value = String(maxDuration);
+        return {
+          target_duration_sec: targetDuration,
+          max_duration_sec: maxDuration,
+          structure_mode: "definition_fool_explain_roast_collapse",
+          roast_ai: el.roastAi.value,
+          one_video_one_insight: true
+        };
+      }
+
+      function buildFallbackSegment(role, idx, themeName, roastAi, spec) {
+        const roast = spec && spec.roast ? spec.roast : {};
+        const viewerSituation = normalizeLine(spec && spec.theme && spec.theme.viewer_situation, "クソ株を売れない");
+        const definition = normalizeLine(spec && spec.theme && spec.theme.short_definition, "損を確定する痛みを実際以上に重く感じる傾向");
+        const roastMetaphor = normalizeLine(roast.roast_metaphor, "腐った牛乳をまだ飲めると言い張る比喩");
+
+        const byRole = {
+          hook: {
+            id: "seg_001",
+            time: "0-2",
+            role: "hook",
+            speaker: "zundamon_engine",
+            semantic_intent: "視聴者を自分ごと化させる",
+            content_goal: viewerSituation + "状況を問いにする",
+            event: "normal"
+          },
+          misunderstanding: {
+            id: "seg_002",
+            time: "2-6",
+            role: "misunderstanding",
+            speaker: "zundamon_engine",
+            semantic_intent: "損失を認めたくない",
+            content_goal: "売らなければ負けではないと思い込む",
+            event: "normal"
+          },
+          explanation: {
+            id: "seg_003",
+            time: "6-13",
+            role: "explanation",
+            speaker: "metan_engine",
+            semantic_intent: themeName + "を短く説明する",
+            content_goal: definition + "と説明する",
+            event: "normal"
+          },
+          roast: {
+            id: "seg_004",
+            time: "13-17",
+            role: "roast",
+            speaker: roastAi,
+            semantic_intent: normalizeLine(roast.roast_angle, "現実逃避を公開処刑する"),
+            content_goal: roastMetaphor + "で刺す",
+            event: "ai_trigger"
+          },
+          collapse: {
+            id: "seg_005",
+            time: "17-22",
+            role: "collapse",
+            speaker: "zundamon_engine",
+            semantic_intent: "被弾リアクション",
+            content_goal: "AI査定に刺されて弱る",
+            event: "normal"
+          }
+        };
+        return byRole[role] || byRole[ROLE_ORDER[idx]] || byRole.hook;
+      }
+
+      function sanitizeSegment(input, fallback, role, roastAi) {
+        const src = input && typeof input === "object" ? input : {};
+        return {
+          id: normalizeLine(src.id, fallback.id),
+          time: normalizeLine(src.time, fallback.time),
+          role: role,
+          speaker: normalizeLine(src.speaker, role === "roast" ? roastAi : fallback.speaker),
+          semantic_intent: normalizeLine(src.semantic_intent, fallback.semantic_intent),
+          content_goal: normalizeLine(src.content_goal, fallback.content_goal),
+          event: role === "roast" ? "ai_trigger" : "normal"
+        };
+      }
+
+      function buildBaseBlueprint(settings) {
+        const theme = metaphorSpec && metaphorSpec.theme ? metaphorSpec.theme : {};
+        const topic = normalizeLine(theme.theme_name, "損失回避");
+        const titleIntent = normalizeLine(theme.viewer_situation, "含み損を売れない理由を自分ごと化する") + "理由を自分ごと化する";
+        const segments = ROLE_ORDER.map(function (role, idx) {
+          return buildFallbackSegment(role, idx, topic, settings.roast_ai, metaphorSpec);
+        });
+
+        return {
+          meta: {
+            version: "script_engine_v1",
+            created_by: "script-engine-v1.html"
+          },
+          source_spec: {
+            metaphor_spec: metaphorSpec || {}
+          },
+          settings: {
+            target_duration_sec: settings.target_duration_sec,
+            max_duration_sec: settings.max_duration_sec,
+            structure_mode: settings.structure_mode,
+            roast_ai: settings.roast_ai,
+            one_video_one_insight: true
+          },
+          blueprint: {
+            title_intent: titleIntent,
+            topic: topic,
+            segments: segments
+          },
+          render_hints: {
+            layout: "classroom_monolith_slide_dialog",
+            background: "classroom_day",
+            monolith_default: "silent_black"
+          }
+        };
+      }
+
+      function enforceConstraints(candidate, settings) {
+        const base = buildBaseBlueprint(settings);
+        const out = Object.assign({}, base, candidate && typeof candidate === "object" ? candidate : {});
+
+        out.meta = {
+          version: "script_engine_v1",
+          created_by: "script-engine-v1.html"
+        };
+        out.source_spec = { metaphor_spec: metaphorSpec || {} };
+        out.settings = {
+          target_duration_sec: settings.target_duration_sec,
+          max_duration_sec: settings.max_duration_sec,
+          structure_mode: settings.structure_mode,
+          roast_ai: settings.roast_ai,
+          one_video_one_insight: true
+        };
+
+        const incomingBlueprint = out.blueprint && typeof out.blueprint === "object" ? out.blueprint : {};
+        const incomingSegments = Array.isArray(incomingBlueprint.segments)
+          ? incomingBlueprint.segments
+          : Array.isArray(out.segments) ? out.segments : [];
+
+        const fixedSegments = ROLE_ORDER.map(function (role, idx) {
+          const fallback = base.blueprint.segments[idx];
+          const byRole = incomingSegments.find(function (s) { return s && s.role === role; });
+          const byIndex = incomingSegments[idx];
+          return sanitizeSegment(byRole || byIndex, fallback, role, settings.roast_ai);
+        });
+
+        out.blueprint = {
+          title_intent: normalizeLine(incomingBlueprint.title_intent, base.blueprint.title_intent),
+          topic: normalizeLine(incomingBlueprint.topic, base.blueprint.topic),
+          segments: fixedSegments
+        };
+        out.render_hints = Object.assign({}, base.render_hints, out.render_hints || {});
+
+        return out;
+      }
+
+      function validateBlueprint(spec) {
+        const errors = [];
+        if (!spec || typeof spec !== "object") return { ok: false, errors: ["root object が必要です"] };
+        if (!spec.blueprint || !Array.isArray(spec.blueprint.segments)) errors.push("blueprint.segments が必要です");
+        const segments = spec.blueprint && Array.isArray(spec.blueprint.segments) ? spec.blueprint.segments : [];
+        if (segments.length !== ROLE_ORDER.length) errors.push("blueprint.segments は5件必要です");
+
+        segments.forEach(function (seg, idx) {
+          const role = ROLE_ORDER[idx];
+          if (!seg || typeof seg !== "object") {
+            errors.push("segment[" + idx + "] がobjectではありません");
+            return;
+          }
+          ["id", "time", "role", "speaker", "semantic_intent", "content_goal", "event"].forEach(function (key) {
+            if (typeof seg[key] !== "string" || !seg[key].trim()) errors.push("segment[" + idx + "]." + key + " が不足");
+          });
+          if (seg.role !== role) errors.push("segment[" + idx + "].role は " + role + " 必須");
+          if (seg.role === "roast" && seg.event !== "ai_trigger") errors.push("roast.event は ai_trigger 固定");
+          if (seg.role !== "roast" && seg.event !== "normal") errors.push(seg.role + ".event は normal 固定");
+          ["screen_text", "voice", "base_text"].forEach(function (ng) {
+            if (Object.prototype.hasOwnProperty.call(seg, ng)) errors.push("segment[" + idx + "] に " + ng + " を含めないでください");
+          });
+        });
+        return { ok: errors.length === 0, errors: errors };
+      }
+
+      function buildPrompt() {
+        if (!metaphorSpec) {
+          status("先にMetaphor Specを読み込んでください。", true);
+          return false;
+        }
+        const settings = getSettings();
+        const draft = buildBaseBlueprint(settings);
+        const prompt = [
+          "以下の metaphor_spec を入力として script_blueprint JSON を生成してください。",
+          "",
+          "【目的】",
+          "- Script Engineとして意味構造のみを作る",
+          "- 完成セリフは作らない",
+          "",
+          "【必須ルール】",
+          "- blueprint.segments は5件固定（hook / misunderstanding / explanation / roast / collapse）",
+          "- 各segmentに id/time/role/speaker/semantic_intent/content_goal/event を入れる",
+          "- roast だけ event: ai_trigger",
+          "- それ以外は event: normal",
+          "- screen_text / voice / base_text は絶対に含めない",
+          "",
+          "【設定値】",
+          JSON.stringify(settings, null, 2),
+          "",
+          "【metaphor_spec】",
+          JSON.stringify(metaphorSpec, null, 2),
+          "",
+          "【出力フォーマット（厳守）】",
+          JSON.stringify(draft, null, 2),
+          "",
+          "JSONのみを返答してください。"
+        ].join("\n");
+
+        el.promptArea.value = prompt;
+        el.blueprintArea.value = JSON.stringify(draft, null, 2);
+        saveState();
+        status("Script Blueprint Promptを生成しました。", false);
+        return true;
+      }
+
+      function parseOutput() {
+        if (!metaphorSpec) {
+          status("先にMetaphor Specを読み込んでください。", true);
+          return;
+        }
+        const raw = el.llmOutput.value.trim();
+        if (!raw) {
+          status("LLM Output Paste が空です。", true);
+          return;
+        }
+        const settings = getSettings();
+        const parsed = extractJsonObject(raw);
+        if (!parsed) {
+          status("JSONを抽出できませんでした。", true);
+          return;
+        }
+        const fixed = enforceConstraints(parsed, settings);
+        const result = validateBlueprint(fixed);
+        if (!result.ok) {
+          status("構造エラー: " + result.errors.join(" / "), true);
+          return;
+        }
+        el.blueprintArea.value = JSON.stringify(fixed, null, 2);
+        saveState();
+        status("Script Blueprint JSONを解析しました。", false);
+      }
+
+      async function copyText(text, okMessage) {
+        if (!text) {
+          status("コピー対象がありません。", true);
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(text);
+          status(okMessage, false);
+        } catch (_err) {
+          status("コピーに失敗しました。", true);
+        }
+      }
+
+      function saveToNextStep() {
+        if (!metaphorSpec) {
+          status("先にMetaphor Specを読み込んでください。", true);
+          return;
+        }
+        const raw = el.blueprintArea.value.trim();
+        if (!raw) {
+          status("Script Blueprint確認欄が空です。", true);
+          return;
+        }
+        const parsed = parseJson(raw);
+        if (!parsed) {
+          status("JSONが不正です。", true);
+          return;
+        }
+        const fixed = enforceConstraints(parsed, getSettings());
+        const result = validateBlueprint(fixed);
+        if (!result.ok) {
+          status("構造エラー: " + result.errors.join(" / "), true);
+          return;
+        }
+        el.blueprintArea.value = JSON.stringify(fixed, null, 2);
+        localStorage.setItem(OUTPUT_KEY, JSON.stringify(fixed));
+        saveState();
+        status("svrs_script_blueprint をlocalStorageに保存しました。", false);
+      }
+
+      function updateWarning() {
+        if (!metaphorSpec) {
+          el.warning.textContent = "注意: metaphor_spec が未読込です。";
+          return;
+        }
+        if (!metaphorSpec.theme || !metaphorSpec.theme.theme_name) {
+          el.warning.textContent = "注意: metaphor_spec.theme.theme_name が不足しています。";
+          return;
+        }
+        el.warning.textContent = "";
+      }
+
+      function saveState() {
+        const state = {
+          metaphorSpec: metaphorSpec,
+          manualSpec: el.manualSpec.value,
+          targetDurationSec: el.targetDurationSec.value,
+          maxDurationSec: el.maxDurationSec.value,
+          roastAi: el.roastAi.value,
+          promptArea: el.promptArea.value,
+          llmOutput: el.llmOutput.value,
+          blueprintArea: el.blueprintArea.value
+        };
+        localStorage.setItem(STATE_KEY, JSON.stringify(state));
+        updateWarning();
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STATE_KEY);
+          if (!raw) return;
+          const s = JSON.parse(raw);
+          if (s.metaphorSpec) metaphorSpec = s.metaphorSpec;
+          if (typeof s.manualSpec === "string") el.manualSpec.value = s.manualSpec;
+          if (typeof s.targetDurationSec === "string") el.targetDurationSec.value = s.targetDurationSec;
+          if (typeof s.maxDurationSec === "string") el.maxDurationSec.value = s.maxDurationSec;
+          if (typeof s.roastAi === "string") el.roastAi.value = s.roastAi;
+          if (typeof s.promptArea === "string") el.promptArea.value = s.promptArea;
+          if (typeof s.llmOutput === "string") el.llmOutput.value = s.llmOutput;
+          if (typeof s.blueprintArea === "string") el.blueprintArea.value = s.blueprintArea;
+          renderLoaded();
+        } catch (_err) {
+          localStorage.removeItem(STATE_KEY);
+        }
+      }
+
+      function resetAll() {
+        metaphorSpec = null;
+        el.loadedSpec.textContent = "未読込";
+        el.manualSpec.value = "";
+        el.targetDurationSec.value = "22";
+        el.maxDurationSec.value = "30";
+        el.roastAi.value = "grok_roast";
+        el.promptArea.value = "";
+        el.llmOutput.value = "";
+        el.blueprintArea.value = "";
+        el.warning.textContent = "";
+        localStorage.removeItem(STATE_KEY);
+        localStorage.removeItem(OUTPUT_KEY);
+        status("リセットしました。", false);
+      }
+
+      [
+        el.manualSpec,
+        el.targetDurationSec,
+        el.maxDurationSec,
+        el.roastAi,
+        el.llmOutput,
+        el.blueprintArea
+      ].forEach(function (node) {
+        node.addEventListener("input", saveState);
+        node.addEventListener("change", saveState);
+      });
+
+      el.loadBtn.addEventListener("click", loadFromStorage);
+      el.sampleBtn.addEventListener("click", applySample);
+      el.applyManualBtn.addEventListener("click", applyManual);
+      el.generatePromptBtn.addEventListener("click", buildPrompt);
+      el.copyPromptBtn.addEventListener("click", function () {
+        if (buildPrompt()) copyText(el.promptArea.value, "Promptをコピーしました。");
+      });
+      el.parseBtn.addEventListener("click", parseOutput);
+      el.copyJsonBtn.addEventListener("click", function () {
+        copyText(el.blueprintArea.value, "JSONをコピーしました。");
+      });
+      el.saveBtn.addEventListener("click", saveToNextStep);
+      el.nextStepBtn.addEventListener("click", function () {
+        openNextStep("./dialogue-generator-v1.html");
+      });
+      el.resetBtn.addEventListener("click", resetAll);
+
+      wireButtonFeedback();
+      loadState();
+      if (!metaphorSpec) loadFromStorage();
+      updateWarning();
+    })();
+  </script>
+</body>
+</html>

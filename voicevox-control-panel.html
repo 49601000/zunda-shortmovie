@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VOICEVOX Scene Control Panel</title>
+  <style>
+    :root {
+      --bg: #0c1017;
+      --panel: #151d2a;
+      --panel-2: #1c2737;
+      --line: #2b3750;
+      --text: #e7edf8;
+      --muted: #93a4c0;
+      --accent: #63c9ff;
+      --ok: #8fe48d;
+      --danger: #ff8196;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+      background:
+        radial-gradient(1200px 640px at 8% -20%, rgba(99, 201, 255, 0.1), transparent 62%),
+        radial-gradient(1000px 480px at 95% -20%, rgba(143, 228, 141, 0.07), transparent 62%),
+        #0c1017;
+    }
+
+    .wrap {
+      max-width: 1460px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.22rem;
+      letter-spacing: 0.02em;
+    }
+
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .row {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #071018;
+      background: var(--accent);
+    }
+
+    button.secondary { background: #dceaff; color: #0f1828; }
+    button.ghost { background: #253349; color: var(--text); border: 1px solid var(--line); }
+    button.warn { background: #ffcf7f; color: #2b1800; }
+
+    .status {
+      margin-top: 8px;
+      min-height: 1.2em;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .status.ok { color: var(--ok); }
+    .status.error { color: var(--danger); }
+
+    textarea, input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #101726;
+      color: var(--text);
+      padding: 9px 10px;
+      outline: none;
+      font-size: 0.9rem;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+      line-height: 1.45;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    textarea:focus, input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 201, 255, 0.14);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 12px;
+    }
+
+    .scenes {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .scene {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(15, 22, 34, 0.76);
+      padding: 12px;
+    }
+
+    .scene-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .scene-title {
+      font-weight: 800;
+      font-size: 0.92rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      border-radius: 999px;
+      padding: 3px 8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.04);
+      color: #d9e7fd;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .field.span-2 { grid-column: span 2; }
+    .field.span-3 { grid-column: span 3; }
+    .field.span-6 { grid-column: span 6; }
+
+    .voice-text {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0f1623;
+      padding: 8px;
+      min-height: 42px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.88rem;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 1100px) {
+      .split { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .field.span-2, .field.span-3, .field.span-6 { grid-column: span 2; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <h1>VOICEVOX Scene Control Panel</h1>
+      <p class="sub">Hook統合済み scene_render_spec の normal scene だけを対象に voice_control を編集します。Hook scene は自動除外されます。</p>
+      <div class="row">
+        <button id="loadStorageBtn">svrs_scene_render_spec 読み込み</button>
+        <button id="loadManualBtn" class="ghost">貼り付けJSON読み込み</button>
+        <button id="applyDefaultsBtn" class="secondary">全sceneに初期値適用</button>
+        <button id="saveBtn" class="warn">svrs_scene_render_spec に保存</button>
+        <button id="copyBtn">JSONコピー</button>
+      </div>
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="card split">
+      <div>
+        <p class="sub" style="margin-bottom:8px">Input scene_render_spec JSON</p>
+        <textarea id="jsonInput" placeholder="scene_render_spec JSON を貼り付け"></textarea>
+      </div>
+      <div>
+        <p class="sub" style="margin-bottom:8px">Output scene_render_spec JSON（voice_control反映）</p>
+        <textarea id="jsonOutput" readonly></textarea>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="scene-head">
+        <div class="scene-title">Normal Scenes Voice Control</div>
+        <div class="badge" id="sceneCount">0 scenes</div>
+      </div>
+      <div id="scenes" class="scenes"></div>
+    </section>
+  </main>
+
+  <script src="./remotion-renderer-v1/shared/voicevox-scene-config.js"></script>
+  <script>
+    (function () {
+      const STORAGE_KEY = "svrs_scene_render_spec";
+      const cfg = window.VOICEVOX_SCENE_CONFIG || {};
+      const DEFAULT_VOICE_CONTROL = cfg.DEFAULT_VOICE_CONTROL || {
+        speaker_id: 3,
+        speedScale: 1.25,
+        pitchScale: 0,
+        intonationScale: 1,
+        volumeScale: 1,
+        prePhonemeLength: 0.1,
+        postPhonemeLength: 0.1,
+        pauseLength: null,
+        pauseLengthScale: 1
+      };
+
+      const normalizeVoiceControl = typeof cfg.normalizeVoiceControl === "function"
+        ? cfg.normalizeVoiceControl
+        : function (v) { return Object.assign({}, DEFAULT_VOICE_CONTROL, v || {}); };
+
+      const el = {
+        loadStorageBtn: document.getElementById("loadStorageBtn"),
+        loadManualBtn: document.getElementById("loadManualBtn"),
+        applyDefaultsBtn: document.getElementById("applyDefaultsBtn"),
+        saveBtn: document.getElementById("saveBtn"),
+        copyBtn: document.getElementById("copyBtn"),
+        status: document.getElementById("status"),
+        jsonInput: document.getElementById("jsonInput"),
+        jsonOutput: document.getElementById("jsonOutput"),
+        scenes: document.getElementById("scenes"),
+        sceneCount: document.getElementById("sceneCount")
+      };
+
+      let spec = null;
+
+      const setStatus = function (text, mode) {
+        el.status.textContent = text || "";
+        el.status.classList.remove("ok", "error");
+        if (mode) el.status.classList.add(mode);
+      };
+
+      const parseJson = function (raw) {
+        try {
+          return JSON.parse(raw);
+        } catch (_err) {
+          return null;
+        }
+      };
+
+      const deepClone = function (value) {
+        return JSON.parse(JSON.stringify(value));
+      };
+
+      const isHookScene = function (scene) {
+        return String(scene && scene.scene_type || "normal") === "hook";
+      };
+
+      const getVoiceText = function (scene) {
+        const v1 = scene && scene.voice && typeof scene.voice.text === "string" ? scene.voice.text.trim() : "";
+        if (v1) return v1;
+        const v2 = scene && scene.dialog && typeof scene.dialog.voice === "string" ? scene.dialog.voice.trim() : "";
+        if (v2) return v2;
+        const v3 = scene && scene.dialog && typeof scene.dialog.screen_text === "string" ? scene.dialog.screen_text.trim() : "";
+        return v3;
+      };
+
+      const updateOutput = function () {
+        el.jsonOutput.value = spec ? JSON.stringify(spec, null, 2) : "";
+      };
+
+      const ensureSpecShape = function (value) {
+        if (!value || typeof value !== "object") return null;
+        if (!Array.isArray(value.scenes)) return null;
+        return deepClone(value);
+      };
+
+      const applyVoiceControlToAllNormals = function (controlFactory) {
+        if (!spec || !Array.isArray(spec.scenes)) return;
+        spec.scenes = spec.scenes.map(function (scene) {
+          const next = Object.assign({}, scene);
+          if (isHookScene(next)) return next;
+          next.scene_type = "normal";
+          next.voice_control = normalizeVoiceControl(controlFactory(next));
+          if (!next.voice || typeof next.voice !== "object") {
+            next.voice = {};
+          }
+          if (!next.voice.text) {
+            next.voice.text = getVoiceText(next);
+          }
+          return next;
+        });
+      };
+
+      const renderScenes = function () {
+        el.scenes.innerHTML = "";
+        if (!spec || !Array.isArray(spec.scenes)) {
+          el.sceneCount.textContent = "0 scenes";
+          updateOutput();
+          return;
+        }
+
+        const normals = spec.scenes.filter(function (scene) {
+          return !isHookScene(scene);
+        });
+
+        el.sceneCount.textContent = normals.length + " scenes";
+        normals.forEach(function (scene, idx) {
+          const control = normalizeVoiceControl(scene.voice_control || DEFAULT_VOICE_CONTROL);
+          scene.voice_control = control;
+          if (!scene.voice || typeof scene.voice !== "object") scene.voice = {};
+          if (!scene.voice.text) scene.voice.text = getVoiceText(scene);
+
+          const card = document.createElement("article");
+          card.className = "scene";
+          card.setAttribute("data-scene-index", String(spec.scenes.indexOf(scene)));
+          card.innerHTML = [
+            '<div class="scene-head">',
+            '  <div class="scene-title">#' + String(idx + 1).padStart(3, "0") + " " + (scene.id || "(no id)") + "</div>",
+            '  <div class="badge">scene_type: normal</div>',
+            "</div>",
+            '<div class="voice-text">' + (scene.voice.text || "(voice text empty)") + "</div>",
+            '<div class="grid" style="margin-top:8px">',
+            '  <div class="field"><label>speaker_id</label><input data-field="speaker_id" type="number" step="1" value="' + control.speaker_id + '"></div>',
+            '  <div class="field"><label>speedScale</label><input data-field="speedScale" type="number" step="0.01" value="' + control.speedScale + '"></div>',
+            '  <div class="field"><label>pitchScale</label><input data-field="pitchScale" type="number" step="0.01" value="' + control.pitchScale + '"></div>',
+            '  <div class="field"><label>intonationScale</label><input data-field="intonationScale" type="number" step="0.01" value="' + control.intonationScale + '"></div>',
+            '  <div class="field"><label>volumeScale</label><input data-field="volumeScale" type="number" step="0.01" value="' + control.volumeScale + '"></div>',
+            '  <div class="field"><label>prePhonemeLength</label><input data-field="prePhonemeLength" type="number" step="0.01" value="' + control.prePhonemeLength + '"></div>',
+            '  <div class="field"><label>postPhonemeLength</label><input data-field="postPhonemeLength" type="number" step="0.01" value="' + control.postPhonemeLength + '"></div>',
+            '  <div class="field"><label>pauseLength</label><input data-field="pauseLength" type="number" step="0.01" value="' + (control.pauseLength == null ? "" : control.pauseLength) + '" placeholder="null可"></div>',
+            '  <div class="field"><label>pauseLengthScale</label><input data-field="pauseLengthScale" type="number" step="0.01" value="' + control.pauseLengthScale + '"></div>',
+            "</div>"
+          ].join("");
+          el.scenes.appendChild(card);
+        });
+        updateOutput();
+      };
+
+      const loadSpec = function (inputSpec, label) {
+        const parsed = ensureSpecShape(inputSpec);
+        if (!parsed) {
+          setStatus("scene_render_spec の形式が不正です。", "error");
+          return;
+        }
+        spec = parsed;
+        applyVoiceControlToAllNormals(function (scene) {
+          return scene.voice_control || DEFAULT_VOICE_CONTROL;
+        });
+        el.jsonInput.value = JSON.stringify(spec, null, 2);
+        renderScenes();
+        setStatus(label + " を読み込みました。", "ok");
+      };
+
+      const updateControlValue = function (sceneIndex, field, rawValue) {
+        if (!spec || !Array.isArray(spec.scenes)) return;
+        const scene = spec.scenes[sceneIndex];
+        if (!scene || isHookScene(scene)) return;
+        const base = normalizeVoiceControl(scene.voice_control || DEFAULT_VOICE_CONTROL);
+        const next = Object.assign({}, base);
+        if (field === "speaker_id") {
+          next.speaker_id = Number(rawValue);
+        } else if (field === "pauseLength") {
+          const trimmed = String(rawValue || "").trim();
+          next.pauseLength = trimmed === "" ? null : Number(trimmed);
+        } else {
+          next[field] = Number(rawValue);
+        }
+        scene.voice_control = normalizeVoiceControl(next);
+        updateOutput();
+      };
+
+      const loadFromStorage = function () {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          setStatus("svrs_scene_render_spec が見つかりません。", "error");
+          return;
+        }
+        const parsed = parseJson(raw);
+        if (!parsed) {
+          setStatus("svrs_scene_render_spec のJSONが不正です。", "error");
+          return;
+        }
+        loadSpec(parsed, "svrs_scene_render_spec");
+      };
+
+      const loadFromManual = function () {
+        const raw = String(el.jsonInput.value || "").trim();
+        if (!raw) {
+          setStatus("JSONを貼り付けてください。", "error");
+          return;
+        }
+        const parsed = parseJson(raw);
+        if (!parsed) {
+          setStatus("貼り付けJSONの形式が不正です。", "error");
+          return;
+        }
+        loadSpec(parsed, "貼り付けJSON");
+      };
+
+      const applyDefaults = function () {
+        if (!spec || !Array.isArray(spec.scenes)) {
+          setStatus("先にspecを読み込んでください。", "error");
+          return;
+        }
+        applyVoiceControlToAllNormals(function () {
+          return DEFAULT_VOICE_CONTROL;
+        });
+        renderScenes();
+        setStatus("全normal sceneに voice_control 初期値を適用しました。", "ok");
+      };
+
+      const saveToStorage = function () {
+        if (!spec || !Array.isArray(spec.scenes)) {
+          setStatus("保存対象のspecがありません。", "error");
+          return;
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(spec));
+        updateOutput();
+        setStatus("svrs_scene_render_spec に保存しました。", "ok");
+      };
+
+      const copyOutput = async function () {
+        const value = String(el.jsonOutput.value || "");
+        if (!value) {
+          setStatus("コピー対象がありません。", "error");
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(value);
+          setStatus("JSONをコピーしました。", "ok");
+        } catch (_err) {
+          setStatus("JSONコピーに失敗しました。", "error");
+        }
+      };
+
+      el.scenes.addEventListener("input", function (event) {
+        const input = event.target;
+        if (!input || !input.closest) return;
+        const field = input.getAttribute("data-field");
+        if (!field) return;
+        const card = input.closest(".scene");
+        if (!card) return;
+        const sceneIndex = Number(card.getAttribute("data-scene-index"));
+        if (!Number.isFinite(sceneIndex)) return;
+        updateControlValue(sceneIndex, field, input.value);
+      });
+
+      el.loadStorageBtn.addEventListener("click", loadFromStorage);
+      el.loadManualBtn.addEventListener("click", loadFromManual);
+      el.applyDefaultsBtn.addEventListener("click", applyDefaults);
+      el.saveBtn.addEventListener("click", saveToStorage);
+      el.copyBtn.addEventListener("click", copyOutput);
+
+      loadFromStorage();
+    })();
+  </script>
+</body>
+</html>

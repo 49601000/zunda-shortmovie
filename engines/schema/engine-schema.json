@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Engine Schema",
+  "type": "object",
+  "required": [
+    "id",
+    "display_name",
+    "engine_role",
+    "core_function",
+    "speech_style",
+    "output_rules",
+    "trigger_patterns",
+    "sample_lines",
+    "prompt_fragment"
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "display_name": { "type": "string" },
+    "engine_role": {
+      "type": "string",
+      "enum": [
+        "roast_engine",
+        "misunderstanding_engine",
+        "explanation_engine",
+        "reaction_engine"
+      ]
+    },
+    "core_function": { "type": "string" },
+    "speech_style": {
+      "type": "object",
+      "required": [
+        "tone",
+        "max_sentences",
+        "max_chars",
+        "humor_level",
+        "cruelty_level"
+      ],
+      "properties": {
+        "tone": { "type": "string" },
+        "max_sentences": { "type": "integer" },
+        "max_chars": { "type": "integer" },
+        "humor_level": {
+          "type": "string",
+          "enum": ["none", "low", "medium", "high"]
+        },
+        "cruelty_level": {
+          "type": "string",
+          "enum": ["none", "low", "medium", "high"]
+        }
+      }
+    },
+    "output_rules": {
+      "type": "object",
+      "required": ["must", "must_not"],
+      "properties": {
+        "must": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "must_not": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "trigger_patterns": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "sample_lines": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "prompt_fragment": { "type": "string" }
+  }
+}

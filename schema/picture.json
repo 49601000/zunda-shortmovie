@@ -1,0 +1,520 @@
+{
+  "meta": {
+    "version": "picture_json_v1",
+    "created_at": "2026-05-28T04:02:44.382Z",
+    "created_by": "picture-control-panel.html",
+    "sources": {
+      "hook": "schema/picture-hook.json",
+      "scene": "schema/picture-scene.json"
+    }
+  },
+  "canvas": {
+    "width": 1080,
+    "height": 1920,
+    "format": "vertical_9_16",
+    "aspect_ratio": "9:16"
+  },
+  "hook": {
+    "meta": {
+      "version": "hook_visual_mock_v1"
+    },
+    "canvas": {
+      "width": 1080,
+      "height": 1920,
+      "format": "vertical_9_16"
+    },
+    "background": {
+      "asset_id": "hook-bg-dots-yl"
+    },
+    "texts": {
+      "top": {
+        "text": "もしかして自分だけ？",
+        "fontSize": 90,
+        "fontWeight": 800,
+        "color": "#303030",
+        "outlineColor": "#ffffff",
+        "fillVisible": false,
+        "outlineScale": 1.06,
+        "x": 58,
+        "y": 230,
+        "rotation": -3,
+        "shadow": false
+      },
+      "main": {
+        "text": "損切",
+        "fontSize": 260,
+        "fontWeight": 900,
+        "color": "#e60012",
+        "outlineColor": "#ffffff",
+        "fillVisible": true,
+        "outlineScale": 1.06,
+        "x": 120,
+        "y": 480,
+        "rotation": -2,
+        "shadow": true
+      },
+      "sub": {
+        "text": "できない理由",
+        "fontSize": 140,
+        "fontWeight": 800,
+        "color": "#303030",
+        "outlineColor": "#ffffff",
+        "fillVisible": false,
+        "outlineScale": 1.06,
+        "x": 220,
+        "y": 827,
+        "rotation": -2,
+        "shadow": true
+      }
+    },
+    "character": {
+      "enabled": true,
+      "asset_id": "zundamon-thinking",
+      "x": 540,
+      "y": 1030,
+      "width": 520,
+      "height": 820,
+      "scale": 1,
+      "objectFit": "contain",
+      "objectPosition": "center top"
+    },
+    "bubble": {
+      "enabled": true,
+      "asset_id": "hook-speech-balloon",
+      "text": "",
+      "x": 80,
+      "y": 1230,
+      "width": 520,
+      "height": 400,
+      "fontSize": 64,
+      "color": "#222222",
+      "emphasisColor": "#e60012",
+      "backgroundColor": "#ffffff",
+      "borderColor": "#222222",
+      "borderWidth": 6,
+      "rotation": 0
+    }
+  },
+  "scene": {
+    "meta": {
+      "version": "scene_player_sot_v1",
+      "created_by": "mock/scene-player-mock-v1.html",
+      "description": "Scene Player Mock v1 のキャラ配置・表示運用・scene定義のSOT"
+    },
+    "canvas": {
+      "width": 1080,
+      "height": 1920,
+      "aspect_ratio": "9:16"
+    },
+    "layout": {
+      "background": {
+        "z_index": 1,
+        "fit": "cover"
+      },
+      "monolith": {
+        "x": 72,
+        "y": 72,
+        "width": 936,
+        "height": 132,
+        "z_index": 25
+      },
+      "slide_area": {
+        "x": 57,
+        "y": 184,
+        "width": 966,
+        "height": 1118,
+        "z_index": 20
+      },
+      "characters": {
+        "base": {
+          "width": 224,
+          "height": 736,
+          "z_index": 12
+        },
+        "left": {
+          "x_mode": "left",
+          "x": -100,
+          "bottom": -250
+        },
+        "right": {
+          "x_mode": "right",
+          "x": 102,
+          "bottom": -190
+        }
+      },
+      "dialog_box": {
+        "left": 54,
+        "right": 54,
+        "bottom": 58,
+        "height": 330,
+        "z_index": 30
+      }
+    },
+    "character_operation": {
+      "engine_to_character_asset": {
+        "metan_engine": "metan",
+        "zundamon_engine": "zundamon"
+      },
+      "state_mapping": {
+        "speaking": "mouth_closed",
+        "grayscale_frozen": "frozen",
+        "idle": "idle"
+      },
+      "framing_defaults": {
+        "left": {
+          "scale": 2.75,
+          "anchor": "bottom-left",
+          "xOffset": -96,
+          "allowCrop": false
+        },
+        "right": {
+          "scale": 3,
+          "anchor": "bottom-left",
+          "xOffset": -96,
+          "allowCrop": false
+        }
+      },
+      "static_asset_state_rules": {
+        "default": {
+          "left": "idle",
+          "right": "idle"
+        },
+        "speaker_active_state": "mouth_closed",
+        "ai_scene": {
+          "left": "frozen",
+          "right": "frozen"
+        }
+      },
+      "lip_sync": {
+        "enabled_default": true,
+        "interval_ms": 210,
+        "frames": [
+          "mouth_closed",
+          "mouth_half",
+          "mouth_open",
+          "mouth_half",
+          "mouth_closed"
+        ],
+        "supported_speakers": [
+          "metan_engine",
+          "zundamon_engine"
+        ],
+        "disabled_on_ai_scene": true,
+        "mute_non_speaking_side_to_idle": true
+      },
+      "ai_scene_detection": {
+        "role_equals": [
+          "roast"
+        ],
+        "event_equals": [
+          "ai_trigger"
+        ]
+      }
+    },
+    "scene_rules": {
+      "ai_scene_requires": {
+        "composition.monolith.mode": "sound_only",
+        "composition.monolith.display_text": "SOUND ONLY",
+        "required_effects": [
+          "grayscale_characters",
+          "darken_slide"
+        ]
+      },
+      "normal_scene_requires": {
+        "composition.monolith.mode": "silent_black",
+        "effects": []
+      }
+    },
+    "asset_registry": {
+      "backgrounds": {
+        "classroom_day": "backgrounds/classroom-daytime.png",
+        "classroom-daytime": "backgrounds/classroom-daytime.png",
+        "classroom_evening": "backgrounds/classroom-evening.png",
+        "classroom-evening": "backgrounds/classroom-evening.png",
+        "classroom_evening2": "backgrounds/classroom-evening2.png",
+        "classroom-evening2": "backgrounds/classroom-evening2.png"
+      },
+      "characters": {
+        "metan": {
+          "idle": "characters/metan/metan-0.png",
+          "mouth_closed": "characters/metan/metan-1.png",
+          "mouth_half": "characters/metan/metan-0.png",
+          "mouth_open": "characters/metan/metan-2.png",
+          "frozen": "characters/metan/metan-2.png"
+        },
+        "zundamon": {
+          "idle": "characters/zundamon/zundamon-normal-0001.png",
+          "mouth_closed": "characters/zundamon/zundamon-normal-0000.png",
+          "mouth_half": "characters/zundamon/zundamon-normal-0001.png",
+          "mouth_open": "characters/zundamon/zundamon-normal-0002.png",
+          "frozen": "characters/zundamon/zundamon-normal-0001.png"
+        }
+      },
+      "slides": {
+        "slide_hook": "slide/000/001.png",
+        "slide_misunderstanding": "slide/000/001.png",
+        "slide_explanation": "slide/000/002.png",
+        "slide_roast": "slide/000/002.png",
+        "slide_collapse": "slide/000/003.png"
+      },
+      "monolith": {
+        "silent_black": "monolith/monolith-0.png",
+        "sound_only": "monolith/monolith-1.png"
+      },
+      "ui": {
+        "dialog_box": "logboard/logboard-BK.png"
+      }
+    },
+    "scenes": [
+      {
+        "id": "scene_001",
+        "time": "0-2",
+        "role": "hook",
+        "speaker": "zundamon_engine",
+        "event": "normal",
+        "dialog": {
+          "speaker_name": "ずんだもん",
+          "speaker_color": "green",
+          "screen_text": "なんでクソ株って売れないのだ？",
+          "voice": "なんでクソ株って売れないのだ？"
+        },
+        "composition": {
+          "background": {
+            "asset_id": "classroom_day",
+            "fit": "cover"
+          },
+          "monolith": {
+            "asset_id": "monolith_silent_black",
+            "mode": "silent_black",
+            "display_text": ""
+          },
+          "slide_area": {
+            "asset_id": "whiteboard_slide",
+            "visible": true,
+            "content_ref": "slide_hook"
+          },
+          "characters": {
+            "left": {
+              "engine": "metan_engine",
+              "asset_id": "metan",
+              "state": "idle",
+              "visible": true
+            },
+            "right": {
+              "engine": "zundamon_engine",
+              "asset_id": "zundamon",
+              "state": "speaking",
+              "visible": true
+            }
+          },
+          "dialog_box": {
+            "asset_id": "dialog_box_translucent_black",
+            "visible": true,
+            "speaker_color": "green"
+          }
+        },
+        "effects": []
+      },
+      {
+        "id": "scene_002",
+        "time": "2-6",
+        "role": "misunderstanding",
+        "speaker": "zundamon_engine",
+        "event": "normal",
+        "dialog": {
+          "speaker_name": "ずんだもん",
+          "speaker_color": "green",
+          "screen_text": "売らなければ負けじゃないのだ！",
+          "voice": "売らなければ負けじゃないのだ！"
+        },
+        "composition": {
+          "background": {
+            "asset_id": "classroom_day",
+            "fit": "cover"
+          },
+          "monolith": {
+            "asset_id": "monolith_silent_black",
+            "mode": "silent_black",
+            "display_text": ""
+          },
+          "slide_area": {
+            "asset_id": "whiteboard_slide",
+            "visible": true,
+            "content_ref": "slide_misunderstanding"
+          },
+          "characters": {
+            "left": {
+              "engine": "metan_engine",
+              "asset_id": "metan",
+              "state": "idle",
+              "visible": true
+            },
+            "right": {
+              "engine": "zundamon_engine",
+              "asset_id": "zundamon",
+              "state": "speaking",
+              "visible": true
+            }
+          },
+          "dialog_box": {
+            "asset_id": "dialog_box_translucent_black",
+            "visible": true,
+            "speaker_color": "green"
+          }
+        },
+        "effects": []
+      },
+      {
+        "id": "scene_003",
+        "time": "6-13",
+        "role": "explanation",
+        "speaker": "metan_engine",
+        "event": "normal",
+        "dialog": {
+          "speaker_name": "四国めたん",
+          "speaker_color": "pink",
+          "screen_text": "それは損失回避よ。",
+          "voice": "それは損失回避よ。"
+        },
+        "composition": {
+          "background": {
+            "asset_id": "classroom_day",
+            "fit": "cover"
+          },
+          "monolith": {
+            "asset_id": "monolith_silent_black",
+            "mode": "silent_black",
+            "display_text": ""
+          },
+          "slide_area": {
+            "asset_id": "whiteboard_slide",
+            "visible": true,
+            "content_ref": "slide_explanation"
+          },
+          "characters": {
+            "left": {
+              "engine": "metan_engine",
+              "asset_id": "metan",
+              "state": "speaking",
+              "visible": true
+            },
+            "right": {
+              "engine": "zundamon_engine",
+              "asset_id": "zundamon",
+              "state": "idle",
+              "visible": true
+            }
+          },
+          "dialog_box": {
+            "asset_id": "dialog_box_translucent_black",
+            "visible": true,
+            "speaker_color": "pink"
+          }
+        },
+        "effects": []
+      },
+      {
+        "id": "scene_004",
+        "time": "13-17",
+        "role": "roast",
+        "speaker": "grok_roast",
+        "event": "ai_trigger",
+        "dialog": {
+          "speaker_name": "AI",
+          "speaker_color": "red",
+          "screen_text": "現実逃避で草。",
+          "voice": "現実逃避で草。"
+        },
+        "composition": {
+          "background": {
+            "asset_id": "classroom_day",
+            "fit": "cover"
+          },
+          "monolith": {
+            "asset_id": "monolith_sound_only",
+            "mode": "sound_only",
+            "display_text": "SOUND ONLY"
+          },
+          "slide_area": {
+            "asset_id": "whiteboard_slide",
+            "visible": true,
+            "content_ref": "slide_roast"
+          },
+          "characters": {
+            "left": {
+              "engine": "metan_engine",
+              "asset_id": "metan",
+              "state": "grayscale_frozen",
+              "visible": true
+            },
+            "right": {
+              "engine": "zundamon_engine",
+              "asset_id": "zundamon",
+              "state": "grayscale_frozen",
+              "visible": true
+            }
+          },
+          "dialog_box": {
+            "asset_id": "dialog_box_translucent_black",
+            "visible": true,
+            "speaker_color": "red"
+          }
+        },
+        "effects": [
+          "grayscale_characters",
+          "darken_slide",
+          "slight_flicker"
+        ]
+      },
+      {
+        "id": "scene_005",
+        "time": "17-22",
+        "role": "collapse",
+        "speaker": "zundamon_engine",
+        "event": "normal",
+        "dialog": {
+          "speaker_name": "ずんだもん",
+          "speaker_color": "green",
+          "screen_text": "やめるのだ…",
+          "voice": "やめるのだ…"
+        },
+        "composition": {
+          "background": {
+            "asset_id": "classroom_day",
+            "fit": "cover"
+          },
+          "monolith": {
+            "asset_id": "monolith_silent_black",
+            "mode": "silent_black",
+            "display_text": ""
+          },
+          "slide_area": {
+            "asset_id": "whiteboard_slide",
+            "visible": true,
+            "content_ref": "slide_collapse"
+          },
+          "characters": {
+            "left": {
+              "engine": "metan_engine",
+              "asset_id": "metan",
+              "state": "idle",
+              "visible": true
+            },
+            "right": {
+              "engine": "zundamon_engine",
+              "asset_id": "zundamon",
+              "state": "speaking",
+              "visible": true
+            }
+          },
+          "dialog_box": {
+            "asset_id": "dialog_box_translucent_black",
+            "visible": true,
+            "speaker_color": "green"
+          }
+        },
+        "effects": []
+      }
+    ]
+  }
+}
