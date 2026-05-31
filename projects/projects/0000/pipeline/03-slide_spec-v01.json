@@ -1,0 +1,30 @@
+{
+  "project_id": "0000",
+  "source": "01-summary_spec-v01.json",
+  "slides": [
+    {
+      "slide_id": "slide_01",
+      "role": "problem",
+      "title": "",
+      "body": "",
+      "visual_intent": "",
+      "duration_sec": 8
+    },
+    {
+      "slide_id": "slide_02",
+      "role": "development",
+      "title": "",
+      "body": "",
+      "visual_intent": "",
+      "duration_sec": 10
+    },
+    {
+      "slide_id": "slide_03",
+      "role": "landing",
+      "title": "",
+      "body": "",
+      "visual_intent": "",
+      "duration_sec": 8
+    }
+  ]
+}

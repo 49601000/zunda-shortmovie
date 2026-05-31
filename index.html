@@ -933,46 +933,73 @@
       };
     }
 
-    function buildSlideSpec(projectId, summaryName, summarySpec) {
-      const lines = Array.isArray(summarySpec.key_points) && summarySpec.key_points.length
-        ? summarySpec.key_points
-        : Array.isArray(summarySpec.usable_lines) ? summarySpec.usable_lines : [];
+    function shortText(text, maxChars = 38) {
+      const raw = String(text || "").replace(/\s+/g, " ").trim();
+      if (!raw) return "";
+      if (charLen(raw) <= maxChars) return raw;
+      return [...raw].slice(0, Math.max(1, maxChars - 1)).join("") + "…";
+    }
 
-      const slideCount = lines.length >= 3 ? 3 : 2;
-      const baseBody = [summarySpec.summary || "", ...lines].filter(Boolean);
-      const first = baseBody.slice(0, 2).join("\n");
-      const second = baseBody.slice(2, 4).join("\n") || summarySpec.summary || "";
-      const third = baseBody.slice(4, 6).join("\n") || (lines[lines.length - 1] || summarySpec.main_topic || "");
+    function stripSpeakerPrefix(text) {
+      return String(text || "").replace(/^[^:：\n]{1,24}[:：]\s*/, "").trim();
+    }
+
+    function toSlideSafeLine(text) {
+      const line = stripSpeakerPrefix(text).replace(/[「」『』]/g, "").trim();
+      if (!line) return "";
+      return shortText(line, 32);
+    }
+
+    function firstAbstractSeed(summarySpec) {
+      const candidates = []
+        .concat(Array.isArray(summarySpec.key_points) ? summarySpec.key_points : [])
+        .concat(Array.isArray(summarySpec.usable_lines) ? summarySpec.usable_lines : []);
+
+      for (const line of candidates) {
+        const seed = toSlideSafeLine(line);
+        if (!seed) continue;
+        if (/[!?！？]/.test(seed)) continue;
+        return seed;
+      }
+      return "";
+    }
+
+    function buildSlideSpec(projectId, summaryName, summarySpec) {
+      const topic = shortText(summarySpec.main_topic || summarySpec.title || "このテーマ", 18);
+      const abstractSeed = firstAbstractSeed(summarySpec);
+      const problemBody = abstractSeed
+        ? `${topic}で起きる矛盾: ${abstractSeed}`
+        : `${topic}で起きる矛盾や違和感を1つ定義する`;
+
+      const developmentBody = `${topic}の流れを整理: 原因 → 認知の調整 → 行動`;
+      const landingBody = `${topic}の気づき: 正当化に気づき、次の1アクションを決める`;
 
       const slides = [
         {
           slide_id: "slide_01",
           role: "problem",
-          title: `${summarySpec.main_topic || "テーマ"}の課題`,
-          body: first || summarySpec.summary || "",
-          visual_intent: "違和感・問題提起を強調する構図",
+          title: shortText(`${topic}の課題`, 20),
+          body: shortText(problemBody, 48),
+          visual_intent: "問題の核を1メッセージで示す概念図",
           duration_sec: 8
         },
         {
           slide_id: "slide_02",
           role: "development",
-          title: "なぜそうなるか",
-          body: second || "背景と展開を提示",
-          visual_intent: "対比・因果が見える構図",
+          title: "なぜ起きるか",
+          body: shortText(developmentBody, 48),
+          visual_intent: "原因→調整→結果の矢印で示す図",
           duration_sec: 10
-        }
-      ];
-
-      if (slideCount === 3) {
-        slides.push({
+        },
+        {
           slide_id: "slide_03",
           role: "landing",
-          title: "結論と持ち帰り",
-          body: third || "結論を短く提示",
-          visual_intent: "解決・納得感を示す構図",
+          title: "今日の気づき",
+          body: shortText(landingBody, 48),
+          visual_intent: "内省を促すシンボル中心の図",
           duration_sec: 8
-        });
-      }
+        }
+      ];
 
       return {
         project_id: projectId,
