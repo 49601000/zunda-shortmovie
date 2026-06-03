@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Project Launcher</title>
+  <title>module1:会話ログ → 動画素材JSON</title>
   <style>
     :root {
       --bg-a: #081119;
@@ -239,7 +239,7 @@
 <body>
   <main class="wrap">
     <section class="card hero">
-      <h1>Index Launcher: 会話ログ → 動画素材JSON</h1>
+      <h1>module1:会話ログ → 動画素材JSON</h1>
       <p>会話ログを貼り付け/読込して、`summary → hook → slide → scene → sub_scene → render` を段階生成します。</p>
       <div class="actions">
         <button id="pickWorkspaceBtn" type="button">ワークスペースを選択</button>
@@ -360,6 +360,22 @@
 
     function charLen(text) {
       return [...String(text || "")].length;
+    }
+
+    function normalizeRawConversation(text) {
+      return String(text || "")
+        .replace(/\r\n?/g, "\n")
+        .replace(/」\s*「/g, "」\n「")
+        .replace(/」\s*(?=[^\s「」\n:：]{1,24}「)/g, "」\n")
+        .replace(/(^|\n)\s*([^「」\n:：]{1,24})「([^」]*)」/g, (_match, lineStart, speaker, body) => {
+          return `${lineStart}${speaker.trim()}: ${body.trim()}`;
+        })
+        .replace(/[「」]/g, "")
+        .split("\n")
+        .map((line) => line.trim())
+        .join("\n")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
     }
 
     function defaultSpeakerId(speaker) {
@@ -797,7 +813,7 @@
       }
       if (!best) throw new Error("raw/raw_conversation.txt が見つかりません。まず会話を読み込んでください。");
       const handle = await rawDir.getFileHandle(best.name);
-      return { name: best.name, text: await readText(handle), version: best.version };
+      return { name: best.name, text: normalizeRawConversation(await readText(handle)), version: best.version };
     }
 
     async function nextRawConversationName(rawDir) {
@@ -1463,7 +1479,7 @@
           normalized = text;
         }
       }
-      document.getElementById("conversationInput").value = normalized;
+      document.getElementById("conversationInput").value = normalizeRawConversation(normalized);
       setStatus("pipelineStatus", `ファイル読込: ${file.name}`, "ok");
       input.value = "";
     }
@@ -1490,13 +1506,15 @@
     }
 
     async function stepLoadConversation(projectId) {
-      const text = document.getElementById("conversationInput").value.trim();
+      const input = document.getElementById("conversationInput");
+      const text = normalizeRawConversation(input.value);
       if (!text) throw new Error("会話ログが空です。textarea か txt/json から入力してください。");
+      input.value = text;
       const { rawDir } = await getProjectHandles(projectId);
       const fileName = await nextRawConversationName(rawDir);
       const handle = await rawDir.getFileHandle(fileName, { create: true });
       await writeText(handle, text + "\n");
-      return [{ path: `projects/${projectId}/raw/${fileName}`, note: "raw_conversation 保存" }];
+      return [{ path: `projects/${projectId}/raw/${fileName}`, note: "raw_conversation 保存（「」除去済み）" }];
     }
 
     async function stepSummary(projectId) {
@@ -1604,6 +1622,12 @@
         syncPipelineButtons();
       });
       document.getElementById("conversationFile").addEventListener("change", onConversationFileSelected);
+      const conversationInput = document.getElementById("conversationInput");
+      conversationInput.addEventListener("paste", () => {
+        setTimeout(() => {
+          conversationInput.value = normalizeRawConversation(conversationInput.value);
+        }, 0);
+      });
 
       document.getElementById("btnLoadConversation").addEventListener("click", () => runStep("会話を読み込む", stepLoadConversation));
       document.getElementById("btnSummary").addEventListener("click", () => runStep("summary_spec 作成", stepSummary));

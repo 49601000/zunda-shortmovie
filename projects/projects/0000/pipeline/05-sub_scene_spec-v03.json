@@ -1,0 +1,394 @@
+{
+  "project_id": "0000",
+  "source": "04-scene_spec-v03.json",
+  "scenes": [
+    {
+      "scene_id": "scene_001",
+      "slide_id": "slide_01",
+      "speaker": "議題",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "認知的不協和",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_001_01",
+          "screen_text": "認知的不協和",
+          "display_mode": "replace",
+          "char_count": 6,
+          "start_sec": 0,
+          "duration_sec": 1.6
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_002",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「課金したゲームがつまらない？違うのだ、ボクがまだ面白さに到達してないだけなのだ！」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_002_01",
+          "screen_text": "「課金したゲームがつまらない？",
+          "display_mode": "replace",
+          "char_count": 15,
+          "start_sec": 1.6,
+          "duration_sec": 2.14
+        },
+        {
+          "sub_scene_id": "scene_002_02",
+          "screen_text": "違うのだ、",
+          "display_mode": "replace",
+          "char_count": 5,
+          "start_sec": 3.74,
+          "duration_sec": 0.71
+        },
+        {
+          "sub_scene_id": "scene_002_03",
+          "screen_text": "ボクがまだ面白さに到達してないだけな",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 4.45,
+          "duration_sec": 2.57
+        },
+        {
+          "sub_scene_id": "scene_002_04",
+          "screen_text": "のだ！」",
+          "display_mode": "replace",
+          "char_count": 4,
+          "start_sec": 7.02,
+          "duration_sec": 0.6
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_003",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "「それは認知的不協和ね。お金を使った自分を守るために、現実を曲げてるわ」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_003_01",
+          "screen_text": "「それは認知的不協和ね。",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_sec": 7.62,
+          "duration_sec": 1.94
+        },
+        {
+          "sub_scene_id": "scene_003_02",
+          "screen_text": "お金を使った自分を守るために、",
+          "display_mode": "replace",
+          "char_count": 15,
+          "start_sec": 9.56,
+          "duration_sec": 2.42
+        },
+        {
+          "sub_scene_id": "scene_003_03",
+          "screen_text": "現実を曲げてるわ」",
+          "display_mode": "replace",
+          "char_count": 9,
+          "start_sec": 11.98,
+          "duration_sec": 1.45
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_004",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「曲げてないのだ！ボクは未来の神ゲーに先行投資しただけなのだ！」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_004_01",
+          "screen_text": "「曲げてないのだ！",
+          "display_mode": "replace",
+          "char_count": 9,
+          "start_sec": 13.43,
+          "duration_sec": 1.45
+        },
+        {
+          "sub_scene_id": "scene_004_02",
+          "screen_text": "ボクは未来の神ゲーに先行投資しただけ",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 14.88,
+          "duration_sec": 2.9
+        },
+        {
+          "sub_scene_id": "scene_004_03",
+          "screen_text": "なのだ！」",
+          "display_mode": "replace",
+          "char_count": 5,
+          "start_sec": 17.78,
+          "duration_sec": 0.81
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_005",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "「今つまらないって言ったじゃない。開始3秒で矛盾してるのよ」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_005_01",
+          "screen_text": "「今つまらないって言ったじゃない。",
+          "display_mode": "replace",
+          "char_count": 17,
+          "start_sec": 18.59,
+          "duration_sec": 2.74
+        },
+        {
+          "sub_scene_id": "scene_005_02",
+          "screen_text": "開始3秒で矛盾してるのよ」",
+          "display_mode": "replace",
+          "char_count": 13,
+          "start_sec": 21.33,
+          "duration_sec": 2.1
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_006",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「でも認めたら負けなのだ！つまらない物にお金を出したボクが爆誕するのだ！」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_006_01",
+          "screen_text": "「でも認めたら負けなのだ！",
+          "display_mode": "replace",
+          "char_count": 13,
+          "start_sec": 23.43,
+          "duration_sec": 2.1
+        },
+        {
+          "sub_scene_id": "scene_006_02",
+          "screen_text": "つまらない物にお金を出したボクが爆誕",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 25.53,
+          "duration_sec": 2.9
+        },
+        {
+          "sub_scene_id": "scene_006_03",
+          "screen_text": "するのだ！」",
+          "display_mode": "replace",
+          "char_count": 6,
+          "start_sec": 28.43,
+          "duration_sec": 0.97
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_007",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "「そこなのよ。人は行動と本音がズレると、言い訳で気持ちを整えにいくの」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_007_01",
+          "screen_text": "「そこなのよ。",
+          "display_mode": "replace",
+          "char_count": 7,
+          "start_sec": 29.4,
+          "duration_sec": 1.13
+        },
+        {
+          "sub_scene_id": "scene_007_02",
+          "screen_text": "人は行動と本音がズレると、",
+          "display_mode": "replace",
+          "char_count": 13,
+          "start_sec": 30.53,
+          "duration_sec": 2.1
+        },
+        {
+          "sub_scene_id": "scene_007_03",
+          "screen_text": "言い訳で気持ちを整えにいくの」",
+          "display_mode": "replace",
+          "char_count": 15,
+          "start_sec": 32.63,
+          "duration_sec": 2.42
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_008",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「つまりボクは悪くないのだ！脳が勝手にボクを守ってるのだ！」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_008_01",
+          "screen_text": "「つまりボクは悪くないのだ！",
+          "display_mode": "replace",
+          "char_count": 14,
+          "start_sec": 35.05,
+          "duration_sec": 2.26
+        },
+        {
+          "sub_scene_id": "scene_008_02",
+          "screen_text": "脳が勝手にボクを守ってるのだ！」",
+          "display_mode": "replace",
+          "char_count": 16,
+          "start_sec": 37.31,
+          "duration_sec": 2.58
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_009",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "「急に責任の外注を始めたわね」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_009_01",
+          "screen_text": "「急に責任の外注を始めたわね」",
+          "display_mode": "replace",
+          "char_count": 15,
+          "start_sec": 39.89,
+          "duration_sec": 2.42
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_010",
+      "slide_id": "slide_03",
+      "speaker": "天の声",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "「食べ放題で限界なのに、最後の唐揚げを“元を取るため”に飲み込む顔ですね」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_010_01",
+          "screen_text": "「食べ放題で限界なのに、",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_sec": 42.31,
+          "duration_sec": 1.94
+        },
+        {
+          "sub_scene_id": "scene_010_02",
+          "screen_text": "最後の唐揚げを“元を取るため”に飲み",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 44.25,
+          "duration_sec": 2.9
+        },
+        {
+          "sub_scene_id": "scene_010_03",
+          "screen_text": "込む顔ですね」",
+          "display_mode": "replace",
+          "char_count": 7,
+          "start_sec": 47.15,
+          "duration_sec": 1.13
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_011",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「それは違うのだ！唐揚げは別腹なのだ！あとデザートも別次元なのだ！」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_011_01",
+          "screen_text": "「それは違うのだ！",
+          "display_mode": "replace",
+          "char_count": 9,
+          "start_sec": 48.28,
+          "duration_sec": 1.45
+        },
+        {
+          "sub_scene_id": "scene_011_02",
+          "screen_text": "唐揚げは別腹なのだ！",
+          "display_mode": "replace",
+          "char_count": 10,
+          "start_sec": 49.73,
+          "duration_sec": 1.61
+        },
+        {
+          "sub_scene_id": "scene_011_03",
+          "screen_text": "あとデザートも別次元なのだ！」",
+          "display_mode": "replace",
+          "char_count": 15,
+          "start_sec": 51.34,
+          "duration_sec": 2.42
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_012",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "「胃袋まで言い訳で拡張しないで」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_012_01",
+          "screen_text": "「胃袋まで言い訳で拡張しないで」",
+          "display_mode": "replace",
+          "char_count": 16,
+          "start_sec": 53.76,
+          "duration_sec": 2.58
+        }
+      ]
+    }
+  ]
+}

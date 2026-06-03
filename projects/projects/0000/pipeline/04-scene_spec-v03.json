@@ -1,0 +1,102 @@
+{
+  "project_id": "0000",
+  "source": "raw_conversation-v03.txt",
+  "scenes": [
+    {
+      "scene_id": "scene_001",
+      "slide_id": "slide_01",
+      "speaker": "議題",
+      "text": "認知的不協和",
+      "emotion": "neutral",
+      "duration_sec": 1.6
+    },
+    {
+      "scene_id": "scene_002",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "text": "「課金したゲームがつまらない？違うのだ、ボクがまだ面白さに到達してないだけなのだ！」",
+      "emotion": "excited",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_003",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "text": "「それは認知的不協和ね。お金を使った自分を守るために、現実を曲げてるわ」",
+      "emotion": "neutral",
+      "duration_sec": 5.81
+    },
+    {
+      "scene_id": "scene_004",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "text": "「曲げてないのだ！ボクは未来の神ゲーに先行投資しただけなのだ！」",
+      "emotion": "excited",
+      "duration_sec": 5.16
+    },
+    {
+      "scene_id": "scene_005",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "text": "「今つまらないって言ったじゃない。開始3秒で矛盾してるのよ」",
+      "emotion": "neutral",
+      "duration_sec": 4.84
+    },
+    {
+      "scene_id": "scene_006",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "text": "「でも認めたら負けなのだ！つまらない物にお金を出したボクが爆誕するのだ！」",
+      "emotion": "excited",
+      "duration_sec": 5.97
+    },
+    {
+      "scene_id": "scene_007",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "text": "「そこなのよ。人は行動と本音がズレると、言い訳で気持ちを整えにいくの」",
+      "emotion": "neutral",
+      "duration_sec": 5.65
+    },
+    {
+      "scene_id": "scene_008",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "text": "「つまりボクは悪くないのだ！脳が勝手にボクを守ってるのだ！」",
+      "emotion": "excited",
+      "duration_sec": 4.84
+    },
+    {
+      "scene_id": "scene_009",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "text": "「急に責任の外注を始めたわね」",
+      "emotion": "neutral",
+      "duration_sec": 2.42
+    },
+    {
+      "scene_id": "scene_010",
+      "slide_id": "slide_03",
+      "speaker": "天の声",
+      "text": "「食べ放題で限界なのに、最後の唐揚げを“元を取るため”に飲み込む顔ですね」",
+      "emotion": "neutral",
+      "duration_sec": 5.97
+    },
+    {
+      "scene_id": "scene_011",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "text": "「それは違うのだ！唐揚げは別腹なのだ！あとデザートも別次元なのだ！」",
+      "emotion": "excited",
+      "duration_sec": 5.48
+    },
+    {
+      "scene_id": "scene_012",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "text": "「胃袋まで言い訳で拡張しないで」",
+      "emotion": "neutral",
+      "duration_sec": 2.58
+    }
+  ]
+}

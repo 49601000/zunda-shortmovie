@@ -244,8 +244,8 @@
       <h1>ショート動画 v2 ランチャー</h1>
       <p>現在の参照先は <code>module/</code> 配下です。流れは「JSON作成 → スライド生成プロンプト → Final Cut調整 → render」です。</p>
       <div class="hero-actions">
-        <a class="btn" href="./module/1_makejson.html" target="_blank" rel="noopener noreferrer">まずJSON作成を開く</a>
-        <button class="btn ghost" type="button" id="copyPipelineBtn">推奨フローをコピー</button>
+        <a class="btn" href="https://49601000.github.io/zund-short-prompter/" target="_blank" rel="noopener noreferrer">会話を生成する</a>
+        <a class="btn" href="./module/1_makejson.html" target="_blank" rel="noopener noreferrer">module1:JSON作成を開く</a>
       </div>
       <p class="status" id="lastOpenedState"></p>
     </section>
@@ -315,7 +315,6 @@
       finalJsonPath: document.getElementById("finalJsonPath"),
       renderCommand: document.getElementById("renderCommand"),
       commandStatus: document.getElementById("commandStatus"),
-      copyPipelineBtn: document.getElementById("copyPipelineBtn"),
       copyFinalRenderBtn: document.getElementById("copyFinalRenderBtn"),
       copyFinalDevBtn: document.getElementById("copyFinalDevBtn"),
       resetIdsBtn: document.getElementById("resetIdsBtn")
@@ -344,15 +343,6 @@
         `$env:SCENE_OUTPUT_RUN_ID="${getRunId()}"`,
         `$env:SCENE_RENDER_SPEC_PATH="${buildFinalJsonPath()}"`,
         `npm run ${scriptName}`
-      ].join("\n");
-    }
-
-    function buildPipelineText() {
-      return [
-        "1. module/1_makejson.html で 06-render-draft を作成",
-        "2. module/2_slideprompt_builder.html でスライド用プロンプトを作成",
-        "3. module/3_Final-Cut-panel.html で render-final-v01.json に保存",
-        "4. index.html の final JSON render コマンドをコピーして実行"
       ].join("\n");
     }
 
@@ -391,10 +381,6 @@
         localStorage.setItem(LAST_OPENED_KEY, link.getAttribute("href") || "");
         renderLastOpened();
       });
-    });
-
-    el.copyPipelineBtn.addEventListener("click", () => {
-      copyText(buildPipelineText(), "推奨フローをコピーしました。");
     });
 
     el.copyFinalRenderBtn.addEventListener("click", () => {

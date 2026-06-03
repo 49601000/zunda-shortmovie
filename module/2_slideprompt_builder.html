@@ -254,10 +254,8 @@
       </div>
       <div class="row">
         <button id="loadRawConversationBtn" class="ghost">Load Raw Conversation</button>
-        <button id="loadSlideSpecBtn">Load Slide Spec</button>
       </div>
       <input id="rawConversationFileInput" type="file" accept=".txt,.md,text/plain,text/markdown" style="display:none">
-      <input id="slideSpecFileInput" type="file" accept=".json,application/json" style="display:none">
       <div id="status" class="status"></div>
     </section>
 
@@ -273,17 +271,6 @@
           </div>
           <label for="plannerPromptArea">ChatGPTへ投げる Lesson Planner Prompt</label>
           <textarea id="plannerPromptArea" readonly placeholder="生成後にLesson Planner Promptが表示されます"></textarea>
-        </div>
-
-        <div class="card">
-          <p class="section">Legacy / Direct: slide_spec JSON</p>
-          <label for="slideSpecInput">slide_spec JSON Paste</label>
-          <textarea id="slideSpecInput" placeholder="Launcherで生成した slide_spec JSON を貼り付け"></textarea>
-          <div class="row">
-            <button id="applySlideSpecBtn" class="ghost">Apply Slide Spec JSON</button>
-          </div>
-          <p class="guide-note">読み込み済みslide_spec</p>
-          <pre id="loadedSlideSpec">未読込</pre>
         </div>
 
         <div class="card">
@@ -306,7 +293,7 @@
 
         <div class="card">
           <p class="section">Step E: Generate Slide Prompts</p>
-          <p class="guide-note">lesson_slide_plan JSON がある場合は slide_spec に変換してから、既存方式で中央スライド画像向けプロンプトを生成します。</p>
+          <p class="guide-note">lesson_slide_plan JSON を slide_spec に変換してから、中央スライド画像向けプロンプトを生成します。</p>
           <div id="warning" class="warn-note"></div>
           <div class="row">
             <button id="generateBtn">Slide Prompt生成</button>
@@ -423,8 +410,6 @@
       const el = {
         loadRawConversationBtn: document.getElementById("loadRawConversationBtn"),
         rawConversationFileInput: document.getElementById("rawConversationFileInput"),
-        loadSlideSpecBtn: document.getElementById("loadSlideSpecBtn"),
-        slideSpecFileInput: document.getElementById("slideSpecFileInput"),
         generatePlannerPromptBtn: document.getElementById("generatePlannerPromptBtn"),
         copyPlannerPromptBtn: document.getElementById("copyPlannerPromptBtn"),
         rawConversationInput: document.getElementById("rawConversationInput"),
@@ -432,11 +417,8 @@
         applyLessonPlanBtn: document.getElementById("applyLessonPlanBtn"),
         lessonPlanInput: document.getElementById("lessonPlanInput"),
         loadedLessonPlan: document.getElementById("loadedLessonPlan"),
-        applySlideSpecBtn: document.getElementById("applySlideSpecBtn"),
         status: document.getElementById("status"),
         warning: document.getElementById("warning"),
-        slideSpecInput: document.getElementById("slideSpecInput"),
-        loadedSlideSpec: document.getElementById("loadedSlideSpec"),
         presetWindow: document.getElementById("presetWindow"),
         generateBtn: document.getElementById("generateBtn"),
         resetBtn: document.getElementById("resetBtn"),
@@ -477,8 +459,8 @@
       function parseLooseJson(raw) {
         const text = String(raw || "").trim();
         if (!text) return null;
-        const direct = parseJson(text);
-        if (direct) return direct;
+        const parsedJson = parseJson(text);
+        if (parsedJson) return parsedJson;
 
         const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
         if (fenced && fenced[1]) {
@@ -670,8 +652,7 @@
         };
       }
 
-      function renderLoaded() {
-        el.loadedSlideSpec.textContent = slideSpec ? JSON.stringify(slideSpec, null, 2) : "未読込";
+      function renderPreset() {
         el.presetWindow.textContent = JSON.stringify(CANVAS_PRESET_PARAMETER, null, 2);
       }
 
@@ -742,15 +723,6 @@
         el.rawConversationFileInput.click();
       }
 
-      function loadSlideSpec() {
-        if (!el.slideSpecFileInput) {
-          status("この環境ではファイル選択が使えません。", true);
-          return;
-        }
-        el.slideSpecFileInput.value = "";
-        el.slideSpecFileInput.click();
-      }
-
       async function onRawConversationFileSelected(event) {
         const file = event.target.files && event.target.files[0];
         if (!file) return;
@@ -764,42 +736,6 @@
         el.rawConversationInput.value = text;
         saveState();
         status("raw/conversation をファイルから読み込みました: " + file.name, false);
-      }
-
-      function applyParsedSlideSpec(parsed, successMsg) {
-        if (!validateSlideSpec(parsed)) {
-          status("slide_spec の形式が不足しています（slides配列と slide_id/role/title/body が必要）。", true);
-          return;
-        }
-        slideSpec = parsed;
-        el.slideSpecInput.value = JSON.stringify(slideSpec, null, 2);
-        renderLoaded();
-        saveState();
-        status(successMsg, false);
-      }
-
-      async function onSlideSpecFileSelected(event) {
-        const file = event.target.files && event.target.files[0];
-        if (!file) return;
-        let text = "";
-        try {
-          text = await file.text();
-        } catch (_err) {
-          status("ファイルの読み込みに失敗しました。", true);
-          return;
-        }
-        const parsed = parseJson(text);
-        applyParsedSlideSpec(parsed, "slide_spec をファイルから読み込みました: " + file.name);
-      }
-
-      function applySlideSpec() {
-        const raw = el.slideSpecInput.value.trim();
-        if (!raw) {
-          status("slide_spec JSON を貼り付けてください。", true);
-          return;
-        }
-        const parsed = parseJson(raw);
-        applyParsedSlideSpec(parsed, "slide_spec を適用しました。");
       }
 
       function generateLessonPlannerPrompt() {
@@ -820,16 +756,24 @@
         }
       }
 
+      function clearLessonPlanState() {
+        lessonSlidePlan = null;
+        slideSpec = null;
+        renderLessonLoaded();
+      }
+
       function applyLessonPlan(options) {
         const silent = options && options.silent;
         const raw = el.lessonPlanInput.value.trim();
         if (!raw) {
+          clearLessonPlanState();
           if (!silent) status("lesson_slide_plan JSON を貼り付けてください。", true);
           return false;
         }
         const parsed = parseLooseJson(raw);
         const validation = validateLessonSlidePlan(parsed);
         if (!validation.ok) {
+          clearLessonPlanState();
           status("lesson_slide_plan の形式が不足しています: " + validation.errors.join(" / "), true);
           return false;
         }
@@ -837,9 +781,7 @@
         lessonSlidePlan = normalizeLessonSlidePlan(parsed);
         slideSpec = mapLessonPlanToSlideSpec(lessonSlidePlan);
         el.lessonPlanInput.value = JSON.stringify(lessonSlidePlan, null, 2);
-        el.slideSpecInput.value = JSON.stringify(slideSpec, null, 2);
         renderLessonLoaded();
-        renderLoaded();
         saveState();
         if (!silent) {
           status("lesson_slide_plan を slide_spec に変換しました。", false);
@@ -988,12 +930,17 @@
       }
 
       function generatePrompt() {
-        if (el.lessonPlanInput.value.trim()) {
-          const applied = applyLessonPlan({ silent: true });
-          if (!applied) return;
+        const hasLessonPlanInput = !!el.lessonPlanInput.value.trim();
+        const applied = applyLessonPlan({ silent: true });
+        if (!applied) {
+          if (!hasLessonPlanInput) {
+            status("lesson_slide_plan JSON を読み込んでください。", true);
+          }
+          saveState();
+          return;
         }
         if (!slideSpec) {
-          status("slide_spec を読み込んでください。", true);
+          status("lesson_slide_plan JSON を読み込んでください。", true);
           return;
         }
         const spec = buildSpec();
@@ -1028,7 +975,7 @@
 
       function updateWarning() {
         if (!slideSpec) {
-          el.warning.textContent = "注意: lesson_slide_plan JSON または既存の slide_spec が必要です。";
+          el.warning.textContent = "注意: lesson_slide_plan JSON が必要です。";
           return;
         }
         el.warning.textContent = "";
@@ -1036,13 +983,11 @@
 
       function saveState() {
         const state = {
-          slideSpec: slideSpec,
           lessonSlidePlan: lessonSlidePlan,
           latestGeneratedSpec: latestGeneratedSpec,
           rawConversationInput: el.rawConversationInput.value,
           plannerPromptArea: el.plannerPromptArea.value,
           lessonPlanInput: el.lessonPlanInput.value,
-          slideSpecInput: el.slideSpecInput.value,
           generatedJsonArea: el.generatedJsonArea.value
         };
         localStorage.setItem(STATE_KEY, JSON.stringify(state));
@@ -1051,17 +996,25 @@
         updateWarning();
       }
 
+      function onLessonPlanInputChanged() {
+        if (!el.lessonPlanInput.value.trim()) {
+          clearLessonPlanState();
+        }
+        saveState();
+      }
+
       function loadState() {
         try {
           const raw = localStorage.getItem(STATE_KEY);
           const s = raw ? JSON.parse(raw) : {};
-          if (s.slideSpec) slideSpec = s.slideSpec;
-          if (s.lessonSlidePlan && typeof s.lessonSlidePlan === "object") lessonSlidePlan = s.lessonSlidePlan;
+          if (s.lessonSlidePlan && typeof s.lessonSlidePlan === "object") {
+            lessonSlidePlan = s.lessonSlidePlan;
+            slideSpec = mapLessonPlanToSlideSpec(lessonSlidePlan);
+          }
           if (s.latestGeneratedSpec && typeof s.latestGeneratedSpec === "object") latestGeneratedSpec = s.latestGeneratedSpec;
           if (typeof s.rawConversationInput === "string") el.rawConversationInput.value = s.rawConversationInput;
           if (typeof s.plannerPromptArea === "string") el.plannerPromptArea.value = s.plannerPromptArea;
           if (typeof s.lessonPlanInput === "string") el.lessonPlanInput.value = s.lessonPlanInput;
-          if (typeof s.slideSpecInput === "string") el.slideSpecInput.value = s.slideSpecInput;
           if (typeof s.generatedJsonArea === "string") el.generatedJsonArea.value = s.generatedJsonArea;
           const storedRawConversation = localStorage.getItem(RAW_CONVERSATION_KEY);
           if (typeof storedRawConversation === "string") el.rawConversationInput.value = storedRawConversation;
@@ -1071,6 +1024,7 @@
             const parsedLessonPlan = parseLooseJson(storedLessonPlan);
             if (validateLessonSlidePlan(parsedLessonPlan).ok) {
               lessonSlidePlan = normalizeLessonSlidePlan(parsedLessonPlan);
+              slideSpec = mapLessonPlanToSlideSpec(lessonSlidePlan);
             }
           }
           const storedOutput = localStorage.getItem(OUTPUT_KEY);
@@ -1081,7 +1035,7 @@
               el.generatedJsonArea.value = JSON.stringify(parsedOutput, null, 2);
             }
           }
-          renderLoaded();
+          renderPreset();
           renderLessonLoaded();
           if (latestGeneratedSpec && Array.isArray(latestGeneratedSpec.generated_prompt_set)) {
             renderPromptList(latestGeneratedSpec);
@@ -1099,8 +1053,6 @@
         el.plannerPromptArea.value = "";
         el.lessonPlanInput.value = "";
         el.loadedLessonPlan.textContent = "未読込";
-        el.slideSpecInput.value = "";
-        el.loadedSlideSpec.textContent = "未読込";
         el.generatedJsonArea.value = "";
         el.promptList.innerHTML = "";
         el.warning.textContent = "";
@@ -1111,25 +1063,24 @@
         status("リセットしました。", false);
       }
 
-      [el.rawConversationInput, el.plannerPromptArea, el.lessonPlanInput, el.slideSpecInput].forEach(function (node) {
+      [el.rawConversationInput, el.plannerPromptArea].forEach(function (node) {
         node.addEventListener("input", saveState);
         node.addEventListener("change", saveState);
       });
+      el.lessonPlanInput.addEventListener("input", onLessonPlanInputChanged);
+      el.lessonPlanInput.addEventListener("change", onLessonPlanInputChanged);
 
       el.loadRawConversationBtn.addEventListener("click", loadRawConversation);
       el.rawConversationFileInput.addEventListener("change", onRawConversationFileSelected);
       el.generatePlannerPromptBtn.addEventListener("click", generateLessonPlannerPrompt);
       el.copyPlannerPromptBtn.addEventListener("click", copyPlannerPrompt);
-      el.loadSlideSpecBtn.addEventListener("click", loadSlideSpec);
-      el.slideSpecFileInput.addEventListener("change", onSlideSpecFileSelected);
       el.applyLessonPlanBtn.addEventListener("click", function () { applyLessonPlan(); });
-      el.applySlideSpecBtn.addEventListener("click", applySlideSpec);
       el.generateBtn.addEventListener("click", generatePrompt);
       el.resetBtn.addEventListener("click", resetAll);
 
       wireButtonFeedback();
       loadState();
-      renderLoaded();
+      renderPreset();
       updateWarning();
     })();
   </script>
