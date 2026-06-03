@@ -1,0 +1,102 @@
+{
+  "project_id": "0000",
+  "source": "raw_conversation-v02.txt",
+  "scenes": [
+    {
+      "scene_id": "scene_001",
+      "slide_id": "slide_01",
+      "speaker": "議題",
+      "text": "認知的不協和",
+      "emotion": "neutral",
+      "duration_sec": 1.6
+    },
+    {
+      "scene_id": "scene_002",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "text": "「ダイエット中だけど、この大盛りラーメンは実質野菜だからカロリーゼロなのだ！」",
+      "emotion": "excited",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_003",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "text": "「出たわね、都合のいい脳内変換。それ完全に『認知的不協和』の典型例よ」",
+      "emotion": "neutral",
+      "duration_sec": 5.65
+    },
+    {
+      "scene_id": "scene_004",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "text": "「不協和音？ボクの頭の中はいつだってハッピーなメロディが流れてるのだ！」",
+      "emotion": "excited",
+      "duration_sec": 5.81
+    },
+    {
+      "scene_id": "scene_005",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "text": "「違うわよ。自分の行動と現実に矛盾があるとき、不快だから都合よく言い訳を作って脳を納得させる現象のことよ」",
+      "emotion": "neutral",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_006",
+      "slide_id": "slide_02",
+      "speaker": "天の声",
+      "text": "「タバコは体に悪いと言いつつ、ストレス解消に良いと言い訳して吸い続けるアレですね」",
+      "emotion": "neutral",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_007",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "text": "「そうなのだ！ボクのラーメンも、食べないとストレスで死んじゃうから命の恩人なのだ！」",
+      "emotion": "excited",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_008",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "text": "「完全に自己正当化のモンスターになってるじゃない。そうやって現実から目を背けて楽しい？」",
+      "emotion": "curious",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_009",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "text": "「めちゃくちゃ楽しいのだ！現実なんて直視したら、ボクの怠惰なソウルが粉々になっちゃうのだ！」",
+      "emotion": "excited",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_010",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "text": "「開き直るんじゃないわよ。少しは矛盾を受け入れて反省しなさいな」",
+      "emotion": "neutral",
+      "duration_sec": 5.16
+    },
+    {
+      "scene_id": "scene_011",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "text": "「じゃあめたん、ボクの代わりにこのラーメンのカロリーを消費してほしいのだ！」",
+      "emotion": "excited",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_012",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "text": "「なんで私があなたの脂肪を背負わなきゃいけないのよ、お断りよ」",
+      "emotion": "curious",
+      "duration_sec": 5
+    }
+  ]
+}
