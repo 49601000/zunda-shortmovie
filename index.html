@@ -3,47 +3,426 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Launcher Moved</title>
+  <title>ショート動画 v2 ランチャー</title>
   <style>
+    :root {
+      --bg-a: #081119;
+      --bg-b: #102236;
+      --bg-c: #17353f;
+      --panel: rgba(8, 20, 30, 0.86);
+      --panel-soft: rgba(10, 28, 42, 0.74);
+      --line: rgba(99, 217, 188, 0.3);
+      --line-soft: rgba(168, 196, 194, 0.24);
+      --ink: #f2f8f7;
+      --sub: #a8c4c2;
+      --accent: #63d9bc;
+      --accent-2: #84f5db;
+      --warn: #ffd166;
+      --ok: #8ef2a6;
+      --shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
       margin: 0;
       min-height: 100vh;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, #081119 0%, #102236 55%, #1a3a44 100%);
-      color: #f2f8f7;
+      color: var(--ink);
       font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
-      padding: 16px;
+      background:
+        radial-gradient(110% 120% at 0% 0%, rgba(99, 217, 188, 0.16) 0%, rgba(99, 217, 188, 0) 46%),
+        radial-gradient(110% 120% at 100% 10%, rgba(255, 209, 102, 0.09) 0%, rgba(255, 209, 102, 0) 52%),
+        linear-gradient(135deg, var(--bg-a) 0%, var(--bg-b) 55%, var(--bg-c) 100%);
+      padding: 20px 16px 30px;
     }
-    .card {
-      width: min(680px, 100%);
-      border-radius: 16px;
-      border: 1px solid rgba(99, 217, 188, 0.35);
-      background: rgba(8, 20, 30, 0.84);
+
+    .wrap {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero,
+    .card,
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
       padding: 20px;
-      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+      display: grid;
+      gap: 12px;
     }
-    h1 { margin: 0 0 10px; font-size: 1.35rem; }
-    p { margin: 0; line-height: 1.65; color: #a8c4c2; }
-    a {
+
+    h1,
+    h2 {
+      margin: 0;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    h1 { font-size: clamp(1.42rem, 2.7vw, 2rem); }
+    h2 { font-size: 1.08rem; }
+
+    p {
+      margin: 0;
+      color: var(--sub);
+      line-height: 1.68;
+    }
+
+    code {
+      padding: 0 0.34em;
+      border-radius: 0.38em;
+      color: #eafff9;
+      background: rgba(99, 217, 188, 0.13);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.88em;
+    }
+
+    .hero-actions,
+    .actions,
+    .inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .card {
+      min-height: 230px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .panel {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .tag {
       display: inline-flex;
-      margin-top: 14px;
-      border-radius: 10px;
-      padding: 10px 14px;
+      width: fit-content;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(99, 217, 188, 0.32);
+      color: #ddfff6;
+      background: rgba(99, 217, 188, 0.12);
+      font-size: 0.82rem;
       font-weight: 700;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border: 0;
+      border-radius: 11px;
+      padding: 10px 14px;
       color: #05342e;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      font: inherit;
+      font-weight: 800;
       text-decoration: none;
-      background: linear-gradient(135deg, #63d9bc, #84f5db);
+      cursor: pointer;
+      transition: transform 150ms ease, filter 150ms ease;
+    }
+
+    .card > .btn {
+      width: 100%;
+      margin-top: auto;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+
+    .btn.ghost {
+      color: #d8ece8;
+      border: 1px solid var(--line-soft);
+      background: rgba(8, 20, 30, 0.75);
+    }
+
+    .btn.warn {
+      color: #2b1800;
+      background: linear-gradient(135deg, #ffd166, #ffe3a0);
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    label {
+      color: var(--sub);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      border-radius: 11px;
+      border: 1px solid rgba(168, 196, 194, 0.34);
+      color: var(--ink);
+      background: rgba(8, 20, 30, 0.82);
+      padding: 10px 12px;
+      font: inherit;
+      font-weight: 700;
+    }
+
+    .code {
+      min-height: 3.4em;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(99, 217, 188, 0.24);
+      color: #eafff9;
+      background: rgba(3, 10, 16, 0.62);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .status {
+      min-height: 1.2em;
+      color: var(--sub);
+      font-size: 0.9rem;
+    }
+
+    .status.ok { color: var(--ok); }
+    .status.warn { color: var(--warn); }
+
+    .path-note {
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: var(--panel-soft);
+      color: #d8ece8;
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--sub);
+      font-size: 0.86rem;
+      padding-top: 2px;
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 14px 10px 22px; }
+      .hero, .panel, .card { padding: 14px; }
+      .btn, .hero-actions .btn, .actions .btn { width: 100%; }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <h1>ランチャーは `module/1_makejson.html` に移動しました</h1>
-    <p>Project Manager 型ランチャーの土台は <code>module/1_makejson.html</code> で管理します。</p>
-    <a href="./module/1_makejson.html">module/1_makejson.html を開く</a>
+  <main class="wrap">
+    <section class="hero">
+      <h1>ショート動画 v2 ランチャー</h1>
+      <p>現在の参照先は <code>module/</code> 配下です。流れは「JSON作成 → スライド生成プロンプト → Final Cut調整 → render」です。</p>
+      <div class="hero-actions">
+        <a class="btn" href="./module/1_makejson.html" target="_blank" rel="noopener noreferrer">まずJSON作成を開く</a>
+        <button class="btn ghost" type="button" id="copyPipelineBtn">推奨フローをコピー</button>
+      </div>
+      <p class="status" id="lastOpenedState"></p>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <span class="tag">Step 1</span>
+        <h2>Project Launcher / JSON作成</h2>
+        <p>会話ログから <code>summary</code>、<code>hook</code>、<code>slide</code>、<code>scene</code>、<code>sub_scene</code>、<code>06-render-draft</code> を作ります。</p>
+        <a class="btn" href="./module/1_makejson.html" target="_blank" rel="noopener noreferrer">module/1_makejson.html</a>
+      </article>
+
+      <article class="card">
+        <span class="tag">Step 2</span>
+        <h2>Slide Prompt Builder 2</h2>
+        <p><code>raw_conversation</code> や <code>slide_spec</code> から、中央スライド領域向けの画像生成プロンプトを作ります。</p>
+        <a class="btn" href="./module/2_slideprompt_builder.html" target="_blank" rel="noopener noreferrer">module/2_slideprompt_builder.html</a>
+      </article>
+
+      <article class="card">
+        <span class="tag">Step 3</span>
+        <h2>Final Cut Panel</h2>
+        <p><code>06-render-draft</code> を読み込み、音声演出・字幕タイミング・背景/BGMなどを調整して <code>render-final-v01.json</code> に反映します。</p>
+        <a class="btn" href="./module/3_Final-Cut-panel.html" target="_blank" rel="noopener noreferrer">module/3_Final-Cut-panel.html</a>
+      </article>
+    </section>
+
+    <section class="panel">
+      <span class="tag">Step 4 Render</span>
+      <h2>Final Cutで作ったJSONをrenderするコマンド</h2>
+      <p>Final Cut Panel の保存先 <code>projects/{id}/outputs/video/render-final-v01.json</code> を <code>SCENE_RENDER_SPEC_PATH</code> に指定して、Remotion側へ同期してから render します。</p>
+
+      <div class="field-grid">
+        <div class="field">
+          <label for="projectIdInput">Project ID</label>
+          <input id="projectIdInput" type="text" value="0000" inputmode="numeric" />
+        </div>
+        <div class="field">
+          <label for="runIdInput">Run ID</label>
+          <input id="runIdInput" type="text" value="000" inputmode="numeric" />
+        </div>
+      </div>
+
+      <div class="path-note" id="finalJsonPath">projects/0000/outputs/video/render-final-v01.json</div>
+      <div class="code" id="renderCommand"></div>
+
+      <div class="actions">
+        <button class="btn warn" type="button" id="copyFinalRenderBtn">final JSON render をコピー</button>
+        <button class="btn ghost" type="button" id="copyFinalDevBtn">final JSON dev をコピー</button>
+        <button class="btn ghost" type="button" id="resetIdsBtn">IDを初期値へ戻す</button>
+      </div>
+      <p class="status" id="commandStatus"></p>
+    </section>
+
+    <p class="footer">Renderer path priority: SCENE_REMOTION_APP_PATH → ../remotion-renderer → ./remotion-renderer-v1</p>
   </main>
+
+  <script>
+    const LAST_OPENED_KEY = "sv2_index_last_opened";
+    const INDEX_PROJECT_ID_KEY = "sv2_index_project_id";
+    const INDEX_RUN_ID_KEY = "sv2_index_run_id";
+
+    const el = {
+      lastOpenedState: document.getElementById("lastOpenedState"),
+      projectIdInput: document.getElementById("projectIdInput"),
+      runIdInput: document.getElementById("runIdInput"),
+      finalJsonPath: document.getElementById("finalJsonPath"),
+      renderCommand: document.getElementById("renderCommand"),
+      commandStatus: document.getElementById("commandStatus"),
+      copyPipelineBtn: document.getElementById("copyPipelineBtn"),
+      copyFinalRenderBtn: document.getElementById("copyFinalRenderBtn"),
+      copyFinalDevBtn: document.getElementById("copyFinalDevBtn"),
+      resetIdsBtn: document.getElementById("resetIdsBtn")
+    };
+
+    function normalizeNumericId(raw, width, fallback) {
+      const digits = String(raw || "").replace(/\D/g, "");
+      if (!digits) return fallback;
+      return digits.slice(0, width).padStart(width, "0");
+    }
+
+    function getProjectId() {
+      return normalizeNumericId(el.projectIdInput.value, 4, "0000");
+    }
+
+    function getRunId() {
+      return normalizeNumericId(el.runIdInput.value, 3, "000");
+    }
+
+    function buildFinalJsonPath() {
+      return `projects/${getProjectId()}/outputs/video/render-final-v01.json`;
+    }
+
+    function buildRenderCommand(scriptName) {
+      return [
+        `$env:SCENE_OUTPUT_RUN_ID="${getRunId()}"`,
+        `$env:SCENE_RENDER_SPEC_PATH="${buildFinalJsonPath()}"`,
+        `npm run ${scriptName}`
+      ].join("\n");
+    }
+
+    function buildPipelineText() {
+      return [
+        "1. module/1_makejson.html で 06-render-draft を作成",
+        "2. module/2_slideprompt_builder.html でスライド用プロンプトを作成",
+        "3. module/3_Final-Cut-panel.html で render-final-v01.json に保存",
+        "4. index.html の final JSON render コマンドをコピーして実行"
+      ].join("\n");
+    }
+
+    function setStatus(message, tone) {
+      el.commandStatus.textContent = message;
+      el.commandStatus.className = "status" + (tone ? " " + tone : "");
+    }
+
+    function renderLastOpened() {
+      const last = localStorage.getItem(LAST_OPENED_KEY);
+      el.lastOpenedState.textContent = last ? "前回開いたモジュール: " + last : "前回開いたモジュール: なし";
+    }
+
+    function renderCommandUi() {
+      const projectId = getProjectId();
+      const runId = getRunId();
+      el.projectIdInput.value = projectId;
+      el.runIdInput.value = runId;
+      localStorage.setItem(INDEX_PROJECT_ID_KEY, projectId);
+      localStorage.setItem(INDEX_RUN_ID_KEY, runId);
+      el.finalJsonPath.textContent = buildFinalJsonPath();
+      el.renderCommand.textContent = buildRenderCommand("scene-remotion:render");
+    }
+
+    async function copyText(text, successMessage) {
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus(successMessage, "ok");
+      } catch (_err) {
+        setStatus("コピーに失敗しました。ブラウザのクリップボード権限を確認してください。", "warn");
+      }
+    }
+
+    document.querySelectorAll("a.btn[href]").forEach((link) => {
+      link.addEventListener("click", () => {
+        localStorage.setItem(LAST_OPENED_KEY, link.getAttribute("href") || "");
+        renderLastOpened();
+      });
+    });
+
+    el.copyPipelineBtn.addEventListener("click", () => {
+      copyText(buildPipelineText(), "推奨フローをコピーしました。");
+    });
+
+    el.copyFinalRenderBtn.addEventListener("click", () => {
+      copyText(buildRenderCommand("scene-remotion:render"), "final JSON render コマンドをコピーしました。");
+    });
+
+    el.copyFinalDevBtn.addEventListener("click", () => {
+      copyText(buildRenderCommand("scene-remotion:dev"), "final JSON dev コマンドをコピーしました。");
+    });
+
+    el.resetIdsBtn.addEventListener("click", () => {
+      el.projectIdInput.value = "0000";
+      el.runIdInput.value = "000";
+      renderCommandUi();
+      setStatus("Project ID と Run ID を初期値へ戻しました。", "ok");
+    });
+
+    [el.projectIdInput, el.runIdInput].forEach((input) => {
+      input.addEventListener("change", renderCommandUi);
+      input.addEventListener("blur", renderCommandUi);
+    });
+
+    const storedProjectId = localStorage.getItem(INDEX_PROJECT_ID_KEY);
+    const storedRunId = localStorage.getItem(INDEX_RUN_ID_KEY);
+    if (storedProjectId) el.projectIdInput.value = storedProjectId;
+    if (storedRunId) el.runIdInput.value = storedRunId;
+    renderCommandUi();
+    renderLastOpened();
+  </script>
 </body>
 </html>
-
-
