@@ -32,7 +32,82 @@
         radial-gradient(140% 120% at 0% 0%, rgba(99, 217, 188, 0.2) 0%, rgba(99, 217, 188, 0) 44%),
         radial-gradient(120% 120% at 100% 0%, rgba(255, 202, 118, 0.1) 0%, rgba(255, 202, 118, 0) 46%),
         linear-gradient(135deg, var(--bg-a) 0%, var(--bg-b) 45%, var(--bg-c) 100%);
-      padding: 20px 16px 28px;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      border-bottom: 1px solid rgba(99, 217, 188, 0.28);
+      background: linear-gradient(90deg, #0d3f39 0%, #0c3140 35%, #102236 70%, #081119 100%);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar {
+      min-height: 66px;
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .topbarLeft {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .brandMark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(160deg, #1f7f6c, #124c58);
+      border: 1px solid rgba(147, 245, 199, 0.36);
+      box-shadow: 0 8px 20px rgba(8, 20, 30, 0.45);
+      color: #f2fff9;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .brandText {
+      font-size: 18px;
+      font-weight: 800;
+      color: #f2f8f7;
+      white-space: nowrap;
+    }
+
+    .topbarDivider {
+      width: 1px;
+      height: 28px;
+      background: rgba(168, 196, 194, 0.42);
+      flex: none;
+    }
+
+    .topbarTitle {
+      font-size: 16px;
+      font-weight: 800;
+      color: #f2f8f7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .topbarVersion {
+      font-size: 12px;
+      font-weight: 800;
+      color: #93f5c7;
+      letter-spacing: 0.04em;
+      opacity: 0.9;
+      white-space: nowrap;
     }
 
     .wrap {
@@ -40,6 +115,7 @@
       margin: 0 auto;
       display: grid;
       gap: 14px;
+      padding: 20px 16px 28px;
     }
 
     .card {
@@ -233,10 +309,26 @@
       button { width: 100%; }
       .actions { flex-direction: column; }
       .actions button { width: 100%; }
+      .topbar { padding: 8px 12px; }
+      .brandText { font-size: 14px; }
+      .topbarTitle { font-size: 12px; }
+      .topbarVersion { font-size: 10px; }
     }
   </style>
 </head>
 <body>
+  <header>
+    <div class="topbar">
+      <div class="topbarLeft">
+        <div class="brandMark">ZSM</div>
+        <div class="brandText">ずんだもん ショート動画作成</div>
+        <div class="topbarDivider"></div>
+        <div class="topbarTitle">Conversation → 動画素材JSON 生成</div>
+      </div>
+      <div class="topbarVersion">v2</div>
+    </div>
+  </header>
+
   <main class="wrap">
     <section class="card hero">
       <h1>module1:会話ログ → 動画素材JSON</h1>
@@ -283,7 +375,6 @@
           <div class="mono">projects/{id}/raw/raw_conversation.txt</div>
           <div class="mono">projects/{id}/pipeline/01-summary_spec-v01.json</div>
           <div class="mono">projects/{id}/pipeline/02-hook_spec-v01.json</div>
-          <div class="mono">projects/{id}/pipeline/03-slide_spec-v01.json</div>
           <div class="mono">projects/{id}/pipeline/04-scene_spec-v01.json</div>
           <div class="mono">projects/{id}/pipeline/05-sub_scene_spec-v01.json</div>
           <div class="mono">projects/{id}/pipeline/06-voice_manifest-v01.json</div>
@@ -316,12 +407,11 @@
 
       <div class="step-grid" style="margin-top: 10px;">
         <button id="btnLoadConversation" type="button" class="step-btn" disabled>1. 会話を読み込む</button>
-        <button id="btnSummary" type="button" class="step-btn" disabled>2. ① summary_spec 作成</button>
-        <button id="btnHook" type="button" class="step-btn" disabled>3. ② hook_spec 作成</button>
-        <button id="btnSlide" type="button" class="step-btn" disabled>4. ③ slide_spec 作成</button>
-        <button id="btnScene" type="button" class="step-btn" disabled>5. ④ scene_spec 作成</button>
-        <button id="btnSubScene" type="button" class="step-btn" disabled>6. ⑤ sub_scene_spec 作成</button>
-        <button id="btnRender" type="button" class="step-btn" disabled>7. ⑥ 06-render-draft-v01.json 作成</button>
+        <button id="btnSummary" type="button" class="step-btn" disabled>2. summary_spec 作成</button>
+        <button id="btnHook" type="button" class="step-btn" disabled>3. hook_spec 作成</button>
+        <button id="btnScene" type="button" class="step-btn" disabled>4. scene_spec 作成</button>
+        <button id="btnSubScene" type="button" class="step-btn" disabled>5. sub_scene_spec 作成</button>
+        <button id="btnRender" type="button" class="step-btn" disabled>6. 06-render-draft-v01.json 作成</button>
       </div>
 
       <p id="pipelineStatus" class="status">対象プロジェクトを選ぶと実行できます。</p>
@@ -523,17 +613,6 @@
           selected_hook_id: "hook_a"
         };
       }
-      if (kind === "slide") {
-        return {
-          project_id: projectId,
-          source: "01-summary_spec-v01.json",
-          slides: [
-            { slide_id: "slide_01", role: "problem", title: "", body: "", visual_intent: "", duration_sec: 8 },
-            { slide_id: "slide_02", role: "development", title: "", body: "", visual_intent: "", duration_sec: 10 },
-            { slide_id: "slide_03", role: "landing", title: "", body: "", visual_intent: "", duration_sec: 8 }
-          ]
-        };
-      }
       if (kind === "scene") {
         return {
           project_id: projectId,
@@ -581,7 +660,6 @@
       const seeds = [
         ["01-summary_spec-v01.json", "summary"],
         ["02-hook_spec-v01.json", "hook"],
-        ["03-slide_spec-v01.json", "slide"],
         ["04-scene_spec-v01.json", "scene"],
         ["05-sub_scene_spec-v01.json", "sub_scene"],
         ["06-voice_manifest-v01.json", "voice_manifest"]
@@ -734,7 +812,6 @@
         "btnLoadConversation",
         "btnSummary",
         "btnHook",
-        "btnSlide",
         "btnScene",
         "btnSubScene",
         "btnRender"
@@ -957,81 +1034,6 @@
           }
         ],
         selected_hook_id: "hook_a"
-      };
-    }
-
-    function shortText(text, maxChars = 38) {
-      const raw = String(text || "").replace(/\s+/g, " ").trim();
-      if (!raw) return "";
-      if (charLen(raw) <= maxChars) return raw;
-      return [...raw].slice(0, Math.max(1, maxChars - 1)).join("") + "…";
-    }
-
-    function stripSpeakerPrefix(text) {
-      return String(text || "").replace(/^[^:：\n]{1,24}[:：]\s*/, "").trim();
-    }
-
-    function toSlideSafeLine(text) {
-      const line = stripSpeakerPrefix(text).replace(/[「」『』]/g, "").trim();
-      if (!line) return "";
-      return shortText(line, 32);
-    }
-
-    function firstAbstractSeed(summarySpec) {
-      const candidates = []
-        .concat(Array.isArray(summarySpec.key_points) ? summarySpec.key_points : [])
-        .concat(Array.isArray(summarySpec.usable_lines) ? summarySpec.usable_lines : []);
-
-      for (const line of candidates) {
-        const seed = toSlideSafeLine(line);
-        if (!seed) continue;
-        if (/[!?！？]/.test(seed)) continue;
-        return seed;
-      }
-      return "";
-    }
-
-    function buildSlideSpec(projectId, summaryName, summarySpec) {
-      const topic = shortText(summarySpec.main_topic || summarySpec.title || "このテーマ", 18);
-      const abstractSeed = firstAbstractSeed(summarySpec);
-      const problemBody = abstractSeed
-        ? `${topic}で起きる矛盾: ${abstractSeed}`
-        : `${topic}で起きる矛盾や違和感を1つ定義する`;
-
-      const developmentBody = `${topic}の流れを整理: 原因 → 認知の調整 → 行動`;
-      const landingBody = `${topic}の気づき: 正当化に気づき、次の1アクションを決める`;
-
-      const slides = [
-        {
-          slide_id: "slide_01",
-          role: "problem",
-          title: shortText(`${topic}の課題`, 20),
-          body: shortText(problemBody, 48),
-          visual_intent: "問題の核を1メッセージで示す概念図",
-          duration_sec: 8
-        },
-        {
-          slide_id: "slide_02",
-          role: "development",
-          title: "なぜ起きるか",
-          body: shortText(developmentBody, 48),
-          visual_intent: "原因→調整→結果の矢印で示す図",
-          duration_sec: 10
-        },
-        {
-          slide_id: "slide_03",
-          role: "landing",
-          title: "今日の気づき",
-          body: shortText(landingBody, 48),
-          visual_intent: "内省を促すシンボル中心の図",
-          duration_sec: 8
-        }
-      ];
-
-      return {
-        project_id: projectId,
-        source: summaryName,
-        slides
       };
     }
 
@@ -1533,26 +1535,6 @@
       return [{ path: `projects/${projectId}/pipeline/${fileName}`, note: `source=${summary.name}` }];
     }
 
-    async function stepSlide(projectId) {
-      const { pipelineDir, slideDir } = await getProjectHandles(projectId);
-      const summary = await readLatestVersionedJson(pipelineDir, "01-summary_spec");
-      const slideSpec = buildSlideSpec(projectId, summary.name, summary.data);
-      const pipelineName = await writeNextVersionedJson(pipelineDir, "03-slide_spec", slideSpec);
-      const created = [{ path: `projects/${projectId}/pipeline/${pipelineName}`, note: `source=${summary.name}` }];
-
-      for (const slide of slideSpec.slides) {
-        let outputName = `${slide.slide_id}.json`;
-        if (await fileExists(slideDir, outputName)) {
-          outputName = await findNextVersionedName(slideDir, slide.slide_id, ".json");
-        }
-        const handle = await slideDir.getFileHandle(outputName, { create: true });
-        await writeJson(handle, slide);
-        created.push({ path: `projects/${projectId}/outputs/slide/${outputName}`, note: `${slide.slide_id} 個別保存` });
-      }
-
-      return created;
-    }
-
     async function stepScene(projectId) {
       const { rawDir, pipelineDir } = await getProjectHandles(projectId);
       const raw = await findLatestRawConversation(rawDir);
@@ -1632,7 +1614,6 @@
       document.getElementById("btnLoadConversation").addEventListener("click", () => runStep("会話を読み込む", stepLoadConversation));
       document.getElementById("btnSummary").addEventListener("click", () => runStep("summary_spec 作成", stepSummary));
       document.getElementById("btnHook").addEventListener("click", () => runStep("hook_spec 作成", stepHook));
-      document.getElementById("btnSlide").addEventListener("click", () => runStep("slide_spec 作成", stepSlide));
       document.getElementById("btnScene").addEventListener("click", () => runStep("scene_spec 作成", stepScene));
       document.getElementById("btnSubScene").addEventListener("click", () => runStep("sub_scene_spec 作成", stepSubScene));
       document.getElementById("btnRender").addEventListener("click", () => runStep("06-render-draft-v01.json 作成", stepRender));

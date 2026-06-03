@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Slide Prompt Builder 2</title>
+  <title>Slide Prompt Builder</title>
   <style>
     :root {
       --bg:#0f172a;
@@ -34,49 +34,108 @@
       overflow-x: hidden;
     }
 
-    header{
-      position:sticky;
-      top:0;
-      z-index:40;
-      border-bottom:1px solid rgba(139,92,246,.22);
-      background:linear-gradient(90deg, #5B21B6 0%, #4C1D95 35%, #1E1B4B 70%, #0F172A 100%);
-      box-shadow:0 12px 32px rgba(0,0,0,.28);
-      backdrop-filter:blur(8px);
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      border-bottom: 1px solid rgba(99, 217, 188, 0.28);
+      background: linear-gradient(90deg, #0d3f39 0%, #0c3140 35%, #102236 70%, #081119 100%);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(8px);
     }
-    .topbar{
-      min-height:66px;
-      padding:8px 20px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      min-width:0;
-    }
-    .topbarLeft{display:flex; align-items:center; min-width:0; gap:14px; flex:1;}
-    .brandMark{
-      width:40px; height:40px; border-radius:12px; display:grid; place-items:center;
-      background:linear-gradient(160deg, #552fb0, #3b277f);
-      border:1px solid rgba(173,148,255,.35);
-      box-shadow:0 8px 20px rgba(20,14,50,.45);
-      color:#f3edff; font-size:16px; line-height:1;
-    }
-    .brandText{font-size:18px; font-weight:800; color:#f8fafc; white-space:nowrap;}
-    .topbarDivider{width:1px; height:28px; background:rgba(154,164,202,.4); flex:none;}
-    .topbarTitle{font-size:16px; font-weight:800; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;}
-    .topbarVersion{font-size:12px; font-weight:800; color:#c4b5fd; letter-spacing:.04em; opacity:.9; white-space:nowrap;}
 
-    main { padding: 18px 22px 34px; }
+    .topbar {
+      min-height: 66px;
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .topbarLeft {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .brandMark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(160deg, #1f7f6c, #124c58);
+      border: 1px solid rgba(147, 245, 199, 0.36);
+      box-shadow: 0 8px 20px rgba(8, 20, 30, 0.45);
+      color: #f2fff9;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .brandText {
+      font-size: 18px;
+      font-weight: 800;
+      color: #f2f8f7;
+      white-space: nowrap;
+    }
+
+    .topbarDivider {
+      width: 1px;
+      height: 28px;
+      background: rgba(168, 196, 194, 0.42);
+      flex: none;
+    }
+
+    .topbarTitle {
+      font-size: 16px;
+      font-weight: 800;
+      color: #f2f8f7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .topbarVersion {
+      font-size: 12px;
+      font-weight: 800;
+      color: #93f5c7;
+      letter-spacing: 0.04em;
+      opacity: 0.9;
+      white-space: nowrap;
+    }
+
+    main { padding: 84px 22px 34px; }
     .wrap {
       width: min(100%, 1240px);
       margin: 0 auto;
       display: grid;
       gap: 16px;
     }
-    .main-grid {
+    .step2-grid {
       display: grid;
       gap: 20px;
-      grid-template-columns: 0.95fr 1.25fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       min-width: 0;
+    }
+    .step2Panel {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid rgba(148,163,184,.2);
+      border-radius: 14px;
+      background: rgba(11,18,32,.54);
+    }
+    .step2Block + .step2Block {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(148,163,184,.18);
     }
     .stack > .card + .card { margin-top: 12px; }
     .card {
@@ -100,6 +159,17 @@
       text-transform: uppercase;
       letter-spacing: 0.03em;
       font-size: 0.82rem;
+    }
+    .presetDetails summary {
+      cursor: pointer;
+      user-select: none;
+      list-style-position: inside;
+    }
+    .presetDetails summary.section {
+      margin-bottom: 0;
+    }
+    .presetDetails[open] summary.section {
+      margin-bottom: 8px;
     }
     .field { margin-bottom: 12px; }
     label {
@@ -179,6 +249,18 @@
     }
     .status.ok { color: var(--ok); }
     .status.error { color: var(--danger); }
+    .file-list {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: var(--sub);
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+    .file-list li + li { margin-top: 4px; }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.86em;
+    }
     .warn-note {
       margin-top: 8px;
       color: var(--warn);
@@ -193,7 +275,7 @@
       line-height: 1.45;
     }
     @media (max-width: 980px) {
-      .main-grid { grid-template-columns: 1fr; }
+      .step2-grid { grid-template-columns: 1fr; }
       .row button { width: 100%; }
       .topbar{padding:8px 12px;}
       .brandText{font-size:14px;}
@@ -206,19 +288,19 @@
   <header>
     <div class="topbar">
       <div class="topbarLeft">
-        <div class="brandMark">SP</div>
-        <div class="brandText">Slide Prompt Builder</div>
+        <div class="brandMark">ZSM</div>
+        <div class="brandText">ずんだもん ショート動画作成</div>
         <div class="topbarDivider"></div>
         <div class="topbarTitle">Conversation → Lesson Plan → Slide Prompt 生成</div>
       </div>
-      <div class="topbarVersion">v1</div>
+      <div class="topbarVersion">v2</div>
     </div>
   </header>
 
   <main>
   <div class="wrap">
     <section class="card">
-      <h1>Slide Prompt Builder 2</h1>
+      <h1>module2:スライド用プロンプト生成</h1>
       <p class="sub">raw/conversation から講義スライド案を作り、そのJSONを中央スライド領域専用の生成プロンプトへ変換する。</p>
       <div class="row">
         <button id="loadRawConversationBtn" class="ghost">Load Raw Conversation</button>
@@ -227,55 +309,76 @@
       <div id="status" class="status"></div>
     </section>
 
-    <section class="main-grid">
-      <section class="stack">
-        <div class="card">
-          <p class="section">Step A/B: raw conversation → Lesson Planner Prompt</p>
-          <label for="rawConversationInput">raw/conversation Paste</label>
-          <textarea id="rawConversationInput" placeholder="ずんだもん・めたん等の会話劇テキストを貼り付け"></textarea>
-          <div class="row">
-            <button id="generatePlannerPromptBtn">Lesson Planner Prompt生成</button>
-            <button id="copyPlannerPromptBtn" class="ghost">Copy Planner Prompt</button>
+    <section class="card">
+      <p class="section">Step1: raw conversation からchatGPT経由で スライド案を作成する</p>
+      <label for="rawConversationInput">raw/conversation Paste</label>
+      <textarea id="rawConversationInput" placeholder="ずんだもん・めたん等の会話劇テキストを貼り付け"></textarea>
+      <div class="row">
+        <button id="generatePlannerPromptBtn">Lesson Planner Prompt生成</button>
+        <button id="copyPlannerPromptBtn" class="ghost">Copy Planner Prompt</button>
+      </div>
+      <label for="plannerPromptArea">ChatGPTへ投げる Lesson Planner Prompt</label>
+      <textarea id="plannerPromptArea" readonly placeholder="生成後にLesson Planner Promptが表示されます"></textarea>
+    </section>
+
+    <section class="card">
+      <p class="section">Step2:スライド生成用プロンプト作成</p>
+      <div class="step2-grid">
+        <div class="step2Panel">
+          <div class="step2Block">
+            <p class="section">lesson_slide_plan JSON Paste</p>
+            <label for="lessonPlanInput">lesson_slide_plan JSON Paste</label>
+            <textarea id="lessonPlanInput" placeholder="ChatGPTから返ってきた lesson_slide_plan JSON を貼り付け"></textarea>
+            <div class="row">
+              <button id="applyLessonPlanBtn" class="ghost">Apply Lesson Plan JSON</button>
+            </div>
+            <p class="guide-note">読み込み済みlesson_slide_plan</p>
+            <pre id="loadedLessonPlan">未読込</pre>
           </div>
-          <label for="plannerPromptArea">ChatGPTへ投げる Lesson Planner Prompt</label>
-          <textarea id="plannerPromptArea" readonly placeholder="生成後にLesson Planner Promptが表示されます"></textarea>
-        </div>
 
-        <div class="card">
-          <p class="section">Preset (Slide Format)</p>
-          <pre id="presetWindow"></pre>
-        </div>
-      </section>
-
-      <section class="stack">
-        <div class="card">
-          <p class="section">Step D: lesson_slide_plan JSON → slide_spec</p>
-          <label for="lessonPlanInput">lesson_slide_plan JSON Paste</label>
-          <textarea id="lessonPlanInput" placeholder="ChatGPTから返ってきた lesson_slide_plan JSON を貼り付け"></textarea>
-          <div class="row">
-            <button id="applyLessonPlanBtn" class="ghost">Apply Lesson Plan JSON</button>
+          <div class="step2Block">
+            <p class="section">Generate Slide Prompts</p>
+            <p class="guide-note">lesson_slide_plan JSON を slide_spec に変換してから、中央スライド画像向けプロンプトを生成します。</p>
+            <div id="warning" class="warn-note"></div>
+            <div class="row">
+              <button id="generateBtn">Slide Prompt生成</button>
+              <button id="resetBtn" class="danger">Reset</button>
+            </div>
           </div>
-          <p class="guide-note">読み込み済みlesson_slide_plan</p>
-          <pre id="loadedLessonPlan">未読込</pre>
-        </div>
 
-        <div class="card">
-          <p class="section">Step E: Generate Slide Prompts</p>
-          <p class="guide-note">lesson_slide_plan JSON を slide_spec に変換してから、中央スライド画像向けプロンプトを生成します。</p>
-          <div id="warning" class="warn-note"></div>
-          <div class="row">
-            <button id="generateBtn">Slide Prompt生成</button>
-            <button id="resetBtn" class="danger">Reset</button>
+          <div class="step2Block">
+            <p class="section">③ slide_spec 作成 / 保存</p>
+            <p class="guide-note">対象プロジェクトへ <span class="mono">pipeline/03-slide_spec-vNN.json</span> と <span class="mono">outputs/slide/{slide_id}.json</span> を保存します。</p>
+            <div class="row">
+              <button id="pickWorkspaceBtn" class="ghost" type="button">Workspace接続</button>
+              <button id="reloadProjectsBtn" class="ghost" type="button" disabled>Projects再読込</button>
+            </div>
+            <label for="projectSelect">対象プロジェクト</label>
+            <select id="projectSelect" disabled>
+              <option value="">未選択</option>
+            </select>
+            <div class="row">
+              <button id="saveSlideSpecBtn" class="warn" type="button" disabled>③ slide_spec 作成 / 保存</button>
+            </div>
+            <p id="workspaceStatus" class="status">ワークスペース未接続です。</p>
+            <ul id="savedFiles" class="file-list"></ul>
           </div>
         </div>
 
-        <div class="card">
+        <div class="step2Panel">
           <p class="section">Generated Prompt List</p>
           <div id="promptList" class="stack"></div>
           <label for="generatedJsonArea">generated_prompt_spec JSON</label>
           <textarea id="generatedJsonArea" readonly placeholder="Generate後にJSONが表示されます"></textarea>
         </div>
-      </section>
+      </div>
+    </section>
+
+    <section class="card">
+      <details class="presetDetails">
+        <summary class="section">Preset (Slide Format)</summary>
+        <pre id="presetWindow"></pre>
+      </details>
     </section>
   </div>
   </main>
@@ -286,6 +389,8 @@
       const RAW_CONVERSATION_KEY = "svrs_raw_conversation";
       const LESSON_PLAN_KEY = "svrs_lesson_slide_plan";
       const OUTPUT_KEY = "svrs_slide_prompt_spec";
+      const SELECTED_PROJECT_KEY = "svrs_slide_prompt_builder_project_id";
+      const META_FILENAME = "meta.json";
       const PRESET_ID = "slide_canvas_whiteboard_v1";
       const CANVAS_PRESET_PARAMETER = {
         preset_id: "slide_canvas_whiteboard_v1",
@@ -391,9 +496,17 @@
         generateBtn: document.getElementById("generateBtn"),
         resetBtn: document.getElementById("resetBtn"),
         promptList: document.getElementById("promptList"),
-        generatedJsonArea: document.getElementById("generatedJsonArea")
+        generatedJsonArea: document.getElementById("generatedJsonArea"),
+        pickWorkspaceBtn: document.getElementById("pickWorkspaceBtn"),
+        reloadProjectsBtn: document.getElementById("reloadProjectsBtn"),
+        projectSelect: document.getElementById("projectSelect"),
+        saveSlideSpecBtn: document.getElementById("saveSlideSpecBtn"),
+        workspaceStatus: document.getElementById("workspaceStatus"),
+        savedFiles: document.getElementById("savedFiles")
       };
 
+      let workspaceHandle = null;
+      let projectRows = [];
       let slideSpec = null;
       let lessonSlidePlan = null;
       let latestGeneratedSpec = null;
@@ -402,6 +515,275 @@
         el.status.textContent = msg || "";
         el.status.classList.remove("ok", "error");
         if (msg) el.status.classList.add(isError ? "error" : "ok");
+      }
+
+      function workspaceStatus(msg, isError) {
+        el.workspaceStatus.textContent = msg || "";
+        el.workspaceStatus.classList.remove("ok", "error");
+        if (msg) el.workspaceStatus.classList.add(isError ? "error" : "ok");
+      }
+
+      function selectedProjectId() {
+        return el.projectSelect.value || "";
+      }
+
+      function updateSaveControls() {
+        const hasWorkspaceProject = Boolean(workspaceHandle && selectedProjectId());
+        el.reloadProjectsBtn.disabled = !workspaceHandle;
+        el.projectSelect.disabled = !workspaceHandle || projectRows.length === 0;
+        el.saveSlideSpecBtn.disabled = !hasWorkspaceProject;
+      }
+
+      function todayYmd() {
+        return new Date().toLocaleDateString("sv-SE");
+      }
+
+      function sanitizeTitle(title) {
+        const trimmed = String(title || "").trim().replace(/\s+/g, " ");
+        return trimmed || "Untitled";
+      }
+
+      async function verifyPermission(handle, mode) {
+        const options = { mode: mode };
+        if ((await handle.queryPermission(options)) === "granted") return true;
+        return (await handle.requestPermission(options)) === "granted";
+      }
+
+      async function writeText(fileHandle, text) {
+        const writable = await fileHandle.createWritable();
+        await writable.write(String(text));
+        await writable.close();
+      }
+
+      async function writeJson(fileHandle, data) {
+        await writeText(fileHandle, JSON.stringify(data, null, 2) + "\n");
+      }
+
+      async function readText(fileHandle) {
+        const file = await fileHandle.getFile();
+        return file.text();
+      }
+
+      async function readJson(fileHandle) {
+        return JSON.parse(await readText(fileHandle));
+      }
+
+      async function fileExists(dirHandle, name) {
+        try {
+          await dirHandle.getFileHandle(name);
+          return true;
+        } catch (_err) {
+          return false;
+        }
+      }
+
+      async function getProjectsDirHandle(create) {
+        if (!workspaceHandle) throw new Error("ワークスペース未接続です。");
+        return workspaceHandle.getDirectoryHandle("projects", { create: create });
+      }
+
+      async function ensureDir(baseDir, name) {
+        return baseDir.getDirectoryHandle(name, { create: true });
+      }
+
+      async function getProjectHandles(projectId) {
+        const projectsDir = await getProjectsDirHandle(true);
+        const projectDir = await projectsDir.getDirectoryHandle(projectId, { create: true });
+        const pipelineDir = await ensureDir(projectDir, "pipeline");
+        const outputsDir = await ensureDir(projectDir, "outputs");
+        const slideDir = await ensureDir(outputsDir, "slide");
+        return { projectDir: projectDir, pipelineDir: pipelineDir, slideDir: slideDir };
+      }
+
+      function escapeRegex(value) {
+        return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      }
+
+      function parseVersionName(name, stem, ext) {
+        const pattern = new RegExp("^" + escapeRegex(stem) + "-v(\\d{2})" + escapeRegex(ext) + "$");
+        const m = String(name).match(pattern);
+        if (!m) return null;
+        const version = Number(m[1]);
+        if (!Number.isFinite(version)) return null;
+        return { version: version, name: name };
+      }
+
+      async function findNextVersionedName(dirHandle, stem, ext) {
+        let max = 0;
+        for await (const entry of dirHandle.entries()) {
+          const name = entry[0];
+          const handle = entry[1];
+          if (handle.kind !== "file") continue;
+          const parsed = parseVersionName(name, stem, ext || ".json");
+          if (!parsed) continue;
+          max = Math.max(max, parsed.version);
+        }
+        return stem + "-v" + String(max + 1).padStart(2, "0") + (ext || ".json");
+      }
+
+      async function writeNextVersionedJson(dirHandle, stem, payload) {
+        const fileName = await findNextVersionedName(dirHandle, stem, ".json");
+        const handle = await dirHandle.getFileHandle(fileName, { create: true });
+        await writeJson(handle, payload);
+        return fileName;
+      }
+
+      async function readMetaFromProject(projectDirHandle, folderName) {
+        try {
+          const metaHandle = await projectDirHandle.getFileHandle(META_FILENAME);
+          const parsed = await readJson(metaHandle);
+          const idCandidate = String(parsed.id || "");
+          const id = /^\d{1,4}$/.test(idCandidate) ? idCandidate.padStart(4, "0") : folderName;
+          return {
+            id: id,
+            title: sanitizeTitle(parsed.title),
+            sourceFolder: folderName
+          };
+        } catch (_err) {
+          return { id: folderName, title: "(meta.json 読み込み失敗)", sourceFolder: folderName };
+        }
+      }
+
+      function renderProjectSelector() {
+        const current = selectedProjectId() || localStorage.getItem(SELECTED_PROJECT_KEY) || "";
+        el.projectSelect.innerHTML = "";
+        const blank = document.createElement("option");
+        blank.value = "";
+        blank.textContent = projectRows.length ? "プロジェクトを選択" : "未選択";
+        el.projectSelect.appendChild(blank);
+
+        projectRows.forEach(function (row) {
+          const opt = document.createElement("option");
+          opt.value = row.id;
+          opt.textContent = row.id + " - " + row.title;
+          el.projectSelect.appendChild(opt);
+        });
+
+        if (projectRows.some(function (row) { return row.id === current; })) {
+          el.projectSelect.value = current;
+        } else if (projectRows.length) {
+          el.projectSelect.value = projectRows[projectRows.length - 1].id;
+        }
+
+        if (selectedProjectId()) {
+          localStorage.setItem(SELECTED_PROJECT_KEY, selectedProjectId());
+        }
+        updateSaveControls();
+      }
+
+      async function loadProjects() {
+        const projectsDir = await getProjectsDirHandle(false);
+        const rows = [];
+        for await (const entry of projectsDir.entries()) {
+          const name = entry[0];
+          const handle = entry[1];
+          if (handle.kind !== "directory") continue;
+          if (!/^\d{4}$/.test(name)) continue;
+          rows.push(await readMetaFromProject(handle, name));
+        }
+        rows.sort(function (a, b) { return Number(a.id) - Number(b.id); });
+        projectRows = rows;
+        renderProjectSelector();
+        workspaceStatus(projectRows.length + "件のprojects/を読み込みました。", false);
+      }
+
+      async function connectWorkspace() {
+        if (!window.showDirectoryPicker) {
+          throw new Error("このブラウザは File System Access API をサポートしていません。");
+        }
+        const handle = await window.showDirectoryPicker({ mode: "readwrite" });
+        const writable = await verifyPermission(handle, "readwrite");
+        if (!writable) throw new Error("ワークスペースへの書き込み許可が必要です。");
+        workspaceHandle = handle;
+        await getProjectsDirHandle(true);
+        await loadProjects();
+      }
+
+      async function touchProjectUpdatedAt(projectId) {
+        const handles = await getProjectHandles(projectId);
+        try {
+          const metaHandle = await handles.projectDir.getFileHandle(META_FILENAME);
+          const meta = await readJson(metaHandle);
+          meta.updated_at = todayYmd();
+          await writeJson(metaHandle, meta);
+        } catch (_err) {
+        }
+      }
+
+      function renderSavedFiles(items) {
+        el.savedFiles.innerHTML = "";
+        items.forEach(function (item) {
+          const li = document.createElement("li");
+          const path = document.createElement("span");
+          path.className = "mono";
+          path.textContent = item.path;
+          li.appendChild(path);
+          if (item.note) {
+            li.appendChild(document.createTextNode(" - " + item.note));
+          }
+          el.savedFiles.appendChild(li);
+        });
+      }
+
+      function buildPersistedSlideSpec(projectId) {
+        const payload = cloneJson(slideSpec || {});
+        payload.project_id = projectId;
+        payload.source = payload.source || "lesson_slide_plan";
+        payload.source_type = payload.source_type || "lesson_slide_plan";
+        payload.slides = (payload.slides || []).map(function (slide) {
+          return {
+            slide_id: normalizeLine(slide.slide_id, "slide_xx"),
+            role: normalizeLine(slide.role, "general"),
+            title: normalizeLine(slide.title, "無題スライド"),
+            body: normalizeLine(slide.body, ""),
+            visual_intent: normalizeLine(slide.visual_intent, "1メッセージを伝える最小構図"),
+            teacher_note: normalizeLine(slide.teacher_note, ""),
+            simple_diagram: normalizeLine(slide.simple_diagram, "")
+          };
+        });
+        return payload;
+      }
+
+      async function saveSlideSpecToProject() {
+        if (!workspaceHandle || !selectedProjectId()) {
+          workspaceStatus("ワークスペース接続と対象プロジェクト選択が必要です。", true);
+          return;
+        }
+        if (!applyLessonPlan({ silent: true }) || !validateSlideSpec(slideSpec)) {
+          workspaceStatus("保存前に lesson_slide_plan JSON を読み込んでください。", true);
+          return;
+        }
+
+        const projectId = selectedProjectId();
+        try {
+          el.saveSlideSpecBtn.disabled = true;
+          workspaceStatus("slide_spec 保存中...", false);
+          const handles = await getProjectHandles(projectId);
+          const persisted = buildPersistedSlideSpec(projectId);
+          const pipelineName = await writeNextVersionedJson(handles.pipelineDir, "03-slide_spec", persisted);
+          const created = [{ path: "projects/" + projectId + "/pipeline/" + pipelineName, note: "slide_spec 保存" }];
+
+          for (const slide of persisted.slides) {
+            let outputName = slide.slide_id + ".json";
+            if (await fileExists(handles.slideDir, outputName)) {
+              outputName = await findNextVersionedName(handles.slideDir, slide.slide_id, ".json");
+            }
+            const handle = await handles.slideDir.getFileHandle(outputName, { create: true });
+            await writeJson(handle, slide);
+            created.push({ path: "projects/" + projectId + "/outputs/slide/" + outputName, note: slide.slide_id + " 個別保存" });
+          }
+
+          await touchProjectUpdatedAt(projectId);
+          await loadProjects();
+          renderSavedFiles(created);
+          localStorage.setItem("svrs_slide_spec", JSON.stringify(persisted));
+          workspaceStatus("slide_spec を保存しました。", false);
+          status("③ slide_spec 作成 / 保存が完了しました。", false);
+        } catch (err) {
+          workspaceStatus("slide_spec 保存失敗: " + (err.message || err), true);
+        } finally {
+          updateSaveControls();
+        }
       }
 
       function wireButtonFeedback() {
@@ -961,6 +1343,7 @@
         localStorage.setItem(RAW_CONVERSATION_KEY, el.rawConversationInput.value);
         localStorage.setItem(LESSON_PLAN_KEY, el.lessonPlanInput.value);
         updateWarning();
+        updateSaveControls();
       }
 
       function onLessonPlanInputChanged() {
@@ -1027,6 +1410,8 @@
         localStorage.removeItem(RAW_CONVERSATION_KEY);
         localStorage.removeItem(LESSON_PLAN_KEY);
         localStorage.removeItem(OUTPUT_KEY);
+        el.savedFiles.innerHTML = "";
+        updateSaveControls();
         status("リセットしました。", false);
       }
 
@@ -1044,13 +1429,38 @@
       el.applyLessonPlanBtn.addEventListener("click", function () { applyLessonPlan(); });
       el.generateBtn.addEventListener("click", generatePrompt);
       el.resetBtn.addEventListener("click", resetAll);
+      el.pickWorkspaceBtn.addEventListener("click", async function () {
+        try {
+          workspaceStatus("ワークスペース接続中...", false);
+          await connectWorkspace();
+        } catch (err) {
+          workspaceStatus(err.message || "ワークスペース接続に失敗しました。", true);
+          updateSaveControls();
+        }
+      });
+      el.reloadProjectsBtn.addEventListener("click", async function () {
+        if (!workspaceHandle) return;
+        try {
+          await loadProjects();
+        } catch (err) {
+          workspaceStatus(err.message || "projects/ の再読込に失敗しました。", true);
+        }
+      });
+      el.projectSelect.addEventListener("change", function () {
+        if (selectedProjectId()) {
+          localStorage.setItem(SELECTED_PROJECT_KEY, selectedProjectId());
+          workspaceStatus("保存先: projects/" + selectedProjectId(), false);
+        }
+        updateSaveControls();
+      });
+      el.saveSlideSpecBtn.addEventListener("click", saveSlideSpecToProject);
 
       wireButtonFeedback();
       loadState();
       renderPreset();
       updateWarning();
+      renderProjectSelector();
     })();
   </script>
 </body>
 </html>
-

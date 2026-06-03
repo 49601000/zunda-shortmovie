@@ -22,7 +22,6 @@
 
     body {
       margin: 0;
-      padding: 20px;
       min-height: 100vh;
       color: var(--text);
       font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
@@ -32,11 +31,90 @@
         #0c1017;
     }
 
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      border-bottom: 1px solid rgba(99, 217, 188, 0.28);
+      background: linear-gradient(90deg, #0d3f39 0%, #0c3140 35%, #102236 70%, #081119 100%);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar {
+      min-height: 66px;
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .topbarLeft {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .brandMark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(160deg, #1f7f6c, #124c58);
+      border: 1px solid rgba(147, 245, 199, 0.36);
+      box-shadow: 0 8px 20px rgba(8, 20, 30, 0.45);
+      color: #f2fff9;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .brandText {
+      font-size: 18px;
+      font-weight: 800;
+      color: #f2f8f7;
+      white-space: nowrap;
+    }
+
+    .topbarDivider {
+      width: 1px;
+      height: 28px;
+      background: rgba(168, 196, 194, 0.42);
+      flex: none;
+    }
+
+    .topbarTitle {
+      font-size: 16px;
+      font-weight: 800;
+      color: #f2f8f7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .topbarVersion {
+      font-size: 12px;
+      font-weight: 800;
+      color: #93f5c7;
+      letter-spacing: 0.04em;
+      opacity: 0.9;
+      white-space: nowrap;
+    }
+
     .wrap {
       max-width: 1460px;
       margin: 0 auto;
       display: grid;
       gap: 14px;
+      padding: 84px 20px 20px;
     }
 
     .card {
@@ -380,14 +458,30 @@
       .field.span-2, .field.span-3, .field.span-6 { grid-column: span 2; }
       .sub-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .project-grid { grid-template-columns: 1fr; }
+      .topbar { padding: 8px 12px; }
+      .brandText { font-size: 14px; }
+      .topbarTitle { font-size: 12px; }
+      .topbarVersion { font-size: 10px; }
     }
   </style>
 </head>
 <body>
+  <header>
+    <div class="topbar">
+      <div class="topbarLeft">
+        <div class="brandMark">ZSM</div>
+        <div class="brandText">ずんだもん ショート動画作成</div>
+        <div class="topbarDivider"></div>
+        <div class="topbarTitle">Render Draft → Final Cut 仕上げ</div>
+      </div>
+      <div class="topbarVersion">v2</div>
+    </div>
+  </header>
+
   <main class="wrap">
     <section class="card">
-      <h1>Final Cut Panel</h1>
-      <p class="sub">AIが生成したrender draftを、人間がscene単位の音声演出とsub_scene単位の字幕タイミングに分けて仕上げる編集卓です。</p>
+      <h1>module3:Final Cut Panel</h1>
+      <p class="sub">AIが生成したrender draftを、ユーザーがscene単位の音声演出とsub_scene単位の字幕タイミングに分けて仕上げる編集卓です。</p>
       <div class="project-grid">
         <div class="field">
           <label for="projectSelect">Project Manager 連携（projects/{id}）</label>
