@@ -192,33 +192,9 @@
       font-size: 0.82rem;
       line-height: 1.45;
     }
-    .flow-row {
-      margin-top: 12px;
-      display: grid;
-      gap: 10px;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      align-items: stretch;
-    }
-    .chip {
-      border-radius: 12px;
-      border: 1px solid rgba(148,163,184,.22);
-      background: #0b1220;
-      padding: 10px;
-      text-align: center;
-      font-weight: 700;
-      font-size: .86rem;
-      color: #ddd6fe;
-    }
-    .chip.current {
-      background: #ddd6fe;
-      color: #1e1b4b;
-      border-color: #c4b5fd;
-      box-shadow: 0 0 0 2px rgba(196,181,253,.25) inset;
-    }
     @media (max-width: 980px) {
       .main-grid { grid-template-columns: 1fr; }
       .row button { width: 100%; }
-      .flow-row { grid-template-columns: 1fr; }
       .topbar{padding:8px 12px;}
       .brandText{font-size:14px;}
       .topbarTitle{font-size:12px;}
@@ -244,14 +220,6 @@
     <section class="card">
       <h1>Slide Prompt Builder 2</h1>
       <p class="sub">raw/conversation から講義スライド案を作り、そのJSONを中央スライド領域専用の生成プロンプトへ変換する。</p>
-      <div class="flow-row">
-        <div class="chip current">A. raw会話</div>
-        <div class="chip">B. Planner Prompt</div>
-        <div class="chip">C. ChatGPT</div>
-        <div class="chip">D. lesson JSON</div>
-        <div class="chip">E. Slide Prompt</div>
-        <div class="chip">F. 画像生成へ</div>
-      </div>
       <div class="row">
         <button id="loadRawConversationBtn" class="ghost">Load Raw Conversation</button>
       </div>
@@ -570,7 +538,6 @@
           "- role は title / concept / example / summary のいずれかを基本にする",
           "- core_message はそのスライドで伝える1文",
           "- simple_diagram は黒板に描く単純図解の指示を短く書く",
-          "- teacher_note は先生が口頭で補う内容を短く書く",
           "",
           "期待出力JSON:",
           getExpectedLessonPlanJson(),
