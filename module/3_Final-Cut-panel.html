@@ -1,0 +1,2713 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Final Cut Panel</title>
+  <style>
+    :root {
+      --bg: #0c1017;
+      --panel: #151d2a;
+      --panel-2: #1c2737;
+      --line: #2b3750;
+      --text: #e7edf8;
+      --muted: #93a4c0;
+      --accent: #63c9ff;
+      --ok: #8fe48d;
+      --danger: #ff8196;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+      background:
+        radial-gradient(1200px 640px at 8% -20%, rgba(99, 201, 255, 0.1), transparent 62%),
+        radial-gradient(1000px 480px at 95% -20%, rgba(143, 228, 141, 0.07), transparent 62%),
+        #0c1017;
+    }
+
+    .wrap {
+      max-width: 1460px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.3rem;
+      letter-spacing: 0.02em;
+    }
+
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .row {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .project-grid {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .path-hint {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0f1623;
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.8rem;
+      word-break: break-word;
+    }
+
+    .duration-editor {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 0;
+    }
+
+    .duration-editor input {
+      width: 120px;
+    }
+
+    .inline-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #071018;
+      background: var(--accent);
+    }
+
+    button.secondary { background: #dceaff; color: #0f1828; }
+    button.ghost { background: #253349; color: var(--text); border: 1px solid var(--line); }
+    button.danger { background: var(--danger); color: #2c0810; }
+    button.mini {
+      padding: 5px 9px;
+      border-radius: 10px;
+      font-size: 0.72rem;
+      background: #253349;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    .status {
+      margin-top: 8px;
+      min-height: 1.2em;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .status.ok { color: var(--ok); }
+    .status.error { color: var(--danger); }
+
+    textarea, select, input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #101726;
+      color: var(--text);
+      padding: 9px 10px;
+      outline: none;
+      font-size: 0.9rem;
+    }
+
+    textarea:focus, select:focus, input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 201, 255, 0.14);
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+      line-height: 1.45;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 12px;
+    }
+
+    .segments {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .seg {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(15, 22, 34, 0.76);
+      padding: 12px;
+    }
+
+    .seg textarea {
+      min-height: 88px;
+      font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+    }
+
+    .scene-card {
+      display: grid;
+      gap: 12px;
+    }
+
+    .sub-scenes {
+      display: grid;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,0.11);
+    }
+
+    .sub-row {
+      display: grid;
+      grid-template-columns: 1.2fr 2fr 1fr 0.7fr 0.8fr 0.8fr;
+      gap: 8px;
+      align-items: start;
+      padding: 10px;
+      border: 1px solid rgba(99, 201, 255, 0.32);
+      border-radius: 10px;
+      background: rgba(35, 52, 75, 0.82);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+
+    .sub-row textarea {
+      min-height: 58px;
+      background: #182437;
+    }
+
+    .scene-card.is-collapsed .scene-body,
+    .scene-card.is-collapsed .sub-scenes {
+      display: none;
+    }
+
+    .seg-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .seg-index { font-weight: 800; font-size: 0.92rem; }
+
+    .badge {
+      font-size: 0.78rem;
+      border-radius: 999px;
+      padding: 3px 8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.04);
+      color: #d9e7fd;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .field.span-2 { grid-column: span 2; }
+    .field.span-3 { grid-column: span 3; }
+    .field.span-6 { grid-column: span 6; }
+
+    .readonly {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0f1623;
+      padding: 8px;
+      min-height: 42px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.88rem;
+      line-height: 1.35;
+    }
+
+    .timeline {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #0f1623;
+      padding: 12px;
+    }
+
+    .timeline-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+    }
+
+    .track {
+      position: relative;
+      height: 86px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.1) 0, rgba(255,255,255,0.1) 1px, transparent 1px, transparent 10%);
+      overflow: hidden;
+    }
+
+    .bar {
+      position: absolute;
+      top: 11px;
+      height: 64px;
+      border-radius: 8px;
+      border: 1px solid rgba(99, 201, 255, 0.46);
+      background: linear-gradient(135deg, rgba(99, 201, 255, 0.35), rgba(99, 201, 255, 0.14));
+      padding: 6px 8px;
+      color: #f1f6ff;
+      font-size: 0.72rem;
+      line-height: 1.25;
+      overflow: hidden;
+    }
+
+    .bar .meta {
+      opacity: 0.86;
+      font-size: 0.67rem;
+    }
+
+    @media (max-width: 1100px) {
+      .split { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .field.span-2, .field.span-3, .field.span-6 { grid-column: span 2; }
+      .sub-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .project-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <h1>Final Cut Panel</h1>
+      <p class="sub">AIが生成したrender draftを、人間がscene単位の音声演出とsub_scene単位の字幕タイミングに分けて仕上げる編集卓です。</p>
+      <div class="project-grid">
+        <div class="field">
+          <label for="projectSelect">Project Manager 連携（projects/{id}）</label>
+          <select id="projectSelect" disabled>
+            <option value="">未接続</option>
+          </select>
+        </div>
+        <div class="row" style="margin-top:0">
+          <button id="pickWorkspaceBtn" class="secondary">ワークスペース選択</button>
+          <button id="reloadProjectsBtn" class="ghost" disabled>projects再読込</button>
+          <button id="loadProjectRenderBtn" disabled>render draft読込</button>
+          <button id="saveProjectRenderBtn" class="secondary" disabled>render-final-v01.jsonに書き出し・反映</button>
+        </div>
+      </div>
+      <div id="projectPathHint" class="path-hint">反映先: projects/{id}/outputs/video/render-final-v01.json</div>
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="card split">
+      <div>
+        <p class="sub" style="margin-bottom:8px">render draft JSON / localStorage 入力</p>
+        <textarea id="jsonInput" placeholder="JSONを貼り付けて読み込み"></textarea>
+      </div>
+      <div>
+        <p class="sub" style="margin-bottom:8px">更新済み render draft JSON（nested scenes形式）</p>
+        <textarea id="jsonOutput" readonly></textarea>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="seg-head">
+        <div class="seg-index">TITLE（別枠設定）</div>
+      </div>
+      <div class="grid">
+        <div class="field span-6">
+          <label for="titleTextInput">title text（0-1秒 / role:title セグメントへ反映）</label>
+          <input id="titleTextInput" type="text" placeholder="例: 損切ができないことって実は普通のこと" />
+        </div>
+        <div class="field span-3">
+          <label for="titleBgColorInput">title background color（黒地）</label>
+          <input id="titleBgColorInput" type="color" value="#000000" />
+        </div>
+        <div class="field span-3">
+          <label for="titleTextColorInput">title text color（白字）</label>
+          <input id="titleTextColorInput" type="color" value="#ffffff" />
+        </div>
+        <div class="field span-3">
+          <label for="titleBarHeightInput">title height px（縦幅）</label>
+          <input id="titleBarHeightInput" type="number" min="24" max="300" step="1" value="72" />
+        </div>
+        <div class="field span-3">
+          <label for="titleFontSizeInput">title font size px（文字サイズ）</label>
+          <input id="titleFontSizeInput" type="number" min="16" max="120" step="1" value="42" />
+        </div>
+        <div class="field span-3">
+          <label for="titleWidthPxInput">title width px（横幅）</label>
+          <input id="titleWidthPxInput" type="number" min="120" max="1080" step="1" value="994" />
+        </div>
+        <div class="field span-3">
+          <label for="titleLineBreakModeInput">title line break（改行ルール）</label>
+          <select id="titleLineBreakModeInput">
+            <option value="auto" selected>auto（自動折り返し）</option>
+            <option value="line_chars">line_chars（指定文字数で改行）</option>
+          </select>
+        </div>
+        <div class="field span-3">
+          <label for="titleLineCharsInput">title line chars（1行文字数）</label>
+          <input id="titleLineCharsInput" type="number" min="4" max="80" step="1" value="18" />
+        </div>
+        <div class="field span-3">
+          <label for="titleTextAlignInput">title text align（文字揃え）</label>
+          <select id="titleTextAlignInput">
+            <option value="left">left（左揃え）</option>
+            <option value="center" selected>center（中央揃え）</option>
+            <option value="right">right（右揃え）</option>
+          </select>
+        </div>
+      </div>
+      <p class="sub" style="margin-top:8px">ここで設定したTITLEは、metadata(`title`)・titleセグメント・常時表示タイトル帯（背景の1つ上レイヤー）に同期されます。</p>
+    </section>
+
+    <section class="card">
+      <div class="seg-head">
+        <div class="seg-index">Background PNG（全体共通設定）</div>
+        <button id="generateBackgroundManifestBtn" class="secondary">manifest自動生成して更新</button>
+      </div>
+      <div class="grid">
+        <div class="field span-6">
+          <label for="backgroundPngInput">top-level background（assets/background/*.png）</label>
+          <select id="backgroundPngInput"></select>
+        </div>
+      </div>
+      <p class="sub" style="margin-top:8px">通常はここで全体背景を固定します。scene/sub_sceneの編集データには背景指定を重複保存しません。</p>
+    </section>
+
+    <section class="card">
+      <div class="seg-head">
+        <div class="seg-index">BGM（動画全体）</div>
+      </div>
+      <div class="grid">
+        <div class="field span-3">
+          <label for="bgmSelect">BGMファイル（public/audio/bgm/*.mp3）</label>
+          <select id="bgmSelect"></select>
+        </div>
+        <div class="field span-3">
+          <label for="bgmVolumeInput">BGM音量（ナレーションとのバランス）</label>
+          <div class="row" style="margin-top:0">
+            <input id="bgmVolumeInput" type="range" min="0" max="1" step="0.01" value="0.2" />
+            <div class="badge" id="bgmVolumeValue">20%</div>
+          </div>
+        </div>
+      </div>
+      <p class="sub" style="margin-top:8px">動画の尺がBGMより長い場合は自動でループ再生します。</p>
+    </section>
+
+    <section class="card">
+      <div class="seg-head">
+        <div class="seg-index">Scenes（scene単位）</div>
+        <div class="badge" id="segmentCount">0 scenes / 0 sub_scenes</div>
+      </div>
+      <div id="segments" class="segments"></div>
+    </section>
+
+    <section class="card">
+      <div class="seg-head">
+        <div class="seg-index">簡易タイムライン</div>
+        <div class="duration-editor">
+          <label for="timelineDurationInput" class="sub">尺(sec)</label>
+          <input id="timelineDurationInput" type="number" min="1" step="0.1" value="0" />
+          <div class="badge" id="durationLabel">duration: 0s</div>
+        </div>
+      </div>
+      <div class="timeline">
+        <div class="timeline-meta">
+          <span>0s</span>
+          <span id="durationMid">0s</span>
+          <span id="durationEnd">0s</span>
+        </div>
+        <div id="timelineTrack" class="track"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../psych-short-renderer/shared/voicevox-config.js"></script>
+  <script>
+    (function () {
+      const VOICE_SETTINGS_KEY = "svrs_voice_settings";
+      const VIDEO_KEY = "svrs_video_spec";
+      const META_FILENAME = "meta.json";
+      const RENDER_DRAFT_STEM = "06-render-draft";
+      const RENDER_DRAFT_NAME = "06-render-draft-v01.json";
+      const RENDER_FINAL_NAME = "render-final-v01.json";
+      const sharedConfig = window.VOICEVOX_SHARED_CONFIG || {};
+      const FALLBACK_STYLE_MAP = {
+        normal: 3,
+        tsuntsun: 7,
+        whisper: 22,
+        hisohiso: 38,
+        herohero: 75,
+        namidame: 76
+      };
+      const VOICE_STYLE_TO_SPEAKER_ID = sharedConfig.VOICE_STYLE_TO_SPEAKER_ID || FALLBACK_STYLE_MAP;
+      const SPEAKER_ID_TO_VOICE_STYLE = sharedConfig.SPEAKER_ID_TO_VOICE_STYLE || Object.keys(VOICE_STYLE_TO_SPEAKER_ID).reduce((acc, style) => {
+        acc[String(VOICE_STYLE_TO_SPEAKER_ID[style])] = style;
+        return acc;
+      }, {});
+      const DEFAULT_VOICE_STYLE = sharedConfig.DEFAULT_VOICE_STYLE || "normal";
+      const DEFAULT_SPEAKER_ID = Number(sharedConfig.DEFAULT_SPEAKER_ID) || VOICE_STYLE_TO_SPEAKER_ID[DEFAULT_VOICE_STYLE] || 3;
+      const DEFAULT_VOICE_SPEED = Number(sharedConfig.DEFAULT_VOICE_SPEED) || 1.4;
+      const VOICE_SPEED_OPTIONS = sharedConfig.VOICE_SPEED_OPTIONS || [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
+
+      const normalizeStyle = typeof sharedConfig.normalizeVoiceStyle === "function"
+        ? sharedConfig.normalizeVoiceStyle
+        : function (style) {
+            const normalized = typeof style === "string" ? style.trim() : "";
+            return Object.prototype.hasOwnProperty.call(VOICE_STYLE_TO_SPEAKER_ID, normalized)
+              ? normalized
+              : DEFAULT_VOICE_STYLE;
+          };
+
+      const normalizeSpeed = typeof sharedConfig.normalizeVoiceSpeed === "function"
+        ? sharedConfig.normalizeVoiceSpeed
+        : function (speed) {
+            const n = Number(speed);
+            if (!Number.isFinite(n)) return DEFAULT_VOICE_SPEED;
+            const hit = VOICE_SPEED_OPTIONS.find((v) => Math.abs(v - n) < 0.0001);
+            return hit != null ? hit : DEFAULT_VOICE_SPEED;
+          };
+
+      const inferStyleFromSpeakerId = typeof sharedConfig.inferVoiceStyleFromSpeakerId === "function"
+        ? sharedConfig.inferVoiceStyleFromSpeakerId
+        : function (speakerId) {
+            return SPEAKER_ID_TO_VOICE_STYLE[String(Number(speakerId))] || DEFAULT_VOICE_STYLE;
+          };
+
+      const resolveSpeakerId = typeof sharedConfig.resolveSpeakerIdFromSegment === "function"
+        ? sharedConfig.resolveSpeakerIdFromSegment
+        : function (segment) {
+            const style = typeof (segment && segment.voice_style) === "string" ? segment.voice_style.trim() : "";
+            if (Object.prototype.hasOwnProperty.call(VOICE_STYLE_TO_SPEAKER_ID, style)) {
+              return VOICE_STYLE_TO_SPEAKER_ID[style];
+            }
+            const legacySpeakerId = Number(segment && segment.speakerId);
+            if (Number.isFinite(legacySpeakerId)) return legacySpeakerId;
+            return DEFAULT_SPEAKER_ID;
+          };
+
+      const VOICE_STYLE_LABEL = {
+        normal: "ノーマル",
+        tsuntsun: "ツンツン",
+        whisper: "ささやき",
+        hisohiso: "ヒソヒソ",
+        herohero: "ヘロヘロ",
+        namidame: "なみだめ"
+      };
+      const EMOTION_OPTIONS = [
+        "normal",
+        "happy",
+        "thinking",
+        "surprised",
+        "sad",
+        "annoyed",
+        "laugh",
+        "provoke",
+        "low-panic",
+        "mid-panic",
+        "high-panic",
+        "low-cheat",
+        "mid-cheat",
+        "high-cheat"
+      ];
+      const EMOTION_LABEL = {
+        normal: "normal",
+        happy: "happy",
+        thinking: "thinking",
+        surprised: "surprised",
+        sad: "sad",
+        annoyed: "annoyed",
+        laugh: "laugh",
+        provoke: "provoke",
+        "low-panic": "low-panic",
+        "mid-panic": "mid-panic",
+        "high-panic": "high-panic",
+        "low-cheat": "low-cheat",
+        "mid-cheat": "mid-cheat",
+        "high-cheat": "high-cheat"
+      };
+      let BACKGROUND_PNG_FILES = [
+        "classroom-daytime.png",
+        "classroom-evening.png",
+        "classroom-evening2.png"
+      ];
+      let BGM_MP3_FILES = [
+        "BGM-lofi.mp3",
+        "BGM-piano.mp3"
+      ];
+
+      const el = {
+        pickWorkspaceBtn: document.getElementById("pickWorkspaceBtn"),
+        reloadProjectsBtn: document.getElementById("reloadProjectsBtn"),
+        projectSelect: document.getElementById("projectSelect"),
+        loadProjectRenderBtn: document.getElementById("loadProjectRenderBtn"),
+        saveProjectRenderBtn: document.getElementById("saveProjectRenderBtn"),
+        projectPathHint: document.getElementById("projectPathHint"),
+        generateBackgroundManifestBtn: document.getElementById("generateBackgroundManifestBtn"),
+        status: document.getElementById("status"),
+        jsonInput: document.getElementById("jsonInput"),
+        jsonOutput: document.getElementById("jsonOutput"),
+        titleTextInput: document.getElementById("titleTextInput"),
+        titleBgColorInput: document.getElementById("titleBgColorInput"),
+        titleTextColorInput: document.getElementById("titleTextColorInput"),
+        titleBarHeightInput: document.getElementById("titleBarHeightInput"),
+        titleFontSizeInput: document.getElementById("titleFontSizeInput"),
+        titleWidthPxInput: document.getElementById("titleWidthPxInput"),
+        titleLineBreakModeInput: document.getElementById("titleLineBreakModeInput"),
+        titleLineCharsInput: document.getElementById("titleLineCharsInput"),
+        titleTextAlignInput: document.getElementById("titleTextAlignInput"),
+        backgroundPngInput: document.getElementById("backgroundPngInput"),
+        bgmSelect: document.getElementById("bgmSelect"),
+        bgmVolumeInput: document.getElementById("bgmVolumeInput"),
+        bgmVolumeValue: document.getElementById("bgmVolumeValue"),
+        segments: document.getElementById("segments"),
+        segmentCount: document.getElementById("segmentCount"),
+        timelineDurationInput: document.getElementById("timelineDurationInput"),
+        durationLabel: document.getElementById("durationLabel"),
+        durationMid: document.getElementById("durationMid"),
+        durationEnd: document.getElementById("durationEnd"),
+        timelineTrack: document.getElementById("timelineTrack")
+      };
+
+      const state = {
+        spec: null,
+        scenes: [],
+        renderFileName: RENDER_FINAL_NAME,
+        backgroundManifestTargetLabel: "",
+        collapsedSceneKeys: new Set(),
+        titleText: "",
+        titleBgColor: "#000000",
+        titleTextColor: "#ffffff",
+        titleBarHeightPx: 72,
+        titleFontSizePx: 42,
+        titleWidthPx: 994,
+        titleLineBreakMode: "auto",
+        titleLineChars: 18,
+        titleTextAlign: "center",
+        transformMode: "none",
+        backgroundPng: "",
+        bgmFile: "",
+        bgmVolume: 0.2,
+        bgmLoop: true,
+        timelineDurationSec: null,
+        selectedProjectId: ""
+      };
+
+      let workspaceHandle = null;
+      let projectRows = [];
+      let backgroundManifestDirHandle = null;
+
+      const DEFAULT_TRANSFORM_MODE = "none";
+
+      const parseJson = (raw) => {
+        try {
+          return JSON.parse(raw);
+        } catch (_err) {
+          return null;
+        }
+      };
+
+      const deepClone = (v) => JSON.parse(JSON.stringify(v));
+
+      const toNum = (value, fallback = NaN) => {
+        const n = Number(value);
+        return Number.isFinite(n) ? n : fallback;
+      };
+
+      const formatSec = (value) => {
+        const safe = Math.max(0, toNum(value, 0));
+        if (Number.isInteger(safe)) return String(safe);
+        return String(Number(safe.toFixed(3))).replace(/\.0+$/, "").replace(/(\.\d*?)0+$/, "$1");
+      };
+
+      const setStatus = (text, mode) => {
+        el.status.textContent = text || "";
+        el.status.classList.remove("ok", "error");
+        if (mode === "ok") el.status.classList.add("ok");
+        if (mode === "error") el.status.classList.add("error");
+      };
+
+      const readText = async (fileHandle) => {
+        const file = await fileHandle.getFile();
+        return file.text();
+      };
+
+      const readJson = async (fileHandle) => {
+        return JSON.parse(await readText(fileHandle));
+      };
+
+      const writeText = async (fileHandle, text) => {
+        const writable = await fileHandle.createWritable();
+        await writable.write(String(text));
+        await writable.close();
+      };
+
+      const writeJson = async (fileHandle, data) => {
+        await writeText(fileHandle, `${JSON.stringify(data, null, 2)}\n`);
+      };
+
+      const verifyPermission = async (handle, mode) => {
+        const options = {mode};
+        if ((await handle.queryPermission(options)) === "granted") return true;
+        return (await handle.requestPermission(options)) === "granted";
+      };
+
+      const ensureDir = async (baseDir, name) => {
+        return baseDir.getDirectoryHandle(name, {create: true});
+      };
+
+      const getDirectoryByPath = async (baseDir, parts, options = {}) => {
+        let current = baseDir;
+        for (const part of parts) {
+          if (!part) continue;
+          current = await current.getDirectoryHandle(part, {create: Boolean(options.create)});
+        }
+        return current;
+      };
+
+      const bindBackgroundManifestTargetFromWorkspace = async () => {
+        if (!workspaceHandle) return null;
+        const candidates = [
+          ["assets", "background"],
+          ["public", "assets", "background"],
+          ["psych-short-renderer", "public", "assets", "background"],
+          ["background"]
+        ];
+
+        for (const parts of candidates) {
+          try {
+            const handle = await getDirectoryByPath(workspaceHandle, parts, {create: false});
+            backgroundManifestDirHandle = handle;
+            state.backgroundManifestTargetLabel = parts.join("/");
+            el.generateBackgroundManifestBtn.title = `更新先: ${state.backgroundManifestTargetLabel}`;
+            return handle;
+          } catch (_err) {
+            // 次の候補を試す。
+          }
+        }
+
+        const fallbackParts = ["assets", "background"];
+        const fallback = await getDirectoryByPath(workspaceHandle, fallbackParts, {create: true});
+        backgroundManifestDirHandle = fallback;
+        state.backgroundManifestTargetLabel = fallbackParts.join("/");
+        el.generateBackgroundManifestBtn.title = `更新先: ${state.backgroundManifestTargetLabel}`;
+        return fallback;
+      };
+
+      const getProjectsDirHandle = async (create) => {
+        if (!workspaceHandle) throw new Error("ワークスペース未接続です。");
+        if (workspaceHandle.name === "projects") return workspaceHandle;
+        return workspaceHandle.getDirectoryHandle("projects", {create});
+      };
+
+      const getProjectHandles = async (projectId) => {
+        const projectsDir = await getProjectsDirHandle(true);
+        const projectDir = await projectsDir.getDirectoryHandle(projectId, {create: true});
+        const pipelineDir = await ensureDir(projectDir, "pipeline");
+        const outputsDir = await ensureDir(projectDir, "outputs");
+        const audioDir = await ensureDir(outputsDir, "audio");
+        const videoDir = await ensureDir(outputsDir, "video");
+        return {projectDir, pipelineDir, outputsDir, audioDir, videoDir};
+      };
+
+      const readMetaFromProject = async (projectDirHandle, folderName) => {
+        try {
+          const metaHandle = await projectDirHandle.getFileHandle(META_FILENAME);
+          const meta = await readJson(metaHandle);
+          return {
+            id: String(meta.id || folderName),
+            title: String(meta.title || ""),
+            status: String(meta.status || ""),
+            sourceFolder: folderName
+          };
+        } catch (_err) {
+          return {
+            id: folderName,
+            title: "",
+            status: "",
+            sourceFolder: folderName
+          };
+        }
+      };
+
+      const renderProjectOptions = () => {
+        const current = state.selectedProjectId;
+        el.projectSelect.innerHTML = "";
+        const blank = document.createElement("option");
+        blank.value = "";
+        blank.textContent = projectRows.length ? "プロジェクトを選択" : "未接続";
+        el.projectSelect.appendChild(blank);
+
+        projectRows.forEach((row) => {
+          const option = document.createElement("option");
+          option.value = row.id;
+          option.textContent = `${row.id}${row.title ? ` - ${row.title}` : ""}${row.status ? ` (${row.status})` : ""}`;
+          el.projectSelect.appendChild(option);
+        });
+
+        if (projectRows.some((row) => row.id === current)) {
+          el.projectSelect.value = current;
+        } else if (projectRows.length) {
+          el.projectSelect.value = projectRows[projectRows.length - 1].id;
+          state.selectedProjectId = el.projectSelect.value;
+        } else {
+          state.selectedProjectId = "";
+        }
+        updateProjectControls();
+      };
+
+      const selectedProjectId = () => String(el.projectSelect.value || state.selectedProjectId || "").trim();
+
+      const updateProjectControls = () => {
+        const hasWorkspace = Boolean(workspaceHandle);
+        const projectId = selectedProjectId();
+        el.projectSelect.disabled = !hasWorkspace || projectRows.length === 0;
+        el.reloadProjectsBtn.disabled = !hasWorkspace;
+        el.loadProjectRenderBtn.disabled = !hasWorkspace || !projectId;
+        el.saveProjectRenderBtn.disabled = !hasWorkspace || !projectId || !state.spec;
+        const renderName = RENDER_FINAL_NAME;
+        el.projectPathHint.textContent = projectId
+          ? `反映先: projects/${projectId}/outputs/video/${renderName}`
+          : `反映先: projects/{id}/outputs/video/${RENDER_FINAL_NAME}`;
+      };
+
+      const loadProjects = async () => {
+        const projectsDir = await getProjectsDirHandle(false);
+        const rows = [];
+        for await (const [name, handle] of projectsDir.entries()) {
+          if (handle.kind !== "directory") continue;
+          if (!/^\d{4}$/.test(name)) continue;
+          rows.push(await readMetaFromProject(handle, name));
+        }
+        rows.sort((a, b) => String(a.id).localeCompare(String(b.id), "ja", {numeric: true}));
+        projectRows = rows;
+        renderProjectOptions();
+        return rows;
+      };
+
+      const connectWorkspace = async () => {
+        if (typeof window.showDirectoryPicker !== "function") {
+          setStatus("このブラウザではワークスペース連携（File System Access API）が使えません。", "error");
+          return;
+        }
+
+        try {
+          const handle = await window.showDirectoryPicker({mode: "readwrite"});
+          const writable = await verifyPermission(handle, "readwrite");
+          if (!writable) {
+            setStatus("ワークスペースへの読み書き許可が必要です。", "error");
+            return;
+          }
+          workspaceHandle = handle;
+          await loadProjects();
+          await bindBackgroundManifestTargetFromWorkspace();
+          await generateBackgroundManifestAndRefresh({useBoundTarget: true});
+          setStatus(`projects を読み込みました（${projectRows.length}件）。manifest更新先: ${state.backgroundManifestTargetLabel}`, "ok");
+        } catch (error) {
+          if (error && error.name === "AbortError") {
+            setStatus("ワークスペース選択をキャンセルしました。", "");
+            return;
+          }
+          setStatus(error && error.message ? error.message : "ワークスペース接続に失敗しました。", "error");
+        } finally {
+          updateProjectControls();
+        }
+      };
+
+      const parseVersionName = (name, stem, ext = ".json") => {
+        const escapedStem = stem.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const escapedExt = ext.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const match = String(name).match(new RegExp(`^${escapedStem}-v(\\d{2})${escapedExt}$`));
+        if (!match) return null;
+        const version = Number(match[1]);
+        return Number.isFinite(version) ? {name, version} : null;
+      };
+
+      const findNextVersionedName = async (dirHandle, stem, ext = ".json") => {
+        let max = 0;
+        for await (const [name, handle] of dirHandle.entries()) {
+          if (handle.kind !== "file") continue;
+          const parsed = parseVersionName(name, stem, ext);
+          if (!parsed) continue;
+          max = Math.max(max, parsed.version);
+        }
+        return `${stem}-v${String(max + 1).padStart(2, "0")}${ext}`;
+      };
+
+      const findLatestVersionedName = async (dirHandle, stem, ext = ".json") => {
+        let best = null;
+        for await (const [name, handle] of dirHandle.entries()) {
+          if (handle.kind !== "file") continue;
+          const parsed = parseVersionName(name, stem, ext);
+          if (!parsed) continue;
+          if (!best || parsed.version > best.version) best = parsed;
+        }
+        return best;
+      };
+
+      const parseTimeRange = (timeValue) => {
+        const raw = String(timeValue || "").trim();
+        const m = raw.match(/^(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)$/);
+        if (!m) return null;
+        const start = Number(m[1]);
+        const end = Number(m[2]);
+        if (!Number.isFinite(start) || !Number.isFinite(end) || end < start) return null;
+        return {start, end};
+      };
+
+      const charLen = (text) => [...String(text || "")].length;
+
+      const defaultSpeakerId = (speaker) => {
+        const speakerIds = {
+          "ずんだもん": 3,
+          "めたん": 2,
+          "天の声": 2,
+          "議題": 2
+        };
+        const key = String(speaker || "").trim();
+        return Object.prototype.hasOwnProperty.call(speakerIds, key) ? speakerIds[key] : 2;
+      };
+
+      const normalizeDisplayMode = (value) => {
+        const raw = String(value || "").trim();
+        return raw || "replace";
+      };
+
+      const createSceneId = (index) => `scene_${String(index + 1).padStart(3, "0")}`;
+
+      const sceneIdFromSubScene = (sub, index = 0) => {
+        if (typeof sub?.scene_id === "string" && sub.scene_id.trim()) return sub.scene_id.trim();
+        const id = String(sub?.sub_scene_id || sub?.id || "").trim();
+        const matched = id.match(/^(.+)_\d{2}$/);
+        return matched ? matched[1] : createSceneId(index);
+      };
+
+      const resolveMaxEndFromSegments = (segments) => {
+        return (segments || []).reduce((acc, seg) => {
+          const segEnd = toNum(seg?.end, NaN);
+          if (Number.isFinite(segEnd) && segEnd > acc) return segEnd;
+          return acc;
+        }, 0);
+      };
+
+      const resolveMaxEndFromScenes = (scenes) => resolveMaxEndFromSegments(flattenScenesToSegments(scenes));
+
+      const resolveInitialDurationSec = (spec, segments) => {
+        const fpsCandidateA = toNum(spec?.fps, NaN);
+        const fpsCandidateB = toNum(spec?.video_spec?.format?.fps, NaN);
+        const fps = Number.isFinite(fpsCandidateA) && fpsCandidateA > 0
+          ? fpsCandidateA
+          : Number.isFinite(fpsCandidateB) && fpsCandidateB > 0
+            ? fpsCandidateB
+            : 30;
+        const byDurationSec = toNum(spec?.durationSec, NaN);
+        const byFormatDuration = toNum(spec?.video_spec?.format?.duration, NaN);
+        const byFrames = toNum(spec?.durationInFrames, NaN);
+        const byFormatFrames = toNum(spec?.video_spec?.format?.durationInFrames, NaN);
+        const durationCandidates = [
+          byDurationSec,
+          byFormatDuration,
+          Number.isFinite(byFrames) ? byFrames / fps : NaN,
+          Number.isFinite(byFormatFrames) ? byFormatFrames / fps : NaN
+        ];
+        const declared = durationCandidates.find((v) => Number.isFinite(v) && v > 0);
+        const maxEnd = resolveMaxEndFromSegments(segments);
+        if (declared != null) return Math.max(declared, maxEnd, 1);
+        return Math.max(maxEnd, 1);
+      };
+
+      const normalizeBackgroundRef = (background) => {
+        if (typeof background !== "string") return "";
+        const trimmed = background.trim();
+        if (!trimmed) return "";
+        const normalized = trimmed.replace(/^\/+/, "");
+        const m = normalized.match(/assets\/background\/(.+\.(?:png|jpe?g|webp|avif))$/i);
+        return m ? m[1] : normalized;
+      };
+
+      const normalizeBgmVolume = (value, fallback = 0.2) => {
+        const n = toNum(value, NaN);
+        if (!Number.isFinite(n)) return fallback;
+        return Math.max(0, Math.min(1, n));
+      };
+
+      const normalizeBgmRef = (value) => {
+        if (typeof value !== "string") return "";
+        const trimmed = value.trim();
+        if (!trimmed || /^none$/i.test(trimmed)) return "";
+        const normalized = trimmed.replace(/\\/g, "/").replace(/^\/+/, "");
+        const m = normalized.match(/audio\/bgm\/(.+\.mp3)$/i);
+        if (m) return m[1];
+        const leaf = normalized.split("/").pop() || "";
+        return /\.mp3$/i.test(leaf) ? leaf : "";
+      };
+
+      const resolveBackgroundFromSpec = (spec) => {
+        const topLevelBackground = normalizeBackgroundRef(spec?.background);
+        if (topLevelBackground) return topLevelBackground;
+        return normalizeBackgroundRef(spec?.video_spec?.style?.background);
+      };
+
+      const resolveBgmSettingsFromSpec = (spec) => {
+        const audio = spec?.video_spec?.audio || {};
+        const specBgm = spec?.bgm;
+        const bgmObject =
+          audio?.bgm && typeof audio.bgm === "object"
+            ? audio.bgm
+            : specBgm && typeof specBgm === "object"
+              ? specBgm
+              : null;
+        const bgmString =
+          typeof audio?.bgm === "string"
+            ? audio.bgm
+            : typeof specBgm === "string"
+              ? specBgm
+              : "";
+        const bgmFile = normalizeBgmRef(bgmObject?.src || bgmString);
+        const volumeCandidate =
+          Number.isFinite(toNum(audio?.bgm_volume, NaN))
+            ? toNum(audio?.bgm_volume, NaN)
+            : toNum(bgmObject?.volume, NaN);
+        const loop = typeof audio?.bgm_loop === "boolean"
+          ? audio.bgm_loop
+          : typeof bgmObject?.loop === "boolean"
+            ? bgmObject.loop
+            : true;
+        return {
+          bgmFile,
+          bgmVolume: normalizeBgmVolume(volumeCandidate, 0.2),
+          bgmLoop: Boolean(loop)
+        };
+      };
+
+      const normalizeTitleText = (value) => {
+        if (typeof value !== "string") return "";
+        return value.replace(/\s+/g, " ").trim();
+      };
+
+      const normalizeColorHex = (value, fallback) => {
+        if (typeof value !== "string") return fallback;
+        const raw = value.trim();
+        const m = raw.match(/^#([0-9a-fA-F]{6})$/);
+        if (!m) return fallback;
+        return `#${m[1].toLowerCase()}`;
+      };
+
+      const normalizePx = (value, fallback, min, max) => {
+        const n = Number(value);
+        if (!Number.isFinite(n)) return fallback;
+        return Math.max(min, Math.min(max, Math.round(n)));
+      };
+
+      const normalizeLineBreakMode = (value) => {
+        return value === "line_chars" ? "line_chars" : "auto";
+      };
+
+      const normalizeTitleTextAlign = (value) => {
+        if (value === "left" || value === "right" || value === "center") return value;
+        return "center";
+      };
+
+      const normalizeScreenTextColor = (value, fallback = "#ffffff") => {
+        if (typeof value === "string" && value.trim().toLowerCase() === "transparent") {
+          return "transparent";
+        }
+        return normalizeColorHex(value, fallback);
+      };
+
+      const normalizeScreenTextBgColor = (value, fallback = "#000000") => {
+        if (typeof value === "string" && value.trim().toLowerCase() === "transparent") {
+          return "transparent";
+        }
+        return normalizeColorHex(value, fallback);
+      };
+
+      const normalizeScreenTextFontSize = (value, fallback = null) => {
+        if (value === "" || value == null) return fallback;
+        const n = Number(value);
+        if (!Number.isFinite(n)) return fallback;
+        return Math.max(16, Math.min(160, Math.round(n)));
+      };
+
+      const normalizeScreenTextStrokeColor = (value, fallback = "#000000") => {
+        if (typeof value === "string" && value.trim().toLowerCase() === "transparent") {
+          return "transparent";
+        }
+        return normalizeColorHex(value, fallback);
+      };
+
+      const normalizeScreenTextStrokeWidth = (value, fallback = 0) => {
+        if (value === "" || value == null) return fallback;
+        const n = Number(value);
+        if (!Number.isFinite(n)) return fallback;
+        return Math.max(0, Math.min(12, Math.round(n)));
+      };
+
+      const isTransparentScreenTextBg = (value) => {
+        return normalizeScreenTextBgColor(value, "#000000") === "transparent";
+      };
+
+      const isTransparentScreenTextColor = (value) => {
+        return normalizeScreenTextColor(value, "#ffffff") === "transparent";
+      };
+
+      const isTransparentScreenTextStrokeColor = (value) => {
+        return normalizeScreenTextStrokeColor(value, "#000000") === "transparent";
+      };
+
+      const normalizeEmphasisWords = (value) => {
+        if (Array.isArray(value)) {
+          const words = value
+            .map((item) => (typeof item === "string" ? item.trim() : ""))
+            .filter((item) => item.length > 0);
+          return Array.from(new Set(words));
+        }
+        if (typeof value === "string") {
+          const words = value
+            .split(/\r?\n/)
+            .map((item) => item.trim())
+            .filter((item) => item.length > 0);
+          return Array.from(new Set(words));
+        }
+        return [];
+      };
+
+      const emphasisWordsToMultiline = (value) => {
+        return normalizeEmphasisWords(value).join("\n");
+      };
+
+      const resolveTitleOverlayFromSpec = (spec) => {
+        const fromTop = spec && typeof spec.title_overlay === "object" && spec.title_overlay
+          ? spec.title_overlay
+          : null;
+        const fromStyle = spec?.video_spec?.style && typeof spec.video_spec.style.title_overlay === "object"
+          ? spec.video_spec.style.title_overlay
+          : null;
+        const source = fromTop || fromStyle || {};
+        const bgCandidate =
+          source.bg_color ??
+          source.background_color ??
+          source.backgroundColor;
+        const textCandidate =
+          source.text_color ??
+          source.font_color ??
+          source.color;
+        const heightCandidate =
+          source.height_px ??
+          source.bar_height_px ??
+          source.heightPx;
+        const fontSizeCandidate =
+          source.font_size_px ??
+          source.fontSizePx;
+        const widthCandidate =
+          source.width_px ??
+          source.widthPx;
+        const lineBreakModeCandidate =
+          source.line_break_mode ??
+          source.lineBreakMode;
+        const lineCharsCandidate =
+          source.line_chars ??
+          source.max_chars_per_line ??
+          source.lineChars;
+        const textAlignCandidate =
+          source.text_align ??
+          source.textAlign;
+        return {
+          bgColor: normalizeColorHex(String(bgCandidate || ""), "#000000"),
+          textColor: normalizeColorHex(String(textCandidate || ""), "#ffffff"),
+          heightPx: normalizePx(heightCandidate, 72, 24, 300),
+          fontSizePx: normalizePx(fontSizeCandidate, 42, 16, 120),
+          widthPx: normalizePx(widthCandidate, 994, 120, 1080),
+          lineBreakMode: normalizeLineBreakMode(lineBreakModeCandidate),
+          lineChars: normalizePx(lineCharsCandidate, 18, 4, 80),
+          textAlign: normalizeTitleTextAlign(textAlignCandidate)
+        };
+      };
+
+      const resolveTitleTextFromSpec = (spec, scenes) => {
+        const topLevelTitle = spec?.title;
+        if (typeof topLevelTitle === "string") return normalizeTitleText(topLevelTitle);
+        if (topLevelTitle && typeof topLevelTitle.text === "string") {
+          return normalizeTitleText(topLevelTitle.text);
+        }
+        const videoSpecTitle = spec?.video_spec?.title;
+        if (typeof videoSpecTitle === "string") return normalizeTitleText(videoSpecTitle);
+        if (videoSpecTitle && typeof videoSpecTitle.text === "string") {
+          return normalizeTitleText(videoSpecTitle.text);
+        }
+        const firstScene = Array.isArray(scenes) ? scenes[0] : null;
+        const firstSub = firstScene && Array.isArray(firstScene.sub_scenes) ? firstScene.sub_scenes[0] : null;
+        const fromScreen = normalizeTitleText(firstSub?.screen_text || "");
+        if (fromScreen) return fromScreen;
+        const fromVoice = normalizeTitleText(firstScene?.voice || "");
+        if (fromVoice) return fromVoice;
+        return "";
+      };
+
+      const applyTitleTextToScenes = (titleText) => {
+        const normalized = normalizeTitleText(titleText);
+        if (!normalized || !state.scenes.length) return;
+        state.scenes = state.scenes.map((scene, i) => {
+          if (i !== 0) return scene;
+          const subScenes = (scene.sub_scenes || []).map((sub, subIndex) => {
+            if (subIndex !== 0) return sub;
+            return {
+              ...sub,
+              screen_text: normalized,
+              char_count: charLen(normalized)
+            };
+          });
+          return {
+            ...scene,
+            voice: normalized,
+            voice_override: normalized,
+            sub_scenes: subScenes
+          };
+        });
+      };
+
+      const renderBackgroundOptions = (selected) => {
+        const normalizedSelected = typeof selected === "string" ? selected.trim() : "";
+        const options = [
+          `<option value="">(背景指定なし)</option>`,
+          ...BACKGROUND_PNG_FILES.map((name) => {
+            const sel = name === normalizedSelected ? " selected" : "";
+            return `<option value="${escapeHtml(name)}"${sel}>${escapeHtml(name)}</option>`;
+          })
+        ];
+        if (
+          normalizedSelected &&
+          !BACKGROUND_PNG_FILES.includes(normalizedSelected)
+        ) {
+          options.push(
+            `<option value="${escapeHtml(normalizedSelected)}" selected>(current) ${escapeHtml(normalizedSelected)}</option>`
+          );
+        }
+        return options.join("");
+      };
+
+      const renderBgmOptions = (selected) => {
+        const normalizedSelected = normalizeBgmRef(selected);
+        const options = [
+          `<option value="">(BGMなし)</option>`,
+          ...BGM_MP3_FILES.map((name) => {
+            const sel = name === normalizedSelected ? " selected" : "";
+            return `<option value="${escapeHtml(name)}"${sel}>${escapeHtml(name)}</option>`;
+          })
+        ];
+        if (
+          normalizedSelected &&
+          !BGM_MP3_FILES.includes(normalizedSelected)
+        ) {
+          options.push(
+            `<option value="${escapeHtml(normalizedSelected)}" selected>(current) ${escapeHtml(normalizedSelected)}</option>`
+          );
+        }
+        return options.join("");
+      };
+
+      const normalizeBackgroundFileList = (files) => {
+        if (!Array.isArray(files)) return [];
+        const uniq = new Set();
+        files.forEach((name) => {
+          const trimmed = String(name || "").trim();
+          if (!trimmed) return;
+          if (!/\.png$/i.test(trimmed)) return;
+          uniq.add(trimmed);
+        });
+        return [...uniq].sort((a, b) => a.localeCompare(b, "ja", {numeric: true, sensitivity: "base"}));
+      };
+
+      const normalizeBgmFileList = (files) => {
+        if (!Array.isArray(files)) return [];
+        const uniq = new Set();
+        files.forEach((name) => {
+          const trimmed = String(name || "").trim();
+          if (!trimmed) return;
+          if (!/\.mp3$/i.test(trimmed)) return;
+          uniq.add(trimmed);
+        });
+        return [...uniq].sort((a, b) => a.localeCompare(b, "ja", {numeric: true, sensitivity: "base"}));
+      };
+
+      const applyBackgroundFileList = (files, options = {}) => {
+        const normalized = normalizeBackgroundFileList(files);
+        if (normalized.length > 0) {
+          BACKGROUND_PNG_FILES = normalized;
+        }
+        const selected =
+          options.selected !== undefined
+            ? String(options.selected || "")
+            : String(state.backgroundPng || "");
+        el.backgroundPngInput.innerHTML = renderBackgroundOptions(selected);
+      };
+
+      const applyBgmFileList = (files, options = {}) => {
+        const normalized = normalizeBgmFileList(files);
+        if (normalized.length > 0) {
+          BGM_MP3_FILES = normalized;
+        }
+        const selected =
+          options.selected !== undefined
+            ? normalizeBgmRef(options.selected)
+            : normalizeBgmRef(state.bgmFile);
+        el.bgmSelect.innerHTML = renderBgmOptions(selected);
+      };
+
+      const generateBackgroundManifestAndRefresh = async (options = {}) => {
+        if (typeof window.showDirectoryPicker !== "function") {
+          setStatus("このブラウザではmanifest自動生成（File System Access API）が使えません。", "error");
+          return;
+        }
+
+        try {
+          let backgroundDir = null;
+          if (options.useBoundTarget || backgroundManifestDirHandle) {
+            backgroundDir = backgroundManifestDirHandle || await bindBackgroundManifestTargetFromWorkspace();
+          }
+
+          if (!backgroundDir) {
+            const selectedDir = await window.showDirectoryPicker({mode: "readwrite"});
+            backgroundDir = selectedDir;
+            state.backgroundManifestTargetLabel = selectedDir.name || "background";
+            if (selectedDir.name !== "background") {
+              try {
+                backgroundDir = await selectedDir.getDirectoryHandle("background", {create: false});
+                state.backgroundManifestTargetLabel = `${selectedDir.name}/background`;
+              } catch (_err) {
+                backgroundDir = selectedDir;
+              }
+            }
+            backgroundManifestDirHandle = backgroundDir;
+          }
+
+          const files = [];
+          for await (const [name, handle] of backgroundDir.entries()) {
+            if (handle.kind !== "file") continue;
+            if (!/\.png$/i.test(name)) continue;
+            files.push(name);
+          }
+
+          const normalizedFiles = normalizeBackgroundFileList(files);
+          const manifest = {
+            version: "background_manifest_v1",
+            base: "assets/background",
+            generatedAt: new Date().toISOString(),
+            files: normalizedFiles
+          };
+
+          const manifestFile = await backgroundDir.getFileHandle("background-manifest.json", {create: true});
+          const writable = await manifestFile.createWritable();
+          await writable.write(`${JSON.stringify(manifest, null, 2)}\n`);
+          await writable.close();
+
+          applyBackgroundFileList(normalizedFiles);
+          refreshOutput();
+          setStatus(
+            `background-manifest.json を生成し、背景候補を更新しました（${normalizedFiles.length} files / ${state.backgroundManifestTargetLabel}）。`,
+            "ok"
+          );
+        } catch (error) {
+          if (error && error.name === "AbortError") {
+            setStatus("manifest生成をキャンセルしました。", "");
+            return;
+          }
+          setStatus("manifest自動生成に失敗しました。backgroundフォルダを選択して再実行してください。", "error");
+        }
+      };
+
+      const normalizeEmotion = (emotion) => {
+        const raw = typeof emotion === "string" ? emotion.trim().toLowerCase() : "";
+        if (!raw) return "normal";
+        if (EMOTION_OPTIONS.includes(raw)) return raw;
+        return "normal";
+      };
+
+      const resolveTransformMode = (spec) => {
+        const topLevelMode = typeof spec?.tts_transform === "string" ? spec.tts_transform.trim() : "";
+        if (topLevelMode) return topLevelMode.toLowerCase();
+        const legacyMode = typeof spec?.video_spec?.audio?.tts_transform === "string"
+          ? spec.video_spec.audio.tts_transform.trim()
+          : "";
+        if (legacyMode) return legacyMode.toLowerCase();
+        return DEFAULT_TRANSFORM_MODE;
+      };
+
+      const transformSentenceToZundamon = (sentence) => {
+        const m = sentence.match(/^([\s\S]*?)([。！？!?]*)$/);
+        if (!m) return sentence;
+
+        const core = m[1];
+        const suffix = m[2] || "";
+        const trimmed = core.trimEnd();
+        const trailingSpaces = core.slice(trimmed.length);
+
+        let transformed = trimmed;
+        let changed = false;
+
+        if (/でしょう$/.test(transformed)) {
+          transformed = transformed.replace(/でしょう$/, "なのだろう");
+          changed = true;
+        } else if (/です$/.test(transformed)) {
+          transformed = transformed.replace(/です$/, "なのだ");
+          changed = true;
+        } else if (/ます$/.test(transformed)) {
+          transformed = transformed.replace(/ます$/, "のだ");
+          changed = true;
+        }
+
+        if (
+          !changed &&
+          transformed &&
+          !/(のだ|なのだ|なのだろう|だろう|でしょう|です|ます|だ)$/.test(transformed)
+        ) {
+          transformed = `${transformed}のだ`;
+        }
+
+        return `${transformed}${trailingSpaces}${suffix}`;
+      };
+
+      const transformVoiceText = (text, transformMode) => {
+        if (transformMode !== "zundamon") return text;
+        if (typeof text !== "string") return "";
+
+        return text
+          .split(/\r?\n/)
+          .map((line) => line.replace(/[^。！？!?]+[。！？!?]*/g, (sentence) => transformSentenceToZundamon(sentence)))
+          .join("\n");
+      };
+
+      const resolveBaseVoiceText = (segment) => {
+        const overrideText = typeof segment?.voice_override === "string" ? segment.voice_override.trim() : "";
+        if (overrideText) return overrideText;
+        return typeof segment?.voice === "string" ? segment.voice.trim() : "";
+      };
+
+      const resolvePreviewVoiceText = (segment, transformMode) => {
+        const base = resolveBaseVoiceText(segment);
+        return transformVoiceText(base, transformMode);
+      };
+
+      const getFlatSourceSegments = (spec) => {
+        if (Array.isArray(spec?.segments)) return spec.segments;
+        if (Array.isArray(spec?.video_spec && spec.video_spec.segments)) return spec.video_spec.segments;
+        if (Array.isArray(spec?.sub_scenes)) return spec.sub_scenes;
+        return [];
+      };
+
+      const timelineToFlatSegments = (spec) => {
+        if (!Array.isArray(spec?.timeline)) return [];
+        return spec.timeline.map((item, index) => {
+          const start = toNum(item?.start_sec ?? item?.start, index * 2);
+          const duration = toNum(item?.duration_sec, NaN);
+          const end = toNum(item?.end, Number.isFinite(duration) ? start + duration : start + 2);
+          const id =
+            (typeof item?.sub_scene_id === "string" && item.sub_scene_id.trim()) ||
+            (typeof item?.id === "string" && item.id.trim()) ||
+            createSegmentId(index);
+          const voiceText =
+            typeof item?.voice_override === "string" && item.voice_override.trim()
+              ? item.voice_override
+              : typeof item?.voice_text === "string" && item.voice_text.trim()
+                ? item.voice_text
+                : typeof item?.text === "string"
+                  ? item.text
+                  : "";
+          return {
+            ...deepClone(item || {}),
+            id,
+            sub_scene_id: id,
+            start,
+            end,
+            time: `${formatSec(start)}-${formatSec(end)}`,
+            voice: voiceText,
+            screen_text: typeof item?.screen_text === "string"
+              ? item.screen_text
+              : typeof item?.text === "string"
+                ? item.text
+                : "",
+            emotion: item?.emotion || "normal"
+          };
+        });
+      };
+
+      const createSegmentId = (index) => `seg_${String(index + 1).padStart(3, "0")}`;
+
+      const getLegacySegmentKey = (raw, sourceIndex) => {
+        const t = typeof raw.time === "string" ? raw.time : "";
+        const v = typeof raw.voice === "string" ? raw.voice : "";
+        return `${sourceIndex}|${t}|${v}`;
+      };
+
+      const resolveSegmentId = (raw, sourceIndex, usedIds) => {
+        const rawId = typeof raw.id === "string" ? raw.id.trim() : "";
+        if (rawId && !usedIds.has(rawId)) {
+          usedIds.add(rawId);
+          return rawId;
+        }
+
+        let n = sourceIndex;
+        let generated = "";
+        do {
+          generated = createSegmentId(n);
+          n += 1;
+        } while (usedIds.has(generated));
+        usedIds.add(generated);
+        return generated;
+      };
+
+      const settingsFromStorage = () => {
+        const raw = localStorage.getItem(VOICE_SETTINGS_KEY);
+        if (!raw) return {};
+        const parsed = parseJson(raw);
+        return parsed && typeof parsed === "object" ? parsed : {};
+      };
+
+      const normalizeSubSceneForState = (rawSub, subIndex, sceneId, savedSettings = {}) => {
+        const raw = rawSub || {};
+        const subSceneId =
+          (typeof raw.sub_scene_id === "string" && raw.sub_scene_id.trim()) ||
+          (typeof raw.id === "string" && raw.id.trim()) ||
+          `${sceneId}_${String(subIndex + 1).padStart(2, "0")}`;
+        const saved = savedSettings[subSceneId] || {};
+        const parsedTime = parseTimeRange(raw.time);
+        const start = saved.start_sec != null
+          ? toNum(saved.start_sec, NaN)
+          : saved.start != null
+            ? toNum(saved.start, NaN)
+            : raw.start_sec != null
+              ? toNum(raw.start_sec, NaN)
+              : raw.start != null
+                ? toNum(raw.start, NaN)
+                : parsedTime
+                  ? parsedTime.start
+                  : subIndex * 2;
+        const rawDuration = raw.duration_sec != null
+          ? toNum(raw.duration_sec, NaN)
+          : raw.end != null && Number.isFinite(toNum(raw.end, NaN)) && Number.isFinite(start)
+            ? Math.max(0, toNum(raw.end, 0) - start)
+            : parsedTime
+              ? Math.max(0, parsedTime.end - parsedTime.start)
+              : NaN;
+        const duration = saved.duration_sec != null
+          ? toNum(saved.duration_sec, NaN)
+          : saved.end != null && Number.isFinite(toNum(saved.end, NaN)) && Number.isFinite(start)
+            ? Math.max(0, toNum(saved.end, 0) - start)
+            : rawDuration;
+        const screenText = typeof saved.screen_text === "string"
+          ? saved.screen_text
+          : typeof raw.screen_text === "string"
+            ? raw.screen_text
+            : typeof raw.text === "string"
+              ? raw.text
+              : "";
+
+        return {
+          key: subSceneId,
+          sub_scene_id: subSceneId,
+          screen_text: screenText,
+          display_mode: normalizeDisplayMode(saved.display_mode || raw.display_mode),
+          char_count: charLen(screenText),
+          start_sec: Math.max(0, Number.isFinite(start) ? start : subIndex * 2),
+          duration_sec: Math.max(0, Number.isFinite(duration) ? duration : 1)
+        };
+      };
+
+      const normalizeSceneForState = (rawScene, sceneIndex, savedSettings = {}) => {
+        const raw = rawScene || {};
+        const sceneId =
+          (typeof raw.scene_id === "string" && raw.scene_id.trim()) ||
+          createSceneId(sceneIndex);
+        const saved = savedSettings[sceneId] || {};
+        const speaker = String(saved.speaker || raw.speaker || "").trim();
+        const rawStyle = typeof raw.voice_style === "string" ? raw.voice_style.trim() : "";
+        const savedStyle = typeof saved.voice_style === "string" ? saved.voice_style.trim() : "";
+        const voiceStyle = normalizeStyle(savedStyle || rawStyle || DEFAULT_VOICE_STYLE);
+        const rawSpeakerId = Number(raw.speakerId);
+        const savedSpeakerId = Number(saved.speakerId);
+        const speakerId = Number.isFinite(savedSpeakerId)
+          ? savedSpeakerId
+          : Number.isFinite(rawSpeakerId)
+            ? rawSpeakerId
+            : defaultSpeakerId(speaker);
+        const subScenes = Array.isArray(raw.sub_scenes)
+          ? raw.sub_scenes.map((sub, subIndex) => normalizeSubSceneForState(sub, subIndex, sceneId, savedSettings))
+          : [];
+
+        return {
+          key: sceneId,
+          scene_id: sceneId,
+          slide_id: String(saved.slide_id || raw.slide_id || "").trim(),
+          speaker,
+          emotion: normalizeEmotion(saved.emotion || raw.emotion || "normal"),
+          voice_style: voiceStyle,
+          speakerId,
+          voice_speed: normalizeSpeed(saved.voice_speed != null ? saved.voice_speed : raw.voice_speed != null ? raw.voice_speed : 1.25),
+          voice: typeof saved.voice === "string"
+            ? saved.voice
+            : typeof raw.voice === "string"
+              ? raw.voice
+              : typeof raw.text === "string"
+                ? raw.text
+                : subScenes.map((sub) => sub.screen_text).join(""),
+          voice_override: typeof saved.voice_override === "string"
+            ? saved.voice_override
+            : typeof raw.voice_override === "string"
+              ? raw.voice_override
+              : "",
+          sub_scenes: subScenes
+        };
+      };
+
+      const migrateFlatSegmentsToScenes = (flatSegments, savedSettings = {}) => {
+        const groups = new Map();
+        (flatSegments || []).forEach((raw, sourceIndex) => {
+          const parsedTime = parseTimeRange(raw.time);
+          const key =
+            (typeof raw.sub_scene_id === "string" && raw.sub_scene_id.trim()) ||
+            (typeof raw.id === "string" && raw.id.trim()) ||
+            createSegmentId(sourceIndex);
+          const legacyKey = getLegacySegmentKey(raw, sourceIndex);
+          const saved = savedSettings[key] || savedSettings[legacyKey] || {};
+          const sceneId = sceneIdFromSubScene(raw, sourceIndex);
+          const start = saved.start != null
+            ? toNum(saved.start, NaN)
+            : raw.start_sec != null
+              ? toNum(raw.start_sec, NaN)
+              : raw.start != null
+                ? toNum(raw.start, NaN)
+                : parsedTime
+                  ? parsedTime.start
+                  : sourceIndex * 2;
+          const end = saved.end != null
+            ? toNum(saved.end, NaN)
+            : raw.end != null
+              ? toNum(raw.end, NaN)
+              : parsedTime
+                ? parsedTime.end
+                : Number.isFinite(start)
+                  ? start + toNum(raw.duration_sec, 1)
+                  : sourceIndex * 2 + 1;
+
+          const rawStyle = typeof raw.voice_style === "string" ? raw.voice_style.trim() : "";
+          const savedStyle = typeof saved.voice_style === "string" ? saved.voice_style.trim() : "";
+          const speakerIdFallback = Number(raw.speakerId);
+          const baseStyle = rawStyle || savedStyle || (Number.isFinite(speakerIdFallback) ? inferStyleFromSpeakerId(speakerIdFallback) : DEFAULT_VOICE_STYLE);
+          const voiceStyle = normalizeStyle(baseStyle);
+          const voiceSpeed = normalizeSpeed(saved.voice_speed != null ? saved.voice_speed : raw.voice_speed != null ? raw.voice_speed : 1.25);
+          const savedSpeakerId = Number(saved.speakerId);
+          const speakerId = Number.isFinite(savedSpeakerId)
+            ? savedSpeakerId
+            : resolveSpeakerId({
+                voice_style: voiceStyle,
+                speakerId: raw.speakerId
+              });
+          const rawVoiceOverride = typeof raw.voice_override === "string" ? raw.voice_override : "";
+          const savedVoiceOverride = typeof saved.voice_override === "string" ? saved.voice_override : "";
+          const voiceOverride = savedVoiceOverride !== "" ? savedVoiceOverride : rawVoiceOverride;
+          const savedEmotion = typeof saved.emotion === "string" ? saved.emotion : "";
+          const rawEmotion = typeof raw.emotion === "string" ? raw.emotion : "";
+          const emotion = normalizeEmotion(savedEmotion.trim() || rawEmotion.trim() || "normal");
+
+          if (!groups.has(sceneId)) {
+            groups.set(sceneId, {
+              key: sceneId,
+              scene_id: sceneId,
+              slide_id: String(raw.slide_id || "").trim(),
+              speaker: String(raw.speaker || "").trim(),
+              emotion,
+              voice_style: voiceStyle,
+              speakerId,
+              voice_speed: voiceSpeed,
+              voice: typeof raw.voice === "string"
+                ? raw.voice
+                : typeof raw.voice_text === "string"
+                  ? raw.voice_text
+                  : "",
+              voice_override: voiceOverride,
+              sub_scenes: []
+            });
+          }
+
+          const group = groups.get(sceneId);
+          const screenText = typeof saved.screen_text === "string"
+            ? saved.screen_text
+            : typeof raw.screen_text === "string"
+              ? raw.screen_text
+              : typeof raw.text === "string"
+                ? raw.text
+                : "";
+          group.sub_scenes.push({
+            key,
+            sub_scene_id: key,
+            screen_text: screenText,
+            display_mode: normalizeDisplayMode(saved.display_mode || raw.display_mode),
+            char_count: charLen(screenText),
+            start_sec: Math.max(0, Number.isFinite(start) ? start : sourceIndex * 2),
+            duration_sec: Math.max(0, Number.isFinite(end) && Number.isFinite(start) ? end - start : toNum(raw.duration_sec, 1))
+          });
+        });
+
+        return [...groups.values()].map((scene) => ({
+          ...scene,
+          voice: scene.voice || scene.sub_scenes.map((sub) => sub.screen_text).join("")
+        }));
+      };
+
+      const normalizeSpecForScenesSoT = (rawSpec, savedSettings = {}) => {
+        const spec = deepClone(rawSpec || {});
+        const scenes = Array.isArray(spec.scenes)
+          ? spec.scenes.map((scene, sceneIndex) => normalizeSceneForState(scene, sceneIndex, savedSettings))
+          : migrateFlatSegmentsToScenes(
+              getFlatSourceSegments(spec).length > 0 ? getFlatSourceSegments(spec) : timelineToFlatSegments(spec),
+              savedSettings
+            );
+        spec.scenes = scenes;
+        delete spec.segments;
+        delete spec.sub_scenes;
+        delete spec.timeline;
+        if (spec.video_spec && Object.prototype.hasOwnProperty.call(spec.video_spec, "segments")) {
+          delete spec.video_spec.segments;
+        }
+        return spec;
+      };
+
+      const cleanScenesForOutput = (scenes) => {
+        return (scenes || []).map((scene) => {
+          const speakerId = Number.isFinite(Number(scene.speakerId)) ? Number(scene.speakerId) : defaultSpeakerId(scene.speaker);
+          return {
+            scene_id: scene.scene_id,
+            slide_id: scene.slide_id,
+            speaker: scene.speaker,
+            emotion: normalizeEmotion(scene.emotion),
+            voice_style: normalizeStyle(scene.voice_style),
+            speakerId,
+            voice_speed: normalizeSpeed(scene.voice_speed),
+            voice: typeof scene.voice === "string" ? scene.voice : "",
+            voice_override: typeof scene.voice_override === "string" ? scene.voice_override : "",
+            sub_scenes: (scene.sub_scenes || []).filter((sub) => {
+              return String(sub && sub.screen_text || "").trim().length > 0;
+            }).map((sub) => {
+              const screenText = typeof sub.screen_text === "string" ? sub.screen_text : "";
+              return {
+                sub_scene_id: sub.sub_scene_id,
+                screen_text: screenText,
+                display_mode: normalizeDisplayMode(sub.display_mode),
+                char_count: charLen(screenText),
+                start_sec: Number(Math.max(0, toNum(sub.start_sec, 0)).toFixed(3)),
+                duration_sec: Number(Math.max(0, toNum(sub.duration_sec, 1)).toFixed(3))
+              };
+            })
+          };
+        });
+      };
+
+      const flattenScenesToSegments = (scenes) => {
+        const flat = [];
+        cleanScenesForOutput(scenes).forEach((scene) => {
+          scene.sub_scenes.forEach((sub) => {
+            const start = Math.max(0, toNum(sub.start_sec, 0));
+            const duration = Math.max(0, toNum(sub.duration_sec, 0));
+            flat.push({
+              id: sub.sub_scene_id,
+              sub_scene_id: sub.sub_scene_id,
+              scene_id: scene.scene_id,
+              slide_id: scene.slide_id,
+              speaker: scene.speaker,
+              screen_text: sub.screen_text,
+              voice: scene.voice,
+              voice_override: scene.voice_override,
+              emotion: scene.emotion,
+              voice_style: scene.voice_style,
+              speakerId: scene.speakerId,
+              voice_speed: scene.voice_speed,
+              start,
+              end: Number((start + duration).toFixed(3)),
+              duration_sec: Number(duration.toFixed(3))
+            });
+          });
+        });
+        return flat.sort((a, b) => {
+          if (a.start !== b.start) return a.start - b.start;
+          if (a.end !== b.end) return a.end - b.end;
+          return String(a.id).localeCompare(String(b.id), "ja", {numeric: true});
+        }).map((seg, sourceIndex) => ({...seg, sourceIndex}));
+      };
+
+      const nextSubSceneId = (scene) => {
+        const sceneId = String(scene && scene.scene_id || scene && scene.key || "scene_001").trim() || "scene_001";
+        const pattern = new RegExp(`^${sceneId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}_(\\d+)$`);
+        const max = (scene.sub_scenes || []).reduce((acc, sub) => {
+          const id = String(sub && sub.sub_scene_id || "").trim();
+          const matched = id.match(pattern);
+          if (!matched) return acc;
+          const n = Number(matched[1]);
+          return Number.isFinite(n) ? Math.max(acc, n) : acc;
+        }, 0);
+        return `${sceneId}_${String(max + 1).padStart(2, "0")}`;
+      };
+
+      const addSubScene = (sceneKey) => {
+        let addedKey = "";
+        state.scenes = state.scenes.map((scene) => {
+          if ((scene.key || scene.scene_id) !== sceneKey) return scene;
+          const subScenes = scene.sub_scenes || [];
+          const lastEnd = subScenes.reduce((acc, sub) => {
+            const start = Math.max(0, toNum(sub.start_sec, 0));
+            const duration = Math.max(0, toNum(sub.duration_sec, 0));
+            return Math.max(acc, start + duration);
+          }, 0);
+          const subSceneId = nextSubSceneId(scene);
+          addedKey = subSceneId;
+          return {
+            ...scene,
+            sub_scenes: [
+              ...subScenes,
+              {
+                key: subSceneId,
+                sub_scene_id: subSceneId,
+                screen_text: "",
+                display_mode: "replace",
+                char_count: 0,
+                start_sec: Number(lastEnd.toFixed(3)),
+                duration_sec: 1
+              }
+            ]
+          };
+        });
+        renderAll();
+        if (addedKey) {
+          window.setTimeout(() => {
+            const row = [...el.segments.querySelectorAll(".sub-row")]
+              .find((item) => item.getAttribute("data-sub-key") === addedKey);
+            const input = row ? row.querySelector('textarea[name="screen_text"]') : null;
+            if (input) input.focus();
+          }, 0);
+        }
+      };
+
+      const buildSpecOutput = () => {
+        const spec = state.spec ? deepClone(state.spec) : {};
+        const normalizedTitle = normalizeTitleText(state.titleText);
+        const normalizedTitleBgColor = normalizeColorHex(state.titleBgColor, "#000000");
+        const normalizedTitleTextColor = normalizeColorHex(state.titleTextColor, "#ffffff");
+        const normalizedTitleHeightPx = normalizePx(state.titleBarHeightPx, 72, 24, 300);
+        const normalizedTitleFontSizePx = normalizePx(state.titleFontSizePx, 42, 16, 120);
+        const normalizedTitleWidthPx = normalizePx(state.titleWidthPx, 994, 120, 1080);
+        const normalizedTitleLineBreakMode = normalizeLineBreakMode(state.titleLineBreakMode);
+        const normalizedTitleLineChars = normalizePx(state.titleLineChars, 18, 4, 80);
+        const normalizedTitleTextAlign = normalizeTitleTextAlign(state.titleTextAlign);
+        const scenes = cleanScenesForOutput(state.scenes);
+        const flatSegments = flattenScenesToSegments(scenes);
+        const maxEnd = resolveMaxEndFromSegments(flatSegments);
+        const requestedDuration = toNum(state.timelineDurationSec, NaN);
+        const durationSec =
+          Number.isFinite(requestedDuration) && requestedDuration > 0
+            ? Math.max(requestedDuration, maxEnd, 1)
+            : Math.max(maxEnd, 1);
+        const fpsCandidateA = toNum(spec?.fps, NaN);
+        const fpsCandidateB = toNum(spec?.video_spec?.format?.fps, NaN);
+        const fps = Number.isFinite(fpsCandidateA) && fpsCandidateA > 0
+          ? Math.round(fpsCandidateA)
+          : Number.isFinite(fpsCandidateB) && fpsCandidateB > 0
+            ? Math.round(fpsCandidateB)
+            : 30;
+        const durationInFrames = Math.max(1, Math.round(durationSec * Math.max(1, fps)));
+
+        spec.project_id = spec.project_id || state.selectedProjectId || "";
+        spec.source = spec.source || "";
+        spec.scenes = scenes;
+        delete spec.segments;
+        delete spec.sub_scenes;
+        delete spec.timeline;
+        delete spec.voices;
+
+        spec.durationSec = Number(durationSec.toFixed(3));
+        spec.durationInFrames = durationInFrames;
+        spec.fps = Math.max(1, fps);
+        spec.tts_transform = state.transformMode === "zundamon" ? "zundamon" : "";
+        if (!spec.video_spec) spec.video_spec = {};
+        if (!spec.video_spec.audio) spec.video_spec.audio = {};
+        if (!spec.video_spec.style) spec.video_spec.style = {};
+        if (!spec.video_spec.format) spec.video_spec.format = {};
+        if (Object.prototype.hasOwnProperty.call(spec.video_spec, "segments")) {
+          delete spec.video_spec.segments;
+        }
+        spec.video_spec.format.fps = Math.max(1, fps);
+        spec.video_spec.format.duration = Number(durationSec.toFixed(3));
+        spec.video_spec.format.durationInFrames = durationInFrames;
+        spec.video_spec.audio.tts_transform = spec.tts_transform;
+
+        const bgmFile = normalizeBgmRef(state.bgmFile);
+        const bgmVolume = normalizeBgmVolume(state.bgmVolume, 0.2);
+        const bgmLoop = Boolean(state.bgmLoop);
+        if (bgmFile) {
+          spec.video_spec.audio.bgm = `/audio/bgm/${bgmFile}`;
+          spec.video_spec.audio.bgm_volume = Number(bgmVolume.toFixed(3));
+          spec.video_spec.audio.bgm_loop = bgmLoop;
+          spec.bgm = {
+            src: `/audio/bgm/${bgmFile}`,
+            volume: Number(bgmVolume.toFixed(3)),
+            loop: bgmLoop
+          };
+        } else {
+          spec.video_spec.audio.bgm = "none";
+          delete spec.video_spec.audio.bgm_volume;
+          delete spec.video_spec.audio.bgm_loop;
+          delete spec.bgm;
+        }
+
+        const backgroundPng = normalizeBackgroundRef(state.backgroundPng);
+        if (backgroundPng) {
+          spec.background = backgroundPng;
+          spec.video_spec.style.background = backgroundPng;
+        } else {
+          delete spec.background;
+          delete spec.video_spec.style.background;
+        }
+
+        if (normalizedTitle) {
+          spec.title = normalizedTitle;
+          spec.video_spec.title = normalizedTitle;
+        } else {
+          delete spec.title;
+          delete spec.video_spec.title;
+        }
+
+        spec.title_overlay = {
+          enabled: true,
+          bg_color: normalizedTitleBgColor,
+          text_color: normalizedTitleTextColor,
+          height_px: normalizedTitleHeightPx,
+          font_size_px: normalizedTitleFontSizePx,
+          width_px: normalizedTitleWidthPx,
+          line_break_mode: normalizedTitleLineBreakMode,
+          line_chars: normalizedTitleLineChars,
+          text_align: normalizedTitleTextAlign
+        };
+        spec.video_spec.style.title_overlay = deepClone(spec.title_overlay);
+
+        return spec;
+      };
+
+      const getDuration = () => {
+        const maxEnd = resolveMaxEndFromScenes(state.scenes);
+        const declared = toNum(state.timelineDurationSec, NaN);
+        if (Number.isFinite(declared) && declared > 0) return Math.max(declared, maxEnd, 1);
+        return Math.max(maxEnd, 1);
+      };
+
+      const refreshOutput = () => {
+        const spec = buildSpecOutput();
+        el.jsonOutput.value = JSON.stringify(spec, null, 2);
+      };
+
+      const speedOptionsHtml = (selected) => {
+        return VOICE_SPEED_OPTIONS.map((v) => {
+          const label = v === 1 ? "1.00 normal" : v.toFixed(2);
+          const sel = Math.abs(v - selected) < 0.0001 ? " selected" : "";
+          return `<option value="${v}"${sel}>${label}</option>`;
+        }).join("");
+      };
+
+      const styleOptionsHtml = (selected) => {
+        return Object.keys(VOICE_STYLE_TO_SPEAKER_ID).map((styleKey) => {
+          const label = VOICE_STYLE_LABEL[styleKey] || styleKey;
+          const sel = styleKey === selected ? " selected" : "";
+          return `<option value="${styleKey}"${sel}>${label}</option>`;
+        }).join("");
+      };
+
+      const emotionOptionsHtml = (selected) => {
+        const normalizedSelected = normalizeEmotion(selected);
+        return EMOTION_OPTIONS.map((emotionKey) => {
+          const label = EMOTION_LABEL[emotionKey] || emotionKey;
+          const sel = emotionKey === normalizedSelected ? " selected" : "";
+          return `<option value="${emotionKey}"${sel}>${label}</option>`;
+        }).join("");
+      };
+
+      const renderSceneCards = () => {
+        const flatSegments = flattenScenesToSegments(state.scenes);
+        el.segmentCount.textContent = `${state.scenes.length} scenes / ${flatSegments.length} sub_scenes`;
+
+        if (state.scenes.length === 0) {
+          el.segments.innerHTML = "<p class='sub'>sceneがありません。JSONを読み込んでください。</p>";
+          return;
+        }
+
+        el.segments.innerHTML = state.scenes.map((scene, i) => {
+          const sceneNo = String(scene.scene_id || "").replace(/^scene_0*/, "") || String(i + 1).padStart(3, "0");
+          const sceneKey = scene.key || scene.scene_id;
+          const isCollapsed = state.collapsedSceneKeys.has(sceneKey);
+          const speakerId = Number.isFinite(Number(scene.speakerId)) ? Number(scene.speakerId) : defaultSpeakerId(scene.speaker);
+          const ttsPreview = resolvePreviewVoiceText(scene, state.transformMode);
+          const rows = (scene.sub_scenes || []).map((sub) => {
+            const duration = Math.max(0, toNum(sub.duration_sec, 0));
+            return `
+              <div class="sub-row" data-sub-key="${escapeHtml(sub.key || sub.sub_scene_id)}">
+                <div class="field">
+                  <label>sub_scene_id</label>
+                  <div class="readonly">${escapeHtml(sub.sub_scene_id)}</div>
+                </div>
+                <div class="field span-2">
+                  <label>screen_text</label>
+                  <textarea name="screen_text" rows="2">${escapeHtml(sub.screen_text || "")}</textarea>
+                </div>
+                <div class="field">
+                  <label>display_mode</label>
+                  <input name="display_mode" type="text" value="${escapeHtml(normalizeDisplayMode(sub.display_mode))}" />
+                </div>
+                <div class="field">
+                  <label>char_count</label>
+                  <div class="readonly">${charLen(sub.screen_text || "")}</div>
+                </div>
+                <div class="field">
+                  <label>start_sec</label>
+                  <input name="start_sec" type="number" min="0" step="0.01" value="${formatSec(sub.start_sec)}" />
+                </div>
+                <div class="field">
+                  <label>duration_sec</label>
+                  <input name="duration_sec" type="number" min="0" step="0.01" value="${formatSec(duration)}" />
+                </div>
+              </div>
+            `;
+          }).join("");
+          return `
+            <article class="seg scene-card${isCollapsed ? " is-collapsed" : ""}" data-scene-key="${escapeHtml(sceneKey)}">
+              <div class="seg-head">
+                <div class="seg-index">Scene ${escapeHtml(sceneNo)}｜${escapeHtml(scene.speaker || "(speaker)") }｜${escapeHtml(scene.slide_id || "(slide)")}</div>
+                <div class="row" style="margin-top:0">
+                  <div class="badge">${escapeHtml(scene.scene_id)} / ${scene.sub_scenes.length} sub_scenes / tts_transform: ${escapeHtml(state.transformMode)}</div>
+                  <button type="button" class="mini toggle-scene-btn" data-scene-key="${escapeHtml(sceneKey)}">${isCollapsed ? "開く" : "畳む"}</button>
+                </div>
+              </div>
+              <div class="grid scene-body">
+                <div class="field span-2">
+                  <label>scene_id</label>
+                  <div class="readonly">${escapeHtml(scene.scene_id)}</div>
+                </div>
+                <div class="field">
+                  <label>speaker</label>
+                  <div class="readonly">${escapeHtml(scene.speaker || "")}</div>
+                </div>
+                <div class="field span-2">
+                  <label>slide_id</label>
+                  <div class="readonly">${escapeHtml(scene.slide_id || "")}</div>
+                </div>
+                <div class="field">
+                  <label>emotion</label>
+                  <select name="emotion" data-scope="scene">${emotionOptionsHtml(scene.emotion || "normal")}</select>
+                </div>
+                <div class="field">
+                  <label>voice_speed</label>
+                  <select name="voice_speed" data-scope="scene">${speedOptionsHtml(scene.voice_speed)}</select>
+                </div>
+                <div class="field">
+                  <label>voice_style</label>
+                  <select name="voice_style" data-scope="scene">${styleOptionsHtml(scene.voice_style)}</select>
+                </div>
+                <div class="field">
+                  <label>speakerId</label>
+                  <input name="speakerId" data-scope="scene" type="number" min="0" step="1" value="${speakerId}" />
+                </div>
+                <div class="field span-6">
+                  <div class="inline-head">
+                    <label>voice</label>
+                    <button type="button" class="mini copy-voice-btn" data-scene-key="${escapeHtml(scene.key || scene.scene_id)}">コピー</button>
+                  </div>
+                  <textarea name="voice" data-scope="scene" rows="3">${escapeHtml(scene.voice || "")}</textarea>
+                </div>
+                <div class="field span-6">
+                  <label>voice_override（空欄ならvoiceを使用）</label>
+                  <textarea name="voice_override" data-scope="scene" rows="3">${escapeHtml(scene.voice_override || "")}</textarea>
+                </div>
+                <div class="field span-6">
+                  <label>TTSプレビュー（voice_override優先 + tts_transform適用後）</label>
+                  <div class="readonly">${escapeHtml(ttsPreview || "(empty)")}</div>
+                </div>
+              </div>
+              <div class="sub-scenes">
+                <div class="inline-head">
+                  <div class="seg-index">sub_scenes</div>
+                  <button type="button" class="mini add-sub-scene-btn" data-scene-key="${escapeHtml(scene.key || scene.scene_id)}">sub_scene追加</button>
+                </div>
+                ${rows || "<p class='sub'>sub_sceneがありません。</p>"}
+              </div>
+            </article>
+          `;
+        }).join("");
+      };
+
+      const renderTimeline = () => {
+        const duration = getDuration();
+        if (document.activeElement !== el.timelineDurationInput) {
+          el.timelineDurationInput.value = formatSec(duration);
+        }
+        el.durationLabel.textContent = `duration: ${formatSec(duration)}s`;
+        el.durationMid.textContent = `${formatSec(duration / 2)}s`;
+        el.durationEnd.textContent = `${formatSec(duration)}s`;
+
+        const flatSegments = flattenScenesToSegments(state.scenes);
+        if (flatSegments.length === 0) {
+          el.timelineTrack.innerHTML = "";
+          return;
+        }
+
+        el.timelineTrack.innerHTML = flatSegments.map((seg, i) => {
+          const start = Math.max(0, seg.start);
+          const end = Math.max(start + 0.01, seg.end);
+          const left = (start / duration) * 100;
+          const width = Math.max(((end - start) / duration) * 100, 1.2);
+          return `
+            <div class="bar" style="left:${left}%; width:${width}%" title="#${i + 1} ${formatSec(start)}-${formatSec(end)}">
+              <div>#${i + 1} ${escapeHtml(seg.voice_style)}</div>
+              <div class="meta">${formatSec(start)}-${formatSec(end)} / speed ${Number(seg.voice_speed).toFixed(2)}</div>
+            </div>
+          `;
+        }).join("");
+      };
+
+      const renderBgmControls = () => {
+        applyBgmFileList(BGM_MP3_FILES, {selected: state.bgmFile});
+        el.bgmVolumeInput.value = String(normalizeBgmVolume(state.bgmVolume, 0.2));
+        el.bgmVolumeValue.textContent = `${Math.round(normalizeBgmVolume(state.bgmVolume, 0.2) * 100)}%`;
+      };
+
+      const renderAll = () => {
+        renderBgmControls();
+        if (document.activeElement !== el.titleTextInput) {
+          el.titleTextInput.value = normalizeTitleText(state.titleText);
+        }
+        if (document.activeElement !== el.titleBgColorInput) {
+          el.titleBgColorInput.value = normalizeColorHex(state.titleBgColor, "#000000");
+        }
+        if (document.activeElement !== el.titleTextColorInput) {
+          el.titleTextColorInput.value = normalizeColorHex(state.titleTextColor, "#ffffff");
+        }
+        if (document.activeElement !== el.titleBarHeightInput) {
+          el.titleBarHeightInput.value = String(normalizePx(state.titleBarHeightPx, 72, 24, 300));
+        }
+        if (document.activeElement !== el.titleFontSizeInput) {
+          el.titleFontSizeInput.value = String(normalizePx(state.titleFontSizePx, 42, 16, 120));
+        }
+        if (document.activeElement !== el.titleWidthPxInput) {
+          el.titleWidthPxInput.value = String(normalizePx(state.titleWidthPx, 994, 120, 1080));
+        }
+        if (document.activeElement !== el.titleLineBreakModeInput) {
+          el.titleLineBreakModeInput.value = normalizeLineBreakMode(state.titleLineBreakMode);
+        }
+        if (document.activeElement !== el.titleLineCharsInput) {
+          el.titleLineCharsInput.value = String(normalizePx(state.titleLineChars, 18, 4, 80));
+        }
+        if (document.activeElement !== el.titleTextAlignInput) {
+          el.titleTextAlignInput.value = normalizeTitleTextAlign(state.titleTextAlign);
+        }
+        renderSceneCards();
+        renderTimeline();
+        refreshOutput();
+      };
+
+      const escapeHtml = (value) => {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      };
+
+      const saveVoiceSettings = () => {
+        const payload = {};
+        state.scenes.forEach((scene) => {
+          payload[scene.scene_id] = {
+            emotion: normalizeEmotion(scene.emotion),
+            voice_speed: normalizeSpeed(scene.voice_speed),
+            voice_style: normalizeStyle(scene.voice_style),
+            speakerId: Number.isFinite(Number(scene.speakerId)) ? Number(scene.speakerId) : undefined,
+            voice: typeof scene.voice === "string" ? scene.voice : "",
+            voice_override: typeof scene.voice_override === "string" ? scene.voice_override : ""
+          };
+          (scene.sub_scenes || []).forEach((sub) => {
+            payload[sub.sub_scene_id] = {
+              screen_text: typeof sub.screen_text === "string" ? sub.screen_text : "",
+              display_mode: normalizeDisplayMode(sub.display_mode),
+              start_sec: toNum(sub.start_sec, 0),
+              duration_sec: toNum(sub.duration_sec, 1)
+            };
+          });
+        });
+        payload.__meta = {
+          titleText: normalizeTitleText(state.titleText),
+          titleBgColor: normalizeColorHex(state.titleBgColor, "#000000"),
+          titleTextColor: normalizeColorHex(state.titleTextColor, "#ffffff"),
+          titleBarHeightPx: normalizePx(state.titleBarHeightPx, 72, 24, 300),
+          titleFontSizePx: normalizePx(state.titleFontSizePx, 42, 16, 120),
+          titleWidthPx: normalizePx(state.titleWidthPx, 994, 120, 1080),
+          titleLineBreakMode: normalizeLineBreakMode(state.titleLineBreakMode),
+          titleLineChars: normalizePx(state.titleLineChars, 18, 4, 80),
+          titleTextAlign: normalizeTitleTextAlign(state.titleTextAlign),
+          bgmFile: normalizeBgmRef(state.bgmFile),
+          bgmVolume: normalizeBgmVolume(state.bgmVolume, 0.2),
+          bgmLoop: Boolean(state.bgmLoop)
+        };
+        localStorage.setItem(VOICE_SETTINGS_KEY, JSON.stringify(payload));
+        setStatus("scene/sub_scene設定をlocalStorageに保存しました（中間状態）。", "ok");
+      };
+
+      const restoreVoiceSettings = () => {
+        const saved = settingsFromStorage();
+        if (Object.keys(saved).length === 0) {
+          setStatus("復元できる voice設定がありません。", "error");
+          return;
+        }
+
+        if (saved.__meta && typeof saved.__meta === "object") {
+          state.titleText = normalizeTitleText(saved.__meta.titleText || state.titleText);
+          state.titleBgColor = normalizeColorHex(saved.__meta.titleBgColor || state.titleBgColor, state.titleBgColor || "#000000");
+          state.titleTextColor = normalizeColorHex(saved.__meta.titleTextColor || state.titleTextColor, state.titleTextColor || "#ffffff");
+          state.titleBarHeightPx = normalizePx(saved.__meta.titleBarHeightPx, state.titleBarHeightPx || 72, 24, 300);
+          state.titleFontSizePx = normalizePx(saved.__meta.titleFontSizePx, state.titleFontSizePx || 42, 16, 120);
+          state.titleWidthPx = normalizePx(saved.__meta.titleWidthPx, state.titleWidthPx || 994, 120, 1080);
+          state.titleLineBreakMode = normalizeLineBreakMode(saved.__meta.titleLineBreakMode || state.titleLineBreakMode);
+          state.titleLineChars = normalizePx(saved.__meta.titleLineChars, state.titleLineChars || 18, 4, 80);
+          state.titleTextAlign = normalizeTitleTextAlign(saved.__meta.titleTextAlign || state.titleTextAlign);
+          state.bgmFile = normalizeBgmRef(saved.__meta.bgmFile || "");
+          state.bgmVolume = normalizeBgmVolume(saved.__meta.bgmVolume, state.bgmVolume);
+          state.bgmLoop =
+            typeof saved.__meta.bgmLoop === "boolean"
+              ? saved.__meta.bgmLoop
+              : state.bgmLoop;
+        }
+
+        state.scenes = state.scenes.map((scene) => {
+          const sceneConf = saved[scene.scene_id] || {};
+          return {
+            ...scene,
+            emotion: normalizeEmotion(sceneConf.emotion || scene.emotion),
+            voice_speed: sceneConf.voice_speed != null ? normalizeSpeed(sceneConf.voice_speed) : scene.voice_speed,
+            voice_style: sceneConf.voice_style != null ? normalizeStyle(sceneConf.voice_style) : scene.voice_style,
+            speakerId: Number.isFinite(Number(sceneConf.speakerId)) ? Number(sceneConf.speakerId) : scene.speakerId,
+            voice: typeof sceneConf.voice === "string" ? sceneConf.voice : scene.voice,
+            voice_override: typeof sceneConf.voice_override === "string" ? sceneConf.voice_override : scene.voice_override,
+            sub_scenes: (scene.sub_scenes || []).map((sub) => {
+              const subConf = saved[sub.sub_scene_id] || {};
+              const screenText = typeof subConf.screen_text === "string" ? subConf.screen_text : sub.screen_text;
+              return {
+                ...sub,
+                screen_text: screenText,
+                display_mode: subConf.display_mode != null ? normalizeDisplayMode(subConf.display_mode) : sub.display_mode,
+                char_count: charLen(screenText),
+                start_sec: Number.isFinite(toNum(subConf.start_sec, NaN)) ? Math.max(0, toNum(subConf.start_sec, 0)) : sub.start_sec,
+                duration_sec: Number.isFinite(toNum(subConf.duration_sec, NaN)) ? Math.max(0, toNum(subConf.duration_sec, 1)) : sub.duration_sec
+              };
+            })
+          };
+        });
+        applyTitleTextToScenes(state.titleText);
+
+        renderAll();
+        setStatus("scene/sub_scene設定を復元しました。", "ok");
+      };
+
+      const loadSpec = (spec, label, fileName = "") => {
+        const normalizedSpec = normalizeSpecForScenesSoT(spec, settingsFromStorage());
+        const bgmSettings = resolveBgmSettingsFromSpec(normalizedSpec);
+        state.spec = deepClone(normalizedSpec);
+        state.renderFileName = RENDER_FINAL_NAME;
+        state.transformMode = resolveTransformMode(normalizedSpec);
+        state.backgroundPng = resolveBackgroundFromSpec(normalizedSpec);
+        state.bgmFile = bgmSettings.bgmFile;
+        state.bgmVolume = bgmSettings.bgmVolume;
+        state.bgmLoop = bgmSettings.bgmLoop;
+        state.scenes = normalizedSpec.scenes;
+        state.titleText = resolveTitleTextFromSpec(normalizedSpec, state.scenes);
+        const titleOverlay = resolveTitleOverlayFromSpec(normalizedSpec);
+        state.titleBgColor = titleOverlay.bgColor;
+        state.titleTextColor = titleOverlay.textColor;
+        state.titleBarHeightPx = titleOverlay.heightPx;
+        state.titleFontSizePx = titleOverlay.fontSizePx;
+        state.titleWidthPx = titleOverlay.widthPx;
+        state.titleLineBreakMode = titleOverlay.lineBreakMode;
+        state.titleLineChars = titleOverlay.lineChars;
+        state.titleTextAlign = titleOverlay.textAlign;
+        state.timelineDurationSec = resolveInitialDurationSec(normalizedSpec, flattenScenesToSegments(state.scenes));
+        el.jsonInput.value = JSON.stringify(normalizedSpec, null, 2);
+        applyBackgroundFileList(BACKGROUND_PNG_FILES, {selected: state.backgroundPng});
+        applyBgmFileList(BGM_MP3_FILES, {selected: state.bgmFile});
+        el.timelineDurationInput.value = formatSec(state.timelineDurationSec);
+        renderAll();
+        setStatus(`${label} を読み込みました。`, "ok");
+        updateProjectControls();
+      };
+
+      const loadFromVideoKey = () => {
+        const raw = localStorage.getItem(VIDEO_KEY);
+        if (!raw) {
+          setStatus("localStorage の保存済みJSONが見つかりません。", "error");
+          return;
+        }
+        const parsed = parseJson(raw);
+        if (!parsed) {
+          setStatus("localStorage のJSONが壊れています。", "error");
+          return;
+        }
+        loadSpec(parsed, "localStorage");
+      };
+
+      const loadFromInput = () => {
+        const raw = el.jsonInput.value.trim();
+        if (!raw) {
+          setStatus("JSONを貼り付けてください。", "error");
+          return;
+        }
+        const parsed = parseJson(raw);
+        if (!parsed) {
+          setStatus("JSONの形式が不正です。", "error");
+          return;
+        }
+        loadSpec(parsed, "貼り付けJSON");
+      };
+
+      const importFromFile = () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".json,application/json";
+        input.addEventListener("change", async function () {
+          const file = input.files && input.files[0];
+          if (!file) return;
+          try {
+            const text = await file.text();
+            const parsed = parseJson(text);
+            if (!parsed) {
+              setStatus("JSONファイルの形式が不正です。", "error");
+              return;
+            }
+            loadSpec(parsed, `ファイル(${file.name})`);
+          } catch (_err) {
+            setStatus("JSONファイルの読み込みに失敗しました。", "error");
+          }
+        });
+        input.click();
+      };
+
+      const saveVideoSpec = () => {
+        const spec = buildSpecOutput();
+        localStorage.setItem(VIDEO_KEY, JSON.stringify(spec));
+        setStatus("localStorage に保存しました（中間状態）。最終反映は project の render-final-v01.json へ保存してください。", "ok");
+        updateProjectControls();
+      };
+
+      const touchProjectUpdatedAt = async (projectId) => {
+        try {
+          const {projectDir} = await getProjectHandles(projectId);
+          const metaHandle = await projectDir.getFileHandle(META_FILENAME);
+          const meta = await readJson(metaHandle);
+          meta.updated_at = new Date().toISOString();
+          await writeJson(metaHandle, meta);
+        } catch (_err) {
+          // meta.json が壊れていても、render draft の保存自体は止めない。
+        }
+      };
+
+      const loadProjectRender = async () => {
+        const projectId = selectedProjectId();
+        if (!projectId) {
+          setStatus("先にプロジェクトを選択してください。", "error");
+          return;
+        }
+        try {
+          const {videoDir} = await getProjectHandles(projectId);
+          const latest = await findLatestVersionedName(videoDir, RENDER_DRAFT_STEM, ".json");
+          const renderName = latest ? latest.name : RENDER_DRAFT_NAME;
+          let renderHandle;
+          let loadedName = renderName;
+          try {
+            renderHandle = await videoDir.getFileHandle(renderName);
+          } catch (_err) {
+            loadedName = "render-v01.json";
+            renderHandle = await videoDir.getFileHandle(loadedName);
+          }
+          const spec = await readJson(renderHandle);
+          state.selectedProjectId = projectId;
+          loadSpec(spec, `projects/${projectId}/outputs/video/${loadedName}`, loadedName);
+        } catch (error) {
+          setStatus(error && error.message ? error.message : "render draft JSON の読み込みに失敗しました。", "error");
+        } finally {
+          updateProjectControls();
+        }
+      };
+
+      const saveProjectRender = async () => {
+        const projectId = selectedProjectId();
+        if (!projectId) {
+          setStatus("先にプロジェクトを選択してください。", "error");
+          return;
+        }
+        if (!state.spec) {
+          setStatus("保存するJSONがありません。先に render draft を読み込んでください。", "error");
+          return;
+        }
+        try {
+          const {videoDir} = await getProjectHandles(projectId);
+          const renderName = RENDER_FINAL_NAME;
+          const renderHandle = await videoDir.getFileHandle(renderName, {create: true});
+          const spec = buildSpecOutput();
+          spec.project_id = spec.project_id || projectId;
+          await writeJson(renderHandle, spec);
+          await touchProjectUpdatedAt(projectId);
+          localStorage.setItem(VIDEO_KEY, JSON.stringify(spec));
+          setStatus(`projects/${projectId}/outputs/video/${renderName} に反映しました。`, "ok");
+        } catch (error) {
+          setStatus(error && error.message ? error.message : "render draft JSON への反映に失敗しました。", "error");
+        } finally {
+          updateProjectControls();
+        }
+      };
+
+      const copyJson = async () => {
+        try {
+          await navigator.clipboard.writeText(el.jsonOutput.value);
+          setStatus("更新済みJSONをコピーしました。", "ok");
+        } catch (_err) {
+          setStatus("JSONコピーに失敗しました。", "error");
+        }
+      };
+
+      const exportJson = () => {
+        const blob = new Blob([el.jsonOutput.value + "\n"], {type: "application/json;charset=utf-8"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = RENDER_FINAL_NAME;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        setStatus("JSONをエクスポートしました。", "ok");
+      };
+
+      const updateSceneField = (event) => {
+        const target = event.target;
+        if (!target || !target.closest) return;
+        const card = target.closest(".scene-card");
+        if (!card) return;
+
+        const sceneKey = card.getAttribute("data-scene-key");
+        const fieldName = target.name;
+        if (!sceneKey || !fieldName) return;
+        const subRow = target.closest(".sub-row");
+        const subKey = subRow ? subRow.getAttribute("data-sub-key") : "";
+
+        state.scenes = state.scenes.map((scene) => {
+          if ((scene.key || scene.scene_id) !== sceneKey) return scene;
+
+          if (subKey) {
+            return {
+              ...scene,
+              sub_scenes: (scene.sub_scenes || []).map((sub) => {
+                if ((sub.key || sub.sub_scene_id) !== subKey) return sub;
+                if (fieldName === "screen_text") {
+                  const screenText = String(target.value || "");
+                  if (!screenText.trim()) return null;
+                  return {
+                    ...sub,
+                    screen_text: screenText,
+                    char_count: charLen(screenText)
+                  };
+                }
+                if (fieldName === "display_mode") {
+                  return {...sub, display_mode: normalizeDisplayMode(target.value)};
+                }
+                if (fieldName === "start_sec") {
+                  const numeric = Number(target.value);
+                  if (!Number.isFinite(numeric)) return sub;
+                  return {...sub, start_sec: Math.max(0, numeric)};
+                }
+                if (fieldName === "duration_sec") {
+                  const numeric = Number(target.value);
+                  if (!Number.isFinite(numeric)) return sub;
+                  return {...sub, duration_sec: Math.max(0, numeric)};
+                }
+                return sub;
+              }).filter(Boolean)
+            };
+          }
+
+          if (fieldName === "emotion") {
+            return {...scene, emotion: normalizeEmotion(target.value)};
+          }
+          if (fieldName === "voice_speed") {
+            return {...scene, voice_speed: normalizeSpeed(target.value)};
+          }
+          if (fieldName === "voice_style") {
+            const voiceStyle = normalizeStyle(target.value);
+            return {
+              ...scene,
+              voice_style: voiceStyle,
+              speakerId: resolveSpeakerId({voice_style: voiceStyle, speakerId: scene.speakerId})
+            };
+          }
+          if (fieldName === "speakerId") {
+            const numeric = Number(target.value);
+            if (!Number.isFinite(numeric)) return scene;
+            return {...scene, speakerId: Math.max(0, Math.round(numeric))};
+          }
+          if (fieldName === "voice") {
+            return {...scene, voice: String(target.value || "")};
+          }
+          if (fieldName === "voice_override") {
+            return {...scene, voice_override: String(target.value || "")};
+          }
+          return scene;
+        });
+
+        renderAll();
+      };
+
+      const copyVoiceBySceneKey = async (key) => {
+        const scene = state.scenes.find((s) => (s.key || s.scene_id) === key);
+        if (!scene) {
+          setStatus("コピー対象のsceneが見つかりません。", "error");
+          return;
+        }
+        const text = typeof scene.voice === "string" ? scene.voice : "";
+        if (!text.trim()) {
+          setStatus("voice本文が空のためコピーできません。", "error");
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(text);
+          setStatus(`voice本文をコピーしました: ${key}`, "ok");
+        } catch (_err) {
+          setStatus("voice本文のコピーに失敗しました。", "error");
+        }
+      };
+
+      el.backgroundPngInput.addEventListener("change", function (event) {
+        state.backgroundPng = String(event.target.value || "");
+        refreshOutput();
+      });
+      el.titleTextInput.addEventListener("input", function (event) {
+        state.titleText = normalizeTitleText(event.target.value || "");
+        applyTitleTextToScenes(state.titleText);
+        renderAll();
+      });
+      el.titleBgColorInput.addEventListener("input", function (event) {
+        state.titleBgColor = normalizeColorHex(String(event.target.value || ""), state.titleBgColor || "#000000");
+        refreshOutput();
+      });
+      el.titleTextColorInput.addEventListener("input", function (event) {
+        state.titleTextColor = normalizeColorHex(String(event.target.value || ""), state.titleTextColor || "#ffffff");
+        refreshOutput();
+      });
+      el.titleBarHeightInput.addEventListener("input", function (event) {
+        state.titleBarHeightPx = normalizePx(event.target.value, state.titleBarHeightPx || 72, 24, 300);
+        refreshOutput();
+      });
+      el.titleFontSizeInput.addEventListener("input", function (event) {
+        state.titleFontSizePx = normalizePx(event.target.value, state.titleFontSizePx || 42, 16, 120);
+        refreshOutput();
+      });
+      el.titleWidthPxInput.addEventListener("input", function (event) {
+        state.titleWidthPx = normalizePx(event.target.value, state.titleWidthPx || 994, 120, 1080);
+        refreshOutput();
+      });
+      el.titleLineBreakModeInput.addEventListener("change", function (event) {
+        state.titleLineBreakMode = normalizeLineBreakMode(String(event.target.value || ""));
+        refreshOutput();
+      });
+      el.titleLineCharsInput.addEventListener("input", function (event) {
+        state.titleLineChars = normalizePx(event.target.value, state.titleLineChars || 18, 4, 80);
+        refreshOutput();
+      });
+      el.titleTextAlignInput.addEventListener("change", function (event) {
+        state.titleTextAlign = normalizeTitleTextAlign(String(event.target.value || ""));
+        refreshOutput();
+      });
+      el.bgmSelect.addEventListener("change", function (event) {
+        state.bgmFile = normalizeBgmRef(String(event.target.value || ""));
+        refreshOutput();
+      });
+      el.bgmVolumeInput.addEventListener("input", function (event) {
+        state.bgmVolume = normalizeBgmVolume(event.target.value, state.bgmVolume);
+        el.bgmVolumeValue.textContent = `${Math.round(state.bgmVolume * 100)}%`;
+        refreshOutput();
+      });
+      el.timelineDurationInput.addEventListener("input", function (event) {
+        const raw = String(event.target.value || "").trim();
+        if (!raw) {
+          state.timelineDurationSec = null;
+          renderTimeline();
+          refreshOutput();
+          return;
+        }
+        const nextDuration = toNum(raw, NaN);
+        if (!Number.isFinite(nextDuration) || nextDuration <= 0) {
+          return;
+        }
+        state.timelineDurationSec = nextDuration;
+        renderTimeline();
+        refreshOutput();
+      });
+      el.generateBackgroundManifestBtn.addEventListener("click", generateBackgroundManifestAndRefresh);
+
+      el.segments.addEventListener("click", function (event) {
+        const toggleButton = event.target.closest(".toggle-scene-btn");
+        if (toggleButton) {
+          const sceneKey = toggleButton.getAttribute("data-scene-key");
+          if (sceneKey) {
+            if (state.collapsedSceneKeys.has(sceneKey)) {
+              state.collapsedSceneKeys.delete(sceneKey);
+            } else {
+              state.collapsedSceneKeys.add(sceneKey);
+            }
+            renderAll();
+          }
+          return;
+        }
+
+        const addButton = event.target.closest(".add-sub-scene-btn");
+        if (addButton) {
+          const sceneKey = addButton.getAttribute("data-scene-key");
+          if (sceneKey) addSubScene(sceneKey);
+          return;
+        }
+
+        const button = event.target.closest(".copy-voice-btn");
+        if (!button) return;
+        const key = button.getAttribute("data-scene-key");
+        if (!key) return;
+        copyVoiceBySceneKey(key);
+      });
+
+      el.segments.addEventListener("change", updateSceneField);
+
+      el.pickWorkspaceBtn.addEventListener("click", connectWorkspace);
+      el.reloadProjectsBtn.addEventListener("click", async function () {
+        try {
+          await loadProjects();
+          setStatus(`projects を再読み込みしました（${projectRows.length}件）。`, "ok");
+        } catch (error) {
+          setStatus(error && error.message ? error.message : "projects の再読み込みに失敗しました。", "error");
+        } finally {
+          updateProjectControls();
+        }
+      });
+      el.projectSelect.addEventListener("change", function () {
+        state.selectedProjectId = selectedProjectId();
+        updateProjectControls();
+      });
+      el.loadProjectRenderBtn.addEventListener("click", loadProjectRender);
+      el.saveProjectRenderBtn.addEventListener("click", saveProjectRender);
+
+      const boot = () => {
+        const raw = localStorage.getItem(VIDEO_KEY);
+        if (!raw) {
+          applyBackgroundFileList(BACKGROUND_PNG_FILES, {selected: ""});
+          applyBgmFileList(BGM_MP3_FILES, {selected: ""});
+          state.titleText = "";
+          state.titleBgColor = "#000000";
+          state.titleTextColor = "#ffffff";
+          state.titleBarHeightPx = 72;
+          state.titleFontSizePx = 42;
+          state.titleWidthPx = 994;
+          state.titleLineBreakMode = "auto";
+          state.titleLineChars = 18;
+          state.titleTextAlign = "center";
+          state.bgmFile = "";
+          state.bgmVolume = 0.2;
+          state.bgmLoop = true;
+          state.timelineDurationSec = 1;
+          el.timelineDurationInput.value = "1";
+          setStatus("初期状態です。ワークスペース選択後、対象projectの render draft JSON を読み込んでください。", "error");
+          renderAll();
+          updateProjectControls();
+          return;
+        }
+        const parsed = parseJson(raw);
+        if (!parsed) {
+          applyBackgroundFileList(BACKGROUND_PNG_FILES, {selected: ""});
+          applyBgmFileList(BGM_MP3_FILES, {selected: ""});
+          state.titleText = "";
+          state.titleBgColor = "#000000";
+          state.titleTextColor = "#ffffff";
+          state.titleBarHeightPx = 72;
+          state.titleFontSizePx = 42;
+          state.titleWidthPx = 994;
+          state.titleLineBreakMode = "auto";
+          state.titleLineChars = 18;
+          state.titleTextAlign = "center";
+          state.bgmFile = "";
+          state.bgmVolume = 0.2;
+          state.bgmLoop = true;
+          state.timelineDurationSec = 1;
+          el.timelineDurationInput.value = "1";
+          setStatus("localStorage のJSONが壊れています。project の render draft JSON を読み込んでください。", "error");
+          renderAll();
+          updateProjectControls();
+          return;
+        }
+        loadSpec(parsed, "localStorage");
+        setStatus("localStorage を復元しました。編集前に最新の project render draft JSON 読み込みを推奨します。", "");
+        updateProjectControls();
+      };
+
+      boot();
+    })();
+  </script>
+</body>
+</html>

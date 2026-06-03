@@ -1,0 +1,396 @@
+{
+  "project_id": "0000",
+  "version": "v01",
+  "hook": {
+    "id": "hook_a",
+    "text": "ずんだもん、その理解で本当に合ってる？",
+    "intent": "疑問型",
+    "duration_sec": 2
+  },
+  "slides": [
+    {
+      "slide_id": "slide_01",
+      "role": "problem",
+      "title": "ずんだもんの課題",
+      "body": "ずんだもんで起きる矛盾: 認知的不協和",
+      "visual_intent": "問題の核を1メッセージで示す概念図",
+      "duration_sec": 8
+    },
+    {
+      "slide_id": "slide_02",
+      "role": "development",
+      "title": "なぜ起きるか",
+      "body": "ずんだもんの流れを整理: 原因 → 認知の調整 → 行動",
+      "visual_intent": "原因→調整→結果の矢印で示す図",
+      "duration_sec": 10
+    },
+    {
+      "slide_id": "slide_03",
+      "role": "landing",
+      "title": "今日の気づき",
+      "body": "ずんだもんの気づき: 正当化に気づき、次の1アクションを決める",
+      "visual_intent": "内省を促すシンボル中心の図",
+      "duration_sec": 8
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "scene_001",
+      "slide_id": "slide_01",
+      "speaker": "議題",
+      "emotion": "normal",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "認知的不協和",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_001_01",
+          "screen_text": "認知的不協和",
+          "display_mode": "replace",
+          "char_count": 6,
+          "start_sec": 0,
+          "duration_sec": 1.6
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_002",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「ダイエット中だけど、この大盛りラーメンは実質野菜だからカロリーゼロなのだ！」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_002_01",
+          "screen_text": "ダイエット中だけど、この大盛りラーメンは",
+          "display_mode": "replace",
+          "char_count": 20,
+          "start_sec": 1.6,
+          "duration_sec": 1.69
+        },
+        {
+          "sub_scene_id": "scene_002_02",
+          "screen_text": "実質野菜だからカロリーゼロなのだ！",
+          "display_mode": "replace",
+          "char_count": 17,
+          "start_sec": 3.29,
+          "duration_sec": 2.77
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_003",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "emotion": "normal",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「出たわね、都合のいい脳内変換。それ完全に『認知的不協和』の典型例よ」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_003_01",
+          "screen_text": "出たわね、都合のいい脳内変換。",
+          "display_mode": "replace",
+          "char_count": 15,
+          "start_sec": 7.6,
+          "duration_sec": 2.58
+        },
+        {
+          "sub_scene_id": "scene_003_03",
+          "screen_text": "それ完全に『認知的不協和』の典型例よ",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 13.09,
+          "duration_sec": 0.6
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_004",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「不協和音？ボクの頭の中はいつだってハッピーなメロディが流れてるのだ！」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_004_01",
+          "screen_text": "不協和音？ボクの頭の中は",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_sec": 13.69,
+          "duration_sec": 0.97
+        },
+        {
+          "sub_scene_id": "scene_004_02",
+          "screen_text": "いつだってハッピーなメロディが流れてるのだ！",
+          "display_mode": "replace",
+          "char_count": 22,
+          "start_sec": 14.66,
+          "duration_sec": 1
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_005",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "normal",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「違うわよ。自分の行動と現実に矛盾があるとき、不快だから都合よく言い訳を作って脳を納得させる現象のことよ」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_005_01",
+          "screen_text": "違うわよ。\n自分の行動と現実に矛盾があるとき、",
+          "display_mode": "replace",
+          "char_count": 23,
+          "start_sec": 19.95,
+          "duration_sec": 0.7
+        },
+        {
+          "sub_scene_id": "scene_005_02",
+          "screen_text": "不快だから都合よく言い訳を作って脳を納得させる現象のことよ",
+          "display_mode": "replace",
+          "char_count": 29,
+          "start_sec": 20.65,
+          "duration_sec": 1.92
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_006",
+      "slide_id": "slide_02",
+      "speaker": "天の声",
+      "emotion": "normal",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「タバコは体に悪いと言いつつ、ストレス解消に良いと言い訳して吸い続けるアレですね」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_006_01",
+          "screen_text": "タバコは体に悪いと言いつつ、ストレス解消に良いと言い訳して吸い続けるアレですね",
+          "display_mode": "replace",
+          "char_count": 39,
+          "start_sec": 25.95,
+          "duration_sec": 2.2
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_007",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「そうなのだ！ボクのラーメンも、食べないとストレスで死んじゃうから命の恩人なのだ！」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_007_01",
+          "screen_text": "そうなのだ！ボクのラーメンも、食べないと",
+          "display_mode": "replace",
+          "char_count": 20,
+          "start_sec": 31.95,
+          "duration_sec": 2.29
+        },
+        {
+          "sub_scene_id": "scene_007_02",
+          "screen_text": "ストレスで死んじゃうから命の恩人なのだ！",
+          "display_mode": "replace",
+          "char_count": 20,
+          "start_sec": 34.24,
+          "duration_sec": 2.57
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_008",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "normal",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「完全に自己正当化のモンスターになってるじゃない。そうやって現実から目を背けて楽しい？」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_008_01",
+          "screen_text": "完全に自己正当化のモンスターになってるじゃない。",
+          "display_mode": "replace",
+          "char_count": 24,
+          "start_sec": 37.95,
+          "duration_sec": 2.45
+        },
+        {
+          "sub_scene_id": "scene_008_02",
+          "screen_text": "そうやって現実から目を背けて楽しい？",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 40.4,
+          "duration_sec": 0.95
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_009",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「めちゃくちゃ楽しいのだ！現実なんて直視したら、ボクの怠惰なソウルが粉々になっちゃうのだ！」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_009_01",
+          "screen_text": "めちゃくちゃ楽しいのだ！現実なんて直視したら、",
+          "display_mode": "replace",
+          "char_count": 23,
+          "start_sec": 44.4,
+          "duration_sec": 1.7
+        },
+        {
+          "sub_scene_id": "scene_009_02",
+          "screen_text": "ボクの怠惰なソウルが粉々になっちゃうのだ！",
+          "display_mode": "replace",
+          "char_count": 21,
+          "start_sec": 46.1,
+          "duration_sec": 1.43
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_010",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "emotion": "normal",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「開き直るんじゃないわよ。少しは矛盾を受け入れて反省しなさいな」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_010_01",
+          "screen_text": "開き直るんじゃないわよ。",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_sec": 50.48,
+          "duration_sec": 2.1
+        },
+        {
+          "sub_scene_id": "scene_010_02",
+          "screen_text": "少しは矛盾を受け入れて反省しなさいな",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 52.58,
+          "duration_sec": 2.9
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_011",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「じゃあめたん、ボクの代わりにこのラーメンのカロリーを消費してほしいのだ！」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_011_01",
+          "screen_text": "じゃあめたん、ボクの代わりにこのラーメンのカロリーを消費してほしいのだ！",
+          "display_mode": "replace",
+          "char_count": 36,
+          "start_sec": 56.08,
+          "duration_sec": 1.26
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_012",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "emotion": "normal",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "「なんで私があなたの脂肪を背負わなきゃいけないのよ、お断りよ」",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_012_01",
+          "screen_text": "なんで私があなたの脂肪を背負わなきゃいけないのよ、お断りよ",
+          "display_mode": "replace",
+          "char_count": 29,
+          "start_sec": 62.52,
+          "duration_sec": 2.9
+        }
+      ]
+    }
+  ],
+  "source": "",
+  "durationSec": 67.52,
+  "durationInFrames": 2026,
+  "fps": 30,
+  "tts_transform": "",
+  "video_spec": {
+    "audio": {
+      "tts_transform": "",
+      "bgm": "none"
+    },
+    "style": {
+      "title_overlay": {
+        "enabled": true,
+        "bg_color": "#000000",
+        "text_color": "#ffffff",
+        "height_px": 72,
+        "font_size_px": 42,
+        "width_px": 994,
+        "line_break_mode": "auto",
+        "line_chars": 18,
+        "text_align": "center"
+      }
+    },
+    "format": {
+      "fps": 30,
+      "duration": 67.52,
+      "durationInFrames": 2026
+    },
+    "title": "認知的不協和"
+  },
+  "title": "認知的不協和",
+  "title_overlay": {
+    "enabled": true,
+    "bg_color": "#000000",
+    "text_color": "#ffffff",
+    "height_px": 72,
+    "font_size_px": 42,
+    "width_px": 994,
+    "line_break_mode": "auto",
+    "line_chars": 18,
+    "text_align": "center"
+  }
+}

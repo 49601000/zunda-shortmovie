@@ -289,7 +289,7 @@
           <div class="mono">projects/{id}/pipeline/06-voice_manifest-v01.json</div>
           <div class="mono">projects/{id}/outputs/slide/</div>
           <div class="mono">projects/{id}/outputs/audio/</div>
-          <div class="mono">projects/{id}/outputs/video/render-v01.json</div>
+          <div class="mono">projects/{id}/outputs/video/06-render-draft-v01.json</div>
         </aside>
       </div>
     </section>
@@ -321,7 +321,7 @@
         <button id="btnSlide" type="button" class="step-btn" disabled>4. ③ slide_spec 作成</button>
         <button id="btnScene" type="button" class="step-btn" disabled>5. ④ scene_spec 作成</button>
         <button id="btnSubScene" type="button" class="step-btn" disabled>6. ⑤ sub_scene_spec 作成</button>
-        <button id="btnRender" type="button" class="step-btn" disabled>7. ⑥ render-v01.json 作成</button>
+        <button id="btnRender" type="button" class="step-btn" disabled>7. ⑥ 06-render-draft-v01.json 作成</button>
       </div>
 
       <p id="pipelineStatus" class="status">対象プロジェクトを選ぶと実行できます。</p>
@@ -360,6 +360,17 @@
 
     function charLen(text) {
       return [...String(text || "")].length;
+    }
+
+    function defaultSpeakerId(speaker) {
+      const speakerIds = {
+        "ずんだもん": 3,
+        "めたん": 2,
+        "天の声": 2,
+        "議題": 2
+      };
+      const key = String(speaker || "").trim();
+      return Object.prototype.hasOwnProperty.call(speakerIds, key) ? speakerIds[key] : 2;
     }
 
     function escapeRegex(value) {
@@ -518,7 +529,7 @@
         return {
           project_id: projectId,
           source: "04-scene_spec-v01.json",
-          sub_scenes: []
+          scenes: []
         };
       }
       if (kind === "voice_manifest") {
@@ -1091,7 +1102,7 @@
     }
 
     function buildSubSceneSpec(projectId, sceneName, sceneSpec) {
-      const subScenes = [];
+      const scenes = [];
       let clock = 0;
 
       for (const scene of sceneSpec.scenes || []) {
@@ -1099,6 +1110,7 @@
         const totalChars = chunks.reduce((sum, chunk) => sum + Math.max(1, charLen(chunk)), 0);
         const baseDuration = toSec(scene.duration_sec, estimateDuration(scene.text, 1.4, 6));
         let consumed = 0;
+        const subScenes = [];
 
         chunks.forEach((chunk, idx) => {
           const partChars = Math.max(1, charLen(chunk));
@@ -1111,10 +1123,7 @@
 
           subScenes.push({
             sub_scene_id: `${scene.scene_id}_${String(idx + 1).padStart(2, "0")}`,
-            scene_id: scene.scene_id,
-            slide_id: scene.slide_id,
-            speaker: scene.speaker,
-            text: chunk,
+            screen_text: chunk,
             display_mode: "replace",
             char_count: partChars,
             start_sec: Math.round(clock * 100) / 100,
@@ -1123,12 +1132,156 @@
 
           clock += duration;
         });
+
+        scenes.push({
+          scene_id: scene.scene_id,
+          slide_id: scene.slide_id,
+          speaker: scene.speaker,
+          emotion: scene.emotion || "normal",
+          voice_style: "normal",
+          speakerId: defaultSpeakerId(scene.speaker),
+          voice_speed: 1.25,
+          voice: String(scene.text || ""),
+          voice_override: "",
+          sub_scenes: subScenes
+        });
       }
 
       return {
         project_id: projectId,
         source: sceneName,
-        sub_scenes: subScenes
+        scenes
+      };
+    }
+
+    function sceneIdFromSubScene(sub) {
+      if (sub && typeof sub.scene_id === "string" && sub.scene_id.trim()) return sub.scene_id.trim();
+      const id = String(sub && sub.sub_scene_id || "").trim();
+      const matched = id.match(/^(.+)_\d{2}$/);
+      return matched ? matched[1] : id || "scene_001";
+    }
+
+    function normalizeSceneSettings(scene) {
+      const speaker = String(scene && scene.speaker || "").trim();
+      const speakerId = Number(scene && scene.speakerId);
+      const voiceSpeed = Number(scene && scene.voice_speed);
+      return {
+        scene_id: String(scene && scene.scene_id || "").trim(),
+        slide_id: String(scene && scene.slide_id || "").trim(),
+        speaker,
+        emotion: String(scene && scene.emotion || "normal").trim() || "normal",
+        voice_style: String(scene && scene.voice_style || "normal").trim() || "normal",
+        speakerId: Number.isFinite(speakerId) ? speakerId : defaultSpeakerId(speaker),
+        voice_speed: Number.isFinite(voiceSpeed) && voiceSpeed > 0 ? Math.round(voiceSpeed * 100) / 100 : 1.25,
+        voice: typeof (scene && scene.voice) === "string" ? scene.voice : String(scene && scene.text || ""),
+        voice_override: typeof (scene && scene.voice_override) === "string" ? scene.voice_override : ""
+      };
+    }
+
+    function cleanNestedSubScene(sub, index, sceneId) {
+      const screenText = typeof (sub && sub.screen_text) === "string"
+        ? sub.screen_text
+        : typeof (sub && sub.text) === "string"
+          ? sub.text
+          : "";
+      const id = String(sub && sub.sub_scene_id || `${sceneId}_${String(index + 1).padStart(2, "0")}`).trim();
+      return {
+        sub_scene_id: id,
+        screen_text: screenText,
+        display_mode: String(sub && sub.display_mode || "replace").trim() || "replace",
+        char_count: Math.max(0, Number.isFinite(Number(sub && sub.char_count)) ? Number(sub.char_count) : charLen(screenText)),
+        start_sec: toSec(sub && sub.start_sec, 0),
+        duration_sec: toSec(sub && sub.duration_sec, 1)
+      };
+    }
+
+    function flattenNestedScenes(scenes) {
+      const flatSubScenes = [];
+      for (const scene of scenes) {
+        const { sub_scenes: subScenes, ...sceneFields } = scene;
+        for (const sub of subScenes || []) {
+          flatSubScenes.push({
+            ...sub,
+            scene_id: sceneFields.scene_id,
+            slide_id: sceneFields.slide_id,
+            speaker: sceneFields.speaker,
+            emotion: sceneFields.emotion,
+            voice_style: sceneFields.voice_style,
+            speakerId: sceneFields.speakerId,
+            voice_speed: sceneFields.voice_speed,
+            voice: sceneFields.voice,
+            voice_override: sceneFields.voice_override,
+            text: sub.screen_text
+          });
+        }
+      }
+      return flatSubScenes;
+    }
+
+    function normalizeNestedSubSceneSpec(spec) {
+      const scenes = (spec.scenes || []).map((rawScene, sceneIndex) => {
+        const sceneFields = normalizeSceneSettings(rawScene);
+        if (!sceneFields.scene_id) sceneFields.scene_id = `scene_${String(sceneIndex + 1).padStart(3, "0")}`;
+        const subScenes = (rawScene.sub_scenes || []).map((sub, subIndex) => cleanNestedSubScene(sub, subIndex, sceneFields.scene_id));
+        return {
+          ...sceneFields,
+          sub_scenes: subScenes
+        };
+      });
+      return {
+        project_id: spec.project_id || "",
+        source: spec.source || "",
+        scenes,
+        flatSubScenes: flattenNestedScenes(scenes)
+      };
+    }
+
+    function migrateFlatSubSceneSpec(spec) {
+      const groups = new Map();
+      for (const sub of spec.sub_scenes || []) {
+        const sceneId = sceneIdFromSubScene(sub);
+        if (!groups.has(sceneId)) {
+          groups.set(sceneId, {
+            scene_id: sceneId,
+            slide_id: sub.slide_id || "",
+            speaker: sub.speaker || "",
+            emotion: sub.emotion || "normal",
+            voice_style: sub.voice_style || "normal",
+            speakerId: Number.isFinite(Number(sub.speakerId)) ? Number(sub.speakerId) : defaultSpeakerId(sub.speaker),
+            voice_speed: Number.isFinite(Number(sub.voice_speed)) ? Number(sub.voice_speed) : 1.25,
+            voice: "",
+            voice_override: typeof sub.voice_override === "string" ? sub.voice_override : "",
+            sub_scenes: []
+          });
+        }
+
+        const scene = groups.get(sceneId);
+        const nestedSub = cleanNestedSubScene(sub, scene.sub_scenes.length, sceneId);
+        scene.sub_scenes.push(nestedSub);
+      }
+
+      const scenes = [...groups.values()].map((scene) => ({
+        ...scene,
+        voice: scene.voice || scene.sub_scenes.map((sub) => sub.screen_text).join("")
+      }));
+
+      return {
+        project_id: spec.project_id || "",
+        source: spec.source || "",
+        scenes,
+        flatSubScenes: flattenNestedScenes(scenes)
+      };
+    }
+
+    function normalizeSubSceneSpec(spec) {
+      const safeSpec = spec && typeof spec === "object" ? spec : {};
+      if (Array.isArray(safeSpec.scenes)) return normalizeNestedSubSceneSpec(safeSpec);
+      if (Array.isArray(safeSpec.sub_scenes)) return migrateFlatSubSceneSpec(safeSpec);
+      return {
+        project_id: safeSpec.project_id || "",
+        source: safeSpec.source || "",
+        scenes: [],
+        flatSubScenes: []
       };
     }
 
@@ -1166,9 +1319,11 @@
       const selectedId = hookSpec.selected_hook_id || (hookSpec.hooks && hookSpec.hooks[0] && hookSpec.hooks[0].id);
       const selectedHook = (hookSpec.hooks || []).find((h) => h.id === selectedId) || (hookSpec.hooks || [])[0] || {};
       const voices = Array.isArray(voiceManifest.voices) ? voiceManifest.voices : [];
+      const normalizedSubScenes = normalizeSubSceneSpec(subSceneSpec);
+      const flatSubScenes = normalizedSubScenes.flatSubScenes;
 
       let clock = 0;
-      const timeline = (subSceneSpec.sub_scenes || []).map((sub) => {
+      const timeline = flatSubScenes.map((sub) => {
         const voice = findVoiceById(voices, sub.sub_scene_id);
         const fallbackAudio = `${sub.sub_scene_id}.wav`;
         const defaultAudioPath = audioNames.has(fallbackAudio) ? `outputs/audio/${fallbackAudio}` : "";
@@ -1176,9 +1331,17 @@
 
         const item = {
           sub_scene_id: sub.sub_scene_id,
+          scene_id: sub.scene_id,
           slide_id: sub.slide_id,
           speaker: sub.speaker,
-          text: sub.text,
+          emotion: sub.emotion,
+          voice_style: sub.voice_style,
+          speakerId: sub.speakerId,
+          voice_speed: sub.voice_speed,
+          voice: sub.voice,
+          voice_override: sub.voice_override,
+          screen_text: sub.screen_text,
+          text: sub.screen_text,
           audio_file: (voice && voice.audio_file) ? voice.audio_file : defaultAudioPath,
           start_sec: Math.round(clock * 100) / 100,
           duration_sec: duration
@@ -1192,7 +1355,8 @@
         version: "v01",
         hook: selectedHook,
         slides: Array.isArray(slideSpec.slides) ? slideSpec.slides : [],
-        sub_scenes: Array.isArray(subSceneSpec.sub_scenes) ? subSceneSpec.sub_scenes : [],
+        scenes: normalizedSubScenes.scenes,
+        sub_scenes: flatSubScenes,
         voices,
         timeline
       };
@@ -1405,7 +1569,7 @@
         audioNames
       );
 
-      const renderName = await findNextVersionedName(videoDir, "render", ".json");
+      const renderName = await findNextVersionedName(videoDir, "06-render-draft", ".json");
       const renderHandle = await videoDir.getFileHandle(renderName, { create: true });
       await writeJson(renderHandle, renderSpec);
 
@@ -1447,7 +1611,7 @@
       document.getElementById("btnSlide").addEventListener("click", () => runStep("slide_spec 作成", stepSlide));
       document.getElementById("btnScene").addEventListener("click", () => runStep("scene_spec 作成", stepScene));
       document.getElementById("btnSubScene").addEventListener("click", () => runStep("sub_scene_spec 作成", stepSubScene));
-      document.getElementById("btnRender").addEventListener("click", () => runStep("render-v01.json 作成", stepRender));
+      document.getElementById("btnRender").addEventListener("click", () => runStep("06-render-draft-v01.json 作成", stepRender));
 
       renderNextId();
       syncPipelineButtons();
