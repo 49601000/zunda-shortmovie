@@ -94,8 +94,31 @@ projects/{id}/
 注意:
 
 - `03-slide_spec` は module2 が担当します。
+- `02-hook_spec` は現在の `04-scene_spec` 生成には使っていません。ただし `06-render-draft` 作成時に選択hookとして読み込まれます。将来 `Hook Lab -> selected_hook -> Script Forge -> scene` に戻すための拡張ポイントとして残しています。
 - module1 の `4. scene_spec 作成` は最新の `03-slide_spec-vNN.json` を読みます。
 - `6. 06-render-draft-v01.json 作成` は、hook / slide / sub_scene / voice_manifest / audio をまとめたレンダー下書きです。
+
+`02-hook_spec` の位置づけ:
+
+```text
+今の実運用:
+raw_conversation
+  ↓
+summary
+  ↓
+scene
+
+将来戻したい拡張ルート:
+Hook Lab
+  ↓
+selected_hook
+  ↓
+Script Forge
+  ↓
+scene
+```
+
+`02-hook_spec` は、ショート動画で特に重要な「最初の2秒」を独立して試作・選定するための予約席です。現時点では `hook_a` / `hook_b` / `hook_c` / `selected_hook` のような独立アセットを持てるようにしておき、scene生成からは独立させています。通常はプロジェクト作成時に初期ファイルが作られるため、render draft 作成時だけ選択hookとして合流します。
 
 ### 3. module2: スライド用プロンプトとslide_specを作る
 
@@ -244,4 +267,3 @@ module2 = スライド画像を作るための設計図を作る係
 module3 = 最後に人間が見て整える編集卓
 index   = 入口とrenderコマンドのコピー係
 ```
-
