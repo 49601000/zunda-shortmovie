@@ -175,6 +175,12 @@
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     }
 
+    .tool-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .card {
       min-height: 230px;
       padding: 16px;
@@ -310,6 +316,7 @@
     @media (max-width: 720px) {
       .wrap { padding: 14px 10px 22px; }
       .hero, .panel, .card { padding: 14px; }
+      .tool-grid { grid-template-columns: 1fr; }
       .btn, .hero-actions .btn, .actions .btn { width: 100%; }
       .topbar { padding: 8px 12px; }
       .brandText { font-size: 14px; }
@@ -363,13 +370,6 @@
         <p><code>06-render-draft</code> を読み込み、音声演出・字幕タイミング・背景/BGMなどを調整して <code>render-final-v01.json</code> に反映します。</p>
         <a class="btn" href="./module/3_Final-Cut-panel.html" target="_blank" rel="noopener noreferrer">module/3_Final-Cut-panel.html</a>
       </article>
-
-      <article class="card">
-        <span class="tag">Tool</span>
-        <h2>Timing Calc</h2>
-        <p><code>scene</code> と <code>subscene</code> の入れ子カードで、文字数比率からstart / durationを自動計算します。</p>
-        <a class="btn" href="./module/timing-calc.html" target="_blank" rel="noopener noreferrer">module/timing-calc.html</a>
-      </article>
     </section>
 
     <section class="panel">
@@ -392,11 +392,28 @@
       <div class="code" id="renderCommand"></div>
 
       <div class="actions">
-        <button class="btn warn" type="button" id="copyFinalRenderBtn">final JSON render をコピー</button>
+        <button class="btn ghost" type="button" id="copyVoicevoxBtn">npm run voicevox をコピー</button>
         <button class="btn ghost" type="button" id="copyFinalDevBtn">final JSON dev をコピー</button>
+        <button class="btn warn" type="button" id="copyFinalRenderBtn">final JSON render をコピー</button>
         <button class="btn ghost" type="button" id="resetIdsBtn">IDを初期値へ戻す</button>
       </div>
       <p class="status" id="commandStatus"></p>
+    </section>
+
+    <section class="tool-grid">
+      <article class="card">
+        <span class="tag">Tool 1</span>
+        <h2>Timing Calc</h2>
+        <p><code>scene</code> と <code>subscene</code> の入れ子カードで、文字数比率からstart / durationを自動計算します。</p>
+        <a class="btn" href="./module/tool1-timing-calc.html" target="_blank" rel="noopener noreferrer">module/tool1-timing-calc.html</a>
+      </article>
+
+      <article class="card">
+        <span class="tag">Tool 2</span>
+        <h2>Hook Viewer Lens</h2>
+        <p>完成済みの会話劇を貼り付けて、視聴者目線で刺さる点を分析するChatGPT用プロンプトを生成します。</p>
+        <a class="btn" href="./module/tool2-hook-viewer-lens.html" target="_blank" rel="noopener noreferrer">module/tool2-hook-viewer-lens.html</a>
+      </article>
     </section>
 
     <p class="footer">Renderer path priority: SCENE_REMOTION_APP_PATH → ../remotion-renderer → ./remotion-renderer-v1</p>
@@ -414,6 +431,7 @@
       finalJsonPath: document.getElementById("finalJsonPath"),
       renderCommand: document.getElementById("renderCommand"),
       commandStatus: document.getElementById("commandStatus"),
+      copyVoicevoxBtn: document.getElementById("copyVoicevoxBtn"),
       copyFinalRenderBtn: document.getElementById("copyFinalRenderBtn"),
       copyFinalDevBtn: document.getElementById("copyFinalDevBtn"),
       resetIdsBtn: document.getElementById("resetIdsBtn")
@@ -482,12 +500,16 @@
       });
     });
 
-    el.copyFinalRenderBtn.addEventListener("click", () => {
-      copyText(buildRenderCommand("scene-remotion:render"), "final JSON render コマンドをコピーしました。");
+    el.copyVoicevoxBtn.addEventListener("click", () => {
+      copyText("npm run voicevox", "VOICEVOX生成コマンドをコピーしました。");
     });
 
     el.copyFinalDevBtn.addEventListener("click", () => {
       copyText(buildRenderCommand("scene-remotion:dev"), "final JSON dev コマンドをコピーしました。");
+    });
+
+    el.copyFinalRenderBtn.addEventListener("click", () => {
+      copyText(buildRenderCommand("scene-remotion:render"), "final JSON render コマンドをコピーしました。");
     });
 
     el.resetIdsBtn.addEventListener("click", () => {

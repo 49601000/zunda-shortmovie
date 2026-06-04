@@ -506,13 +506,13 @@
           </select>
         </div>
         <div class="row" style="margin-top:0">
-          <button id="pickWorkspaceBtn" class="secondary">ワークスペース選択</button>
+          <button id="pickWorkspaceBtn" class="secondary">02_hobby選択</button>
           <button id="reloadProjectsBtn" class="ghost" disabled>projects再読込</button>
           <button id="loadProjectRenderBtn" disabled>render draft読込</button>
           <button id="saveProjectRenderBtn" class="secondary" disabled>render-final-v01.jsonに書き出し・反映</button>
         </div>
       </div>
-      <div id="projectPathHint" class="path-hint">反映先: 20_ショート動画v2/projects/{id}/outputs/video/render-final-v01.json</div>
+      <div id="projectPathHint" class="path-hint">反映先: 02_hobby/20_ショート動画v2/projects/{id}/outputs/video/render-final-v01.json</div>
       <div id="status" class="status"></div>
     </section>
 
@@ -633,7 +633,7 @@
           <div class="field span-3"><label for="sharedAssetsSubLeftCharInput">左キャラサブフォルダ</label><input id="sharedAssetsSubLeftCharInput" value="images/characters/metan" /></div>
           <div class="field span-3"><label for="sharedAssetsSubRightCharInput">右キャラサブフォルダ</label><input id="sharedAssetsSubRightCharInput" value="images/characters/zundamon, images/frames" /></div>
         </div>
-        <p class="sub" style="margin-top:8px">推奨: 02_hobby をワークスペース選択すると shared-assets を自動検出できます。サブフォルダはカンマ区切りで複数指定できます。</p>
+        <p class="sub" style="margin-top:8px">推奨: トップの「02_hobby選択」で 02_hobby を指定すると、20_ショート動画v2/projects と shared-assets を自動検出できます。サブフォルダはカンマ区切りで複数指定できます。</p>
       </details>
     </section>
 
@@ -678,7 +678,7 @@
         <div class="seg-index">簡易タイムライン</div>
         <div class="duration-editor">
           <label for="timelineDurationInput" class="sub">尺(sec)</label>
-          <input id="timelineDurationInput" type="number" min="1" step="0.1" value="0" />
+          <input id="timelineDurationInput" type="number" min="0" step="0.001" value="0" />
           <div class="badge" id="durationLabel">duration: 0s</div>
         </div>
       </div>
@@ -982,6 +982,7 @@
         character_left: [],
         character_right: []
       };
+      let projectSlideFileCatalog = [];
 
       const DEFAULT_TRANSFORM_MODE = "none";
 
@@ -1011,8 +1012,8 @@
         return Number((Math.round(toNum(value, 0) / safeStep) * safeStep).toFixed(3));
       };
 
-      const normalizeSubSceneStart = (value, fallback = 0) => Math.max(0, roundTimeStep(toNum(value, fallback), 0.1));
-      const normalizeSubSceneDuration = (value, fallback = 1) => Math.max(0.1, roundTimeStep(toNum(value, fallback), 0.1));
+      const normalizeSubSceneStart = (value, fallback = 0) => Math.max(0, roundTimeStep(toNum(value, fallback), 0.001));
+      const normalizeSubSceneDuration = (value, fallback = 1) => Math.max(0, roundTimeStep(toNum(value, fallback), 0.001));
 
       const relayNextSubSceneStart = (subScenes, editedIndex) => {
         if (!Array.isArray(subScenes) || editedIndex < 0 || editedIndex + 1 >= subScenes.length) return subScenes;
@@ -1092,6 +1093,7 @@
       };
 
       const APP_WORKSPACE_DIR_NAME = inferAppWorkspaceDirName();
+      const PREFERRED_WORKSPACE_ROOT_NAME = "02_hobby";
 
       const bindBackgroundManifestTargetFromWorkspace = async () => {
         if (!workspaceHandle) return null;
@@ -1135,16 +1137,6 @@
       };
 
       const resolveWorkspaceSelection = async (selectedDir) => {
-        if (await directoryHasProjects(selectedDir)) {
-          return {
-            handle: selectedDir,
-            parentHandle: null,
-            label: selectedDir.name || "(workspace)",
-            pathPrefix: "",
-            siblingSharedAssetsLabel: ""
-          };
-        }
-
         const appDirName = APP_WORKSPACE_DIR_NAME || "";
         if (appDirName) {
           const appDir = await getDirectoryByPathIfExists(selectedDir, [appDirName]);
@@ -1158,17 +1150,27 @@
             };
           }
 
-          const hobbyDir = await getDirectoryByPathIfExists(selectedDir, ["02_hobby"]);
+          const hobbyDir = await getDirectoryByPathIfExists(selectedDir, [PREFERRED_WORKSPACE_ROOT_NAME]);
           const nestedAppDir = hobbyDir ? await getDirectoryByPathIfExists(hobbyDir, [appDirName]) : null;
           if (await directoryHasProjects(nestedAppDir)) {
             return {
               handle: nestedAppDir,
               parentHandle: hobbyDir,
-              label: normalizeSubdirRef(`${selectedDir.name || ""}/02_hobby/${appDirName}`) || appDirName,
-              pathPrefix: normalizeSubdirRef(`02_hobby/${appDirName}`),
-              siblingSharedAssetsLabel: "02_hobby/shared-assets"
+              label: normalizeSubdirRef(`${selectedDir.name || ""}/${PREFERRED_WORKSPACE_ROOT_NAME}/${appDirName}`) || appDirName,
+              pathPrefix: normalizeSubdirRef(`${PREFERRED_WORKSPACE_ROOT_NAME}/${appDirName}`),
+              siblingSharedAssetsLabel: `${PREFERRED_WORKSPACE_ROOT_NAME}/shared-assets`
             };
           }
+        }
+
+        if (await directoryHasProjects(selectedDir)) {
+          return {
+            handle: selectedDir,
+            parentHandle: null,
+            label: selectedDir.name || "(workspace)",
+            pathPrefix: "",
+            siblingSharedAssetsLabel: ""
+          };
         }
 
         return {
@@ -1186,8 +1188,9 @@
         const pipelineDir = await ensureDir(projectDir, "pipeline");
         const outputsDir = await ensureDir(projectDir, "outputs");
         const audioDir = await ensureDir(outputsDir, "audio");
+        const slideDir = await ensureDir(outputsDir, "slide");
         const videoDir = await ensureDir(outputsDir, "video");
-        return {projectDir, pipelineDir, outputsDir, audioDir, videoDir};
+        return {projectDir, pipelineDir, outputsDir, audioDir, slideDir, videoDir};
       };
 
       const readMetaFromProject = async (projectDirHandle, folderName) => {
@@ -1246,11 +1249,12 @@
         el.loadProjectRenderBtn.disabled = !hasWorkspace || !projectId;
         el.saveProjectRenderBtn.disabled = !hasWorkspace || !projectId || !state.spec;
         const renderName = RENDER_FINAL_NAME;
-        const displayWorkspacePrefix = hasWorkspace ? workspacePathPrefix : APP_WORKSPACE_DIR_NAME;
+        const displayWorkspacePrefix = hasWorkspace ? workspacePathPrefix : normalizeSubdirRef(`${PREFERRED_WORKSPACE_ROOT_NAME}/${APP_WORKSPACE_DIR_NAME}`);
         const basePath = normalizeSubdirRef(`${displayWorkspacePrefix}/projects`);
+        const workspaceText = hasWorkspace && workspaceLabel ? `接続先: ${workspaceLabel} / ` : "";
         el.projectPathHint.textContent = projectId
-          ? `反映先: ${basePath}/${projectId}/outputs/video/${renderName}`
-          : `反映先: ${basePath}/{id}/outputs/video/${RENDER_FINAL_NAME}`;
+          ? `${workspaceText}反映先: ${basePath}/${projectId}/outputs/video/${renderName}`
+          : `${workspaceText}反映先: ${basePath}/{id}/outputs/video/${RENDER_FINAL_NAME}`;
       };
 
       const loadProjects = async () => {
@@ -1290,6 +1294,7 @@
           sharedAssetsRootLabel = "";
           resetSharedAssetFileCatalog();
           await loadProjects();
+          await refreshProjectSlideFileCatalog(selectedProjectId(), {render: false});
           await bindBackgroundManifestTargetFromWorkspace();
           await generateBackgroundManifestAndRefresh({useBoundTarget: true});
           const sharedAssetsResult = await autoBindSharedAssetsRootFromWorkspace();
@@ -2065,6 +2070,29 @@
         };
       };
 
+      const refreshProjectSlideFileCatalog = async (projectId = selectedProjectId(), options = {}) => {
+        const shouldRender = options.render !== false;
+        projectSlideFileCatalog = [];
+        const normalizedProjectId = String(projectId || "").trim();
+        if (!normalizedProjectId || !workspaceHandle) {
+          if (shouldRender) renderAll();
+          return projectSlideFileCatalog;
+        }
+        try {
+          const {slideDir} = await getProjectHandles(normalizedProjectId);
+          const files = await collectFilesRecursive(
+            slideDir,
+            `projects/${normalizedProjectId}/outputs/slide`,
+            /\.(png|jpe?g|webp|avif)$/i
+          );
+          projectSlideFileCatalog = normalizeStringList(files);
+        } catch (_err) {
+          projectSlideFileCatalog = [];
+        }
+        if (shouldRender) renderAll();
+        return projectSlideFileCatalog;
+      };
+
       const refreshSharedAssetFileCatalog = async () => {
         if (!sharedAssetsRootDirHandle) {
           resetSharedAssetFileCatalog();
@@ -2443,6 +2471,10 @@
         return String(scene?.scene_type || scene?.role || "").trim() === "hook";
       };
 
+      const isHookPictureScene = (scene, sceneIndex = -1) => {
+        return Number(sceneIndex) === 0 || isHookScene(scene);
+      };
+
       const normalizeSceneEffectList = (effects) => {
         const out = [];
         const seen = new Set();
@@ -2589,9 +2621,42 @@
       };
 
       const buildScenePartOptionsHtml = (fieldKey, selected) => {
+        if (fieldKey === "slide") {
+          return buildSelectOptionsHtml(selected, projectSlideFileCatalog, "(未指定)");
+        }
         const shared = Array.isArray(sharedAssetFileCatalog[fieldKey]) ? sharedAssetFileCatalog[fieldKey] : [];
         const defaults = SCENE_ASSET_DEFAULTS[fieldKey] || [];
         return buildSelectOptionsHtml(selected, shared.concat(defaults), "(未指定)");
+      };
+
+      const buildHookPartOptionsHtml = (fieldKey, selected) => {
+        const sharedBg = Array.isArray(sharedAssetFileCatalog.background) ? sharedAssetFileCatalog.background : [];
+        const sharedDialog = Array.isArray(sharedAssetFileCatalog.dialog_box) ? sharedAssetFileCatalog.dialog_box : [];
+        const sharedCharsL = Array.isArray(sharedAssetFileCatalog.character_left) ? sharedAssetFileCatalog.character_left : [];
+        const sharedCharsR = Array.isArray(sharedAssetFileCatalog.character_right) ? sharedAssetFileCatalog.character_right : [];
+        const allShared = normalizeStringList([].concat(sharedBg, sharedDialog, sharedCharsL, sharedCharsR));
+        if (fieldKey === "hook_background") {
+          return buildSelectOptionsHtml(
+            selected,
+            sharedBg.concat(SCENE_ASSET_DEFAULTS.background || [], SCENE_ASSET_DEFAULTS.hook_background || []),
+            "(未指定)"
+          );
+        }
+        if (fieldKey === "hook_character") {
+          return buildSelectOptionsHtml(
+            selected,
+            sharedCharsL.concat(sharedCharsR, SCENE_ASSET_DEFAULTS.character_left || [], SCENE_ASSET_DEFAULTS.character_right || [], SCENE_ASSET_DEFAULTS.hook_character || []),
+            "(未指定)"
+          );
+        }
+        if (fieldKey === "hook_bubble") {
+          return buildSelectOptionsHtml(
+            selected,
+            sharedDialog.concat(allShared, SCENE_ASSET_DEFAULTS.dialog_box || [], SCENE_ASSET_DEFAULTS.hook_bubble || []),
+            "(未指定)"
+          );
+        }
+        return buildScenePartOptionsHtml(fieldKey, selected);
       };
 
       const buildCharacterDiffOptionsHtml = (side, selected) => {
@@ -2897,8 +2962,75 @@
         return spec;
       };
 
+      const lipSyncStateName = (index) => `mouth_${index + 1}`;
+
+      const buildLipSyncFrames = (imagePaths) => {
+        const states = normalizeStringList(imagePaths || []).map((_path, index) => lipSyncStateName(index));
+        if (!states.length) return [];
+        return states.length === 1 ? ["idle", states[0]] : ["idle", ...states, states[0]];
+      };
+
+      const buildLipSyncAssetMap = (baseImage, imagePaths) => {
+        const assets = {};
+        const base = normalizeImageRef(baseImage || "");
+        if (base) assets.idle = base;
+        normalizeStringList(imagePaths || []).forEach((imagePath, index) => {
+          const normalized = normalizeImageRef(imagePath || "");
+          if (normalized) assets[lipSyncStateName(index)] = normalized;
+        });
+        return assets;
+      };
+
+      const buildSceneLipSyncConfig = (scene, visualAssets, hookPictureScene) => {
+        if (scene.lip_sync && typeof scene.lip_sync === "object") {
+          return deepClone(scene.lip_sync);
+        }
+
+        if (hookPictureScene) {
+          const hookDiffs = normalizeStringList(scene.hook_diff_images || []);
+          if (!hookDiffs.length) return null;
+          return {
+            enabled: true,
+            mode: "hook",
+            interval_ms: 210,
+            frames: buildLipSyncFrames(hookDiffs),
+            mute_non_speaking_side_to_idle: false,
+            speaker: scene.speaker || "",
+            speaker_side: "hook",
+            assets: {
+              hook: buildLipSyncAssetMap(visualAssets.hook_character || "", hookDiffs)
+            }
+          };
+        }
+
+        const speakerSide = scene.speaker_side === "left" || scene.speaker_side === "right"
+          ? scene.speaker_side
+          : "none";
+        if (speakerSide === "none") return null;
+
+        const leftDiffs = normalizeStringList(scene.left_diff_images || []);
+        const rightDiffs = normalizeStringList(scene.right_diff_images || []);
+        const speakingDiffs = speakerSide === "left" ? leftDiffs : rightDiffs;
+        if (!speakingDiffs.length) return null;
+
+        return {
+          enabled: true,
+          mode: "scene",
+          interval_ms: 210,
+          frames: buildLipSyncFrames(speakingDiffs),
+          mute_non_speaking_side_to_idle: true,
+          speaker: scene.speaker || "",
+          speaker_side: speakerSide,
+          assets: {
+            left: buildLipSyncAssetMap(visualAssets.character_left || "", leftDiffs),
+            right: buildLipSyncAssetMap(visualAssets.character_right || "", rightDiffs)
+          }
+        };
+      };
+
       const cleanScenesForOutput = (scenes) => {
-        return (scenes || []).map((scene) => {
+        return (scenes || []).map((scene, sceneIndex) => {
+          const hookPictureScene = isHookPictureScene(scene, sceneIndex);
           const speakerId = Number.isFinite(Number(scene.speakerId)) ? Number(scene.speakerId) : defaultSpeakerId(scene.speaker);
           const character = characters[scene.character_id] || characters.zundamon || Object.values(characters)[0] || null;
           const speakerName = scene.voicevox_speaker_name || character?.voice?.voicevox_speaker_name || "";
@@ -2917,11 +3049,12 @@
           const hookTexts = scene.hook_texts && typeof scene.hook_texts === "object" ? scene.hook_texts : {};
           const hookTextStyles = scene.hook_text_styles && typeof scene.hook_text_styles === "object" ? scene.hook_text_styles : deepClone(HOOK_TEXT_STYLE_DEFAULTS);
           const hookFinalText = [hookTexts.top, hookTexts.main, hookTexts.sub].map((v) => String(v || "").trim()).filter(Boolean).join("\n");
+          const lipSync = buildSceneLipSyncConfig(scene, visualAssets, hookPictureScene);
           const output = {
             id: scene.id || scene.scene_id,
             scene_id: scene.scene_id,
-            scene_type: scene.scene_type || "normal",
-            role: scene.role || scene.scene_type || "normal",
+            scene_type: hookPictureScene ? "hook" : (scene.scene_type || "normal"),
+            role: hookPictureScene ? "hook" : (scene.role || scene.scene_type || "normal"),
             event: scene.event || "normal",
             scene_enabled: scene.scene_enabled !== false,
             slide_id: scene.slide_id,
@@ -3003,7 +3136,8 @@
             })
           };
           if (!output.background_override) delete output.background_override;
-          if (isHookScene(output)) {
+          if (lipSync) output.lip_sync = lipSync;
+          if (hookPictureScene) {
             output.hook_visual = {
               texts: {
                 top: {
@@ -3356,7 +3490,8 @@
           const sceneNo = String(scene.scene_id || "").replace(/^scene_0*/, "") || String(i + 1).padStart(3, "0");
           const sceneKey = scene.key || scene.scene_id;
           const isCollapsed = state.collapsedSceneKeys.has(sceneKey);
-          const hookScene = isHookScene(scene);
+          const hookPictureScene = isHookPictureScene(scene, i);
+          const sceneTypeValue = hookPictureScene ? "hook" : (scene.scene_type || "normal");
           const speakerId = Number.isFinite(Number(scene.speakerId)) ? Number(scene.speakerId) : defaultSpeakerId(scene.speaker);
           const characterId = canonicalCharacterId(scene.character_id);
           const character = characters[characterId] || characters.zundamon || Object.values(characters)[0] || null;
@@ -3382,7 +3517,7 @@
                 </div>
                 <div class="field span-2">
                   <label>screen_text</label>
-                  <textarea name="screen_text" rows="2">${escapeHtml(sub.screen_text || "")}</textarea>
+                  <textarea name="screen_text" rows="2" placeholder="72ptで1行10-11文字/2行が適当">${escapeHtml(sub.screen_text || "")}</textarea>
                 </div>
                 <div class="field">
                   <label>display_mode</label>
@@ -3394,11 +3529,11 @@
                 </div>
                 <div class="field">
                   <label>start_sec</label>
-                  <input name="start_sec" type="number" min="0" step="0.1" value="${formatSec(sub.start_sec)}" />
+                  <input name="start_sec" type="number" min="0" step="0.001" value="${formatSec(sub.start_sec)}" />
                 </div>
                 <div class="field">
                   <label>duration_sec</label>
-                  <input name="duration_sec" type="number" min="0.1" step="0.1" value="${formatSec(duration)}" />
+                  <input name="duration_sec" type="number" min="0" step="0.001" value="${formatSec(duration)}" />
                 </div>
               </div>
             `;
@@ -3422,7 +3557,7 @@
                 </div>
                 <div class="field">
                   <label>scene_type</label>
-                  <input name="scene_type" data-scope="scene" type="text" value="${escapeHtml(scene.scene_type || "normal")}" />
+                  <input name="scene_type" data-scope="scene" type="text" value="${escapeHtml(sceneTypeValue)}" />
                 </div>
                 <div class="field">
                   <label>slide_id</label>
@@ -3527,7 +3662,7 @@
                     </div>
                   </div>
                 </details>
-                ${!hookScene ? `
+                ${!hookPictureScene ? `
                   <details class="collapse inner-card" open>
                     <summary class="inner-card-title">SCENEレイヤー構成</summary>
                     <div class="inner-card-body">
@@ -3558,23 +3693,31 @@
                     </div>
                   </details>
                 ` : ""}
-                ${hookScene ? `
+                ${hookPictureScene ? `
                   <details class="collapse inner-card" open>
                     <summary class="inner-card-title">HOOK Picture</summary>
                     <div class="inner-card-body">
                       <div class="grid">
-                        <div class="field span-2"><label>HOOK背景画像</label><select name="visual_hook_background" data-scope="scene">${buildScenePartOptionsHtml("hook_background", visualAssets.hook_background || "")}</select></div>
-                        <div class="field span-2"><label>HOOKキャラ画像</label><select name="visual_hook_character" data-scope="scene">${buildScenePartOptionsHtml("hook_character", visualAssets.hook_character || "")}</select></div>
-                        <div class="field span-2"><label>HOOK吹き出し画像</label><select name="visual_hook_bubble" data-scope="scene">${buildScenePartOptionsHtml("hook_bubble", visualAssets.hook_bubble || "")}</select></div>
-                        <div class="field span-2"><label>HOOKキャラ差分1</label><select name="hook_character_diff_1" data-scope="scene">${buildScenePartOptionsHtml("hook_character", hookDiff1)}</select></div>
-                        <div class="field span-2"><label>HOOKキャラ差分2</label><select name="hook_character_diff_2" data-scope="scene">${buildScenePartOptionsHtml("hook_character", hookDiff2)}</select></div>
+                        <div class="field span-6"><div class="readonly">scene1(Hook) Picture / hook part x3 + texts.top/main/sub</div></div>
+                        <div class="field span-2"><label>HOOK背景画像（hook part）</label><select name="visual_hook_background" data-scope="scene">${buildHookPartOptionsHtml("hook_background", visualAssets.hook_background || "")}</select></div>
+                        <div class="field span-2"><label>HOOKキャラ画像（hook part）</label><select name="visual_hook_character" data-scope="scene">${buildHookPartOptionsHtml("hook_character", visualAssets.hook_character || "")}</select></div>
+                        <div class="field span-2"><label>HOOK吹き出し画像（hook part）</label><select name="visual_hook_bubble" data-scope="scene">${buildHookPartOptionsHtml("hook_bubble", visualAssets.hook_bubble || "")}</select></div>
+                        <div class="field span-2"><label>HOOKキャラ差分1</label><select name="hook_character_diff_1" data-scope="scene">${buildHookPartOptionsHtml("hook_character", hookDiff1)}</select></div>
+                        <div class="field span-2"><label>HOOKキャラ差分2</label><select name="hook_character_diff_2" data-scope="scene">${buildHookPartOptionsHtml("hook_character", hookDiff2)}</select></div>
                         <div class="field check-field span-2"><label><input name="hook_finalize_to_dialog" data-scope="scene" type="checkbox"${scene.hook_finalize_to_dialog ? " checked" : ""} />hook文言をdialog/voiceへ反映</label></div>
                         <div class="field span-2"><label>texts.top</label><textarea name="hook_top_text" data-scope="scene" rows="2">${escapeHtml(hookTexts.top || "")}</textarea></div>
                         <div class="field span-2"><label>texts.main</label><textarea name="hook_main_text" data-scope="scene" rows="2">${escapeHtml(hookTexts.main || "")}</textarea></div>
                         <div class="field span-2"><label>texts.sub</label><textarea name="hook_sub_text" data-scope="scene" rows="2">${escapeHtml(hookTexts.sub || "")}</textarea></div>
+                        <div class="field span-2"><label>bubble.text</label><textarea name="hook_bubble_text" data-scope="scene" rows="2">${escapeHtml(hookTexts.bubble || "")}</textarea></div>
                         <div class="field span-2"><label>top fill</label><input name="hook_top_fill_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.top?.fill_color || HOOK_TEXT_STYLE_DEFAULTS.top.fill_color)}" /></div>
+                        <div class="field span-2"><label>top outline</label><input name="hook_top_outline_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.top?.outline_color || HOOK_TEXT_STYLE_DEFAULTS.top.outline_color)}" /></div>
+                        <div class="field span-2"><label>top outline scale</label><input name="hook_top_outline_scale" data-scope="scene" type="number" min="1" max="1.3" step="0.01" value="${escapeHtml(hookTextStyles.top?.outline_scale ?? HOOK_TEXT_STYLE_DEFAULTS.top.outline_scale)}" /></div>
                         <div class="field span-2"><label>main fill</label><input name="hook_main_fill_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.main?.fill_color || HOOK_TEXT_STYLE_DEFAULTS.main.fill_color)}" /></div>
+                        <div class="field span-2"><label>main outline</label><input name="hook_main_outline_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.main?.outline_color || HOOK_TEXT_STYLE_DEFAULTS.main.outline_color)}" /></div>
+                        <div class="field span-2"><label>main outline scale</label><input name="hook_main_outline_scale" data-scope="scene" type="number" min="1" max="1.3" step="0.01" value="${escapeHtml(hookTextStyles.main?.outline_scale ?? HOOK_TEXT_STYLE_DEFAULTS.main.outline_scale)}" /></div>
                         <div class="field span-2"><label>sub fill</label><input name="hook_sub_fill_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.sub?.fill_color || HOOK_TEXT_STYLE_DEFAULTS.sub.fill_color)}" /></div>
+                        <div class="field span-2"><label>sub outline</label><input name="hook_sub_outline_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.sub?.outline_color || HOOK_TEXT_STYLE_DEFAULTS.sub.outline_color)}" /></div>
+                        <div class="field span-2"><label>sub outline scale</label><input name="hook_sub_outline_scale" data-scope="scene" type="number" min="1" max="1.3" step="0.01" value="${escapeHtml(hookTextStyles.sub?.outline_scale ?? HOOK_TEXT_STYLE_DEFAULTS.sub.outline_scale)}" /></div>
                       </div>
                     </div>
                   </details>
@@ -3673,7 +3816,8 @@
 
       const saveVoiceSettings = () => {
         const payload = {};
-        state.scenes.forEach((scene) => {
+        state.scenes.forEach((scene, sceneIndex) => {
+          const hookPictureScene = isHookPictureScene(scene, sceneIndex);
           payload[scene.scene_id] = {
             emotion: normalizeEmotion(scene.emotion),
             voice_speed: normalizeSpeed(scene.voice_speed),
@@ -3682,7 +3826,7 @@
             voice: typeof scene.voice === "string" ? scene.voice : "",
             voice_override: typeof scene.voice_override === "string" ? scene.voice_override : "",
             scene_enabled: scene.scene_enabled !== false,
-            scene_type: scene.scene_type || "normal",
+            scene_type: hookPictureScene ? "hook" : (scene.scene_type || "normal"),
             character_id: canonicalCharacterId(scene.character_id),
             voicevox_style_id: Number(scene.voicevox_style_id) || undefined,
             speedScale: toNum(scene.speedScale, DEFAULT_SPEED_SCALE),
@@ -3923,11 +4067,17 @@
           try {
             renderHandle = await videoDir.getFileHandle(renderName);
           } catch (_err) {
-            loadedName = "render-v01.json";
-            renderHandle = await videoDir.getFileHandle(loadedName);
+            try {
+              loadedName = RENDER_FINAL_NAME;
+              renderHandle = await videoDir.getFileHandle(loadedName);
+            } catch (_finalErr) {
+              loadedName = "render-v01.json";
+              renderHandle = await videoDir.getFileHandle(loadedName);
+            }
           }
           const spec = await readJson(renderHandle);
           state.selectedProjectId = projectId;
+          await refreshProjectSlideFileCatalog(projectId, {render: false});
           loadSpec(spec, `projects/${projectId}/outputs/video/${loadedName}`, loadedName);
         } catch (error) {
           setStatus(error && error.message ? error.message : "render draft JSON の読み込みに失敗しました。", "error");
@@ -4158,21 +4308,30 @@
           if (fieldName === "hook_finalize_to_dialog") {
             return {...scene, hook_finalize_to_dialog: !!target.checked};
           }
-          if (fieldName === "hook_top_text" || fieldName === "hook_main_text" || fieldName === "hook_sub_text") {
+          if (fieldName === "hook_top_text" || fieldName === "hook_main_text" || fieldName === "hook_sub_text" || fieldName === "hook_bubble_text") {
             const hookTexts = {...(scene.hook_texts || {})};
             if (fieldName === "hook_top_text") hookTexts.top = String(target.value || "");
             if (fieldName === "hook_main_text") hookTexts.main = String(target.value || "");
             if (fieldName === "hook_sub_text") hookTexts.sub = String(target.value || "");
+            if (fieldName === "hook_bubble_text") hookTexts.bubble = String(target.value || "");
             return {...scene, hook_texts: hookTexts};
           }
-          if (/^hook_(top|main|sub)_fill_color$/.test(fieldName)) {
-            const match = fieldName.match(/^hook_(top|main|sub)_fill_color$/);
+          if (/^hook_(top|main|sub)_(fill_color|outline_color|outline_scale)$/.test(fieldName)) {
+            const match = fieldName.match(/^hook_(top|main|sub)_(fill_color|outline_color|outline_scale)$/);
             const layer = match ? match[1] : "top";
+            const styleKey = match ? match[2] : "fill_color";
             const hookTextStyles = deepClone(scene.hook_text_styles || HOOK_TEXT_STYLE_DEFAULTS);
+            const fallbackLayer = HOOK_TEXT_STYLE_DEFAULTS[layer] || HOOK_TEXT_STYLE_DEFAULTS.top;
             hookTextStyles[layer] = {
-              ...(hookTextStyles[layer] || HOOK_TEXT_STYLE_DEFAULTS[layer]),
-              fill_color: normalizeColorHex(target.value, HOOK_TEXT_STYLE_DEFAULTS[layer].fill_color)
+              ...(hookTextStyles[layer] || fallbackLayer)
             };
+            if (styleKey === "fill_color") {
+              hookTextStyles[layer].fill_color = normalizeColorHex(target.value, fallbackLayer.fill_color);
+            } else if (styleKey === "outline_color") {
+              hookTextStyles[layer].outline_color = normalizeColorHex(target.value, fallbackLayer.outline_color);
+            } else if (styleKey === "outline_scale") {
+              hookTextStyles[layer].outline_scale = normalizeHookOutlineScale(target.value, fallbackLayer.outline_scale);
+            }
             return {...scene, hook_text_styles: hookTextStyles};
           }
           if (fieldName.indexOf("visual_") === 0) {
@@ -4510,6 +4669,7 @@
       el.reloadProjectsBtn.addEventListener("click", async function () {
         try {
           await loadProjects();
+          await refreshProjectSlideFileCatalog(selectedProjectId(), {render: false});
           setStatus(`projects を再読み込みしました（${projectRows.length}件）。`, "ok");
         } catch (error) {
           setStatus(error && error.message ? error.message : "projects の再読み込みに失敗しました。", "error");
@@ -4517,8 +4677,9 @@
           updateProjectControls();
         }
       });
-      el.projectSelect.addEventListener("change", function () {
+      el.projectSelect.addEventListener("change", async function () {
         state.selectedProjectId = selectedProjectId();
+        await refreshProjectSlideFileCatalog(state.selectedProjectId);
         updateProjectControls();
       });
       el.loadProjectRenderBtn.addEventListener("click", loadProjectRender);

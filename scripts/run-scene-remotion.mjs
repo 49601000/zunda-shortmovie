@@ -97,6 +97,7 @@ function resolveSceneAudioSrc(sceneIndex, projectAudioDir) {
 
 function resolveSceneAssets(scene) {
   const visual = scene?.visual_assets && typeof scene.visual_assets === "object" ? scene.visual_assets : {};
+  const hookVisual = scene?.hook_visual && typeof scene.hook_visual === "object" ? scene.hook_visual : {};
   const composition = scene?.composition && typeof scene.composition === "object" ? scene.composition : {};
   const characters = composition.characters && typeof composition.characters === "object" ? composition.characters : {};
   return {
@@ -107,9 +108,92 @@ function resolveSceneAssets(scene) {
     dialog_box: scene?.scene_assets?.dialog_box || visual.dialog_box || composition.dialog_box?.image_path || "",
     character_left: scene?.scene_assets?.character_left || visual.character_left || characters.left?.image_path || "",
     character_right: scene?.scene_assets?.character_right || visual.character_right || characters.right?.image_path || "",
-    hook_background: scene?.scene_assets?.hook_background || visual.hook_background || "",
-    hook_character: scene?.scene_assets?.hook_character || visual.hook_character || "",
-    hook_bubble: scene?.scene_assets?.hook_bubble || visual.hook_bubble || ""
+    hook_background: scene?.scene_assets?.hook_background || visual.hook_background || hookVisual.background?.image_path || "",
+    hook_character: scene?.scene_assets?.hook_character || visual.hook_character || hookVisual.character?.image_path || "",
+    hook_bubble: scene?.scene_assets?.hook_bubble || visual.hook_bubble || hookVisual.bubble?.image_path || ""
+  };
+}
+
+function normalizeStringList(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item ?? "").trim()).filter(Boolean);
+  }
+  if (typeof value === "string") {
+    return value.split(/[\n,]+/).map((item) => item.trim()).filter(Boolean);
+  }
+  return [];
+}
+
+function lipSyncStateName(index) {
+  return `mouth_${index + 1}`;
+}
+
+function buildLipSyncFrames(imagePaths) {
+  const states = normalizeStringList(imagePaths).map((_path, index) => lipSyncStateName(index));
+  if (!states.length) return [];
+  return states.length === 1 ? ["idle", states[0]] : ["idle", ...states, states[0]];
+}
+
+function buildLipSyncAssetMap(baseImage, imagePaths) {
+  const assets = {};
+  const base = String(baseImage ?? "").trim();
+  if (base) assets.idle = base;
+  normalizeStringList(imagePaths).forEach((imagePath, index) => {
+    assets[lipSyncStateName(index)] = imagePath;
+  });
+  return assets;
+}
+
+function resolveSceneLipSync(scene, sceneAssets, role) {
+  if (scene?.lip_sync && typeof scene.lip_sync === "object") {
+    return scene.lip_sync;
+  }
+
+  const hookVisual = scene?.hook_visual && typeof scene.hook_visual === "object" ? scene.hook_visual : {};
+  const composition = scene?.composition && typeof scene.composition === "object" ? scene.composition : {};
+  const characters = composition.characters && typeof composition.characters === "object" ? composition.characters : {};
+  const normalizedRole = String(role || scene?.role || scene?.scene_type || "").trim().toLowerCase();
+
+  if (normalizedRole === "hook") {
+    const hookDiffs = normalizeStringList(hookVisual.character?.lip_sync_image_paths);
+    if (!hookDiffs.length) return undefined;
+    return {
+      enabled: true,
+      mode: "hook",
+      interval_ms: 210,
+      frames: buildLipSyncFrames(hookDiffs),
+      mute_non_speaking_side_to_idle: false,
+      speaker: scene?.speaker || "",
+      speaker_side: "hook",
+      assets: {
+        hook: buildLipSyncAssetMap(sceneAssets.hook_character, hookDiffs)
+      }
+    };
+  }
+
+  const leftDiffs = normalizeStringList(characters.left?.lip_sync_image_paths);
+  const rightDiffs = normalizeStringList(characters.right?.lip_sync_image_paths);
+  const speakerSide =
+    characters.left?.state === "speaking"
+      ? "left"
+      : characters.right?.state === "speaking"
+        ? "right"
+        : "none";
+  const speakingDiffs = speakerSide === "left" ? leftDiffs : speakerSide === "right" ? rightDiffs : [];
+  if (!speakingDiffs.length) return undefined;
+
+  return {
+    enabled: true,
+    mode: "scene",
+    interval_ms: 210,
+    frames: buildLipSyncFrames(speakingDiffs),
+    mute_non_speaking_side_to_idle: true,
+    speaker: scene?.speaker || "",
+    speaker_side: speakerSide,
+    assets: {
+      left: buildLipSyncAssetMap(sceneAssets.character_left, leftDiffs),
+      right: buildLipSyncAssetMap(sceneAssets.character_right, rightDiffs)
+    }
   };
 }
 
@@ -134,10 +218,12 @@ function flattenScenesToSegments(spec, projectAudioDir) {
   scenes.forEach((scene, sceneIndex) => {
     if (!isSceneEnabled(spec, scene, sceneIndex)) return;
     const sceneId = String(scene?.scene_id || scene?.id || `scene_${String(sceneIndex + 1).padStart(3, "0")}`);
+    const role = scene?.role || scene?.scene_type || "normal";
     const subScenes = Array.isArray(scene?.sub_scenes) && scene.sub_scenes.length
       ? scene.sub_scenes
       : [createFallbackSubScene(scene, sceneIndex)];
     const sceneAssets = resolveSceneAssets(scene);
+    const lipSync = resolveSceneLipSync(scene, sceneAssets, role);
     const audioSrc = resolveSceneAudioSrc(sceneIndex, projectAudioDir);
 
     subScenes.forEach((sub, subIndex) => {
@@ -149,7 +235,7 @@ function flattenScenesToSegments(spec, projectAudioDir) {
         sub_scene_id: id,
         scene_id: sceneId,
         slide_id: scene?.slide_id || "",
-        role: scene?.role || scene?.scene_type || "normal",
+        role,
         speaker: scene?.speaker || "",
         emotion: scene?.emotion || "",
         screen_text: String(sub?.screen_text || scene?.dialog?.screen_text || scene?.screen_text || ""),
@@ -171,7 +257,7 @@ function flattenScenesToSegments(spec, projectAudioDir) {
         background_override: scene?.background_override || sceneAssets.background || spec?.background || "",
         scene_assets: sceneAssets,
         effects: Array.isArray(scene?.effects) ? scene.effects : [],
-        lip_sync: scene?.lip_sync,
+        lip_sync: lipSync,
         hook_texts: scene?.hook_texts,
         hook_visual: scene?.hook_visual,
         start,

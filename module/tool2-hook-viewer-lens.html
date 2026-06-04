@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hook Viewer Lens</title>
+  <style>
+    :root {
+      --bg-a: #081119;
+      --bg-b: #102236;
+      --bg-c: #1a3a44;
+      --panel: rgba(8, 20, 30, 0.84);
+      --panel-2: rgba(12, 31, 42, 0.82);
+      --surface: rgba(8, 20, 30, 0.9);
+      --line: rgba(99, 217, 188, 0.36);
+      --line-soft: rgba(168, 196, 194, 0.25);
+      --ink: #f2f8f7;
+      --sub: #a8c4c2;
+      --accent: #63d9bc;
+      --ok: #93f5c7;
+      --warn: #ffca76;
+      --danger: #ff8f8f;
+      --shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+      background:
+        radial-gradient(140% 120% at 0% 0%, rgba(99, 217, 188, 0.2) 0%, rgba(99, 217, 188, 0) 44%),
+        radial-gradient(120% 120% at 100% 0%, rgba(255, 202, 118, 0.1) 0%, rgba(255, 202, 118, 0) 46%),
+        linear-gradient(135deg, var(--bg-a) 0%, var(--bg-b) 45%, var(--bg-c) 100%);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(99, 217, 188, 0.28);
+      background: linear-gradient(90deg, #0d3f39 0%, #0c3140 35%, #102236 70%, #081119 100%);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar {
+      min-height: 66px;
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .topbarLeft {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .brandMark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(160deg, #1f7f6c, #124c58);
+      border: 1px solid rgba(147, 245, 199, 0.36);
+      box-shadow: 0 8px 20px rgba(8, 20, 30, 0.45);
+      color: #f2fff9;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .brandText {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .topbarDivider {
+      width: 1px;
+      height: 28px;
+      background: rgba(168, 196, 194, 0.42);
+      flex: none;
+    }
+
+    .topbarTitle {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .topbarVersion {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--ok);
+      letter-spacing: 0.04em;
+      opacity: 0.9;
+      white-space: nowrap;
+    }
+
+    .wrap {
+      width: min(1320px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+      padding: 20px 16px 28px;
+    }
+
+    .card {
+      min-width: 0;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      box-shadow: var(--shadow);
+    }
+
+    h1,
+    h2 {
+      margin: 0;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    h1 { font-size: clamp(1.35rem, 2.8vw, 2rem); }
+    h2 { font-size: 1.05rem; }
+
+    p {
+      margin: 0;
+      color: var(--sub);
+      line-height: 1.55;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #d8ece8;
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid rgba(168, 196, 194, 0.35);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--ink);
+      outline: none;
+      box-shadow: none;
+    }
+
+    textarea:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 217, 188, 0.18);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 380px;
+      padding: 12px;
+      line-height: 1.55;
+      font-size: 0.92rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Yu Gothic UI", monospace;
+      white-space: pre-wrap;
+    }
+
+    select {
+      min-height: 40px;
+      padding: 9px 11px;
+      font-size: 0.92rem;
+      font-family: inherit;
+    }
+
+    button {
+      min-height: 38px;
+      border: 0;
+      border-radius: 11px;
+      padding: 9px 13px;
+      color: #06241e;
+      background: linear-gradient(135deg, var(--accent), #98f2dd);
+      font-weight: 800;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+
+    button.ghost {
+      color: #d8ece8;
+      border: 1px solid rgba(168, 196, 194, 0.34);
+      background: rgba(8, 20, 30, 0.75);
+    }
+
+    button.danger {
+      color: #3d1414;
+      background: linear-gradient(135deg, var(--danger), #ffc4c4);
+    }
+
+    .hero {
+      display: grid;
+      gap: 10px;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .panel {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .panelHead {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(240px, 420px) 1fr;
+      gap: 14px;
+      align-items: end;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .status {
+      min-height: 22px;
+      color: var(--sub);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .status.ok { color: var(--ok); }
+    .status.warn { color: var(--warn); }
+    .status.error { color: var(--danger); }
+
+    .hint {
+      margin-top: 8px;
+      padding: 9px 10px;
+      border: 1px solid var(--line-soft);
+      border-radius: 10px;
+      color: var(--sub);
+      background: rgba(8, 20, 30, 0.48);
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+
+    #outputPrompt {
+      background: rgba(8, 20, 30, 0.66);
+      border-style: dashed;
+    }
+
+    @media (max-width: 900px) {
+      .workspace,
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        justify-content: flex-start;
+      }
+
+      textarea {
+        min-height: 300px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .topbarLeft {
+        width: 100%;
+      }
+
+      .brandText,
+      .topbarDivider {
+        display: none;
+      }
+
+      .topbarTitle {
+        white-space: normal;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="topbarLeft">
+        <div class="brandMark">HV</div>
+        <div class="brandText">Zundamon Tools</div>
+        <div class="topbarDivider"></div>
+        <div class="topbarTitle">Hook Viewer Lens</div>
+      </div>
+      <div class="topbarVersion">PROMPT ONLY</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card hero">
+      <h1>Hook Viewer Lens</h1>
+      <p>完成済みの会話劇を貼り付けて、ChatGPTに「視聴者目線で刺さる点」を読ませるためのプロンプトを生成します。AI API、JSON読み込み、localStorage、FINAL CUT panel連携は使いません。</p>
+    </section>
+
+    <section class="card">
+      <div class="controls">
+        <div>
+          <label for="analysisMode">analysis_mode</label>
+          <select id="analysisMode">
+            <option value="viewer_lens">viewer_lens: 視聴者目線で刺さる点を探す</option>
+            <option value="emotion">emotion: 感情トリガーを探す</option>
+            <option value="comment">comment: コメント欄で反応されそうな論点を探す</option>
+            <option value="self_projection">self_projection: 「これ自分やん」と思う点を探す</option>
+            <option value="pain_truth">pain_truth: 痛い真実を探す</option>
+            <option value="hook_candidates">hook_candidates: HOOK候補を作る</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="actions">
+            <button type="button" id="generateBtn">Generate Prompt</button>
+            <button type="button" id="copyBtn" class="ghost">Copy Prompt</button>
+            <button type="button" id="clearBtn" class="danger">Clear</button>
+          </div>
+          <div id="status" class="status" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="hint">生成結果はそのままChatGPT等へ貼り付ける想定です。HOOKを直接量産するより、会話劇を視聴者の目で読み直すための分析依頼に寄せています。</div>
+    </section>
+
+    <section class="workspace">
+      <div class="card panel">
+        <div class="panelHead">
+          <div>
+            <h2>raw_conversation</h2>
+            <p>ずんだもん・めたん・天の声の完成済み会話劇を貼り付けます。</p>
+          </div>
+        </div>
+        <textarea id="rawConversation" spellcheck="false" placeholder="例:
+ずんだもん「また先延ばししてしまったのだ」
+めたん「それ、意志が弱いだけじゃなくて...」
+天の声「人は不安が強いほど、短期的に楽な選択へ逃げやすい」"></textarea>
+      </div>
+
+      <div class="card panel">
+        <div class="panelHead">
+          <div>
+            <h2>output_prompt</h2>
+            <p>ChatGPTに貼るためのプロンプトです。</p>
+          </div>
+        </div>
+        <textarea id="outputPrompt" readonly spellcheck="false" placeholder="Generate Prompt を押すとここに表示されます。"></textarea>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const modeGuides = {
+      viewer_lens: [
+        "視聴者が「続き見たい」と思う箇所",
+        "最初の2秒に持ってくるべき違和感",
+        "一番キャッチーなセリフ",
+        "説明ではなく、視聴体験として引っかかる点"
+      ],
+      emotion: [
+        "怒り、後悔、焦り、自己正当化、恥ずかしさなどの感情",
+        "視聴者の防衛反応や共感が起きそうな箇所",
+        "感情が動く前後のセリフ",
+        "強く言いすぎると不正確になる表現の注意点"
+      ],
+      comment: [
+        "コメント欄で割れそうな意見",
+        "ツッコミたくなる点",
+        "自分語りが発生しそうな点",
+        "反論・共感・補足コメントを呼びそうな言い回し"
+      ],
+      self_projection: [
+        "視聴者が「これ自分だ」と思う点",
+        "あるある化できる点",
+        "自分の過去や日常に重ねやすいセリフ",
+        "個人攻撃ではなく自己投影として刺さる表現"
+      ],
+      pain_truth: [
+        "刺さるけど言われたくない真実",
+        "笑えるけど痛い一言",
+        "視聴者が一瞬黙りそうな指摘",
+        "心理学的に断定しすぎず、体験として響く表現"
+      ],
+      hook_candidates: [
+        "冒頭0〜2秒で使えるHOOK案",
+        "短く、強く、説明しすぎない",
+        "できれば15〜25文字程度",
+        "会話劇の中で一番強い違和感や痛点を先に出す"
+      ]
+    };
+
+    const modeNames = {
+      viewer_lens: "視聴者目線で刺さる点を探す",
+      emotion: "感情トリガーを探す",
+      comment: "コメント欄で反応されそうな論点を探す",
+      self_projection: "「これ自分やん」と思う点を探す",
+      pain_truth: "痛い真実を探す",
+      hook_candidates: "HOOK候補を作る"
+    };
+
+    const el = {
+      rawConversation: document.getElementById("rawConversation"),
+      analysisMode: document.getElementById("analysisMode"),
+      outputPrompt: document.getElementById("outputPrompt"),
+      generateBtn: document.getElementById("generateBtn"),
+      copyBtn: document.getElementById("copyBtn"),
+      clearBtn: document.getElementById("clearBtn"),
+      status: document.getElementById("status")
+    };
+
+    function setStatus(message, type = "") {
+      el.status.textContent = message;
+      el.status.className = type ? `status ${type}` : "status";
+    }
+
+    function buildPrompt(rawConversation, mode) {
+      const guideLines = (modeGuides[mode] || modeGuides.viewer_lens)
+        .map((item) => `- ${item}`)
+        .join("\n");
+      const modeName = modeNames[mode] || modeNames.viewer_lens;
+
+      return `あなたは心理学ショート動画の編集者です。
+以下のずんだもん会話劇を、視聴者目線で分析してください。
+
+説明の正しさよりも、どこで視聴者の感情が動くかを重視してください。
+ただし心理学的に不正確な断定は避けてください。
+最終的に、FINAL CUT panelへ手打ちするHOOK案の参考にします。
+
+出力は日本語。
+余計な前置きは不要。
+JSONではなく、自然文と箇条書きで出力してください。
+
+今回の analysis_mode:
+${mode} - ${modeName}
+
+特に見る分析観点:
+${guideLines}
+
+共通出力フォーマット:
+1. この会話の一番おいしい点
+2. 視聴者が反応しそうな瞬間
+3. コメントされそうな論点
+4. HOOKに使えそうな短い言葉
+5. FINAL CUTに手打ちするならおすすめのHOOK 3案
+
+会話劇:
+${rawConversation}`;
+    }
+
+    function generatePrompt() {
+      const rawConversation = el.rawConversation.value.trim();
+      if (!rawConversation) {
+        setStatus("raw_conversation が空です。会話劇を貼り付けてください。", "error");
+        alert("raw_conversation が空です。会話劇を貼り付けてください。");
+        el.rawConversation.focus();
+        return;
+      }
+
+      el.outputPrompt.value = buildPrompt(rawConversation, el.analysisMode.value);
+      setStatus("プロンプトを生成しました。", "ok");
+    }
+
+    async function copyPrompt() {
+      const prompt = el.outputPrompt.value.trim();
+      if (!prompt) {
+        setStatus("コピーするプロンプトがありません。先に Generate Prompt を押してください。", "error");
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(el.outputPrompt.value);
+        setStatus("プロンプトをコピーしました。", "ok");
+      } catch {
+        el.outputPrompt.focus();
+        el.outputPrompt.select();
+        document.execCommand("copy");
+        setStatus("プロンプトをコピーしました。", "ok");
+      }
+    }
+
+    function clearAll() {
+      el.rawConversation.value = "";
+      el.outputPrompt.value = "";
+      setStatus("入力と出力をクリアしました。", "warn");
+      el.rawConversation.focus();
+    }
+
+    el.generateBtn.addEventListener("click", generatePrompt);
+    el.copyBtn.addEventListener("click", copyPrompt);
+    el.clearBtn.addEventListener("click", clearAll);
+  </script>
+</body>
+</html>

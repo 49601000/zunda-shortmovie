@@ -477,9 +477,11 @@
           <p>scene durationをsubscene文字数比率で割り、scene間のstartを0.1秒単位で切り上げます。</p>
         </div>
         <div class="actions">
+          <button class="ghost" type="button" data-action="import-render-final">render-final読込</button>
           <button type="button" data-action="add-scene">scene追加</button>
           <button class="ghost" type="button" data-action="save">保存</button>
           <button class="ghost" type="button" data-action="reset">初期化</button>
+          <input id="jsonFileInput" type="file" accept=".json,application/json" hidden />
         </div>
       </div>
       <div class="summary-grid" id="summaryGrid"></div>
@@ -517,7 +519,8 @@
       summaryGrid: document.getElementById("summaryGrid"),
       timeline: document.getElementById("timeline"),
       jsonOutput: document.getElementById("jsonOutput"),
-      status: document.getElementById("status")
+      status: document.getElementById("status"),
+      jsonFileInput: document.getElementById("jsonFileInput")
     };
 
     let idSeq = 1;
@@ -566,6 +569,13 @@
 
     function countChars(text) {
       return String(text || "").replace(/\s+/g, "").length;
+    }
+
+    function readTextValue(...values) {
+      for (const value of values) {
+        if (typeof value === "string" && value.trim()) return value;
+      }
+      return "";
     }
 
     function ceilToTenthSecond(value) {
@@ -833,6 +843,77 @@
       return scene?.subscenes.find((subscene) => subscene.id === subsceneId);
     }
 
+    function subsceneStartOf(subscene) {
+      return parseSecond(subscene.start_sec ?? subscene.start ?? 0);
+    }
+
+    function subsceneDurationOf(subscene) {
+      return parseSecond(subscene.duration_sec ?? subscene.duration ?? 0);
+    }
+
+    function toTimingScene(scene, sceneIndex) {
+      const rawSubscenes = Array.isArray(scene.sub_scenes)
+        ? scene.sub_scenes
+        : Array.isArray(scene.subscenes)
+          ? scene.subscenes
+          : [];
+      const sourceSubscenes = rawSubscenes.length
+        ? rawSubscenes
+        : [{
+            sub_scene_id: `${scene.scene_id || scene.id || `scene_${pad2(sceneIndex + 1)}`}_01`,
+            screen_text: readTextValue(scene.voice_override, scene.voice_text, scene.dialog?.voice, scene.voice, scene.text),
+            char_count: countChars(readTextValue(scene.voice_override, scene.voice_text, scene.dialog?.voice, scene.voice, scene.text)),
+            start_sec: scene.start_sec ?? scene.start ?? 0,
+            duration_sec: scene.duration_sec ?? scene.duration ?? 1
+          }];
+
+      const subsceneRanges = sourceSubscenes.map((subscene) => {
+        const start = subsceneStartOf(subscene);
+        const duration = subsceneDurationOf(subscene);
+        return { start, end: start + duration, duration };
+      });
+      const minStart = subsceneRanges.length ? Math.min(...subsceneRanges.map((range) => range.start)) : 0;
+      const maxEnd = subsceneRanges.length ? Math.max(...subsceneRanges.map((range) => range.end)) : minStart;
+      const summedDuration = subsceneRanges.reduce((sum, range) => sum + range.duration, 0);
+      const explicitDuration = parseSecond(scene.duration_sec ?? scene.duration ?? 0);
+      const duration = explicitDuration || Math.max(0, maxEnd - minStart) || summedDuration || 1;
+
+      return {
+        id: scene.scene_id || scene.id || nextId("scene"),
+        start: parseSecond(scene.start_sec ?? scene.start ?? minStart),
+        duration,
+        collapsed: Boolean(scene.collapsed),
+        subscenes: sourceSubscenes.map((subscene, subsceneIndex) => {
+          const text = readTextValue(
+            subscene.screen_text,
+            subscene.text,
+            subscene.dialog?.screen_text,
+            subscene.dialog?.voice,
+            subscene.voice,
+            subscene.voice_text
+          );
+          return {
+            id: subscene.internal_id || subscene.sub_scene_id || subscene.subscene_id || subscene.id || nextId("subscene"),
+            text,
+            char_count: parseCount(subscene.char_count) || countChars(text)
+          };
+        })
+      };
+    }
+
+    function toTimingState(parsed) {
+      const scenes = Array.isArray(parsed?.scenes) ? parsed.scenes : [];
+      if (!scenes.length) {
+        throw new Error("scenes[] が見つかりません。render-final-v01.json か Timing Output JSON を指定してください。");
+      }
+
+      return {
+        scenes: scenes
+          .filter((scene) => scene?.scene_enabled !== false)
+          .map((scene, sceneIndex) => toTimingScene(scene, sceneIndex))
+      };
+    }
+
     function addScene() {
       const previous = state.scenes[state.scenes.length - 1];
       const start = previous ? ceilToTenthSecond(previous.end || previous.start + previous.duration) : 0;
@@ -883,25 +964,26 @@
     function applyJson() {
       try {
         const parsed = JSON.parse(el.jsonOutput.value);
-        const scenes = Array.isArray(parsed.scenes) ? parsed.scenes : [];
-        state = {
-          scenes: scenes.map((scene) => ({
-            id: scene.scene_id || scene.id || nextId("scene"),
-            start: parseSecond(scene.start),
-            duration: parseSecond(scene.duration),
-            collapsed: Boolean(scene.collapsed),
-            subscenes: (Array.isArray(scene.subscenes) ? scene.subscenes : []).map((subscene) => ({
-              id: subscene.internal_id || subscene.id || subscene.subscene_id || nextId("subscene"),
-              text: subscene.text || "",
-              char_count: parseCount(subscene.char_count)
-            }))
-          }))
-        };
+        state = toTimingState(parsed);
         render();
         saveState();
         setStatus("JSONを反映しました。");
       } catch (error) {
         setStatus(`JSONエラー: ${error.message}`);
+      }
+    }
+
+    async function importJsonFile(file) {
+      if (!file) return;
+      try {
+        const parsed = JSON.parse(await file.text());
+        state = toTimingState(parsed);
+        syncIdSeq();
+        render();
+        saveState();
+        setStatus(`${file.name} を読み込みました。`);
+      } catch (error) {
+        setStatus(`読込エラー: ${error.message}`);
       }
     }
 
@@ -982,8 +1064,15 @@
       }
       if (action === "copy-json") copyJson();
       if (action === "apply-json") applyJson();
+      if (action === "import-render-final") el.jsonFileInput.click();
       if (action === "save") saveState();
       if (action === "reset") resetState();
+    });
+
+    el.jsonFileInput.addEventListener("change", (event) => {
+      const file = event.target.files?.[0];
+      event.target.value = "";
+      importJsonFile(file);
     });
 
     document.addEventListener("input", (event) => {

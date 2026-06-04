@@ -1,0 +1,264 @@
+{
+  "project_id": "0000",
+  "source": "04-scene_spec-v04.json",
+  "scenes": [
+    {
+      "scene_id": "scene_001",
+      "slide_id": "slide_01",
+      "speaker": "議題",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "認知的不協和",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_001_01",
+          "screen_text": "認知的不協和",
+          "display_mode": "replace",
+          "char_count": 6,
+          "start_sec": 0,
+          "duration_sec": 1.6
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_002",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "今日は3万円負けたのだ。でも乱数調整だから実質ノーカンなのだ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_002_01",
+          "screen_text": "今日は3万円負けたのだ。",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_sec": 1.6,
+          "duration_sec": 1.94
+        },
+        {
+          "sub_scene_id": "scene_002_02",
+          "screen_text": "でも乱数調整だから実質ノーカンなのだ",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 3.54,
+          "duration_sec": 2.9
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_003",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "それは認知的不協和ね。現実とプライドが殴り合ってるのよ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_003_01",
+          "screen_text": "それは認知的不協和ね。",
+          "display_mode": "replace",
+          "char_count": 11,
+          "start_sec": 6.44,
+          "duration_sec": 1.77
+        },
+        {
+          "sub_scene_id": "scene_003_02",
+          "screen_text": "現実とプライドが殴り合ってるのよ",
+          "display_mode": "replace",
+          "char_count": 16,
+          "start_sec": 8.21,
+          "duration_sec": 2.58
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_004",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "違うのだ。途中までは勝ってたのだ。流れは完全に来てたのだ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_004_01",
+          "screen_text": "違うのだ。途中までは勝ってたのだ。",
+          "display_mode": "replace",
+          "char_count": 17,
+          "start_sec": 10.79,
+          "duration_sec": 2.74
+        },
+        {
+          "sub_scene_id": "scene_004_02",
+          "screen_text": "流れは完全に来てたのだ",
+          "display_mode": "replace",
+          "char_count": 11,
+          "start_sec": 13.53,
+          "duration_sec": 1.78
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_005",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "結果だけ来てないじゃない",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_005_01",
+          "screen_text": "結果だけ来てないじゃない",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_sec": 15.31,
+          "duration_sec": 1.94
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_006",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "最後に偏ったのだ。あれはボクのせいじゃないのだ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_006_01",
+          "screen_text": "最後に偏ったのだ。",
+          "display_mode": "replace",
+          "char_count": 9,
+          "start_sec": 17.25,
+          "duration_sec": 1.45
+        },
+        {
+          "sub_scene_id": "scene_006_02",
+          "screen_text": "あれはボクのせいじゃないのだ",
+          "display_mode": "replace",
+          "char_count": 14,
+          "start_sec": 18.7,
+          "duration_sec": 2.26
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_007",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "負けた時だけ運の話になるのね",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_007_01",
+          "screen_text": "負けた時だけ運の話になるのね",
+          "display_mode": "replace",
+          "char_count": 14,
+          "start_sec": 20.96,
+          "duration_sec": 2.26
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_008",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "だって負けを認めたら、ボクが下手だったことになるのだ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_008_01",
+          "screen_text": "だって負けを認めたら、",
+          "display_mode": "replace",
+          "char_count": 11,
+          "start_sec": 23.22,
+          "duration_sec": 1.77
+        },
+        {
+          "sub_scene_id": "scene_008_02",
+          "screen_text": "ボクが下手だったことになるのだ",
+          "display_mode": "replace",
+          "char_count": 15,
+          "start_sec": 24.99,
+          "duration_sec": 2.42
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_009",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "だから脳が都合のいい説明を作るのよ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_009_01",
+          "screen_text": "だから脳が都合のいい説明を作るのよ",
+          "display_mode": "replace",
+          "char_count": 17,
+          "start_sec": 27.41,
+          "duration_sec": 2.74
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_010",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "emotion": "understanding",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "なるほどなのだ。じゃあ明日もう3万円で検証するのだ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_010_01",
+          "screen_text": "なるほどなのだ。",
+          "display_mode": "replace",
+          "char_count": 8,
+          "start_sec": 30.15,
+          "duration_sec": 1.29
+        },
+        {
+          "sub_scene_id": "scene_010_02",
+          "screen_text": "じゃあ明日もう3万円で検証するのだ",
+          "display_mode": "replace",
+          "char_count": 17,
+          "start_sec": 31.44,
+          "duration_sec": 2.74
+        }
+      ]
+    }
+  ]
+}

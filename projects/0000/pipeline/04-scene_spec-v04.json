@@ -1,0 +1,86 @@
+{
+  "project_id": "0000",
+  "source": "raw_conversation-v04.txt",
+  "scenes": [
+    {
+      "scene_id": "scene_001",
+      "slide_id": "slide_01",
+      "speaker": "議題",
+      "text": "認知的不協和",
+      "emotion": "neutral",
+      "duration_sec": 1.6
+    },
+    {
+      "scene_id": "scene_002",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "text": "今日は3万円負けたのだ。でも乱数調整だから実質ノーカンなのだ",
+      "emotion": "neutral",
+      "duration_sec": 4.84
+    },
+    {
+      "scene_id": "scene_003",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "text": "それは認知的不協和ね。現実とプライドが殴り合ってるのよ",
+      "emotion": "neutral",
+      "duration_sec": 4.35
+    },
+    {
+      "scene_id": "scene_004",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "text": "違うのだ。途中までは勝ってたのだ。流れは完全に来てたのだ",
+      "emotion": "neutral",
+      "duration_sec": 4.52
+    },
+    {
+      "scene_id": "scene_005",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "text": "結果だけ来てないじゃない",
+      "emotion": "neutral",
+      "duration_sec": 1.94
+    },
+    {
+      "scene_id": "scene_006",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "text": "最後に偏ったのだ。あれはボクのせいじゃないのだ",
+      "emotion": "neutral",
+      "duration_sec": 3.71
+    },
+    {
+      "scene_id": "scene_007",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "text": "負けた時だけ運の話になるのね",
+      "emotion": "neutral",
+      "duration_sec": 2.26
+    },
+    {
+      "scene_id": "scene_008",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "text": "だって負けを認めたら、ボクが下手だったことになるのだ",
+      "emotion": "neutral",
+      "duration_sec": 4.19
+    },
+    {
+      "scene_id": "scene_009",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "text": "だから脳が都合のいい説明を作るのよ",
+      "emotion": "neutral",
+      "duration_sec": 2.74
+    },
+    {
+      "scene_id": "scene_010",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "text": "なるほどなのだ。じゃあ明日もう3万円で検証するのだ",
+      "emotion": "understanding",
+      "duration_sec": 4.03
+    }
+  ]
+}
