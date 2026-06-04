@@ -82,6 +82,15 @@ function toNumber(value, fallback) {
   return Number.isFinite(n) ? n : fallback;
 }
 
+function resolveFps(spec) {
+  const fps = toNumber(spec?.fps ?? spec?.video_spec?.format?.fps, 30);
+  return fps > 0 ? fps : 30;
+}
+
+function frameToSec(frame, fps) {
+  return Number((Math.max(0, Math.round(toNumber(frame, 0))) / Math.max(1, fps)).toFixed(3));
+}
+
 function isSceneEnabled(spec, scene, index) {
   if (scene?.scene_enabled === false) return false;
   const sceneId = String(scene?.scene_id || scene?.id || `scene_${String(index + 1).padStart(3, "0")}`);
@@ -197,10 +206,14 @@ function resolveSceneLipSync(scene, sceneAssets, role) {
   };
 }
 
-function createFallbackSubScene(scene, sceneIndex) {
-  const start = toNumber(scene?.start_sec ?? scene?.start, sceneIndex * 2);
+function createFallbackSubScene(scene, sceneIndex, fps) {
+  const start = Number.isFinite(Number(scene?.start_frame))
+    ? frameToSec(scene.start_frame, fps)
+    : toNumber(scene?.start_sec ?? scene?.start, sceneIndex * 2);
   const end = toNumber(scene?.end, NaN);
-  const duration = Number.isFinite(end) && end > start
+  const duration = Number.isFinite(Number(scene?.duration_frames))
+    ? frameToSec(scene.duration_frames, fps)
+    : Number.isFinite(end) && end > start
     ? end - start
     : toNumber(scene?.duration_sec, 2);
   return {
@@ -214,6 +227,7 @@ function createFallbackSubScene(scene, sceneIndex) {
 function flattenScenesToSegments(spec, projectAudioDir) {
   const scenes = Array.isArray(spec?.scenes) ? spec.scenes : [];
   const segments = [];
+  const fps = resolveFps(spec);
 
   scenes.forEach((scene, sceneIndex) => {
     if (!isSceneEnabled(spec, scene, sceneIndex)) return;
@@ -221,14 +235,20 @@ function flattenScenesToSegments(spec, projectAudioDir) {
     const role = scene?.role || scene?.scene_type || "normal";
     const subScenes = Array.isArray(scene?.sub_scenes) && scene.sub_scenes.length
       ? scene.sub_scenes
-      : [createFallbackSubScene(scene, sceneIndex)];
+      : [createFallbackSubScene(scene, sceneIndex, fps)];
     const sceneAssets = resolveSceneAssets(scene);
     const lipSync = resolveSceneLipSync(scene, sceneAssets, role);
     const audioSrc = resolveSceneAudioSrc(sceneIndex, projectAudioDir);
 
     subScenes.forEach((sub, subIndex) => {
-      const start = Math.max(0, toNumber(sub?.start_sec ?? sub?.start, sceneIndex * 2));
-      const duration = Math.max(0.001, toNumber(sub?.duration_sec, 1));
+      const startFrame = Number.isFinite(Number(sub?.start_frame)) ? Math.max(0, Math.round(Number(sub.start_frame))) : null;
+      const durationFrame = Number.isFinite(Number(sub?.duration_frames)) ? Math.max(0, Math.round(Number(sub.duration_frames))) : null;
+      const start = startFrame !== null
+        ? frameToSec(startFrame, fps)
+        : Math.max(0, toNumber(sub?.start_sec ?? sub?.start, sceneIndex * 2));
+      const duration = durationFrame !== null
+        ? frameToSec(durationFrame, fps)
+        : Math.max(0.001, toNumber(sub?.duration_sec, 1));
       const id = String(sub?.sub_scene_id || `${sceneId}_${String(subIndex + 1).padStart(2, "0")}`);
       const segment = {
         id,
@@ -260,6 +280,10 @@ function flattenScenesToSegments(spec, projectAudioDir) {
         lip_sync: lipSync,
         hook_texts: scene?.hook_texts,
         hook_visual: scene?.hook_visual,
+        start_frame: startFrame !== null ? startFrame : Math.max(0, Math.round(start * fps)),
+        duration_frames: durationFrame !== null ? durationFrame : Math.max(1, Math.round(duration * fps)),
+        end_frame: (startFrame !== null ? startFrame : Math.max(0, Math.round(start * fps))) +
+          (durationFrame !== null ? durationFrame : Math.max(1, Math.round(duration * fps))),
         start,
         end: Number((start + duration).toFixed(3)),
         duration_sec: Number(duration.toFixed(3))

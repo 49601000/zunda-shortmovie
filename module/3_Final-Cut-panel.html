@@ -677,9 +677,11 @@
       <div class="seg-head">
         <div class="seg-index">簡易タイムライン</div>
         <div class="duration-editor">
-          <label for="timelineDurationInput" class="sub">尺(sec)</label>
-          <input id="timelineDurationInput" type="number" min="0" step="0.001" value="0" />
-          <div class="badge" id="durationLabel">duration: 0s</div>
+          <label for="fpsInput" class="sub">fps</label>
+          <input id="fpsInput" type="number" min="1" step="1" value="30" />
+          <label for="timelineDurationInput" class="sub">尺(frames)</label>
+          <input id="timelineDurationInput" type="number" min="0" step="1" value="0" />
+          <div class="badge" id="durationLabel">duration: 0f / 0s</div>
         </div>
       </div>
       <div class="timeline">
@@ -931,6 +933,7 @@
         bgmVolumeValue: document.getElementById("bgmVolumeValue"),
         segments: document.getElementById("segments"),
         segmentCount: document.getElementById("segmentCount"),
+        fpsInput: document.getElementById("fpsInput"),
         timelineDurationInput: document.getElementById("timelineDurationInput"),
         durationLabel: document.getElementById("durationLabel"),
         durationMid: document.getElementById("durationMid"),
@@ -958,6 +961,8 @@
         bgmFile: "",
         bgmVolume: 0.2,
         bgmLoop: true,
+        fps: 30,
+        timelineDurationFrames: null,
         timelineDurationSec: null,
         selectedProjectId: ""
       };
@@ -1012,6 +1017,53 @@
         return Number((Math.round(toNum(value, 0) / safeStep) * safeStep).toFixed(3));
       };
 
+      const normalizeFps = (value, fallback = 30) => {
+        const n = Math.round(toNum(value, fallback));
+        return Number.isFinite(n) && n > 0 ? n : fallback;
+      };
+
+      const currentFps = () => normalizeFps(state.fps, 30);
+
+      const normalizeFrame = (value, fallback = 0) => {
+        const n = Math.round(toNum(value, fallback));
+        return Number.isFinite(n) ? Math.max(0, n) : Math.max(0, Math.round(fallback));
+      };
+
+      const frameToSec = (frame, fps = currentFps()) => Number((normalizeFrame(frame, 0) / normalizeFps(fps)).toFixed(3));
+      const secToFrame = (sec, fps = currentFps()) => normalizeFrame(Math.round(Math.max(0, toNum(sec, 0)) * normalizeFps(fps)), 0);
+
+      const subStartFrame = (sub) => (
+        Number.isFinite(Number(sub?.start_frame))
+          ? normalizeFrame(sub.start_frame, 0)
+          : secToFrame(sub?.start_sec ?? sub?.start ?? 0)
+      );
+
+      const subDurationFrames = (sub, fallbackSec = 1) => (
+        Number.isFinite(Number(sub?.duration_frames))
+          ? normalizeFrame(sub.duration_frames, 0)
+          : secToFrame(sub?.duration_sec ?? sub?.duration ?? fallbackSec)
+      );
+
+      const withFrameTiming = (sub, startFrame, durationFrames) => {
+        const fps = currentFps();
+        const start = normalizeFrame(startFrame, 0);
+        const duration = normalizeFrame(durationFrames, 0);
+        return {
+          ...sub,
+          start_frame: start,
+          duration_frames: duration,
+          end_frame: start + duration,
+          start_sec: frameToSec(start, fps),
+          duration_sec: frameToSec(duration, fps)
+        };
+      };
+
+      const normalizeSubSceneFrameTiming = (sub) => withFrameTiming(
+        sub,
+        subStartFrame(sub),
+        subDurationFrames(sub, 1)
+      );
+
       const normalizeSubSceneStart = (value, fallback = 0) => Math.max(0, roundTimeStep(toNum(value, fallback), 0.001));
       const normalizeSubSceneDuration = (value, fallback = 1) => Math.max(0, roundTimeStep(toNum(value, fallback), 0.001));
 
@@ -1019,11 +1071,13 @@
         if (!Array.isArray(subScenes) || editedIndex < 0 || editedIndex + 1 >= subScenes.length) return subScenes;
         const edited = subScenes[editedIndex];
         if (!edited) return subScenes;
-        const nextStart = normalizeSubSceneStart(
-          normalizeSubSceneStart(edited.start_sec, 0) + normalizeSubSceneDuration(edited.duration_sec, 1),
-          0
-        );
-        return subScenes.map((sub, index) => index === editedIndex + 1 ? {...sub, start_sec: nextStart} : sub);
+        const normalizedEdited = normalizeSubSceneFrameTiming(edited);
+        const nextStartFrame = subStartFrame(normalizedEdited) + subDurationFrames(normalizedEdited, 0);
+        return subScenes.map((sub, index) => (
+          index === editedIndex + 1
+            ? withFrameTiming(sub, nextStartFrame, subDurationFrames(sub, 1))
+            : normalizeSubSceneFrameTiming(sub)
+        ));
       };
 
       const setStatus = (text, mode) => {
@@ -1413,6 +1467,28 @@
         const maxEnd = resolveMaxEndFromSegments(segments);
         if (declared != null) return Math.max(declared, maxEnd, 1);
         return Math.max(maxEnd, 1);
+      };
+
+      const resolveSpecFps = (spec) => {
+        const fpsCandidateA = toNum(spec?.fps, NaN);
+        const fpsCandidateB = toNum(spec?.video_spec?.format?.fps, NaN);
+        return normalizeFps(Number.isFinite(fpsCandidateA) && fpsCandidateA > 0 ? fpsCandidateA : fpsCandidateB, 30);
+      };
+
+      const resolveInitialDurationFrames = (spec, scenes) => {
+        const fps = currentFps();
+        const byFrames = toNum(spec?.durationInFrames, NaN);
+        const byFormatFrames = toNum(spec?.video_spec?.format?.durationInFrames, NaN);
+        const bySec = toNum(spec?.durationSec ?? spec?.video_spec?.format?.duration, NaN);
+        const maxEndFrame = (scenes || []).reduce((acc, scene) => {
+          const sceneMax = (scene.sub_scenes || []).reduce((subAcc, sub) => {
+            return Math.max(subAcc, subStartFrame(sub) + subDurationFrames(sub, 0));
+          }, 0);
+          return Math.max(acc, sceneMax);
+        }, 0);
+        const declared = [byFrames, byFormatFrames, Number.isFinite(bySec) ? secToFrame(bySec, fps) : NaN]
+          .find((v) => Number.isFinite(v) && v > 0);
+        return Math.max(normalizeFrame(declared, 0), maxEndFrame, fps);
       };
 
       const normalizeBackgroundRef = (background) => {
@@ -2715,6 +2791,8 @@
           screen_text: screenText,
           display_mode: normalizeDisplayMode(saved.display_mode || raw.display_mode),
           char_count: charLen(screenText),
+          ...(Number.isFinite(toNum(saved.start_frame ?? raw.start_frame, NaN)) ? {start_frame: normalizeFrame(saved.start_frame ?? raw.start_frame, 0)} : {}),
+          ...(Number.isFinite(toNum(saved.duration_frames ?? raw.duration_frames, NaN)) ? {duration_frames: normalizeFrame(saved.duration_frames ?? raw.duration_frames, 0)} : {}),
           start_sec: Math.max(0, Number.isFinite(start) ? start : subIndex * 2),
           duration_sec: Math.max(0, Number.isFinite(duration) ? duration : 1)
         };
@@ -3125,13 +3203,19 @@
               return String(sub && sub.screen_text || "").trim().length > 0;
             }).map((sub) => {
               const screenText = typeof sub.screen_text === "string" ? sub.screen_text : "";
+              const timed = normalizeSubSceneFrameTiming(sub);
+              const startFrame = subStartFrame(timed);
+              const durationFrames = subDurationFrames(timed, 0);
               return {
                 sub_scene_id: sub.sub_scene_id,
                 screen_text: screenText,
                 display_mode: normalizeDisplayMode(sub.display_mode),
                 char_count: charLen(screenText),
-                start_sec: Number(Math.max(0, toNum(sub.start_sec, 0)).toFixed(3)),
-                duration_sec: Number(Math.max(0, toNum(sub.duration_sec, 1)).toFixed(3))
+                start_frame: startFrame,
+                duration_frames: durationFrames,
+                end_frame: startFrame + durationFrames,
+                start_sec: frameToSec(startFrame),
+                duration_sec: frameToSec(durationFrames)
               };
             })
           };
@@ -3182,8 +3266,10 @@
         const flat = [];
         cleanScenesForOutput(scenes).forEach((scene) => {
           scene.sub_scenes.forEach((sub) => {
-            const start = Math.max(0, toNum(sub.start_sec, 0));
-            const duration = Math.max(0, toNum(sub.duration_sec, 0));
+            const startFrame = subStartFrame(sub);
+            const durationFrames = subDurationFrames(sub, 0);
+            const start = frameToSec(startFrame);
+            const duration = frameToSec(durationFrames);
             flat.push({
               id: sub.sub_scene_id,
               sub_scene_id: sub.sub_scene_id,
@@ -3197,6 +3283,9 @@
               voice_style: scene.voice_style,
               speakerId: scene.speakerId,
               voice_speed: scene.voice_speed,
+              start_frame: startFrame,
+              duration_frames: durationFrames,
+              end_frame: startFrame + durationFrames,
               start,
               end: Number((start + duration).toFixed(3)),
               duration_sec: Number(duration.toFixed(3))
@@ -3228,26 +3317,23 @@
         state.scenes = state.scenes.map((scene) => {
           if ((scene.key || scene.scene_id) !== sceneKey) return scene;
           const subScenes = scene.sub_scenes || [];
-          const lastEnd = subScenes.reduce((acc, sub) => {
-            const start = Math.max(0, toNum(sub.start_sec, 0));
-            const duration = Math.max(0, toNum(sub.duration_sec, 0));
-            return Math.max(acc, start + duration);
+          const lastEndFrame = subScenes.reduce((acc, sub) => {
+            return Math.max(acc, subStartFrame(sub) + subDurationFrames(sub, 0));
           }, 0);
           const subSceneId = nextSubSceneId(scene);
           addedKey = subSceneId;
+          const durationFrames = currentFps();
           return {
             ...scene,
             sub_scenes: [
               ...subScenes,
-              {
+              withFrameTiming({
                 key: subSceneId,
                 sub_scene_id: subSceneId,
                 screen_text: "",
                 display_mode: "replace",
-                char_count: 0,
-                start_sec: Number(lastEnd.toFixed(3)),
-                duration_sec: 1
-              }
+                char_count: 0
+              }, lastEndFrame, durationFrames)
             ]
           };
         });
@@ -3275,20 +3361,11 @@
         const normalizedTitleTextAlign = normalizeTitleTextAlign(state.titleTextAlign);
         const scenes = cleanScenesForOutput(state.scenes);
         const flatSegments = flattenScenesToSegments(scenes);
-        const maxEnd = resolveMaxEndFromSegments(flatSegments);
-        const requestedDuration = toNum(state.timelineDurationSec, NaN);
-        const durationSec =
-          Number.isFinite(requestedDuration) && requestedDuration > 0
-            ? Math.max(requestedDuration, maxEnd, 1)
-            : Math.max(maxEnd, 1);
-        const fpsCandidateA = toNum(spec?.fps, NaN);
-        const fpsCandidateB = toNum(spec?.video_spec?.format?.fps, NaN);
-        const fps = Number.isFinite(fpsCandidateA) && fpsCandidateA > 0
-          ? Math.round(fpsCandidateA)
-          : Number.isFinite(fpsCandidateB) && fpsCandidateB > 0
-            ? Math.round(fpsCandidateB)
-            : 30;
-        const durationInFrames = Math.max(1, Math.round(durationSec * Math.max(1, fps)));
+        const fps = currentFps();
+        const maxEndFrame = flatSegments.reduce((acc, seg) => Math.max(acc, normalizeFrame(seg.end_frame, 0)), 0);
+        const requestedDurationFrames = normalizeFrame(state.timelineDurationFrames, 0);
+        const durationInFrames = Math.max(1, requestedDurationFrames || 0, maxEndFrame || 0);
+        const durationSec = frameToSec(durationInFrames, fps);
 
         spec.project_id = spec.project_id || state.selectedProjectId || "";
         spec.source = spec.source || "";
@@ -3374,10 +3451,15 @@
       };
 
       const getDuration = () => {
-        const maxEnd = resolveMaxEndFromScenes(state.scenes);
-        const declared = toNum(state.timelineDurationSec, NaN);
-        if (Number.isFinite(declared) && declared > 0) return Math.max(declared, maxEnd, 1);
-        return Math.max(maxEnd, 1);
+        return frameToSec(getDurationFrames());
+      };
+
+      const getDurationFrames = () => {
+        const maxEndFrame = (state.scenes || []).reduce((acc, scene) => {
+          return Math.max(acc, ...(scene.sub_scenes || []).map((sub) => subStartFrame(sub) + subDurationFrames(sub, 0)));
+        }, 0);
+        const declared = normalizeFrame(state.timelineDurationFrames, 0);
+        return Math.max(declared || 0, maxEndFrame || 0, currentFps());
       };
 
       const refreshOutput = () => {
@@ -3508,7 +3590,10 @@
           const hookDiff2 = (scene.hook_diff_images || [])[1] || "";
           const ttsPreview = resolvePreviewVoiceText(scene, state.transformMode);
           const rows = (scene.sub_scenes || []).map((sub) => {
-            const duration = Math.max(0, toNum(sub.duration_sec, 0));
+            const timed = normalizeSubSceneFrameTiming(sub);
+            const startFrame = subStartFrame(timed);
+            const durationFrames = subDurationFrames(timed, 0);
+            const endFrame = startFrame + durationFrames;
             return `
               <div class="sub-row" data-sub-key="${escapeHtml(sub.key || sub.sub_scene_id)}">
                 <div class="field">
@@ -3528,12 +3613,16 @@
                   <div class="readonly">${charLen(sub.screen_text || "")}</div>
                 </div>
                 <div class="field">
-                  <label>start_sec</label>
-                  <input name="start_sec" type="number" min="0" step="0.001" value="${formatSec(sub.start_sec)}" />
+                  <label>start_frame</label>
+                  <input name="start_frame" type="number" min="0" step="1" value="${startFrame}" />
                 </div>
                 <div class="field">
-                  <label>duration_sec</label>
-                  <input name="duration_sec" type="number" min="0" step="0.001" value="${formatSec(duration)}" />
+                  <label>duration_frames</label>
+                  <input name="duration_frames" type="number" min="0" step="1" value="${durationFrames}" />
+                </div>
+                <div class="field">
+                  <label>sec確認</label>
+                  <div class="readonly">${formatSec(frameToSec(startFrame))} - ${formatSec(frameToSec(endFrame))}s</div>
                 </div>
               </div>
             `;
@@ -3737,12 +3826,16 @@
 
       const renderTimeline = () => {
         const duration = getDuration();
+        const durationFrames = getDurationFrames();
         if (document.activeElement !== el.timelineDurationInput) {
-          el.timelineDurationInput.value = formatSec(duration);
+          el.timelineDurationInput.value = String(durationFrames);
         }
-        el.durationLabel.textContent = `duration: ${formatSec(duration)}s`;
-        el.durationMid.textContent = `${formatSec(duration / 2)}s`;
-        el.durationEnd.textContent = `${formatSec(duration)}s`;
+        if (document.activeElement !== el.fpsInput) {
+          el.fpsInput.value = String(currentFps());
+        }
+        el.durationLabel.textContent = `duration: ${durationFrames}f / ${formatSec(duration)}s`;
+        el.durationMid.textContent = `${Math.round(durationFrames / 2)}f / ${formatSec(duration / 2)}s`;
+        el.durationEnd.textContent = `${durationFrames}f / ${formatSec(duration)}s`;
 
         const flatSegments = flattenScenesToSegments(state.scenes);
         if (flatSegments.length === 0) {
@@ -3849,11 +3942,14 @@
             grayscale_filter: scene.grayscale_filter === "on" ? "on" : "off"
           };
           (scene.sub_scenes || []).forEach((sub) => {
+            const timed = normalizeSubSceneFrameTiming(sub);
             payload[sub.sub_scene_id] = {
               screen_text: typeof sub.screen_text === "string" ? sub.screen_text : "",
               display_mode: normalizeDisplayMode(sub.display_mode),
-              start_sec: toNum(sub.start_sec, 0),
-              duration_sec: toNum(sub.duration_sec, 1)
+              start_frame: subStartFrame(timed),
+              duration_frames: subDurationFrames(timed, 0),
+              start_sec: toNum(timed.start_sec, 0),
+              duration_sec: toNum(timed.duration_sec, 1)
             };
           });
         });
@@ -3869,7 +3965,9 @@
           titleTextAlign: normalizeTitleTextAlign(state.titleTextAlign),
           bgmFile: normalizeBgmRef(state.bgmFile),
           bgmVolume: normalizeBgmVolume(state.bgmVolume, 0.2),
-          bgmLoop: Boolean(state.bgmLoop)
+          bgmLoop: Boolean(state.bgmLoop),
+          fps: currentFps(),
+          timelineDurationFrames: normalizeFrame(state.timelineDurationFrames, 0)
         };
         localStorage.setItem(VOICE_SETTINGS_KEY, JSON.stringify(payload));
         setStatus("scene/sub_scene設定をlocalStorageに保存しました（中間状態）。", "ok");
@@ -3898,6 +3996,10 @@
             typeof saved.__meta.bgmLoop === "boolean"
               ? saved.__meta.bgmLoop
               : state.bgmLoop;
+          state.fps = normalizeFps(saved.__meta.fps, state.fps || 30);
+          state.timelineDurationFrames = Number.isFinite(toNum(saved.__meta.timelineDurationFrames, NaN))
+            ? normalizeFrame(saved.__meta.timelineDurationFrames, 0)
+            : state.timelineDurationFrames;
         }
 
         state.scenes = state.scenes.map((scene) => {
@@ -3940,8 +4042,14 @@
                 screen_text: screenText,
                 display_mode: subConf.display_mode != null ? normalizeDisplayMode(subConf.display_mode) : sub.display_mode,
                 char_count: charLen(screenText),
-                start_sec: Number.isFinite(toNum(subConf.start_sec, NaN)) ? Math.max(0, toNum(subConf.start_sec, 0)) : sub.start_sec,
-                duration_sec: Number.isFinite(toNum(subConf.duration_sec, NaN)) ? Math.max(0, toNum(subConf.duration_sec, 1)) : sub.duration_sec
+                ...normalizeSubSceneFrameTiming({
+                  ...sub,
+                  start_frame: Number.isFinite(toNum(subConf.start_frame, NaN)) ? normalizeFrame(subConf.start_frame, 0) : sub.start_frame,
+                  duration_frames: Number.isFinite(toNum(subConf.duration_frames, NaN)) ? normalizeFrame(subConf.duration_frames, 0) : sub.duration_frames,
+                  start_sec: Number.isFinite(toNum(subConf.start_sec, NaN)) ? Math.max(0, toNum(subConf.start_sec, 0)) : sub.start_sec,
+                  duration_sec: Number.isFinite(toNum(subConf.duration_sec, NaN)) ? Math.max(0, toNum(subConf.duration_sec, 1)) : sub.duration_sec
+                }),
+                char_count: charLen(screenText)
               };
             })
           };
@@ -3955,6 +4063,11 @@
       const loadSpec = (spec, label, fileName = "") => {
         const normalizedSpec = normalizeSpecForScenesSoT(spec, settingsFromStorage());
         const bgmSettings = resolveBgmSettingsFromSpec(normalizedSpec);
+        state.fps = resolveSpecFps(normalizedSpec);
+        const frameTimedScenes = (normalizedSpec.scenes || []).map((scene) => ({
+          ...scene,
+          sub_scenes: (scene.sub_scenes || []).map((sub) => normalizeSubSceneFrameTiming(sub))
+        }));
         state.spec = deepClone(normalizedSpec);
         state.renderFileName = RENDER_FINAL_NAME;
         state.transformMode = resolveTransformMode(normalizedSpec);
@@ -3962,7 +4075,7 @@
         state.bgmFile = bgmSettings.bgmFile;
         state.bgmVolume = bgmSettings.bgmVolume;
         state.bgmLoop = bgmSettings.bgmLoop;
-        state.scenes = normalizedSpec.scenes;
+        state.scenes = frameTimedScenes;
         state.titleText = resolveTitleTextFromSpec(normalizedSpec, state.scenes);
         const titleOverlay = resolveTitleOverlayFromSpec(normalizedSpec);
         state.titleBgColor = titleOverlay.bgColor;
@@ -3973,11 +4086,13 @@
         state.titleLineBreakMode = titleOverlay.lineBreakMode;
         state.titleLineChars = titleOverlay.lineChars;
         state.titleTextAlign = titleOverlay.textAlign;
-        state.timelineDurationSec = resolveInitialDurationSec(normalizedSpec, flattenScenesToSegments(state.scenes));
+        state.timelineDurationFrames = resolveInitialDurationFrames(normalizedSpec, state.scenes);
+        state.timelineDurationSec = frameToSec(state.timelineDurationFrames, state.fps);
         el.jsonInput.value = JSON.stringify(normalizedSpec, null, 2);
         applyBackgroundFileList(BACKGROUND_PNG_FILES, {selected: state.backgroundPng});
         applyBgmFileList(BGM_MP3_FILES, {selected: state.bgmFile});
-        el.timelineDurationInput.value = formatSec(state.timelineDurationSec);
+        el.fpsInput.value = String(state.fps);
+        el.timelineDurationInput.value = String(state.timelineDurationFrames);
         renderAll();
         setStatus(`${label} を読み込みました。`, "ok");
         updateProjectControls();
@@ -4177,13 +4292,21 @@
               if (fieldName === "display_mode") {
                 return {...sub, display_mode: normalizeDisplayMode(target.value)};
               }
+              if (fieldName === "start_frame") {
+                shouldRelaySubTime = true;
+                return withFrameTiming(sub, target.value, subDurationFrames(sub, 1));
+              }
+              if (fieldName === "duration_frames") {
+                shouldRelaySubTime = true;
+                return withFrameTiming(sub, subStartFrame(sub), target.value);
+              }
               if (fieldName === "start_sec") {
                 shouldRelaySubTime = true;
-                return {...sub, start_sec: normalizeSubSceneStart(target.value, sub.start_sec)};
+                return withFrameTiming(sub, secToFrame(normalizeSubSceneStart(target.value, sub.start_sec)), subDurationFrames(sub, 1));
               }
               if (fieldName === "duration_sec") {
                 shouldRelaySubTime = true;
-                return {...sub, duration_sec: normalizeSubSceneDuration(target.value, sub.duration_sec)};
+                return withFrameTiming(sub, subStartFrame(sub), secToFrame(normalizeSubSceneDuration(target.value, sub.duration_sec)));
               }
               return sub;
             }).filter(Boolean);
@@ -4610,19 +4733,40 @@
         el.bgmVolumeValue.textContent = `${Math.round(state.bgmVolume * 100)}%`;
         refreshOutput();
       });
+      el.fpsInput.addEventListener("input", function (event) {
+        const previousFps = currentFps();
+        const nextFps = normalizeFps(event.target.value, previousFps);
+        if (nextFps === previousFps) return;
+        state.fps = nextFps;
+        state.scenes = state.scenes.map((scene) => ({
+          ...scene,
+          sub_scenes: (scene.sub_scenes || []).map((sub) => {
+            const startSec = toNum(sub.start_sec, frameToSec(subStartFrame(sub), previousFps));
+            const durationSec = toNum(sub.duration_sec, frameToSec(subDurationFrames(sub, 0), previousFps));
+            return withFrameTiming(sub, secToFrame(startSec, nextFps), secToFrame(durationSec, nextFps));
+          })
+        }));
+        if (Number.isFinite(toNum(state.timelineDurationSec, NaN))) {
+          state.timelineDurationFrames = secToFrame(state.timelineDurationSec, nextFps);
+        }
+        renderAll();
+        refreshOutput();
+      });
       el.timelineDurationInput.addEventListener("input", function (event) {
         const raw = String(event.target.value || "").trim();
         if (!raw) {
+          state.timelineDurationFrames = null;
           state.timelineDurationSec = null;
           renderTimeline();
           refreshOutput();
           return;
         }
-        const nextDuration = toNum(raw, NaN);
-        if (!Number.isFinite(nextDuration) || nextDuration <= 0) {
+        const nextDurationFrames = normalizeFrame(raw, NaN);
+        if (!Number.isFinite(nextDurationFrames) || nextDurationFrames <= 0) {
           return;
         }
-        state.timelineDurationSec = nextDuration;
+        state.timelineDurationFrames = nextDurationFrames;
+        state.timelineDurationSec = frameToSec(nextDurationFrames);
         renderTimeline();
         refreshOutput();
       });
@@ -4714,8 +4858,11 @@
           state.bgmFile = "";
           state.bgmVolume = 0.2;
           state.bgmLoop = true;
+          state.fps = 30;
+          state.timelineDurationFrames = 30;
           state.timelineDurationSec = 1;
-          el.timelineDurationInput.value = "1";
+          el.fpsInput.value = "30";
+          el.timelineDurationInput.value = "30";
           setStatus("初期状態です。ワークスペース選択後、対象projectの render draft JSON を読み込んでください。", "error");
           renderAll();
           updateProjectControls();
@@ -4737,8 +4884,11 @@
           state.bgmFile = "";
           state.bgmVolume = 0.2;
           state.bgmLoop = true;
+          state.fps = 30;
+          state.timelineDurationFrames = 30;
           state.timelineDurationSec = 1;
-          el.timelineDurationInput.value = "1";
+          el.fpsInput.value = "30";
+          el.timelineDurationInput.value = "30";
           setStatus("localStorage のJSONが壊れています。project の render draft JSON を読み込んでください。", "error");
           renderAll();
           updateProjectControls();
