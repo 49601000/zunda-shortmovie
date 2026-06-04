@@ -3106,7 +3106,62 @@
         };
       };
 
-      const cleanScenesForOutput = (scenes) => {
+      const getVisualAssetValue = (scene, key) => {
+        const manual = scene?.visual_assets && typeof scene.visual_assets === "object" ? scene.visual_assets : {};
+        const composition = scene?.composition && typeof scene.composition === "object" ? scene.composition : {};
+        if (key === "background") return normalizeImageRef(manual.background || composition.background?.image_path || "");
+        if (key === "dialog_box") return normalizeImageRef(manual.dialog_box || composition.dialog_box?.image_path || "");
+        return "";
+      };
+
+      const resolveCommonDialogBox = (scenes) => {
+        const values = (scenes || [])
+          .filter((scene, sceneIndex) => !isHookPictureScene(scene, sceneIndex))
+          .map((scene) => getVisualAssetValue(scene, "dialog_box"))
+          .filter(Boolean);
+        if (!values.length) return "";
+        const first = values[0];
+        return values.every((value) => value === first) ? first : "";
+      };
+
+      const stripCommonAssetValue = (value, commonValue) => {
+        const normalized = normalizeImageRef(value || "");
+        return commonValue && normalized === commonValue ? "" : normalized;
+      };
+
+      const buildCommonLayers = (backgroundPng, dialogBox, durationInFrames) => {
+        const duration = Math.max(1, normalizeFrame(durationInFrames, 1));
+        const layers = [];
+        const backgroundSrc = normalizeBackgroundRef(backgroundPng);
+        const dialogBoxSrc = normalizeImageRef(dialogBox);
+        if (backgroundSrc) {
+          layers.push({
+            layer_id: "background",
+            type: "image",
+            src: backgroundSrc,
+            z_index: 0,
+            fit: "cover",
+            start_frame: 0,
+            duration_frames: duration
+          });
+        }
+        if (dialogBoxSrc) {
+          layers.push({
+            layer_id: "logboard",
+            type: "image",
+            src: dialogBoxSrc,
+            z_index: 18,
+            fit: "contain",
+            start_frame: 0,
+            duration_frames: duration
+          });
+        }
+        return layers;
+      };
+
+      const cleanScenesForOutput = (scenes, options = {}) => {
+        const commonBackground = normalizeImageRef(options.commonBackground || "");
+        const commonDialogBox = normalizeImageRef(options.commonDialogBox || "");
         return (scenes || []).map((scene, sceneIndex) => {
           const hookPictureScene = isHookPictureScene(scene, sceneIndex);
           const speakerId = Number.isFinite(Number(scene.speakerId)) ? Number(scene.speakerId) : defaultSpeakerId(scene.speaker);
@@ -3117,6 +3172,17 @@
           voiceControl.speaker_id = Number(style.id) || speakerId;
           voiceControl.speedScale = toNum(scene.speedScale, DEFAULT_SPEED_SCALE);
           const visualAssets = scene.visual_assets && typeof scene.visual_assets === "object" ? scene.visual_assets : {};
+          const outputVisualAssets = {
+            background: stripCommonAssetValue(visualAssets.background || "", commonBackground),
+            slide: normalizeImageRef(visualAssets.slide || ""),
+            monolith: normalizeImageRef(visualAssets.monolith || ""),
+            dialog_box: stripCommonAssetValue(visualAssets.dialog_box || "", commonDialogBox),
+            character_left: normalizeImageRef(visualAssets.character_left || ""),
+            character_right: normalizeImageRef(visualAssets.character_right || ""),
+            hook_background: normalizeImageRef(visualAssets.hook_background || ""),
+            hook_character: normalizeImageRef(visualAssets.hook_character || ""),
+            hook_bubble: normalizeImageRef(visualAssets.hook_bubble || "")
+          };
           const screenText = String(scene.screen_text || "");
           const screenTextFontSize = normalizeScreenTextFontSize(scene.screen_text_font_size, SCREEN_TEXT_STYLE_DEFAULTS.font_size);
           const screenTextFontFamily = String(scene.screen_text_font_family || SCREEN_TEXT_STYLE_DEFAULTS.font_family);
@@ -3166,32 +3232,22 @@
             text_color: screenTextColor,
             line_break_mode: screenTextLineBreakMode,
             line_chars: screenTextLineChars,
-            visual_assets: {
-              background: normalizeImageRef(visualAssets.background || ""),
-              slide: normalizeImageRef(visualAssets.slide || ""),
-              monolith: normalizeImageRef(visualAssets.monolith || ""),
-              dialog_box: normalizeImageRef(visualAssets.dialog_box || ""),
-              character_left: normalizeImageRef(visualAssets.character_left || ""),
-              character_right: normalizeImageRef(visualAssets.character_right || ""),
-              hook_background: normalizeImageRef(visualAssets.hook_background || ""),
-              hook_character: normalizeImageRef(visualAssets.hook_character || ""),
-              hook_bubble: normalizeImageRef(visualAssets.hook_bubble || "")
-            },
+            visual_assets: outputVisualAssets,
             composition: {
-              background: { image_path: normalizeImageRef(visualAssets.background || "") },
-              slide_area: { image_path: normalizeImageRef(visualAssets.slide || "") },
-              monolith: { image_path: normalizeImageRef(visualAssets.monolith || "") },
-              dialog_box: { image_path: normalizeImageRef(visualAssets.dialog_box || "") },
+              background: { image_path: outputVisualAssets.background },
+              slide_area: { image_path: outputVisualAssets.slide },
+              monolith: { image_path: outputVisualAssets.monolith },
+              dialog_box: { image_path: outputVisualAssets.dialog_box },
               characters: {
                 left: {
                   engine: CHARACTER_ENGINE_BY_ID.metan,
-                  image_path: normalizeImageRef(visualAssets.character_left || ""),
+                  image_path: outputVisualAssets.character_left,
                   state: scene.speaker_side === "left" ? "speaking" : "idle",
                   lip_sync_image_paths: normalizeStringList(scene.left_diff_images || [])
                 },
                 right: {
                   engine: CHARACTER_ENGINE_BY_ID.zundamon,
-                  image_path: normalizeImageRef(visualAssets.character_right || ""),
+                  image_path: outputVisualAssets.character_right,
                   state: scene.speaker_side === "right" ? "speaking" : "idle",
                   lip_sync_image_paths: normalizeStringList(scene.right_diff_images || [])
                 }
@@ -3359,7 +3415,12 @@
         const normalizedTitleLineBreakMode = normalizeLineBreakMode(state.titleLineBreakMode);
         const normalizedTitleLineChars = normalizePx(state.titleLineChars, 18, 4, 80);
         const normalizedTitleTextAlign = normalizeTitleTextAlign(state.titleTextAlign);
-        const scenes = cleanScenesForOutput(state.scenes);
+        const backgroundPng = normalizeBackgroundRef(state.backgroundPng);
+        const commonDialogBox = resolveCommonDialogBox(state.scenes);
+        const scenes = cleanScenesForOutput(state.scenes, {
+          commonBackground: backgroundPng,
+          commonDialogBox
+        });
         const flatSegments = flattenScenesToSegments(scenes);
         const fps = currentFps();
         const maxEndFrame = flatSegments.reduce((acc, seg) => Math.max(acc, normalizeFrame(seg.end_frame, 0)), 0);
@@ -3384,7 +3445,9 @@
 
         spec.durationSec = Number(durationSec.toFixed(3));
         spec.durationInFrames = durationInFrames;
+        spec.total_frames = durationInFrames;
         spec.fps = Math.max(1, fps);
+        spec.common_layers = buildCommonLayers(backgroundPng, commonDialogBox, durationInFrames);
         spec.tts_transform = state.transformMode === "zundamon" ? "zundamon" : "";
         if (!spec.video_spec) spec.video_spec = {};
         if (!spec.video_spec.audio) spec.video_spec.audio = {};
@@ -3417,7 +3480,6 @@
           delete spec.bgm;
         }
 
-        const backgroundPng = normalizeBackgroundRef(state.backgroundPng);
         if (backgroundPng) {
           spec.background = backgroundPng;
           spec.video_spec.style.background = backgroundPng;

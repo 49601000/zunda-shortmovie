@@ -252,7 +252,7 @@
         "background": "",
         "slide": "",
         "monolith": "",
-        "dialog_box": "logboard/logboard-BK.png",
+        "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
         "character_right": "images/characters/zundamon/zundamon-midpanic0000.png",
         "hook_background": "",
@@ -270,7 +270,7 @@
           "image_path": ""
         },
         "dialog_box": {
-          "image_path": "logboard/logboard-BK.png"
+          "image_path": ""
         },
         "characters": {
           "left": {
@@ -392,7 +392,7 @@
         "background": "",
         "slide": "images/frames/slide/000/001.png",
         "monolith": "",
-        "dialog_box": "logboard/logboard-BK.png",
+        "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
         "character_right": "images/characters/zundamon/zundamon-midpanic0000.png",
         "hook_background": "",
@@ -410,7 +410,7 @@
           "image_path": ""
         },
         "dialog_box": {
-          "image_path": "logboard/logboard-BK.png"
+          "image_path": ""
         },
         "characters": {
           "left": {
@@ -532,7 +532,7 @@
         "background": "",
         "slide": "images/frames/slide/000/001.png",
         "monolith": "",
-        "dialog_box": "logboard/logboard-BK.png",
+        "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
         "character_right": "images/characters/zundamon/zundamon-annoy-0000.png",
         "hook_background": "",
@@ -550,7 +550,7 @@
           "image_path": ""
         },
         "dialog_box": {
-          "image_path": "logboard/logboard-BK.png"
+          "image_path": ""
         },
         "characters": {
           "left": {
@@ -672,7 +672,7 @@
         "background": "",
         "slide": "images/frames/slide/000/001.png",
         "monolith": "",
-        "dialog_box": "logboard/logboard-BK.png",
+        "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
         "character_right": "images/characters/zundamon/zundamon-midpanic0000.png",
         "hook_background": "",
@@ -690,7 +690,7 @@
           "image_path": ""
         },
         "dialog_box": {
-          "image_path": "logboard/logboard-BK.png"
+          "image_path": ""
         },
         "characters": {
           "left": {
@@ -801,7 +801,7 @@
         "background": "",
         "slide": "images/frames/slide/000/001.png",
         "monolith": "",
-        "dialog_box": "logboard/logboard-BK.png",
+        "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
         "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_background": "",
@@ -819,7 +819,7 @@
           "image_path": ""
         },
         "dialog_box": {
-          "image_path": "logboard/logboard-BK.png"
+          "image_path": ""
         },
         "characters": {
           "left": {
@@ -941,7 +941,7 @@
         "background": "",
         "slide": "images/frames/slide/000/001.png",
         "monolith": "",
-        "dialog_box": "logboard/logboard-BK.png",
+        "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
         "character_right": "images/characters/zundamon/zundamon-midpanic0000.png",
         "hook_background": "",
@@ -959,7 +959,7 @@
           "image_path": ""
         },
         "dialog_box": {
-          "image_path": "logboard/logboard-BK.png"
+          "image_path": ""
         },
         "characters": {
           "left": {
@@ -1070,7 +1070,7 @@
         "background": "",
         "slide": "images/frames/slide/000/001.png",
         "monolith": "",
-        "dialog_box": "logboard/logboard-BK.png",
+        "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
         "character_right": "images/characters/zundamon/zundamon-annoy-0000.png",
         "hook_background": "",
@@ -1088,7 +1088,7 @@
           "image_path": ""
         },
         "dialog_box": {
-          "image_path": "logboard/logboard-BK.png"
+          "image_path": ""
         },
         "characters": {
           "left": {
@@ -1210,7 +1210,7 @@
         "background": "",
         "slide": "images/frames/slide/000/002.png",
         "monolith": "",
-        "dialog_box": "logboard/logboard-BK.png",
+        "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
         "character_right": "images/characters/zundamon/zundamon-midpanic0000.png",
         "hook_background": "",
@@ -1228,7 +1228,7 @@
           "image_path": ""
         },
         "dialog_box": {
-          "image_path": "logboard/logboard-BK.png"
+          "image_path": ""
         },
         "characters": {
           "left": {
@@ -1339,7 +1339,7 @@
         "background": "",
         "slide": "images/frames/slide/000/002.png",
         "monolith": "",
-        "dialog_box": "logboard/logboard-BK.png",
+        "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
         "character_right": "images/characters/zundamon/zundamon-normal-0001.png",
         "hook_background": "",
@@ -1357,7 +1357,7 @@
           "image_path": ""
         },
         "dialog_box": {
-          "image_path": "logboard/logboard-BK.png"
+          "image_path": ""
         },
         "characters": {
           "left": {
@@ -1492,5 +1492,26 @@
     "line_break_mode": "auto",
     "line_chars": 18,
     "text_align": "center"
-  }
+  },
+  "total_frames": 933,
+  "common_layers": [
+    {
+      "layer_id": "background",
+      "type": "image",
+      "src": "scene-bg-classroom-daytime.png",
+      "z_index": 0,
+      "fit": "cover",
+      "start_frame": 0,
+      "duration_frames": 933
+    },
+    {
+      "layer_id": "logboard",
+      "type": "image",
+      "src": "logboard/logboard-BK.png",
+      "z_index": 18,
+      "fit": "contain",
+      "start_frame": 0,
+      "duration_frames": 933
+    }
+  ]
 }

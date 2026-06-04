@@ -104,6 +104,119 @@ function resolveSceneAudioSrc(sceneIndex, projectAudioDir) {
   return fs.existsSync(path.join(projectAudioDir, fileName)) ? `/audio/${fileName}` : "";
 }
 
+function normalizeImageRef(value) {
+  return String(value ?? "").trim().replace(/\\/g, "/").replace(/^\/+/, "");
+}
+
+function isHookSceneLike(scene, index) {
+  if (index === 0) return true;
+  return String(scene?.scene_type || scene?.role || "").trim().toLowerCase() === "hook";
+}
+
+function resolveSceneAssetValue(scene, key) {
+  const sceneAssets = scene?.scene_assets && typeof scene.scene_assets === "object" ? scene.scene_assets : {};
+  const visual = scene?.visual_assets && typeof scene.visual_assets === "object" ? scene.visual_assets : {};
+  const composition = scene?.composition && typeof scene.composition === "object" ? scene.composition : {};
+  if (key === "background") {
+    return normalizeImageRef(sceneAssets.background || visual.background || composition.background?.image_path || "");
+  }
+  if (key === "dialog_box") {
+    return normalizeImageRef(sceneAssets.dialog_box || visual.dialog_box || composition.dialog_box?.image_path || "");
+  }
+  return "";
+}
+
+function resolveCommonDialogBox(scenes) {
+  const values = (Array.isArray(scenes) ? scenes : [])
+    .filter((scene, index) => !isHookSceneLike(scene, index))
+    .map((scene) => resolveSceneAssetValue(scene, "dialog_box"))
+    .filter(Boolean);
+  if (!values.length) return "";
+  const first = values[0];
+  return values.every((value) => value === first) ? first : "";
+}
+
+function stripCommonAsset(value, commonValue) {
+  const normalized = normalizeImageRef(value);
+  return commonValue && normalized === commonValue ? "" : normalized;
+}
+
+function buildCommonLayers(spec, durationInFrames) {
+  const existing = Array.isArray(spec?.common_layers) ? spec.common_layers : [];
+  const existingIds = new Set(existing.map((layer) => String(layer?.layer_id || "").trim()).filter(Boolean));
+  const duration = Math.max(1, Math.round(toNumber(durationInFrames, 1)));
+  const layers = existing.map((layer) => ({
+    ...layer,
+    start_frame: Number.isFinite(Number(layer?.start_frame)) ? Math.max(0, Math.round(Number(layer.start_frame))) : 0,
+    duration_frames: duration
+  }));
+  const background = normalizeImageRef(spec?.background || spec?.video_spec?.style?.background || "");
+  const dialogBox = resolveCommonDialogBox(spec?.scenes);
+  if (background && !existingIds.has("background")) {
+    layers.push({
+      layer_id: "background",
+      type: "image",
+      src: background,
+      z_index: 0,
+      fit: "cover",
+      start_frame: 0,
+      duration_frames: duration
+    });
+  }
+  if (dialogBox && !existingIds.has("logboard")) {
+    layers.push({
+      layer_id: "logboard",
+      type: "image",
+      src: dialogBox,
+      z_index: 18,
+      fit: "contain",
+      start_frame: 0,
+      duration_frames: duration
+    });
+  }
+  return layers;
+}
+
+function stripCommonSceneAssets(spec) {
+  const commonLayers = Array.isArray(spec?.common_layers) ? spec.common_layers : [];
+  const commonBackground = normalizeImageRef(commonLayers.find((layer) => layer?.layer_id === "background")?.src || "");
+  const commonDialogBox = normalizeImageRef(commonLayers.find((layer) => layer?.layer_id === "logboard")?.src || "");
+  if (!Array.isArray(spec?.scenes)) return;
+  spec.scenes = spec.scenes.map((scene) => {
+    const next = scene && typeof scene === "object" ? {...scene} : {};
+    if (next.scene_assets && typeof next.scene_assets === "object") {
+      next.scene_assets = {
+        ...next.scene_assets,
+        background: stripCommonAsset(next.scene_assets.background, commonBackground),
+        dialog_box: stripCommonAsset(next.scene_assets.dialog_box, commonDialogBox)
+      };
+    }
+    if (next.visual_assets && typeof next.visual_assets === "object") {
+      next.visual_assets = {
+        ...next.visual_assets,
+        background: stripCommonAsset(next.visual_assets.background, commonBackground),
+        dialog_box: stripCommonAsset(next.visual_assets.dialog_box, commonDialogBox)
+      };
+    }
+    if (next.composition && typeof next.composition === "object") {
+      next.composition = {...next.composition};
+      if (next.composition.background && typeof next.composition.background === "object") {
+        next.composition.background = {
+          ...next.composition.background,
+          image_path: stripCommonAsset(next.composition.background.image_path, commonBackground)
+        };
+      }
+      if (next.composition.dialog_box && typeof next.composition.dialog_box === "object") {
+        next.composition.dialog_box = {
+          ...next.composition.dialog_box,
+          image_path: stripCommonAsset(next.composition.dialog_box.image_path, commonDialogBox)
+        };
+      }
+    }
+    return next;
+  });
+}
+
 function resolveSceneAssets(scene) {
   const visual = scene?.visual_assets && typeof scene.visual_assets === "object" ? scene.visual_assets : {};
   const hookVisual = scene?.hook_visual && typeof scene.hook_visual === "object" ? scene.hook_visual : {};
@@ -302,6 +415,16 @@ function flattenScenesToSegments(spec, projectAudioDir) {
 
 function prepareRendererSpec(spec, projectAudioDir) {
   const nextSpec = JSON.parse(JSON.stringify(spec));
+  const fps = resolveFps(nextSpec);
+  const durationInFrames =
+    toNumber(nextSpec?.total_frames, NaN) ||
+    toNumber(nextSpec?.durationInFrames, NaN) ||
+    toNumber(nextSpec?.video_spec?.format?.durationInFrames, NaN) ||
+    Math.max(1, Math.round(toNumber(nextSpec?.durationSec ?? nextSpec?.video_spec?.format?.duration, 30) * fps));
+  nextSpec.total_frames = Math.max(1, Math.round(durationInFrames));
+  nextSpec.durationInFrames = Math.max(1, Math.round(durationInFrames));
+  nextSpec.common_layers = buildCommonLayers(nextSpec, nextSpec.durationInFrames);
+  stripCommonSceneAssets(nextSpec);
   if (!Array.isArray(nextSpec.segments) || nextSpec.segments.length === 0) {
     nextSpec.segments = flattenScenesToSegments(nextSpec, projectAudioDir);
   }
