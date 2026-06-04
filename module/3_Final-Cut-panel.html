@@ -763,7 +763,6 @@
       const SCENE_EFFECT_GRAYSCALE_EXCEPT_MONOLITH = "grayscale_except_monolith";
       const SCENE_ASSET_DEFAULTS = {
         background: ["backgrounds/classroom-daytime.png"],
-        slide: ["slide/000/001.png"],
         monolith: ["monolith/monolith-0.png"],
         dialog_box: ["logboard/logboard-BK.png"],
         character_left: ["characters/metan/metan-0.png"],
@@ -1637,25 +1636,30 @@
 
       const getRunId = () => normalizeRunId(localStorage.getItem(OUTPUT_RUN_ID_KEY));
 
-      const getSlideRenderBaseByRunId = () => {
+      const getSlideProjectId = (projectId = selectedProjectId()) => {
+        const fromProject = String(projectId || state.selectedProjectId || "").trim();
+        if (fromProject) return fromProject.padStart(4, "0");
         const runId = getRunId();
-        return `images/frames/slide/${runId === "auto" ? "000" : runId}`;
+        return (runId === "auto" ? "0000" : runId).padStart(4, "0");
       };
 
-      const normalizeSlideAssetRef = (value) => {
+      const getSlideProjectBase = (projectId = selectedProjectId()) => {
+        return `projects/${getSlideProjectId(projectId)}/outputs/slide`;
+      };
+
+      const normalizeSlideAssetRef = (value, projectId = selectedProjectId()) => {
         const normalized = normalizeImageRef(value || "");
         if (!normalized) return "";
-        if (/^images\/frames\/slide\//i.test(normalized)) return normalized;
-        if (/^assets\/images\/frames\/slide\//i.test(normalized)) {
-          return normalized.replace(/^assets\/images\//i, "images/");
+        if (/^projects\/[^/]+\/outputs\/slide\/.+\.(png|jpe?g|webp|avif)$/i.test(normalized)) {
+          return normalized;
         }
         if (!/\.(png|jpe?g|webp|avif)$/i.test(normalized)) return "";
         const fileName = normalized.split("/").pop() || "";
         const matched = fileName.match(/^(?:slide[_-]?)?0*(\d+)(?:[-_].*)?(\.(?:png|jpe?g|webp|avif))$/i);
-        if (!matched) return `${getSlideRenderBaseByRunId()}/${fileName}`;
+        if (!matched) return `${getSlideProjectBase(projectId)}/${fileName}`;
         const n = Number(matched[1]);
         const ext = String(matched[2] || ".png").toLowerCase();
-        return `${getSlideRenderBaseByRunId()}/${String(n).padStart(3, "0")}${ext}`;
+        return `${getSlideProjectBase(projectId)}/slide${String(n).padStart(2, "0")}${ext}`;
       };
 
       const normalizeSubdirRef = (value) => {
@@ -2177,7 +2181,7 @@
             `projects/${normalizedProjectId}/outputs/slide`,
             /\.(png|jpe?g|webp|avif)$/i
           );
-          projectSlideFileCatalog = normalizeStringList(files.map((file) => normalizeSlideAssetRef(file)));
+          projectSlideFileCatalog = normalizeStringList(files.map((file) => normalizeSlideAssetRef(file, normalizedProjectId)));
         } catch (_err) {
           projectSlideFileCatalog = [];
         }
@@ -2743,9 +2747,23 @@
         ].join("");
       };
 
+      const buildSlideOptionsHtml = (selected) => {
+        const projectId = selectedProjectId();
+        const selectedValue = normalizeSlideAssetRef(selected || "", projectId);
+        const list = normalizeStringList((projectSlideFileCatalog || []).map((value) => normalizeSlideAssetRef(value, projectId)));
+        if (selectedValue && !list.includes(selectedValue)) list.unshift(selectedValue);
+        return [
+          `<option value="">${escapeHtml("(未指定)")}</option>`,
+          ...list.map((value) => {
+            const sel = selectedValue === value ? " selected" : "";
+            return `<option value="${escapeHtml(value)}"${sel}>${escapeHtml(value)}</option>`;
+          })
+        ].join("");
+      };
+
       const buildScenePartOptionsHtml = (fieldKey, selected) => {
         if (fieldKey === "slide") {
-          return buildSelectOptionsHtml(selected, projectSlideFileCatalog, "(未指定)");
+          return buildSlideOptionsHtml(selected);
         }
         const shared = Array.isArray(sharedAssetFileCatalog[fieldKey]) ? sharedAssetFileCatalog[fieldKey] : [];
         const defaults = SCENE_ASSET_DEFAULTS[fieldKey] || [];
@@ -3214,13 +3232,23 @@
         return layers;
       };
 
-      const buildHookBackgroundLayers = (scenes, durationInFrames) => {
+      const resolveSceneBackgroundLayerSrc = (scene, sceneIndex, commonBackground) => {
+        const visualAssets = scene?.visual_assets && typeof scene.visual_assets === "object" ? scene.visual_assets : {};
+        const hookPictureScene = isHookPictureScene(scene, sceneIndex);
+        const src = hookPictureScene
+          ? normalizeImageRef(visualAssets.hook_background || scene?.hook_visual?.background?.image_path || "")
+          : scene.use_background_override
+            ? normalizeBackgroundRef(scene.background_override || "")
+            : normalizeImageRef(visualAssets.background || scene?.composition?.background?.image_path || "");
+        if (!src || src === commonBackground) return "";
+        return !hookPictureScene && scene.use_background_override ? `assets/background/${src}` : src;
+      };
+
+      const buildSceneBackgroundLayers = (scenes, durationInFrames, commonBackground = "") => {
         const durationLimit = Math.max(1, normalizeFrame(durationInFrames, 1));
         return (scenes || []).reduce((layers, scene, sceneIndex) => {
-          if (!isHookPictureScene(scene, sceneIndex)) return layers;
-          const visualAssets = scene?.visual_assets && typeof scene.visual_assets === "object" ? scene.visual_assets : {};
-          const hookBackgroundSrc = normalizeImageRef(visualAssets.hook_background || scene?.hook_visual?.background?.image_path || "");
-          if (!hookBackgroundSrc) return layers;
+          const backgroundSrc = resolveSceneBackgroundLayerSrc(scene, sceneIndex, commonBackground);
+          if (!backgroundSrc) return layers;
 
           const timedSubs = (scene.sub_scenes || [])
             .map((sub) => normalizeSubSceneFrameTiming(sub))
@@ -3241,9 +3269,9 @@
           const safeDuration = Math.max(1, Math.min(durationLimit - safeStart, endFrame - startFrame));
 
           layers.push({
-            layer_id: `hook-background-${scene.scene_id || sceneIndex + 1}`,
+            layer_id: `${isHookPictureScene(scene, sceneIndex) ? "hook" : "scene"}-background-${scene.scene_id || sceneIndex + 1}`,
             type: "image",
-            src: hookBackgroundSrc,
+            src: backgroundSrc,
             z_index: 0,
             fit: "cover",
             start_frame: safeStart,
@@ -3277,9 +3305,6 @@
             hook_character: normalizeImageRef(visualAssets.hook_character || ""),
             hook_bubble: normalizeImageRef(visualAssets.hook_bubble || "")
           };
-          if (hookPictureScene && outputVisualAssets.hook_background) {
-            outputVisualAssets.background = outputVisualAssets.hook_background;
-          }
           const screenText = String(scene.screen_text || "");
           const screenTextFontSize = normalizeScreenTextFontSize(scene.screen_text_font_size, SCREEN_TEXT_STYLE_DEFAULTS.font_size);
           const screenTextFontFamily = String(scene.screen_text_font_family || SCREEN_TEXT_STYLE_DEFAULTS.font_family);
@@ -3547,7 +3572,7 @@
         spec.total_frames = durationInFrames;
         spec.fps = Math.max(1, fps);
         spec.common_layers = buildCommonLayers(backgroundPng, commonDialogBox, durationInFrames)
-          .concat(buildHookBackgroundLayers(state.scenes, durationInFrames));
+          .concat(buildSceneBackgroundLayers(state.scenes, durationInFrames, backgroundPng));
         spec.tts_transform = state.transformMode === "zundamon" ? "zundamon" : "";
         if (!spec.video_spec) spec.video_spec = {};
         if (!spec.video_spec.audio) spec.video_spec.audio = {};
@@ -4073,6 +4098,8 @@
         const payload = {};
         state.scenes.forEach((scene, sceneIndex) => {
           const hookPictureScene = isHookPictureScene(scene, sceneIndex);
+          const savedVisualAssets = deepClone(scene.visual_assets || {});
+          savedVisualAssets.slide = normalizeSlideAssetRef(savedVisualAssets.slide || "");
           payload[scene.scene_id] = {
             emotion: normalizeEmotion(scene.emotion),
             voice_speed: normalizeSpeed(scene.voice_speed),
@@ -4093,7 +4120,7 @@
             screen_text_line_chars: normalizePx(scene.screen_text_line_chars, SCREEN_TEXT_STYLE_DEFAULTS.line_chars, 1, 120),
             use_background_override: !!scene.use_background_override,
             background_override: normalizeBackgroundRef(scene.background_override || ""),
-            visual_assets: deepClone(scene.visual_assets || {}),
+            visual_assets: savedVisualAssets,
             speaker_side: scene.speaker_side || "none",
             left_diff_images: normalizeStringList(scene.left_diff_images || []),
             right_diff_images: normalizeStringList(scene.right_diff_images || []),

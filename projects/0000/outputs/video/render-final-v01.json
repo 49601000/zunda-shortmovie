@@ -86,7 +86,7 @@
       "line_break_mode": "auto",
       "line_chars": 18,
       "visual_assets": {
-        "background": "",
+        "background": "images/backgrounds/hook-bg-dots-yl.png",
         "slide": "",
         "monolith": "",
         "dialog_box": "",
@@ -98,7 +98,7 @@
       },
       "composition": {
         "background": {
-          "image_path": ""
+          "image_path": "images/backgrounds/hook-bg-dots-yl.png"
         },
         "slide_area": {
           "image_path": ""
@@ -187,6 +187,14 @@
           "image_path": "images/backgrounds/hook-bg-dots-yl.png"
         },
         "character": {
+          "enabled": true,
+          "x": 450,
+          "y": 1130,
+          "width": 800,
+          "height": 820,
+          "scale": 2,
+          "objectFit": "contain",
+          "objectPosition": "center top",
           "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
           "lip_sync_image_paths": [
             "images/characters/zundamon/zundamon-normal-0001.png",
@@ -1337,7 +1345,7 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "images/frames/slide/000/002.png",
+        "slide": "projects/0000/outputs/slide/slide02.png",
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
@@ -1351,7 +1359,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": "images/frames/slide/000/002.png"
+          "image_path": "projects/0000/outputs/slide/slide02.png"
         },
         "monolith": {
           "image_path": ""
@@ -1505,13 +1513,13 @@
       "duration_frames": 933
     },
     {
-      "layer_id": "logboard",
+      "layer_id": "hook-background-scene_001",
       "type": "image",
-      "src": "logboard/logboard-BK.png",
-      "z_index": 18,
-      "fit": "contain",
+      "src": "images/backgrounds/hook-bg-dots-yl.png",
+      "z_index": 0,
+      "fit": "cover",
       "start_frame": 0,
-      "duration_frames": 933
+      "duration_frames": 60
     }
   ]
 }

@@ -145,11 +145,17 @@ function buildCommonLayers(spec, durationInFrames) {
   const existing = Array.isArray(spec?.common_layers) ? spec.common_layers : [];
   const existingIds = new Set(existing.map((layer) => String(layer?.layer_id || "").trim()).filter(Boolean));
   const duration = Math.max(1, Math.round(toNumber(durationInFrames, 1)));
-  const layers = existing.map((layer) => ({
-    ...layer,
-    start_frame: Number.isFinite(Number(layer?.start_frame)) ? Math.max(0, Math.round(Number(layer.start_frame))) : 0,
-    duration_frames: duration
-  }));
+  const layers = existing.map((layer) => {
+    const startFrame = Number.isFinite(Number(layer?.start_frame)) ? Math.max(0, Math.round(Number(layer.start_frame))) : 0;
+    const layerDuration = Number.isFinite(Number(layer?.duration_frames))
+      ? Math.max(1, Math.round(Number(layer.duration_frames)))
+      : Math.max(1, duration - Math.min(startFrame, duration - 1));
+    return {
+      ...layer,
+      start_frame: startFrame,
+      duration_frames: layerDuration
+    };
+  });
   const background = normalizeImageRef(spec?.background || spec?.video_spec?.style?.background || "");
   const dialogBox = resolveCommonDialogBox(spec?.scenes);
   if (background && !existingIds.has("background")) {
