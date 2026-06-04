@@ -399,6 +399,17 @@
     .field.span-3 { grid-column: span 3; }
     .field.span-6 { grid-column: span 6; }
 
+    .command-copy-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .command-copy-row input {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
     .readonly {
       border: 1px solid var(--line);
       border-radius: 10px;
@@ -501,7 +512,7 @@
           <button id="saveProjectRenderBtn" class="secondary" disabled>render-final-v01.jsonに書き出し・反映</button>
         </div>
       </div>
-      <div id="projectPathHint" class="path-hint">反映先: projects/{id}/outputs/video/render-final-v01.json</div>
+      <div id="projectPathHint" class="path-hint">反映先: 20_ショート動画v2/projects/{id}/outputs/video/render-final-v01.json</div>
       <div id="status" class="status"></div>
     </section>
 
@@ -517,6 +528,13 @@
         <div class="field span-6">
           <label for="engineUrlInput">VOICEVOX endpoint</label>
           <input id="engineUrlInput" type="url" value="http://127.0.0.1:5510" placeholder="http://127.0.0.1:5510" />
+        </div>
+        <div class="field span-6">
+          <label for="voicevoxCommandInput">ボイスを生成</label>
+          <div class="command-copy-row">
+            <input id="voicevoxCommandInput" type="text" value="npm run voicevox" readonly />
+            <button id="copyVoicevoxCmdBtn" class="ghost" type="button">コピー</button>
+          </div>
         </div>
       </div>
     </section>
@@ -599,7 +617,7 @@
       <details class="collapse" open>
         <summary class="seg-index">Shared Assets（scene part候補）</summary>
         <div class="row">
-          <button id="pickSharedAssetsRootBtn" class="secondary">shared-assets ルート選択</button>
+          <button id="pickSharedAssetsRootBtn" class="secondary">workspaceから自動読込</button>
           <button id="refreshSharedAssetsBtn" class="ghost">候補を再読込</button>
         </div>
         <div class="grid" style="margin-top:10px">
@@ -615,7 +633,7 @@
           <div class="field span-3"><label for="sharedAssetsSubLeftCharInput">左キャラサブフォルダ</label><input id="sharedAssetsSubLeftCharInput" value="images/characters/metan" /></div>
           <div class="field span-3"><label for="sharedAssetsSubRightCharInput">右キャラサブフォルダ</label><input id="sharedAssetsSubRightCharInput" value="images/characters/zundamon, images/frames" /></div>
         </div>
-        <p class="sub" style="margin-top:8px">推奨: MyAntigravity/02_hobby/shared-assets。サブフォルダはカンマ区切りで複数指定できます。</p>
+        <p class="sub" style="margin-top:8px">推奨: 02_hobby をワークスペース選択すると shared-assets を自動検出できます。サブフォルダはカンマ区切りで複数指定できます。</p>
       </details>
     </section>
 
@@ -688,6 +706,7 @@
       const RENDER_DRAFT_STEM = "06-render-draft";
       const RENDER_DRAFT_NAME = "06-render-draft-v01.json";
       const RENDER_FINAL_NAME = "render-final-v01.json";
+      const VOICEVOX_COMMAND = "npm run voicevox";
       const sharedConfig = window.VOICEVOX_SHARED_CONFIG || {};
       const FALLBACK_STYLE_MAP = {
         normal: 3,
@@ -768,6 +787,15 @@
         line_break_mode: "auto",
         line_chars: 18
       };
+      const SCREEN_TEXT_COLOR_PRESETS = [
+        { label: "白（標準）", value: "#ffffff" },
+        { label: "ずんだもん（ノーマル）", value: "#86d654" },
+        { label: "ずんだもん（強調）", value: "#a6ff6b" },
+        { label: "ずんだもん（落ち着き）", value: "#6cb84a" },
+        { label: "めたん（ノーマル）", value: "#ff5ca3" },
+        { label: "めたん（落ち着き）", value: "#eb74aa" },
+        { label: "めたん（強調）", value: "#ff46b4" }
+      ];
       const HOOK_TEXT_STYLE_DEFAULTS = {
         top: { fill_color: "#303030", outline_color: "#ffffff", outline_scale: 1.06, fill_visible: false },
         main: { fill_color: "#e60012", outline_color: "#ffffff", outline_scale: 1.06, fill_visible: true },
@@ -868,6 +896,8 @@
         saveProjectRenderBtn: document.getElementById("saveProjectRenderBtn"),
         projectPathHint: document.getElementById("projectPathHint"),
         engineUrlInput: document.getElementById("engineUrlInput"),
+        voicevoxCommandInput: document.getElementById("voicevoxCommandInput"),
+        copyVoicevoxCmdBtn: document.getElementById("copyVoicevoxCmdBtn"),
         saveSystemBtn: document.getElementById("saveSystemBtn"),
         fetchSpeakersBtn: document.getElementById("fetchSpeakersBtn"),
         characterGrid: document.getElementById("characterGrid"),
@@ -933,6 +963,10 @@
       };
 
       let workspaceHandle = null;
+      let workspaceParentHandle = null;
+      let workspaceLabel = "";
+      let workspacePathPrefix = "";
+      let workspaceSiblingSharedAssetsLabel = "";
       let projectRows = [];
       let backgroundManifestDirHandle = null;
       let speakersCatalog = [];
@@ -972,11 +1006,31 @@
         return String(Number(safe.toFixed(3))).replace(/\.0+$/, "").replace(/(\.\d*?)0+$/, "$1");
       };
 
+      const roundTimeStep = (value, step = 0.1) => {
+        const safeStep = Number.isFinite(Number(step)) && Number(step) > 0 ? Number(step) : 0.1;
+        return Number((Math.round(toNum(value, 0) / safeStep) * safeStep).toFixed(3));
+      };
+
+      const normalizeSubSceneStart = (value, fallback = 0) => Math.max(0, roundTimeStep(toNum(value, fallback), 0.1));
+      const normalizeSubSceneDuration = (value, fallback = 1) => Math.max(0.1, roundTimeStep(toNum(value, fallback), 0.1));
+
+      const relayNextSubSceneStart = (subScenes, editedIndex) => {
+        if (!Array.isArray(subScenes) || editedIndex < 0 || editedIndex + 1 >= subScenes.length) return subScenes;
+        const edited = subScenes[editedIndex];
+        if (!edited) return subScenes;
+        const nextStart = normalizeSubSceneStart(
+          normalizeSubSceneStart(edited.start_sec, 0) + normalizeSubSceneDuration(edited.duration_sec, 1),
+          0
+        );
+        return subScenes.map((sub, index) => index === editedIndex + 1 ? {...sub, start_sec: nextStart} : sub);
+      };
+
       const setStatus = (text, mode) => {
         el.status.textContent = text || "";
-        el.status.classList.remove("ok", "error");
+        el.status.classList.remove("ok", "error", "warn");
         if (mode === "ok") el.status.classList.add("ok");
         if (mode === "error") el.status.classList.add("error");
+        if (mode === "warn") el.status.classList.add("warn");
       };
 
       const readText = async (fileHandle) => {
@@ -1017,6 +1071,28 @@
         return current;
       };
 
+      const getDirectoryByPathIfExists = async (baseDir, parts) => {
+        try {
+          return await getDirectoryByPath(baseDir, parts, {create: false});
+        } catch (_err) {
+          return null;
+        }
+      };
+
+      const inferAppWorkspaceDirName = () => {
+        try {
+          const decodedPath = decodeURIComponent(String(window.location?.pathname || "")).replace(/\\/g, "/");
+          const parts = decodedPath.split("/").filter(Boolean);
+          const moduleIndex = parts.lastIndexOf("module");
+          if (moduleIndex > 0) return parts[moduleIndex - 1] || "";
+        } catch (_err) {
+          // location may be unavailable in unusual embed contexts.
+        }
+        return "20_ショート動画v2";
+      };
+
+      const APP_WORKSPACE_DIR_NAME = inferAppWorkspaceDirName();
+
       const bindBackgroundManifestTargetFromWorkspace = async () => {
         if (!workspaceHandle) return null;
         const candidates = [
@@ -1050,6 +1126,58 @@
         if (!workspaceHandle) throw new Error("ワークスペース未接続です。");
         if (workspaceHandle.name === "projects") return workspaceHandle;
         return workspaceHandle.getDirectoryHandle("projects", {create});
+      };
+
+      const directoryHasProjects = async (dirHandle) => {
+        if (!dirHandle) return false;
+        if (dirHandle.name === "projects") return true;
+        return Boolean(await getDirectoryByPathIfExists(dirHandle, ["projects"]));
+      };
+
+      const resolveWorkspaceSelection = async (selectedDir) => {
+        if (await directoryHasProjects(selectedDir)) {
+          return {
+            handle: selectedDir,
+            parentHandle: null,
+            label: selectedDir.name || "(workspace)",
+            pathPrefix: "",
+            siblingSharedAssetsLabel: ""
+          };
+        }
+
+        const appDirName = APP_WORKSPACE_DIR_NAME || "";
+        if (appDirName) {
+          const appDir = await getDirectoryByPathIfExists(selectedDir, [appDirName]);
+          if (await directoryHasProjects(appDir)) {
+            return {
+              handle: appDir,
+              parentHandle: selectedDir,
+              label: normalizeSubdirRef(`${selectedDir.name || ""}/${appDirName}`) || appDirName,
+              pathPrefix: appDirName,
+              siblingSharedAssetsLabel: "shared-assets"
+            };
+          }
+
+          const hobbyDir = await getDirectoryByPathIfExists(selectedDir, ["02_hobby"]);
+          const nestedAppDir = hobbyDir ? await getDirectoryByPathIfExists(hobbyDir, [appDirName]) : null;
+          if (await directoryHasProjects(nestedAppDir)) {
+            return {
+              handle: nestedAppDir,
+              parentHandle: hobbyDir,
+              label: normalizeSubdirRef(`${selectedDir.name || ""}/02_hobby/${appDirName}`) || appDirName,
+              pathPrefix: normalizeSubdirRef(`02_hobby/${appDirName}`),
+              siblingSharedAssetsLabel: "02_hobby/shared-assets"
+            };
+          }
+        }
+
+        return {
+          handle: selectedDir,
+          parentHandle: null,
+          label: selectedDir.name || "(workspace)",
+          pathPrefix: "",
+          siblingSharedAssetsLabel: ""
+        };
       };
 
       const getProjectHandles = async (projectId) => {
@@ -1118,9 +1246,11 @@
         el.loadProjectRenderBtn.disabled = !hasWorkspace || !projectId;
         el.saveProjectRenderBtn.disabled = !hasWorkspace || !projectId || !state.spec;
         const renderName = RENDER_FINAL_NAME;
+        const displayWorkspacePrefix = hasWorkspace ? workspacePathPrefix : APP_WORKSPACE_DIR_NAME;
+        const basePath = normalizeSubdirRef(`${displayWorkspacePrefix}/projects`);
         el.projectPathHint.textContent = projectId
-          ? `反映先: projects/${projectId}/outputs/video/${renderName}`
-          : `反映先: projects/{id}/outputs/video/${RENDER_FINAL_NAME}`;
+          ? `反映先: ${basePath}/${projectId}/outputs/video/${renderName}`
+          : `反映先: ${basePath}/{id}/outputs/video/${RENDER_FINAL_NAME}`;
       };
 
       const loadProjects = async () => {
@@ -1150,11 +1280,23 @@
             setStatus("ワークスペースへの読み書き許可が必要です。", "error");
             return;
           }
-          workspaceHandle = handle;
+          const resolvedWorkspace = await resolveWorkspaceSelection(handle);
+          workspaceHandle = resolvedWorkspace.handle;
+          workspaceParentHandle = resolvedWorkspace.parentHandle;
+          workspaceLabel = resolvedWorkspace.label;
+          workspacePathPrefix = normalizeSubdirRef(resolvedWorkspace.pathPrefix || "");
+          workspaceSiblingSharedAssetsLabel = normalizeSubdirRef(resolvedWorkspace.siblingSharedAssetsLabel || "");
+          sharedAssetsRootDirHandle = null;
+          sharedAssetsRootLabel = "";
+          resetSharedAssetFileCatalog();
           await loadProjects();
           await bindBackgroundManifestTargetFromWorkspace();
           await generateBackgroundManifestAndRefresh({useBoundTarget: true});
-          setStatus(`projects を読み込みました（${projectRows.length}件）。manifest更新先: ${state.backgroundManifestTargetLabel}`, "ok");
+          const sharedAssetsResult = await autoBindSharedAssetsRootFromWorkspace();
+          const sharedAssetsText = sharedAssetsResult
+            ? ` / shared-assets: ${sharedAssetsResult.label}（${sharedAssetsResult.count}件）`
+            : " / shared-assets: 未検出（02_hobby 選択時は shared-assets を自動読込）";
+          setStatus(`projects を読み込みました（${projectRows.length}件）。manifest更新先: ${state.backgroundManifestTargetLabel}${sharedAssetsText}`, sharedAssetsResult ? "ok" : "warn");
         } catch (error) {
           if (error && error.name === "AbortError") {
             setStatus("ワークスペース選択をキャンセルしました。", "");
@@ -1365,6 +1507,19 @@
           return "transparent";
         }
         return normalizeColorHex(value, fallback);
+      };
+
+      const renderScreenTextColorPresetOptions = (selectedColor) => {
+        const normalizedSelected = normalizeScreenTextColor(selectedColor, SCREEN_TEXT_STYLE_DEFAULTS.color);
+        const rows = SCREEN_TEXT_COLOR_PRESETS.map((preset) => {
+          const value = normalizeScreenTextColor(preset.value, SCREEN_TEXT_STYLE_DEFAULTS.color);
+          const selected = value === normalizedSelected ? " selected" : "";
+          return `<option value="${escapeHtml(value)}"${selected}>${escapeHtml(`${preset.label} (${value.toUpperCase()})`)}</option>`;
+        });
+        if (normalizedSelected !== "transparent" && !SCREEN_TEXT_COLOR_PRESETS.some((preset) => normalizeScreenTextColor(preset.value, SCREEN_TEXT_STYLE_DEFAULTS.color) === normalizedSelected)) {
+          rows.unshift(`<option value="${escapeHtml(normalizedSelected)}" selected>現在の色 (${escapeHtml(normalizedSelected.toUpperCase())})</option>`);
+        }
+        return rows.join("");
       };
 
       const normalizeImageRef = (value) => {
@@ -1959,6 +2114,69 @@
         }, 0);
       };
 
+      const bindSharedAssetsRoot = async (rootDir, rootLabel) => {
+        sharedAssetsRootDirHandle = rootDir;
+        sharedAssetsRootLabel = rootLabel || rootDir.name || "(shared-assets)";
+        await refreshSharedAssetFileCatalog();
+        writeSystemSettings();
+        return countSharedAssetFiles();
+      };
+
+      const autoBindSharedAssetsRootFromWorkspace = async () => {
+        if (!workspaceHandle) return null;
+        const candidates = [];
+        if (String(workspaceHandle.name || "").toLowerCase() === "shared-assets") {
+          candidates.push({dir: workspaceHandle, label: workspaceHandle.name || "shared-assets"});
+        }
+        if (workspaceParentHandle) {
+          candidates.push({
+            base: workspaceParentHandle,
+            parts: ["shared-assets"],
+            label: workspaceSiblingSharedAssetsLabel || "shared-assets"
+          });
+        }
+        candidates.push({
+          base: workspaceHandle,
+          parts: ["shared-assets"],
+          label: workspaceLabel ? `${workspaceLabel}/shared-assets` : "shared-assets"
+        });
+
+        for (let i = 0; i < candidates.length; i += 1) {
+          const candidate = candidates[i];
+          try {
+            const dir = candidate.dir || await getDirectoryByPath(candidate.base, candidate.parts, {create: false});
+            if (!dir || String(dir.name || "").toLowerCase() !== "shared-assets") continue;
+            const count = await bindSharedAssetsRoot(dir, candidate.label);
+            return {label: sharedAssetsRootLabel, count};
+          } catch (_err) {
+            // Try the next workspace-relative candidate.
+          }
+        }
+        return null;
+      };
+
+      const loadSharedAssetsFromWorkspace = async () => {
+        if (!workspaceHandle) {
+          setStatus("先にワークスペースを選択してください。", "warn");
+          return;
+        }
+        try {
+          const result = await autoBindSharedAssetsRootFromWorkspace();
+          if (result) {
+            setStatus(`shared-assets を ${result.label} から自動読込しました。候補数: ${result.count}`, "ok");
+            return;
+          }
+          sharedAssetsRootDirHandle = null;
+          sharedAssetsRootLabel = "";
+          resetSharedAssetFileCatalog();
+          renderSharedAssetsRootLabel();
+          renderAll();
+          setStatus("shared-assets を自動検出できませんでした。02_hobby をワークスペース選択してください。", "warn");
+        } catch (_err) {
+          setStatus("shared-assets の自動読込に失敗しました。", "error");
+        }
+      };
+
       const pickSharedAssetsRoot = async () => {
         if (typeof window.showDirectoryPicker !== "function") {
           setStatus("このブラウザでは shared-assets 連携（File System Access API）が使えません。", "error");
@@ -2000,7 +2218,7 @@
       const refreshSharedAssetsFromUi = async () => {
         if (!sharedAssetsRootDirHandle) {
           writeSystemSettings();
-          setStatus("先に shared-assets ルートを選択してください。", "warn");
+          setStatus("先に workspaceから自動読込 を実行してください。", "warn");
           return;
         }
         try {
@@ -3176,11 +3394,11 @@
                 </div>
                 <div class="field">
                   <label>start_sec</label>
-                  <input name="start_sec" type="number" min="0" step="0.01" value="${formatSec(sub.start_sec)}" />
+                  <input name="start_sec" type="number" min="0" step="0.1" value="${formatSec(sub.start_sec)}" />
                 </div>
                 <div class="field">
                   <label>duration_sec</label>
-                  <input name="duration_sec" type="number" min="0" step="0.01" value="${formatSec(duration)}" />
+                  <input name="duration_sec" type="number" min="0.1" step="0.1" value="${formatSec(duration)}" />
                 </div>
               </div>
             `;
@@ -3291,6 +3509,10 @@
                         <label>カラー</label>
                         <input name="screen_text_color" data-scope="scene" type="color" value="${escapeHtml(normalizeColorHex(scene.screen_text_color || SCREEN_TEXT_STYLE_DEFAULTS.color, SCREEN_TEXT_STYLE_DEFAULTS.color))}" />
                       </div>
+                      <div class="field span-2">
+                        <label>カラープリセット</label>
+                        <select name="screen_text_color_preset" data-scope="scene">${renderScreenTextColorPresetOptions(scene.screen_text_color || SCREEN_TEXT_STYLE_DEFAULTS.color)}</select>
+                      </div>
                       <div class="field">
                         <label>改行モード</label>
                         <select name="screen_text_line_break_mode" data-scope="scene">
@@ -3309,6 +3531,12 @@
                   <details class="collapse inner-card" open>
                     <summary class="inner-card-title">SCENEレイヤー構成</summary>
                     <div class="inner-card-body">
+                      ${i === 1 ? `
+                        <div class="row" style="margin-top:0;margin-bottom:10px">
+                          <button type="button" class="mini apply-scene2-visuals-btn">Scene 2の画像構成を以降のsceneへ反映</button>
+                          <span class="sub">背景・スライド・モノリス・ダイアログ枠・左右キャラ・左右差分1/2のみコピーします。</span>
+                        </div>
+                      ` : ""}
                       <div class="grid">
                         <div class="field span-2"><label>背景画像</label><select name="visual_background" data-scope="scene">${buildScenePartOptionsHtml("background", visualAssets.background || "")}</select></div>
                         <div class="field span-2"><label>スライド画像</label><select name="visual_slide" data-scope="scene">${buildScenePartOptionsHtml("slide", visualAssets.slide || "")}</select></div>
@@ -3744,6 +3972,15 @@
         }
       };
 
+      const copyVoicevoxCommand = async () => {
+        try {
+          await navigator.clipboard.writeText(el.voicevoxCommandInput.value || VOICEVOX_COMMAND);
+          setStatus("VOICEVOX生成コマンドをコピーしました。", "ok");
+        } catch (_err) {
+          setStatus("VOICEVOX生成コマンドのコピーに失敗しました。", "error");
+        }
+      };
+
       const exportJson = () => {
         const blob = new Blob([el.jsonOutput.value + "\n"], {type: "application/json;charset=utf-8"});
         const url = URL.createObjectURL(blob);
@@ -3773,34 +4010,36 @@
           if ((scene.key || scene.scene_id) !== sceneKey) return scene;
 
           if (subKey) {
+            let editedSubIndex = -1;
+            let shouldRelaySubTime = false;
+            const nextSubScenes = (scene.sub_scenes || []).map((sub, subIndex) => {
+              if ((sub.key || sub.sub_scene_id) !== subKey) return sub;
+              editedSubIndex = subIndex;
+              if (fieldName === "screen_text") {
+                const screenText = String(target.value || "");
+                if (!screenText.trim()) return null;
+                return {
+                  ...sub,
+                  screen_text: screenText,
+                  char_count: charLen(screenText)
+                };
+              }
+              if (fieldName === "display_mode") {
+                return {...sub, display_mode: normalizeDisplayMode(target.value)};
+              }
+              if (fieldName === "start_sec") {
+                shouldRelaySubTime = true;
+                return {...sub, start_sec: normalizeSubSceneStart(target.value, sub.start_sec)};
+              }
+              if (fieldName === "duration_sec") {
+                shouldRelaySubTime = true;
+                return {...sub, duration_sec: normalizeSubSceneDuration(target.value, sub.duration_sec)};
+              }
+              return sub;
+            }).filter(Boolean);
             return {
               ...scene,
-              sub_scenes: (scene.sub_scenes || []).map((sub) => {
-                if ((sub.key || sub.sub_scene_id) !== subKey) return sub;
-                if (fieldName === "screen_text") {
-                  const screenText = String(target.value || "");
-                  if (!screenText.trim()) return null;
-                  return {
-                    ...sub,
-                    screen_text: screenText,
-                    char_count: charLen(screenText)
-                  };
-                }
-                if (fieldName === "display_mode") {
-                  return {...sub, display_mode: normalizeDisplayMode(target.value)};
-                }
-                if (fieldName === "start_sec") {
-                  const numeric = Number(target.value);
-                  if (!Number.isFinite(numeric)) return sub;
-                  return {...sub, start_sec: Math.max(0, numeric)};
-                }
-                if (fieldName === "duration_sec") {
-                  const numeric = Number(target.value);
-                  if (!Number.isFinite(numeric)) return sub;
-                  return {...sub, duration_sec: Math.max(0, numeric)};
-                }
-                return sub;
-              }).filter(Boolean)
+              sub_scenes: shouldRelaySubTime ? relayNextSubSceneStart(nextSubScenes, editedSubIndex) : nextSubScenes
             };
           }
 
@@ -3878,6 +4117,9 @@
           }
           if (fieldName === "screen_text_color") {
             return {...scene, screen_text_color: normalizeScreenTextColor(target.value, SCREEN_TEXT_STYLE_DEFAULTS.color)};
+          }
+          if (fieldName === "screen_text_color_preset") {
+            return {...scene, screen_text_color: normalizeScreenTextColor(target.value, scene.screen_text_color || SCREEN_TEXT_STYLE_DEFAULTS.color)};
           }
           if (fieldName === "screen_text_line_break_mode") {
             return {...scene, screen_text_line_break_mode: normalizeLineBreakMode(target.value)};
@@ -3961,6 +4203,60 @@
         renderAll();
       };
 
+      const applyScene2VisualAssetsToFollowingScenes = () => {
+        const sourceIndex = 1;
+        const source = state.scenes[sourceIndex];
+        if (!source) {
+          setStatus("Scene 2がないため、画像構成を反映できません。", "error");
+          return;
+        }
+
+        const sourceAssets = source.visual_assets && typeof source.visual_assets === "object" ? source.visual_assets : {};
+        const visualKeys = [
+          "background",
+          "slide",
+          "monolith",
+          "dialog_box",
+          "character_left",
+          "character_right"
+        ];
+        const copiedVisualAssets = visualKeys.reduce((acc, key) => {
+          acc[key] = normalizeImageRef(sourceAssets[key] || "");
+          return acc;
+        }, {});
+        const copiedLeftDiffs = normalizeStringList([
+          (source.left_diff_images || [])[0] || "",
+          (source.left_diff_images || [])[1] || ""
+        ]);
+        const copiedRightDiffs = normalizeStringList([
+          (source.right_diff_images || [])[0] || "",
+          (source.right_diff_images || [])[1] || ""
+        ]);
+
+        let appliedCount = 0;
+        state.scenes = state.scenes.map((scene, index) => {
+          if (index <= sourceIndex || isHookScene(scene)) return scene;
+          appliedCount += 1;
+          return {
+            ...scene,
+            visual_assets: {
+              ...(scene.visual_assets || {}),
+              ...copiedVisualAssets
+            },
+            left_diff_images: copiedLeftDiffs,
+            right_diff_images: copiedRightDiffs
+          };
+        });
+
+        if (!appliedCount) {
+          setStatus("Scene 3以降に反映できる通常sceneがありません。", "warn");
+          return;
+        }
+
+        renderAll();
+        setStatus(`Scene 2の画像構成をScene 3以降の通常scene ${appliedCount}件へ反映しました。`, "ok");
+      };
+
       const copyVoiceBySceneKey = async (key) => {
         const scene = state.scenes.find((s) => (s.key || s.scene_id) === key);
         if (!scene) {
@@ -3986,11 +4282,32 @@
           setStatus("VOICEVOX endpoint を入力してください。", "error");
           return;
         }
+        const candidates = [base];
+        if (/^https?:\/\/(127\.0\.0\.1|localhost):50021\b/i.test(base) && base !== "http://127.0.0.1:5510") {
+          candidates.push("http://127.0.0.1:5510");
+        }
         setStatus("/speakers 取得中...", "warn");
+        const failures = [];
         try {
-          const res = await fetch(`${base}/speakers`);
-          if (!res.ok) throw new Error(`/speakers failed: ${res.status} ${res.statusText}`);
-          const data = await res.json();
+          let data = null;
+          let usedBase = base;
+          for (const endpoint of candidates) {
+            try {
+              const res = await fetch(`${endpoint}/speakers`);
+              if (!res.ok) throw new Error(`/speakers failed: ${res.status} ${res.statusText}`);
+              data = await res.json();
+              usedBase = endpoint;
+              break;
+            } catch (err) {
+              failures.push(`${endpoint}: ${err && err.message ? err.message : String(err)}`);
+            }
+          }
+          if (!data) {
+            throw new Error(failures.join(" / "));
+          }
+          if (usedBase !== base && el.engineUrlInput) {
+            el.engineUrlInput.value = usedBase;
+          }
           speakersCatalog = normalizeSpeakersCatalog(data);
           if (!speakersCatalog.length) throw new Error("/speakers empty");
           writeSystemSettings();
@@ -4009,9 +4326,9 @@
             };
           });
           renderAll();
-          setStatus(`/speakers を取得しました。話者数: ${speakersCatalog.length}`, "ok");
+          setStatus(`/speakers を取得しました。話者数: ${speakersCatalog.length} endpoint: ${usedBase}`, "ok");
         } catch (err) {
-          setStatus(`VOICEVOX /speakers 取得失敗: ${err && err.message ? err.message : String(err)}`, "error");
+          setStatus(`VOICEVOX /speakers 取得失敗: ${err && err.message ? err.message : String(err)}。50021直叩きで失敗する場合は npm run voicevox:proxy を起動し、endpoint を http://127.0.0.1:5510 にしてください。`, "error");
         }
       };
 
@@ -4064,7 +4381,8 @@
       });
 
       el.fetchSpeakersBtn.addEventListener("click", fetchSpeakers);
-      el.pickSharedAssetsRootBtn.addEventListener("click", pickSharedAssetsRoot);
+      el.copyVoicevoxCmdBtn.addEventListener("click", copyVoicevoxCommand);
+      el.pickSharedAssetsRootBtn.addEventListener("click", loadSharedAssetsFromWorkspace);
       el.refreshSharedAssetsBtn.addEventListener("click", refreshSharedAssetsFromUi);
 
       [
@@ -4170,6 +4488,12 @@
         if (addButton) {
           const sceneKey = addButton.getAttribute("data-scene-key");
           if (sceneKey) addSubScene(sceneKey);
+          return;
+        }
+
+        const applyScene2VisualsButton = event.target.closest(".apply-scene2-visuals-btn");
+        if (applyScene2VisualsButton) {
+          applyScene2VisualAssetsToFollowingScenes();
           return;
         }
 

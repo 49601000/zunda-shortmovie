@@ -35,15 +35,94 @@
   ],
   "scenes": [
     {
+      "id": "scene_001",
       "scene_id": "scene_001",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
       "slide_id": "slide_01",
       "speaker": "議題",
       "emotion": "normal",
       "voice_style": "normal",
       "speakerId": 3,
       "voice_speed": 1.25,
-      "voice": "認知的不協和",
+      "voice": "認知的不協和ってなんなのだ",
       "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "認知的不協和ってなんなのだ",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ffffff",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ffffff",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "",
+        "character_right": "",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": ""
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "background_override": "assets/background/hook-bg-dots-bl.png",
       "sub_scenes": [
         {
           "sub_scene_id": "scene_001_01",
@@ -51,317 +130,1206 @@
           "display_mode": "replace",
           "char_count": 6,
           "start_sec": 0,
-          "duration_sec": 1.6
+          "duration_sec": 2
         }
       ]
     },
     {
+      "id": "scene_002",
       "scene_id": "scene_002",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
       "slide_id": "slide_01",
       "speaker": "ずんだもん",
       "emotion": "normal",
-      "voice_style": "normal",
+      "voice_style": "namidame",
       "speakerId": 3,
       "voice_speed": 1.25,
-      "voice": "「ダイエット中だけど、この大盛りラーメンは実質野菜だからカロリーゼロなのだ！」",
+      "voice": "課金したゲームがつまらなくても、面白かったことにするのだ。ボクの三千円が泣くからなのだ",
       "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "課金したゲームがつまらなくても、面白かったことにするのだ。ボクの三千円が泣くからなのだ",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "images/frames/slide/000/001.png",
+        "monolith": "monolith/monolith-0.png",
+        "dialog_box": "logboard/logboard-BK.png",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0001.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "images/frames/slide/000/001.png"
+        },
+        "monolith": {
+          "image_path": "monolith/monolith-0.png"
+        },
+        "dialog_box": {
+          "image_path": "logboard/logboard-BK.png"
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0001.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-normal-0002.png",
+              "images/characters/zundamon/zundamon-normal-00003.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
       "sub_scenes": [
         {
           "sub_scene_id": "scene_002_01",
-          "screen_text": "ダイエット中だけど、この大盛りラーメンは",
+          "screen_text": "課金したゲームがつまらなくても、面白かったことにするのだ。",
           "display_mode": "replace",
-          "char_count": 20,
-          "start_sec": 1.6,
-          "duration_sec": 1.69
+          "char_count": 29,
+          "start_sec": 2,
+          "duration_sec": 5.2
         },
         {
           "sub_scene_id": "scene_002_02",
-          "screen_text": "実質野菜だからカロリーゼロなのだ！",
+          "screen_text": "ボクの三千円が泣くからなのだ",
           "display_mode": "replace",
-          "char_count": 17,
-          "start_sec": 3.29,
-          "duration_sec": 2.77
+          "char_count": 14,
+          "start_sec": 7.2,
+          "duration_sec": 2.5
         }
       ]
     },
     {
+      "id": "scene_003",
       "scene_id": "scene_003",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
       "slide_id": "slide_01",
       "speaker": "めたん",
       "emotion": "normal",
       "voice_style": "normal",
-      "speakerId": 3,
+      "speakerId": 2,
       "voice_speed": 1.25,
-      "voice": "「出たわね、都合のいい脳内変換。それ完全に『認知的不協和』の典型例よ」",
+      "voice": "それは認知的不協和ね。損した現実と、自分は賢いという思い込みがケンカしてるのよ",
       "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "それは認知的不協和ね。損した現実と、自分は賢いという思い込みがケンカしてるのよ",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff5ca3",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff5ca3",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "images/frames/slide/000/001.png",
+        "monolith": "monolith/monolith-0.png",
+        "dialog_box": "logboard/logboard-BK.png",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0001.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "images/frames/slide/000/001.png"
+        },
+        "monolith": {
+          "image_path": "monolith/monolith-0.png"
+        },
+        "dialog_box": {
+          "image_path": "logboard/logboard-BK.png"
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-2.png",
+              "images/characters/metan/metan-1.png"
+            ]
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0001.png",
+            "state": "idle",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-normal-0002.png",
+              "images/characters/zundamon/zundamon-normal-00003.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
       "sub_scenes": [
         {
           "sub_scene_id": "scene_003_01",
-          "screen_text": "出たわね、都合のいい脳内変換。",
+          "screen_text": "それは認知的不協和ね。損した現実と、\n自分は賢いという思い込みがケンカしてるのよ",
           "display_mode": "replace",
-          "char_count": 15,
-          "start_sec": 7.6,
-          "duration_sec": 2.58
-        },
-        {
-          "sub_scene_id": "scene_003_03",
-          "screen_text": "それ完全に『認知的不協和』の典型例よ",
-          "display_mode": "replace",
-          "char_count": 18,
-          "start_sec": 13.09,
-          "duration_sec": 0.6
+          "char_count": 40,
+          "start_sec": 9.7,
+          "duration_sec": 5.4
         }
       ]
     },
     {
+      "id": "scene_004",
       "scene_id": "scene_004",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
       "slide_id": "slide_01",
       "speaker": "ずんだもん",
       "emotion": "normal",
       "voice_style": "normal",
       "speakerId": 3,
       "voice_speed": 1.25,
-      "voice": "「不協和音？ボクの頭の中はいつだってハッピーなメロディが流れてるのだ！」",
+      "voice": "違うのだ！ 未来のボクへの投資なのだ！ たぶん来月のアップデートで神になるのだ！",
       "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "違うのだ！ 未来のボクへの投資なのだ！ たぶん来月のアップデートで神になるのだ！",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "images/frames/slide/000/001.png",
+        "monolith": "monolith/monolith-0.png",
+        "dialog_box": "logboard/logboard-BK.png",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0001.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "images/frames/slide/000/001.png"
+        },
+        "monolith": {
+          "image_path": "monolith/monolith-0.png"
+        },
+        "dialog_box": {
+          "image_path": "logboard/logboard-BK.png"
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0001.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-normal-0002.png",
+              "images/characters/zundamon/zundamon-normal-00003.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
       "sub_scenes": [
         {
           "sub_scene_id": "scene_004_01",
-          "screen_text": "不協和音？ボクの頭の中は",
+          "screen_text": "違うのだ！未来のボクへの投資なのだ！\nたぶん来月のアップデートで神になるのだ！",
           "display_mode": "replace",
-          "char_count": 12,
-          "start_sec": 13.69,
-          "duration_sec": 0.97
-        },
-        {
-          "sub_scene_id": "scene_004_02",
-          "screen_text": "いつだってハッピーなメロディが流れてるのだ！",
-          "display_mode": "replace",
-          "char_count": 22,
-          "start_sec": 14.66,
-          "duration_sec": 1
+          "char_count": 39,
+          "start_sec": 15.1,
+          "duration_sec": 5.4
         }
       ]
     },
     {
+      "id": "scene_005",
       "scene_id": "scene_005",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
       "slide_id": "slide_02",
       "speaker": "めたん",
       "emotion": "normal",
       "voice_style": "normal",
-      "speakerId": 3,
+      "speakerId": 2,
       "voice_speed": 1.25,
-      "voice": "「違うわよ。自分の行動と現実に矛盾があるとき、不快だから都合よく言い訳を作って脳を納得させる現象のことよ」",
+      "voice": "急に未来へ逃げたわね。今つまらない事実を、まだ来てない希望で薄めてるだけよ",
       "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "急に未来へ逃げたわね。今つまらない事実を、まだ来てない希望で薄めてるだけよ",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff5ca3",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff5ca3",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "images/frames/slide/000/001.png",
+        "monolith": "monolith/monolith-0.png",
+        "dialog_box": "logboard/logboard-BK.png",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0001.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "images/frames/slide/000/001.png"
+        },
+        "monolith": {
+          "image_path": "monolith/monolith-0.png"
+        },
+        "dialog_box": {
+          "image_path": "logboard/logboard-BK.png"
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-1.png",
+              "images/characters/metan/metan-2.png"
+            ]
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0001.png",
+            "state": "idle",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-normal-0002.png",
+              "images/characters/zundamon/zundamon-normal-00003.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
       "sub_scenes": [
         {
           "sub_scene_id": "scene_005_01",
-          "screen_text": "違うわよ。\n自分の行動と現実に矛盾があるとき、",
+          "screen_text": "急に未来へ逃げたわね。",
           "display_mode": "replace",
-          "char_count": 23,
-          "start_sec": 19.95,
-          "duration_sec": 0.7
+          "char_count": 11,
+          "start_sec": 20.5,
+          "duration_sec": 1.5
         },
         {
           "sub_scene_id": "scene_005_02",
-          "screen_text": "不快だから都合よく言い訳を作って脳を納得させる現象のことよ",
+          "screen_text": "今つまらない事実を、まだ来てない希望で薄めてるだけよ",
           "display_mode": "replace",
-          "char_count": 29,
-          "start_sec": 20.65,
-          "duration_sec": 1.92
+          "char_count": 26,
+          "start_sec": 22,
+          "duration_sec": 3.5
         }
       ]
     },
     {
+      "id": "scene_006",
       "scene_id": "scene_006",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
       "slide_id": "slide_02",
-      "speaker": "天の声",
+      "speaker": "ずんだもん",
       "emotion": "normal",
       "voice_style": "normal",
       "speakerId": 3,
       "voice_speed": 1.25,
-      "voice": "「タバコは体に悪いと言いつつ、ストレス解消に良いと言い訳して吸い続けるアレですね」",
+      "voice": "でも認めたら負けなのだ。ボクは選択を間違えた愚かな生き物になるのだ",
       "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "でも認めたら負けなのだ。ボクは選択を間違えた愚かな生き物になるのだ",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "images/frames/slide/000/001.png",
+        "monolith": "monolith/monolith-0.png",
+        "dialog_box": "logboard/logboard-BK.png",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0001.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "images/frames/slide/000/001.png"
+        },
+        "monolith": {
+          "image_path": "monolith/monolith-0.png"
+        },
+        "dialog_box": {
+          "image_path": "logboard/logboard-BK.png"
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0001.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-normal-0002.png",
+              "images/characters/zundamon/zundamon-normal-00003.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
       "sub_scenes": [
         {
           "sub_scene_id": "scene_006_01",
-          "screen_text": "タバコは体に悪いと言いつつ、ストレス解消に良いと言い訳して吸い続けるアレですね",
+          "screen_text": "でも認めたら負けなのだ。\nボクは選択を間違えた愚かな生き物になるのだ",
           "display_mode": "replace",
-          "char_count": 39,
-          "start_sec": 25.95,
-          "duration_sec": 2.2
+          "char_count": 34,
+          "start_sec": 25.5,
+          "duration_sec": 5
         }
       ]
     },
     {
+      "id": "scene_007",
       "scene_id": "scene_007",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
       "slide_id": "slide_02",
-      "speaker": "ずんだもん",
+      "speaker": "めたん",
       "emotion": "normal",
       "voice_style": "normal",
-      "speakerId": 3,
+      "speakerId": 2,
       "voice_speed": 1.25,
-      "voice": "「そうなのだ！ボクのラーメンも、食べないとストレスで死んじゃうから命の恩人なのだ！」",
+      "voice": "そこは少し核心ね。人は失敗より、“失敗した自分”を見るのがしんどいのよ",
       "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "そこは少し核心ね。人は失敗より、“失敗した自分”を見るのがしんどいのよ",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff5ca3",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff5ca3",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "images/frames/slide/000/001.png",
+        "monolith": "monolith/monolith-0.png",
+        "dialog_box": "logboard/logboard-BK.png",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0001.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "images/frames/slide/000/001.png"
+        },
+        "monolith": {
+          "image_path": "monolith/monolith-0.png"
+        },
+        "dialog_box": {
+          "image_path": "logboard/logboard-BK.png"
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-2.png",
+              "images/characters/metan/metan-1.png"
+            ]
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0001.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
       "sub_scenes": [
         {
           "sub_scene_id": "scene_007_01",
-          "screen_text": "そうなのだ！ボクのラーメンも、食べないと",
+          "screen_text": "そこは少し核心ね。人は失敗より、“失敗した自分”を見るのがしんどいのよ",
           "display_mode": "replace",
-          "char_count": 20,
-          "start_sec": 31.95,
-          "duration_sec": 2.29
-        },
-        {
-          "sub_scene_id": "scene_007_02",
-          "screen_text": "ストレスで死んじゃうから命の恩人なのだ！",
-          "display_mode": "replace",
-          "char_count": 20,
-          "start_sec": 34.24,
-          "duration_sec": 2.57
+          "char_count": 35,
+          "start_sec": 30.5,
+          "duration_sec": 5.5
         }
       ]
     },
     {
+      "id": "scene_008",
       "scene_id": "scene_008",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
       "slide_id": "slide_02",
-      "speaker": "めたん",
+      "speaker": "ずんだもん",
       "emotion": "normal",
       "voice_style": "normal",
       "speakerId": 3,
       "voice_speed": 1.25,
-      "voice": "「完全に自己正当化のモンスターになってるじゃない。そうやって現実から目を背けて楽しい？」",
+      "voice": "じゃあ失敗じゃないことにすれば解決なのだ！ 人類、都合のいい物語で生きてるのだ！",
       "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "じゃあ失敗じゃないことにすれば解決なのだ！ 人類、都合のいい物語で生きてるのだ！",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "images/frames/slide/000/001.png",
+        "monolith": "monolith/monolith-0.png",
+        "dialog_box": "logboard/logboard-BK.png",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0001.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "images/frames/slide/000/001.png"
+        },
+        "monolith": {
+          "image_path": "monolith/monolith-0.png"
+        },
+        "dialog_box": {
+          "image_path": "logboard/logboard-BK.png"
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0001.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-normal-0002.png",
+              "images/characters/zundamon/zundamon-normal-00003.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
       "sub_scenes": [
         {
           "sub_scene_id": "scene_008_01",
-          "screen_text": "完全に自己正当化のモンスターになってるじゃない。",
+          "screen_text": "じゃあ失敗じゃないことにすれば解決なのだ！",
           "display_mode": "replace",
-          "char_count": 24,
-          "start_sec": 37.95,
-          "duration_sec": 2.45
+          "char_count": 21,
+          "start_sec": 36,
+          "duration_sec": 3.1
         },
         {
-          "sub_scene_id": "scene_008_02",
-          "screen_text": "そうやって現実から目を背けて楽しい？",
+          "sub_scene_id": "scene_008_03",
+          "screen_text": "人類、都合のいい物語で生きてるのだ！",
           "display_mode": "replace",
           "char_count": 18,
-          "start_sec": 40.4,
-          "duration_sec": 0.95
+          "start_sec": 39.2,
+          "duration_sec": 2.7
         }
       ]
     },
     {
+      "id": "scene_009",
       "scene_id": "scene_009",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
       "slide_id": "slide_03",
-      "speaker": "ずんだもん",
+      "speaker": "めたん",
       "emotion": "normal",
       "voice_style": "normal",
-      "speakerId": 3,
+      "speakerId": 2,
       "voice_speed": 1.25,
-      "voice": "「めちゃくちゃ楽しいのだ！現実なんて直視したら、ボクの怠惰なソウルが粉々になっちゃうのだ！」",
+      "voice": "規模を人類に広げて免罪符にしない。あなたが今やってるのは自己弁護よ",
       "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "規模を人類に広げて免罪符にしない。あなたが今やってるのは自己弁護よ",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff5ca3",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff5ca3",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "images/frames/slide/000/001.png",
+        "monolith": "monolith/monolith-0.png",
+        "dialog_box": "logboard/logboard-BK.png",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0001.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "images/frames/slide/000/001.png"
+        },
+        "monolith": {
+          "image_path": "monolith/monolith-0.png"
+        },
+        "dialog_box": {
+          "image_path": "logboard/logboard-BK.png"
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-2.png",
+              "images/characters/metan/metan-0.png"
+            ]
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0001.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
       "sub_scenes": [
         {
           "sub_scene_id": "scene_009_01",
-          "screen_text": "めちゃくちゃ楽しいのだ！現実なんて直視したら、",
+          "screen_text": "規模を人類に広げて免罪符にしない。\nあなたが今やってるのは自己弁護よ",
           "display_mode": "replace",
-          "char_count": 23,
-          "start_sec": 44.4,
-          "duration_sec": 1.7
-        },
-        {
-          "sub_scene_id": "scene_009_02",
-          "screen_text": "ボクの怠惰なソウルが粉々になっちゃうのだ！",
-          "display_mode": "replace",
-          "char_count": 21,
-          "start_sec": 46.1,
-          "duration_sec": 1.43
+          "char_count": 34,
+          "start_sec": 41.9,
+          "duration_sec": 4.3
         }
       ]
     },
     {
+      "id": "scene_010",
       "scene_id": "scene_010",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
       "slide_id": "slide_03",
-      "speaker": "めたん",
+      "speaker": "天の声",
       "emotion": "normal",
       "voice_style": "normal",
-      "speakerId": 3,
+      "speakerId": 2,
       "voice_speed": 1.25,
-      "voice": "「開き直るんじゃないわよ。少しは矛盾を受け入れて反省しなさいな」",
+      "voice": "冷蔵庫の奥で賞味期限切れヨーグルトを“まだいける”と言い張る朝ですね",
       "voice_override": "",
+      "character_id": "ankomon",
+      "voice_profile": {
+        "character_id": "ankomon",
+        "voicevox_speaker_name": "あんこもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 113,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 113,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "冷蔵庫の奥で賞味期限切れヨーグルトを“まだいける”と言い張る朝ですね",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ffffff",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ffffff",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "images/frames/slide/000/001.png",
+        "monolith": "monolith/monolith-0.png",
+        "dialog_box": "logboard/logboard-BK.png",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0001.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "images/frames/slide/000/001.png"
+        },
+        "monolith": {
+          "image_path": "monolith/monolith-0.png"
+        },
+        "dialog_box": {
+          "image_path": "logboard/logboard-BK.png"
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0001.png",
+            "state": "idle",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-normal-0002.png",
+              "images/characters/zundamon/zundamon-normal-00003.png"
+            ]
+          }
+        }
+      },
+      "effects": [
+        "grayscale_except_monolith"
+      ],
       "sub_scenes": [
         {
           "sub_scene_id": "scene_010_01",
-          "screen_text": "開き直るんじゃないわよ。",
+          "screen_text": "冷蔵庫の奥で賞味期限切れヨーグルトを\n“まだいける”と言い張る朝ですね",
           "display_mode": "replace",
-          "char_count": 12,
-          "start_sec": 50.48,
-          "duration_sec": 2.1
-        },
-        {
-          "sub_scene_id": "scene_010_02",
-          "screen_text": "少しは矛盾を受け入れて反省しなさいな",
-          "display_mode": "replace",
-          "char_count": 18,
-          "start_sec": 52.58,
-          "duration_sec": 2.9
+          "char_count": 35,
+          "start_sec": 46.2,
+          "duration_sec": 5.4
         }
       ]
     },
     {
+      "id": "scene_011",
       "scene_id": "scene_011",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
       "slide_id": "slide_03",
       "speaker": "ずんだもん",
       "emotion": "normal",
       "voice_style": "normal",
       "speakerId": 3,
       "voice_speed": 1.25,
-      "voice": "「じゃあめたん、ボクの代わりにこのラーメンのカロリーを消費してほしいのだ！」",
+      "voice": "それは食べ物を信じる心なのだ！ 捨てたら昨日のボクがかわいそうなのだ！",
       "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "それは食べ物を信じる心なのだ！ 捨てたら昨日のボクがかわいそうなのだ！",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "images/frames/slide/000/001.png",
+        "monolith": "monolith/monolith-0.png",
+        "dialog_box": "logboard/logboard-BK.png",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0001.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "images/frames/slide/000/001.png"
+        },
+        "monolith": {
+          "image_path": "monolith/monolith-0.png"
+        },
+        "dialog_box": {
+          "image_path": "logboard/logboard-BK.png"
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0001.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-normal-0002.png",
+              "images/characters/zundamon/zundamon-normal-00003.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
       "sub_scenes": [
         {
           "sub_scene_id": "scene_011_01",
-          "screen_text": "じゃあめたん、ボクの代わりにこのラーメンのカロリーを消費してほしいのだ！",
+          "screen_text": "それは食べ物を信じる心なのだ！",
           "display_mode": "replace",
-          "char_count": 36,
-          "start_sec": 56.08,
-          "duration_sec": 1.26
+          "char_count": 15,
+          "start_sec": 51.6,
+          "duration_sec": 2.1
+        },
+        {
+          "sub_scene_id": "scene_011_02",
+          "screen_text": "捨てたら昨日のボクがかわいそうなのだ！",
+          "display_mode": "replace",
+          "char_count": 19,
+          "start_sec": 53.7,
+          "duration_sec": 2.6
         }
       ]
     },
     {
+      "id": "scene_012",
       "scene_id": "scene_012",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
       "slide_id": "slide_03",
       "speaker": "めたん",
       "emotion": "normal",
       "voice_style": "normal",
-      "speakerId": 3,
+      "speakerId": 2,
       "voice_speed": 1.25,
-      "voice": "「なんで私があなたの脂肪を背負わなきゃいけないのよ、お断りよ」",
+      "voice": "昨日のあなたより、今日のお腹を守りなさい",
       "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "昨日のあなたより、今日のお腹を守りなさい",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff5ca3",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff5ca3",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "images/frames/slide/000/001.png",
+        "monolith": "monolith/monolith-0.png",
+        "dialog_box": "logboard/logboard-BK.png",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0001.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "images/frames/slide/000/001.png"
+        },
+        "monolith": {
+          "image_path": "monolith/monolith-0.png"
+        },
+        "dialog_box": {
+          "image_path": "logboard/logboard-BK.png"
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-1.png",
+              "images/characters/metan/metan-2.png"
+            ]
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0001.png",
+            "state": "idle",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-normal-0002.png",
+              "images/characters/zundamon/zundamon-normal-00003.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
       "sub_scenes": [
         {
           "sub_scene_id": "scene_012_01",
-          "screen_text": "なんで私があなたの脂肪を背負わなきゃいけないのよ、お断りよ",
+          "screen_text": "昨日のあなたより、\n今日のお腹を守りなさい",
           "display_mode": "replace",
-          "char_count": 29,
-          "start_sec": 62.52,
-          "duration_sec": 2.9
+          "char_count": 21,
+          "start_sec": 56.4,
+          "duration_sec": 2.5
         }
       ]
     }
   ],
   "source": "",
-  "durationSec": 67.52,
-  "durationInFrames": 2026,
+  "render_control": {
+    "scene_visibility": {
+      "scene_001": true,
+      "scene_002": true,
+      "scene_003": true,
+      "scene_004": true,
+      "scene_005": true,
+      "scene_006": true,
+      "scene_007": true,
+      "scene_008": true,
+      "scene_009": true,
+      "scene_010": true,
+      "scene_011": true,
+      "scene_012": true
+    }
+  },
+  "durationSec": 59,
+  "durationInFrames": 1770,
   "fps": 30,
   "tts_transform": "",
   "video_spec": {
     "audio": {
       "tts_transform": "",
-      "bgm": "none"
+      "bgm": "/audio/bgm/BGM-piano.mp3",
+      "bgm_volume": 0.03,
+      "bgm_loop": true
     },
     "style": {
+      "background": "scene-bg-classroom-daytime.png",
       "title_overlay": {
         "enabled": true,
         "bg_color": "#000000",
@@ -376,11 +1344,17 @@
     },
     "format": {
       "fps": 30,
-      "duration": 67.52,
-      "durationInFrames": 2026
+      "duration": 59,
+      "durationInFrames": 1770
     },
     "title": "認知的不協和"
   },
+  "bgm": {
+    "src": "/audio/bgm/BGM-piano.mp3",
+    "volume": 0.03,
+    "loop": true
+  },
+  "background": "scene-bg-classroom-daytime.png",
   "title": "認知的不協和",
   "title_overlay": {
     "enabled": true,

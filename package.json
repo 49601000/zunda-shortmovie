@@ -5,6 +5,7 @@
   "description": "Orchestrator project that reuses psych-short-renderer",
   "scripts": {
     "dev": "npm run scene-remotion:dev",
+    "voicevox": "npm run scene-remotion:voicevox:batch && npm run scene-remotion:audio:sync",
     "renderer:dev": "node scripts/run-renderer.mjs dev",
     "renderer:render": "node scripts/run-renderer.mjs render",
     "renderer:voicevox": "node scripts/run-renderer.mjs voicevox",

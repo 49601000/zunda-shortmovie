@@ -1,0 +1,1018 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Timing Calc Tool</title>
+  <style>
+    :root {
+      --bg-a: #081119;
+      --bg-b: #102236;
+      --bg-c: #1a3a44;
+      --panel: rgba(8, 20, 30, 0.84);
+      --panel-2: rgba(12, 31, 42, 0.82);
+      --surface: rgba(8, 20, 30, 0.9);
+      --line: rgba(99, 217, 188, 0.36);
+      --line-soft: rgba(168, 196, 194, 0.25);
+      --ink: #f2f8f7;
+      --sub: #a8c4c2;
+      --accent: #63d9bc;
+      --accent-2: #84f5db;
+      --ok: #93f5c7;
+      --warn: #ffca76;
+      --danger: #ff8f8f;
+      --shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+      background:
+        radial-gradient(140% 120% at 0% 0%, rgba(99, 217, 188, 0.2) 0%, rgba(99, 217, 188, 0) 44%),
+        radial-gradient(120% 120% at 100% 0%, rgba(255, 202, 118, 0.1) 0%, rgba(255, 202, 118, 0) 46%),
+        linear-gradient(135deg, var(--bg-a) 0%, var(--bg-b) 45%, var(--bg-c) 100%);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      border-bottom: 1px solid rgba(99, 217, 188, 0.28);
+      background: linear-gradient(90deg, #0d3f39 0%, #0c3140 35%, #102236 70%, #081119 100%);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar {
+      min-height: 66px;
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .topbarLeft {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .brandMark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(160deg, #1f7f6c, #124c58);
+      border: 1px solid rgba(147, 245, 199, 0.36);
+      box-shadow: 0 8px 20px rgba(8, 20, 30, 0.45);
+      color: #f2fff9;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .brandText {
+      font-size: 18px;
+      font-weight: 800;
+      color: #f2f8f7;
+      white-space: nowrap;
+    }
+
+    .topbarDivider {
+      width: 1px;
+      height: 28px;
+      background: rgba(168, 196, 194, 0.42);
+      flex: none;
+    }
+
+    .topbarTitle {
+      font-size: 16px;
+      font-weight: 800;
+      color: #f2f8f7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .topbarVersion {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--ok);
+      letter-spacing: 0.04em;
+      opacity: 0.9;
+      white-space: nowrap;
+    }
+
+    .wrap {
+      width: min(1360px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+      padding: 20px 16px 28px;
+    }
+
+    .card,
+    .scene-card,
+    .subscene-card {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .card { padding: 16px; }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    h1 { font-size: clamp(1.35rem, 2.8vw, 2rem); }
+    h2 { font-size: 1.08rem; }
+    h3 { font-size: 0.98rem; }
+
+    p {
+      margin: 0;
+      color: var(--sub);
+      line-height: 1.55;
+    }
+
+    .hero {
+      display: grid;
+      gap: 12px;
+    }
+
+    .toolbar,
+    .row,
+    .scene-head,
+    .subscene-head {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .toolbar { justify-content: space-between; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+    button {
+      min-height: 38px;
+      border: 0;
+      border-radius: 11px;
+      padding: 9px 13px;
+      color: #05342e;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 150ms ease, filter 150ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+
+    button.ghost {
+      color: #d8ece8;
+      border: 1px solid rgba(168, 196, 194, 0.34);
+      background: rgba(8, 20, 30, 0.75);
+    }
+
+    button.warn {
+      color: #332407;
+      background: linear-gradient(135deg, var(--warn), #ffe1a3);
+    }
+
+    button.danger {
+      color: #3d1414;
+      background: linear-gradient(135deg, var(--danger), #ffc4c4);
+    }
+
+    button.mini {
+      min-height: 32px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 0.78rem;
+    }
+
+    .summary-grid,
+    .scene-metrics,
+    .subscene-metrics {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    .metric {
+      display: grid;
+      gap: 5px;
+      min-height: 72px;
+      padding: 11px;
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      background: rgba(8, 20, 30, 0.56);
+    }
+
+    .metric-label,
+    label {
+      color: var(--sub);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .metric-value {
+      color: var(--ink);
+      font-size: 1.12rem;
+      font-weight: 850;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .scene-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .scene-card {
+      overflow: hidden;
+    }
+
+    .scene-card.is-collapsed .scene-body {
+      display: none;
+    }
+
+    .scene-card.is-collapsed .scene-head {
+      border-bottom: 0;
+    }
+
+    .scene-head {
+      justify-content: space-between;
+      padding: 14px;
+      border-bottom: 1px solid rgba(99, 217, 188, 0.25);
+      background: rgba(10, 35, 42, 0.7);
+    }
+
+    .scene-title,
+    .subscene-title {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .tag {
+      display: inline-flex;
+      width: fit-content;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(99, 217, 188, 0.32);
+      color: #ddfff6;
+      background: rgba(99, 217, 188, 0.12);
+      font-size: 0.78rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .scene-body {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      align-items: end;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(168, 196, 194, 0.35);
+      background: var(--surface);
+      color: var(--ink);
+      padding: 9px 10px;
+      font: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      min-width: 0;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 217, 188, 0.18);
+    }
+
+    input[readonly] {
+      border-style: dashed;
+      color: #d7ebe8;
+      background: rgba(8, 20, 30, 0.62);
+    }
+
+    textarea {
+      min-height: 74px;
+      resize: vertical;
+      line-height: 1.48;
+    }
+
+    .subscene-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .subscene-card {
+      border-color: rgba(147, 245, 199, 0.42);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+      background:
+        linear-gradient(180deg, rgba(242, 248, 247, 0.15), rgba(99, 217, 188, 0.08)),
+        rgba(18, 54, 56, 0.86);
+      padding: 12px;
+    }
+
+    .subscene-head {
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .output-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.7fr);
+      align-items: start;
+    }
+
+    .timeline {
+      min-height: 220px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+      padding: 12px;
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      background: rgba(8, 20, 30, 0.52);
+    }
+
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr) 116px;
+      gap: 8px;
+      align-items: center;
+      min-height: 32px;
+      font-size: 0.84rem;
+    }
+
+    .bar-track {
+      overflow: hidden;
+      height: 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(168, 196, 194, 0.25);
+      background: rgba(8, 20, 30, 0.75);
+    }
+
+    .bar-fill {
+      height: 100%;
+      min-width: 2px;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #63d9bc, #ffca76);
+    }
+
+    .time-label {
+      color: #d7ebe8;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .json-output {
+      min-height: 360px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      white-space: pre;
+    }
+
+    .status {
+      min-height: 1.2em;
+      color: var(--ok);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .muted {
+      color: var(--sub);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 860px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .topbarLeft {
+        width: 100%;
+      }
+
+      .brandText {
+        white-space: normal;
+      }
+
+      .output-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline-row {
+        grid-template-columns: 72px minmax(0, 1fr);
+      }
+
+      .time-label {
+        grid-column: 1 / -1;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="topbarLeft">
+        <div class="brandMark">ZSM</div>
+        <div class="brandText">ずんだもん ショート動画作成</div>
+        <div class="topbarDivider"></div>
+        <div class="topbarTitle">Timing Calc</div>
+      </div>
+      <div class="topbarVersion">standalone</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card hero">
+      <div class="toolbar">
+        <div>
+          <h1>Timing Calc Tool</h1>
+          <p>scene durationをsubscene文字数比率で割り、scene間のstartを0.1秒単位で切り上げます。</p>
+        </div>
+        <div class="actions">
+          <button type="button" data-action="add-scene">scene追加</button>
+          <button class="ghost" type="button" data-action="save">保存</button>
+          <button class="ghost" type="button" data-action="reset">初期化</button>
+        </div>
+      </div>
+      <div class="summary-grid" id="summaryGrid"></div>
+      <p class="status" id="status"></p>
+    </section>
+
+    <section class="scene-list" id="sceneList"></section>
+
+    <section class="card">
+      <div class="toolbar">
+        <div>
+          <h2>Timing Output</h2>
+          <p>計算済みのscene/subscene構造です。</p>
+        </div>
+        <div class="actions">
+          <button type="button" data-action="copy-json">JSONコピー</button>
+          <button class="ghost" type="button" data-action="apply-json">JSON反映</button>
+        </div>
+      </div>
+      <div class="output-grid">
+        <div>
+          <div class="timeline" id="timeline"></div>
+        </div>
+        <textarea class="json-output" id="jsonOutput" spellcheck="false"></textarea>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "sv2_timing_calc_state_v1";
+    const EPSILON = 1e-9;
+
+    const el = {
+      sceneList: document.getElementById("sceneList"),
+      summaryGrid: document.getElementById("summaryGrid"),
+      timeline: document.getElementById("timeline"),
+      jsonOutput: document.getElementById("jsonOutput"),
+      status: document.getElementById("status")
+    };
+
+    let idSeq = 1;
+    let state = createDefaultState();
+
+    function nextId(prefix) {
+      idSeq += 1;
+      return `${prefix}_${String(idSeq).padStart(3, "0")}`;
+    }
+
+    function createDefaultState() {
+      return {
+        scenes: [
+          {
+            id: "scene_001",
+            start: 0,
+            duration: 12,
+            subscenes: [
+              { id: "subscene_001", text: "導入の一言", char_count: 1 },
+              { id: "subscene_002", text: "具体例で説明する部分", char_count: 1 },
+              { id: "subscene_003", text: "結論", char_count: 1 }
+            ]
+          },
+          {
+            id: "scene_002",
+            start: 12,
+            duration: 12,
+            subscenes: [
+              { id: "subscene_004", text: "次の論点", char_count: 1 },
+              { id: "subscene_005", text: "補足と回収", char_count: 1 }
+            ]
+          }
+        ]
+      };
+    }
+
+    function parseSecond(value) {
+      const number = Number(value);
+      return Number.isFinite(number) ? Math.max(0, number) : 0;
+    }
+
+    function parseCount(value) {
+      const number = Number(value);
+      return Number.isFinite(number) ? Math.max(0, Math.round(number)) : 0;
+    }
+
+    function countChars(text) {
+      return String(text || "").replace(/\s+/g, "").length;
+    }
+
+    function ceilToTenthSecond(value) {
+      return Math.ceil((parseSecond(value) - EPSILON) * 10) / 10;
+    }
+
+    function roundSec(value) {
+      return Math.round((Number(value) || 0) * 1000) / 1000;
+    }
+
+    function formatSec(value) {
+      return roundSec(value).toFixed(3).replace(/\.?0+$/, "");
+    }
+
+    function formatPct(value) {
+      return `${(Math.round((Number(value) || 0) * 10) / 10).toFixed(1)}%`;
+    }
+
+    function pad2(value) {
+      return String(value).padStart(2, "0");
+    }
+
+    function recalc() {
+      let carrySceneStart = parseSecond(state.scenes[0]?.start || 0);
+
+      state.scenes.forEach((scene, sceneIndex) => {
+        scene.scene_no = pad2(sceneIndex + 1);
+        scene.start = sceneIndex === 0 ? parseSecond(scene.start) : carrySceneStart;
+        scene.duration = parseSecond(scene.duration);
+        scene.subscenes = Array.isArray(scene.subscenes) ? scene.subscenes : [];
+        scene.char_count = scene.subscenes.reduce((sum, subscene) => sum + parseCount(subscene.char_count), 0);
+        scene.subscene_count = scene.subscenes.length;
+
+        let subsceneStart = scene.start;
+        scene.subscenes.forEach((subscene, subsceneIndex) => {
+          subscene.subscene_no = pad2(subsceneIndex + 1);
+          subscene.serial_no = `${scene.scene_no}-${subscene.subscene_no}`;
+          subscene.char_count = parseCount(subscene.char_count);
+          subscene.char_weight_percent = scene.char_count > 0 ? (subscene.char_count / scene.char_count) * 100 : 0;
+          subscene.start = subsceneStart;
+          subscene.duration = scene.char_count > 0 ? scene.duration * (subscene.char_count / scene.char_count) : 0;
+          subscene.end = subscene.start + subscene.duration;
+          subsceneStart = subscene.end;
+        });
+
+        scene.end = scene.subscenes.length ? subsceneStart : scene.start + scene.duration;
+        carrySceneStart = ceilToTenthSecond(scene.end);
+      });
+    }
+
+    function buildOutput() {
+      recalc();
+      return {
+        schema: "timing_calc_v1",
+        generated_at: new Date().toISOString(),
+        total_duration: state.scenes.length ? roundSec(state.scenes[state.scenes.length - 1].end - state.scenes[0].start) : 0,
+        scene_count: state.scenes.length,
+        scenes: state.scenes.map((scene, sceneIndex) => ({
+          scene_id: scene.id,
+          scene_index: sceneIndex + 1,
+          scene_no: scene.scene_no,
+          start: roundSec(scene.start),
+          duration: roundSec(scene.duration),
+          end: roundSec(scene.end),
+          char_count: scene.char_count,
+          subscene_count: scene.subscene_count,
+          collapsed: Boolean(scene.collapsed),
+          subscenes: scene.subscenes.map((subscene, subsceneIndex) => ({
+            subscene_id: subscene.serial_no,
+            subscene_index: subsceneIndex + 1,
+            subscene_no: subscene.subscene_no,
+            start: roundSec(subscene.start),
+            duration: roundSec(subscene.duration),
+            end: roundSec(subscene.end),
+            char_count: subscene.char_count,
+            char_weight_percent: Math.round(subscene.char_weight_percent * 10) / 10,
+            text: subscene.text || ""
+          }))
+        }))
+      };
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function render() {
+      recalc();
+      el.sceneList.innerHTML = state.scenes.map((scene, sceneIndex) => renderScene(scene, sceneIndex)).join("");
+      updateComputedViews();
+    }
+
+    function renderScene(scene, sceneIndex) {
+      const startReadonly = sceneIndex === 0 ? "" : "readonly";
+      const startTitle = sceneIndex === 0 ? "最初のscene start" : "前sceneの最後のsubscene endを0.1秒単位で切り上げ";
+      const collapsedClass = scene.collapsed ? " is-collapsed" : "";
+      const collapseLabel = scene.collapsed ? "展開" : "折りたたむ";
+      return `
+        <article class="scene-card${collapsedClass}" data-scene-id="${scene.id}">
+          <div class="scene-head">
+            <div class="scene-title">
+              <span class="tag">scene ${scene.scene_no}</span>
+            </div>
+            <div class="actions">
+              <button class="mini ghost" type="button" data-action="toggle-scene" data-scene-id="${scene.id}">${collapseLabel}</button>
+              <button class="mini ghost" type="button" data-action="add-subscene" data-scene-id="${scene.id}">subscene追加</button>
+              <button class="mini danger" type="button" data-action="delete-scene" data-scene-id="${scene.id}">scene削除</button>
+            </div>
+          </div>
+          <div class="scene-body">
+            <div class="field-grid">
+              <div class="field">
+                <label>${startTitle}</label>
+                <input type="number" min="0" step="0.1" value="${formatSec(scene.start)}" ${startReadonly} data-field="scene-start" data-scene-id="${scene.id}" />
+              </div>
+              <div class="field">
+                <label>scene duration</label>
+                <input type="number" min="0" step="0.1" value="${formatSec(scene.duration)}" data-field="scene-duration" data-scene-id="${scene.id}" />
+              </div>
+              <div class="field">
+                <label>scene char_count</label>
+                <input readonly value="${scene.char_count}" data-read="scene-char-count" data-scene-id="${scene.id}" />
+              </div>
+              <div class="field">
+                <label>subscene数</label>
+                <input readonly value="${scene.subscene_count}" data-read="scene-subscene-count" data-scene-id="${scene.id}" />
+              </div>
+              <div class="field">
+                <label>scene end</label>
+                <input readonly value="${formatSec(scene.end)}" data-read="scene-end" data-scene-id="${scene.id}" />
+              </div>
+            </div>
+            <div class="subscene-list">
+              ${scene.subscenes.map((subscene, subsceneIndex) => renderSubscene(scene, subscene, subsceneIndex)).join("")}
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderSubscene(scene, subscene, subsceneIndex) {
+      return `
+        <article class="subscene-card" data-subscene-id="${subscene.id}">
+          <div class="subscene-head">
+            <div class="subscene-title">
+              <span class="tag">subscene ${subscene.serial_no}</span>
+            </div>
+            <div class="actions">
+              <button class="mini ghost" type="button" data-action="recount-subscene" data-scene-id="${scene.id}" data-subscene-id="${subscene.id}">文字数更新</button>
+              <button class="mini danger" type="button" data-action="delete-subscene" data-scene-id="${scene.id}" data-subscene-id="${subscene.id}">削除</button>
+            </div>
+          </div>
+          <div class="field-grid">
+            <div class="field" style="grid-column: span 2;">
+              <label>subscene text</label>
+              <textarea data-field="subscene-text" data-scene-id="${scene.id}" data-subscene-id="${subscene.id}">${escapeHtml(subscene.text || "")}</textarea>
+            </div>
+            <div class="field">
+              <label>char_count</label>
+              <input type="number" min="0" step="1" value="${subscene.char_count}" data-field="subscene-char-count" data-scene-id="${scene.id}" data-subscene-id="${subscene.id}" />
+            </div>
+            <div class="field">
+              <label>char重みづけ%</label>
+              <input readonly value="${formatPct(subscene.char_weight_percent)}" data-read="subscene-weight" data-subscene-id="${subscene.id}" />
+            </div>
+            <div class="field">
+              <label>start</label>
+              <input readonly value="${formatSec(subscene.start)}" data-read="subscene-start" data-subscene-id="${subscene.id}" />
+            </div>
+            <div class="field">
+              <label>duration</label>
+              <input readonly value="${formatSec(subscene.duration)}" data-read="subscene-duration" data-subscene-id="${subscene.id}" />
+            </div>
+            <div class="field">
+              <label>end</label>
+              <input readonly value="${formatSec(subscene.end)}" data-read="subscene-end" data-subscene-id="${subscene.id}" />
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function updateComputedViews() {
+      const output = buildOutput();
+      const totalChars = output.scenes.reduce((sum, scene) => sum + scene.char_count, 0);
+      const subsceneCount = output.scenes.reduce((sum, scene) => sum + scene.subscene_count, 0);
+
+      el.summaryGrid.innerHTML = [
+        metric("scene数", output.scene_count),
+        metric("subscene数", subsceneCount),
+        metric("総char_count", totalChars),
+        metric("総duration", `${formatSec(output.total_duration)} sec`)
+      ].join("");
+
+      state.scenes.forEach((scene, sceneIndex) => {
+        setValue(`[data-read="scene-char-count"][data-scene-id="${scene.id}"]`, scene.char_count);
+        setValue(`[data-read="scene-subscene-count"][data-scene-id="${scene.id}"]`, scene.subscene_count);
+        setValue(`[data-read="scene-end"][data-scene-id="${scene.id}"]`, formatSec(scene.end));
+        if (sceneIndex > 0) {
+          setValue(`[data-field="scene-start"][data-scene-id="${scene.id}"]`, formatSec(scene.start));
+        }
+        scene.subscenes.forEach((subscene) => {
+          setValue(`[data-read="subscene-weight"][data-subscene-id="${subscene.id}"]`, formatPct(subscene.char_weight_percent));
+          setValue(`[data-read="subscene-start"][data-subscene-id="${subscene.id}"]`, formatSec(subscene.start));
+          setValue(`[data-read="subscene-duration"][data-subscene-id="${subscene.id}"]`, formatSec(subscene.duration));
+          setValue(`[data-read="subscene-end"][data-subscene-id="${subscene.id}"]`, formatSec(subscene.end));
+        });
+      });
+
+      el.timeline.innerHTML = renderTimeline(output);
+      el.jsonOutput.value = JSON.stringify(output, null, 2);
+    }
+
+    function metric(label, value) {
+      return `
+        <div class="metric">
+          <div class="metric-label">${escapeHtml(label)}</div>
+          <div class="metric-value">${escapeHtml(value)}</div>
+        </div>
+      `;
+    }
+
+    function setValue(selector, value) {
+      const target = document.querySelector(selector);
+      if (target && document.activeElement !== target) {
+        target.value = value;
+      }
+    }
+
+    function renderTimeline(output) {
+      const maxDuration = Math.max(1, ...output.scenes.flatMap((scene) => scene.subscenes.map((subscene) => subscene.duration)));
+      const rows = [];
+      output.scenes.forEach((scene) => {
+        rows.push(`
+          <div class="timeline-row">
+            <strong>scene ${scene.scene_no}</strong>
+            <div class="bar-track"><div class="bar-fill" style="width: ${Math.max(2, (scene.duration / maxDuration) * 100)}%;"></div></div>
+            <div class="time-label">${formatSec(scene.start)} - ${formatSec(scene.end)}</div>
+          </div>
+        `);
+        scene.subscenes.forEach((subscene) => {
+          rows.push(`
+            <div class="timeline-row">
+              <span class="muted">sub ${subscene.subscene_id}</span>
+              <div class="bar-track"><div class="bar-fill" style="width: ${Math.max(2, (subscene.duration / maxDuration) * 100)}%;"></div></div>
+              <div class="time-label">${formatSec(subscene.start)} - ${formatSec(subscene.end)}</div>
+            </div>
+          `);
+        });
+      });
+      return rows.join("") || `<p class="muted">sceneがありません。</p>`;
+    }
+
+    function findScene(sceneId) {
+      return state.scenes.find((scene) => scene.id === sceneId);
+    }
+
+    function findSubscene(sceneId, subsceneId) {
+      const scene = findScene(sceneId);
+      return scene?.subscenes.find((subscene) => subscene.id === subsceneId);
+    }
+
+    function addScene() {
+      const previous = state.scenes[state.scenes.length - 1];
+      const start = previous ? ceilToTenthSecond(previous.end || previous.start + previous.duration) : 0;
+      state.scenes.push({
+        id: nextId("scene"),
+        start,
+        duration: 12,
+        collapsed: false,
+        subscenes: [
+          { id: nextId("subscene"), text: "", char_count: 1 }
+        ]
+      });
+      render();
+      setStatus("sceneを追加しました。");
+    }
+
+    function addSubscene(sceneId) {
+      const scene = findScene(sceneId);
+      if (!scene) return;
+      scene.subscenes.push({ id: nextId("subscene"), text: "", char_count: 1 });
+      render();
+      setStatus("subsceneを追加しました。");
+    }
+
+    function deleteScene(sceneId) {
+      state.scenes = state.scenes.filter((scene) => scene.id !== sceneId);
+      render();
+      setStatus("sceneを削除しました。");
+    }
+
+    function deleteSubscene(sceneId, subsceneId) {
+      const scene = findScene(sceneId);
+      if (!scene) return;
+      scene.subscenes = scene.subscenes.filter((subscene) => subscene.id !== subsceneId);
+      render();
+      setStatus("subsceneを削除しました。");
+    }
+
+    function toggleScene(sceneId) {
+      const scene = findScene(sceneId);
+      if (!scene) return;
+      scene.collapsed = !scene.collapsed;
+      render();
+      saveState();
+      setStatus(scene.collapsed ? "sceneを折りたたみました。" : "sceneを展開しました。");
+    }
+
+    function applyJson() {
+      try {
+        const parsed = JSON.parse(el.jsonOutput.value);
+        const scenes = Array.isArray(parsed.scenes) ? parsed.scenes : [];
+        state = {
+          scenes: scenes.map((scene) => ({
+            id: scene.scene_id || scene.id || nextId("scene"),
+            start: parseSecond(scene.start),
+            duration: parseSecond(scene.duration),
+            collapsed: Boolean(scene.collapsed),
+            subscenes: (Array.isArray(scene.subscenes) ? scene.subscenes : []).map((subscene) => ({
+              id: subscene.internal_id || subscene.id || subscene.subscene_id || nextId("subscene"),
+              text: subscene.text || "",
+              char_count: parseCount(subscene.char_count)
+            }))
+          }))
+        };
+        render();
+        saveState();
+        setStatus("JSONを反映しました。");
+      } catch (error) {
+        setStatus(`JSONエラー: ${error.message}`);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ state, idSeq }));
+      setStatus("保存しました。");
+    }
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+        if (saved?.state?.scenes) {
+          state = saved.state;
+          idSeq = Number(saved.idSeq) || 1;
+        }
+      } catch {
+        state = createDefaultState();
+      }
+      syncIdSeq();
+    }
+
+    function syncIdSeq() {
+      const ids = state.scenes.flatMap((scene) => [scene.id, ...scene.subscenes.map((subscene) => subscene.id)]);
+      const max = ids.reduce((current, id) => {
+        const match = String(id).match(/_(\d+)$/);
+        return match ? Math.max(current, Number(match[1])) : current;
+      }, idSeq);
+      idSeq = max;
+    }
+
+    function resetState() {
+      if (!confirm("Timing Calcを初期状態に戻しますか？")) return;
+      idSeq = 5;
+      state = createDefaultState();
+      render();
+      saveState();
+      setStatus("初期化しました。");
+    }
+
+    async function copyJson() {
+      try {
+        await navigator.clipboard.writeText(el.jsonOutput.value);
+        setStatus("JSONをコピーしました。");
+      } catch {
+        el.jsonOutput.select();
+        document.execCommand("copy");
+        setStatus("JSONをコピーしました。");
+      }
+    }
+
+    function setStatus(message) {
+      el.status.textContent = message;
+      window.clearTimeout(setStatus.timer);
+      setStatus.timer = window.setTimeout(() => {
+        el.status.textContent = "";
+      }, 2600);
+    }
+
+    document.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-action]");
+      if (!target) return;
+
+      const action = target.dataset.action;
+      if (action === "add-scene") addScene();
+      if (action === "toggle-scene") toggleScene(target.dataset.sceneId);
+      if (action === "add-subscene") addSubscene(target.dataset.sceneId);
+      if (action === "delete-scene") deleteScene(target.dataset.sceneId);
+      if (action === "delete-subscene") deleteSubscene(target.dataset.sceneId, target.dataset.subsceneId);
+      if (action === "recount-subscene") {
+        const subscene = findSubscene(target.dataset.sceneId, target.dataset.subsceneId);
+        if (subscene) {
+          subscene.char_count = countChars(subscene.text);
+          const input = document.querySelector(`[data-field="subscene-char-count"][data-subscene-id="${subscene.id}"]`);
+          if (input) input.value = subscene.char_count;
+          updateComputedViews();
+          setStatus("文字数を更新しました。");
+        }
+      }
+      if (action === "copy-json") copyJson();
+      if (action === "apply-json") applyJson();
+      if (action === "save") saveState();
+      if (action === "reset") resetState();
+    });
+
+    document.addEventListener("input", (event) => {
+      const target = event.target;
+      const field = target.dataset.field;
+      if (!field) return;
+
+      const scene = findScene(target.dataset.sceneId);
+      if (field === "scene-start" && scene) scene.start = parseSecond(target.value);
+      if (field === "scene-duration" && scene) scene.duration = parseSecond(target.value);
+
+      const subscene = target.dataset.subsceneId ? findSubscene(target.dataset.sceneId, target.dataset.subsceneId) : null;
+      if (field === "subscene-text" && subscene) {
+        subscene.text = target.value;
+        subscene.char_count = countChars(target.value);
+        const input = document.querySelector(`[data-field="subscene-char-count"][data-subscene-id="${subscene.id}"]`);
+        if (input && document.activeElement !== input) input.value = subscene.char_count;
+      }
+      if (field === "subscene-char-count" && subscene) subscene.char_count = parseCount(target.value);
+
+      updateComputedViews();
+    });
+
+    document.addEventListener("change", (event) => {
+      if (event.target.dataset.field) saveState();
+    });
+
+    loadState();
+    render();
+  </script>
+</body>
+</html>

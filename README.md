@@ -233,6 +233,7 @@ npm run scene-remotion:dev
 
 ```text
 npm run dev
+npm run voicevox
 npm run scene-remotion:dev
 npm run scene-remotion:render
 npm run scene-remotion:voicevox:initial
@@ -243,7 +244,21 @@ npm run scene-remotion:typecheck
 npm run voicevox:proxy
 ```
 
-現状のリポジトリ直下には `scripts/` ディレクトリがないため、これらのコマンドはレンダラー連携スクリプトが配置されている環境で実行してください。
+`voicevox` は `scene-remotion:voicevox:batch` でWAVを生成したあと、`scene-remotion:audio:sync` で `projects/{id}/outputs/audio/` へ同期します。
+
+`voicevox:proxy` は `http://127.0.0.1:5510` で起動し、VOICEVOX Engine標準の `http://127.0.0.1:50021` にCORS付きで中継します。Final Cut Panelをブラウザで直接開いて `/speakers` がCORSで失敗する場合は、VOICEVOX Engineを起動したうえで別ターミナルから実行してください。
+
+```powershell
+npm run voicevox:proxy
+```
+
+VOICEVOX EngineのURLやプロキシのポートを変える場合:
+
+```powershell
+$env:VOICEVOX_ENGINE_URL="http://127.0.0.1:50021"
+$env:VOICEVOX_PROXY_PORT="5510"
+npm run voicevox:proxy
+```
 
 ## 現在確認できるサンプルproject
 
