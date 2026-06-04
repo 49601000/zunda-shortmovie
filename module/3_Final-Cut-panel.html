@@ -627,7 +627,6 @@
           </div>
           <div class="field span-2"><label for="sharedAssetsSubBackgroundInput">背景サブフォルダ</label><input id="sharedAssetsSubBackgroundInput" value="images/backgrounds" /></div>
           <div class="field span-2"><label for="sharedAssetsSubBgmInput">BGMサブフォルダ</label><input id="sharedAssetsSubBgmInput" value="audio/bgm" /></div>
-          <div class="field span-2"><label for="sharedAssetsSubSlideInput">スライド候補サブフォルダ（runid別）</label><input id="sharedAssetsSubSlideInput" value="" placeholder="assets/images/frames/slide/[runid]" /></div>
           <div class="field span-2"><label for="sharedAssetsSubMonolithInput">モノリスサブフォルダ</label><input id="sharedAssetsSubMonolithInput" value="images/monolith" /></div>
           <div class="field span-2"><label for="sharedAssetsSubDialogInput">ダイアログ枠サブフォルダ</label><input id="sharedAssetsSubDialogInput" value="images/logboard" /></div>
           <div class="field span-3"><label for="sharedAssetsSubLeftCharInput">左キャラサブフォルダ</label><input id="sharedAssetsSubLeftCharInput" value="images/characters/metan" /></div>
@@ -776,7 +775,6 @@
       const SHARED_ASSET_SUBDIR_DEFAULTS = {
         background: "images/backgrounds",
         bgm: "audio/bgm",
-        slide: "",
         monolith: "images/monolith",
         dialog_box: "images/logboard",
         character_left: "images/characters/metan",
@@ -802,6 +800,16 @@
         top: { fill_color: "#303030", outline_color: "#ffffff", outline_scale: 1.06, fill_visible: false },
         main: { fill_color: "#e60012", outline_color: "#ffffff", outline_scale: 1.06, fill_visible: true },
         sub: { fill_color: "#303030", outline_color: "#ffffff", outline_scale: 1.06, fill_visible: false }
+      };
+      const HOOK_CHARACTER_LAYOUT_DEFAULTS = {
+        enabled: true,
+        x: 450,
+        y: 1130,
+        width: 800,
+        height: 820,
+        scale: 2,
+        objectFit: "contain",
+        objectPosition: "center top"
       };
 
       const normalizeStyle = typeof sharedConfig.normalizeVoiceStyle === "function"
@@ -909,7 +917,6 @@
         sharedAssetsRootView: document.getElementById("sharedAssetsRootView"),
         sharedAssetsSubBackgroundInput: document.getElementById("sharedAssetsSubBackgroundInput"),
         sharedAssetsSubBgmInput: document.getElementById("sharedAssetsSubBgmInput"),
-        sharedAssetsSubSlideInput: document.getElementById("sharedAssetsSubSlideInput"),
         sharedAssetsSubMonolithInput: document.getElementById("sharedAssetsSubMonolithInput"),
         sharedAssetsSubDialogInput: document.getElementById("sharedAssetsSubDialogInput"),
         sharedAssetsSubLeftCharInput: document.getElementById("sharedAssetsSubLeftCharInput"),
@@ -981,7 +988,6 @@
       let sharedAssetFileCatalog = {
         background: [],
         bgm: [],
-        slide: [],
         monolith: [],
         dialog_box: [],
         character_left: [],
@@ -1631,9 +1637,25 @@
 
       const getRunId = () => normalizeRunId(localStorage.getItem(OUTPUT_RUN_ID_KEY));
 
-      const getDefaultSlideSubdirByRunId = () => {
+      const getSlideRenderBaseByRunId = () => {
         const runId = getRunId();
-        return `assets/images/frames/slide/${runId}, images/frames/slide/${runId}`;
+        return `images/frames/slide/${runId === "auto" ? "000" : runId}`;
+      };
+
+      const normalizeSlideAssetRef = (value) => {
+        const normalized = normalizeImageRef(value || "");
+        if (!normalized) return "";
+        if (/^images\/frames\/slide\//i.test(normalized)) return normalized;
+        if (/^assets\/images\/frames\/slide\//i.test(normalized)) {
+          return normalized.replace(/^assets\/images\//i, "images/");
+        }
+        if (!/\.(png|jpe?g|webp|avif)$/i.test(normalized)) return "";
+        const fileName = normalized.split("/").pop() || "";
+        const matched = fileName.match(/^(?:slide[_-]?)?0*(\d+)(?:[-_].*)?(\.(?:png|jpe?g|webp|avif))$/i);
+        if (!matched) return `${getSlideRenderBaseByRunId()}/${fileName}`;
+        const n = Number(matched[1]);
+        const ext = String(matched[2] || ".png").toLowerCase();
+        return `${getSlideRenderBaseByRunId()}/${String(n).padStart(3, "0")}${ext}`;
       };
 
       const normalizeSubdirRef = (value) => {
@@ -1658,7 +1680,6 @@
       const getSharedAssetsSubdirConfigFromUi = () => ({
         background: String(el.sharedAssetsSubBackgroundInput?.value || SHARED_ASSET_SUBDIR_DEFAULTS.background),
         bgm: String(el.sharedAssetsSubBgmInput?.value || SHARED_ASSET_SUBDIR_DEFAULTS.bgm),
-        slide: String(el.sharedAssetsSubSlideInput?.value || getDefaultSlideSubdirByRunId()),
         monolith: String(el.sharedAssetsSubMonolithInput?.value || SHARED_ASSET_SUBDIR_DEFAULTS.monolith),
         dialog_box: String(el.sharedAssetsSubDialogInput?.value || SHARED_ASSET_SUBDIR_DEFAULTS.dialog_box),
         character_left: String(el.sharedAssetsSubLeftCharInput?.value || SHARED_ASSET_SUBDIR_DEFAULTS.character_left),
@@ -1669,7 +1690,6 @@
         const safe = cfg && typeof cfg === "object" ? cfg : {};
         if (el.sharedAssetsSubBackgroundInput) el.sharedAssetsSubBackgroundInput.value = String(safe.background || SHARED_ASSET_SUBDIR_DEFAULTS.background);
         if (el.sharedAssetsSubBgmInput) el.sharedAssetsSubBgmInput.value = String(safe.bgm || SHARED_ASSET_SUBDIR_DEFAULTS.bgm);
-        if (el.sharedAssetsSubSlideInput) el.sharedAssetsSubSlideInput.value = String(safe.slide || getDefaultSlideSubdirByRunId());
         if (el.sharedAssetsSubMonolithInput) el.sharedAssetsSubMonolithInput.value = String(safe.monolith || SHARED_ASSET_SUBDIR_DEFAULTS.monolith);
         if (el.sharedAssetsSubDialogInput) el.sharedAssetsSubDialogInput.value = String(safe.dialog_box || SHARED_ASSET_SUBDIR_DEFAULTS.dialog_box);
         if (el.sharedAssetsSubLeftCharInput) el.sharedAssetsSubLeftCharInput.value = String(safe.character_left || SHARED_ASSET_SUBDIR_DEFAULTS.character_left);
@@ -1719,7 +1739,6 @@
         const parsed = parseJson(localStorage.getItem(SYSTEM_SETTINGS_KEY) || "");
         if (!parsed || typeof parsed !== "object") {
           const defaults = deepClone(SHARED_ASSET_SUBDIR_DEFAULTS);
-          defaults.slide = getDefaultSlideSubdirByRunId();
           return {
             engine_endpoint: "http://127.0.0.1:5510",
             use_speakers_cache: true,
@@ -1735,7 +1754,6 @@
           shared_assets_subdirs: {
             background: String(storedSubdirs.background || SHARED_ASSET_SUBDIR_DEFAULTS.background),
             bgm: String(storedSubdirs.bgm || SHARED_ASSET_SUBDIR_DEFAULTS.bgm),
-            slide: String(storedSubdirs.slide || getDefaultSlideSubdirByRunId()),
             monolith: String(storedSubdirs.monolith || SHARED_ASSET_SUBDIR_DEFAULTS.monolith),
             dialog_box: String(storedSubdirs.dialog_box || SHARED_ASSET_SUBDIR_DEFAULTS.dialog_box),
             character_left: String(storedSubdirs.character_left || SHARED_ASSET_SUBDIR_DEFAULTS.character_left),
@@ -1752,7 +1770,6 @@
           shared_assets_subdirs: {
             background: String(sharedSubdirs.background || SHARED_ASSET_SUBDIR_DEFAULTS.background),
             bgm: String(sharedSubdirs.bgm || SHARED_ASSET_SUBDIR_DEFAULTS.bgm),
-            slide: String(sharedSubdirs.slide || getDefaultSlideSubdirByRunId()),
             monolith: String(sharedSubdirs.monolith || SHARED_ASSET_SUBDIR_DEFAULTS.monolith),
             dialog_box: String(sharedSubdirs.dialog_box || SHARED_ASSET_SUBDIR_DEFAULTS.dialog_box),
             character_left: String(sharedSubdirs.character_left || SHARED_ASSET_SUBDIR_DEFAULTS.character_left),
@@ -2138,7 +2155,6 @@
         sharedAssetFileCatalog = {
           background: [],
           bgm: [],
-          slide: [],
           monolith: [],
           dialog_box: [],
           character_left: [],
@@ -2161,7 +2177,7 @@
             `projects/${normalizedProjectId}/outputs/slide`,
             /\.(png|jpe?g|webp|avif)$/i
           );
-          projectSlideFileCatalog = normalizeStringList(files);
+          projectSlideFileCatalog = normalizeStringList(files.map((file) => normalizeSlideAssetRef(file)));
         } catch (_err) {
           projectSlideFileCatalog = [];
         }
@@ -2177,11 +2193,10 @@
           return;
         }
         const cfg = getSharedAssetsSubdirConfigFromUi();
-        const keys = ["background", "bgm", "slide", "monolith", "dialog_box", "character_left", "character_right"];
+        const keys = ["background", "bgm", "monolith", "dialog_box", "character_left", "character_right"];
         const next = {
           background: [],
           bgm: [],
-          slide: [],
           monolith: [],
           dialog_box: [],
           character_left: [],
@@ -2598,7 +2613,7 @@
         const hook = scene?.hook_visual && typeof scene.hook_visual === "object" ? scene.hook_visual : {};
         return {
           background: normalizeImageRef(manual.background || composition.background?.image_path || ""),
-          slide: normalizeImageRef(manual.slide || composition.slide_area?.image_path || ""),
+          slide: normalizeSlideAssetRef(manual.slide || composition.slide_area?.image_path || ""),
           monolith: normalizeImageRef(manual.monolith || composition.monolith?.image_path || ""),
           dialog_box: normalizeImageRef(manual.dialog_box || composition.dialog_box?.image_path || ""),
           character_left: normalizeImageRef(manual.character_left || chars.left?.image_path || ""),
@@ -2639,6 +2654,38 @@
           top: resolveLayer(texts.top, HOOK_TEXT_STYLE_DEFAULTS.top),
           main: resolveLayer(texts.main, HOOK_TEXT_STYLE_DEFAULTS.main),
           sub: resolveLayer(texts.sub, HOOK_TEXT_STYLE_DEFAULTS.sub)
+        };
+      };
+
+      const buildDefaultHookCharacterLayout = (scene) => {
+        const node = scene?.hook_visual?.character && typeof scene.hook_visual.character === "object"
+          ? scene.hook_visual.character
+          : {};
+        return {
+          enabled: typeof node.enabled === "boolean" ? node.enabled : HOOK_CHARACTER_LAYOUT_DEFAULTS.enabled,
+          x: normalizeFrame(node.x, HOOK_CHARACTER_LAYOUT_DEFAULTS.x),
+          y: normalizeFrame(node.y, HOOK_CHARACTER_LAYOUT_DEFAULTS.y),
+          width: normalizeFrame(node.width, HOOK_CHARACTER_LAYOUT_DEFAULTS.width),
+          height: normalizeFrame(node.height, HOOK_CHARACTER_LAYOUT_DEFAULTS.height),
+          scale: Number.isFinite(toNum(node.scale, NaN)) ? toNum(node.scale, HOOK_CHARACTER_LAYOUT_DEFAULTS.scale) : HOOK_CHARACTER_LAYOUT_DEFAULTS.scale,
+          objectFit: String(node.objectFit || HOOK_CHARACTER_LAYOUT_DEFAULTS.objectFit),
+          objectPosition: String(node.objectPosition || HOOK_CHARACTER_LAYOUT_DEFAULTS.objectPosition)
+        };
+      };
+
+      const resolveHookCharacterLayout = (scene) => {
+        const raw = scene?.hook_character_layout && typeof scene.hook_character_layout === "object"
+          ? scene.hook_character_layout
+          : buildDefaultHookCharacterLayout(scene);
+        return {
+          enabled: typeof raw.enabled === "boolean" ? raw.enabled : HOOK_CHARACTER_LAYOUT_DEFAULTS.enabled,
+          x: normalizeFrame(raw.x, HOOK_CHARACTER_LAYOUT_DEFAULTS.x),
+          y: normalizeFrame(raw.y, HOOK_CHARACTER_LAYOUT_DEFAULTS.y),
+          width: normalizeFrame(raw.width, HOOK_CHARACTER_LAYOUT_DEFAULTS.width),
+          height: normalizeFrame(raw.height, HOOK_CHARACTER_LAYOUT_DEFAULTS.height),
+          scale: Number.isFinite(toNum(raw.scale, NaN)) ? toNum(raw.scale, HOOK_CHARACTER_LAYOUT_DEFAULTS.scale) : HOOK_CHARACTER_LAYOUT_DEFAULTS.scale,
+          objectFit: String(raw.objectFit || HOOK_CHARACTER_LAYOUT_DEFAULTS.objectFit),
+          objectPosition: String(raw.objectPosition || HOOK_CHARACTER_LAYOUT_DEFAULTS.objectPosition)
         };
       };
 
@@ -2832,12 +2879,19 @@
         const visualAssets = saved.visual_assets && typeof saved.visual_assets === "object"
           ? saved.visual_assets
           : buildDefaultVisualAssets(raw);
+        visualAssets.slide = normalizeSlideAssetRef(visualAssets.slide || "");
         const hookTexts = saved.hook_texts && typeof saved.hook_texts === "object"
           ? saved.hook_texts
           : buildDefaultHookTexts(raw);
         const hookTextStyles = saved.hook_text_styles && typeof saved.hook_text_styles === "object"
           ? saved.hook_text_styles
           : buildDefaultHookTextStyles(raw);
+        const hookCharacterLayout = saved.hook_character_layout && typeof saved.hook_character_layout === "object"
+          ? {
+              ...HOOK_CHARACTER_LAYOUT_DEFAULTS,
+              ...saved.hook_character_layout
+            }
+          : buildDefaultHookCharacterLayout(raw);
 
         return {
           key: sceneId,
@@ -2888,6 +2942,7 @@
           hook_diff_images: normalizeStringList(saved.hook_diff_images || resolveHookCharacterDiffImagePaths(raw)),
           hook_texts: deepClone(hookTexts),
           hook_text_styles: deepClone(hookTextStyles),
+          hook_character_layout: deepClone(hookCharacterLayout),
           hook_finalize_to_dialog: !!(saved.hook_finalize_to_dialog ?? raw.hook_visual?.finalize_to_dialog),
           grayscale_filter: saved.grayscale_filter || resolveSceneGrayscaleFilterMode(raw),
           voice_control: normalizeVoiceControl(raw.voice_control || {}),
@@ -3159,6 +3214,45 @@
         return layers;
       };
 
+      const buildHookBackgroundLayers = (scenes, durationInFrames) => {
+        const durationLimit = Math.max(1, normalizeFrame(durationInFrames, 1));
+        return (scenes || []).reduce((layers, scene, sceneIndex) => {
+          if (!isHookPictureScene(scene, sceneIndex)) return layers;
+          const visualAssets = scene?.visual_assets && typeof scene.visual_assets === "object" ? scene.visual_assets : {};
+          const hookBackgroundSrc = normalizeImageRef(visualAssets.hook_background || scene?.hook_visual?.background?.image_path || "");
+          if (!hookBackgroundSrc) return layers;
+
+          const timedSubs = (scene.sub_scenes || [])
+            .map((sub) => normalizeSubSceneFrameTiming(sub))
+            .filter((sub) => subDurationFrames(sub, 0) > 0);
+          const fallbackStart = Number.isFinite(toNum(scene.start_frame, NaN))
+            ? normalizeFrame(scene.start_frame, 0)
+            : secToFrame(scene.start_sec ?? scene.start ?? 0);
+          const fallbackDuration = Number.isFinite(toNum(scene.duration_frames, NaN))
+            ? normalizeFrame(scene.duration_frames, 0)
+            : secToFrame(scene.duration_sec ?? scene.duration ?? 2);
+          const startFrame = timedSubs.length
+            ? timedSubs.reduce((min, sub) => Math.min(min, subStartFrame(sub)), Number.POSITIVE_INFINITY)
+            : fallbackStart;
+          const endFrame = timedSubs.length
+            ? timedSubs.reduce((max, sub) => Math.max(max, subStartFrame(sub) + subDurationFrames(sub, 0)), 0)
+            : fallbackStart + Math.max(1, fallbackDuration);
+          const safeStart = Math.min(Math.max(0, startFrame), durationLimit - 1);
+          const safeDuration = Math.max(1, Math.min(durationLimit - safeStart, endFrame - startFrame));
+
+          layers.push({
+            layer_id: `hook-background-${scene.scene_id || sceneIndex + 1}`,
+            type: "image",
+            src: hookBackgroundSrc,
+            z_index: 0,
+            fit: "cover",
+            start_frame: safeStart,
+            duration_frames: safeDuration
+          });
+          return layers;
+        }, []);
+      };
+
       const cleanScenesForOutput = (scenes, options = {}) => {
         const commonBackground = normalizeImageRef(options.commonBackground || "");
         const commonDialogBox = normalizeImageRef(options.commonDialogBox || "");
@@ -3174,7 +3268,7 @@
           const visualAssets = scene.visual_assets && typeof scene.visual_assets === "object" ? scene.visual_assets : {};
           const outputVisualAssets = {
             background: stripCommonAssetValue(visualAssets.background || "", commonBackground),
-            slide: normalizeImageRef(visualAssets.slide || ""),
+            slide: normalizeSlideAssetRef(visualAssets.slide || ""),
             monolith: normalizeImageRef(visualAssets.monolith || ""),
             dialog_box: stripCommonAssetValue(visualAssets.dialog_box || "", commonDialogBox),
             character_left: normalizeImageRef(visualAssets.character_left || ""),
@@ -3183,6 +3277,9 @@
             hook_character: normalizeImageRef(visualAssets.hook_character || ""),
             hook_bubble: normalizeImageRef(visualAssets.hook_bubble || "")
           };
+          if (hookPictureScene && outputVisualAssets.hook_background) {
+            outputVisualAssets.background = outputVisualAssets.hook_background;
+          }
           const screenText = String(scene.screen_text || "");
           const screenTextFontSize = normalizeScreenTextFontSize(scene.screen_text_font_size, SCREEN_TEXT_STYLE_DEFAULTS.font_size);
           const screenTextFontFamily = String(scene.screen_text_font_family || SCREEN_TEXT_STYLE_DEFAULTS.font_family);
@@ -3192,6 +3289,7 @@
           const backgroundOverride = scene.use_background_override ? normalizeBackgroundRef(scene.background_override || "") : "";
           const hookTexts = scene.hook_texts && typeof scene.hook_texts === "object" ? scene.hook_texts : {};
           const hookTextStyles = scene.hook_text_styles && typeof scene.hook_text_styles === "object" ? scene.hook_text_styles : deepClone(HOOK_TEXT_STYLE_DEFAULTS);
+          const hookCharacterLayout = resolveHookCharacterLayout(scene);
           const hookFinalText = [hookTexts.top, hookTexts.main, hookTexts.sub].map((v) => String(v || "").trim()).filter(Boolean).join("\n");
           const lipSync = buildSceneLipSyncConfig(scene, visualAssets, hookPictureScene);
           const output = {
@@ -3302,13 +3400,14 @@
                   fillVisible: false
                 }
               },
-              background: { image_path: normalizeImageRef(visualAssets.hook_background || "") },
+              background: { image_path: outputVisualAssets.hook_background },
               character: {
-                image_path: normalizeImageRef(visualAssets.hook_character || ""),
+                ...hookCharacterLayout,
+                image_path: outputVisualAssets.hook_character,
                 lip_sync_image_paths: normalizeStringList(scene.hook_diff_images || [])
               },
               bubble: {
-                image_path: normalizeImageRef(visualAssets.hook_bubble || ""),
+                image_path: outputVisualAssets.hook_bubble,
                 text: String(hookTexts.bubble || "")
               },
               finalize_to_dialog: !!scene.hook_finalize_to_dialog
@@ -3447,7 +3546,8 @@
         spec.durationInFrames = durationInFrames;
         spec.total_frames = durationInFrames;
         spec.fps = Math.max(1, fps);
-        spec.common_layers = buildCommonLayers(backgroundPng, commonDialogBox, durationInFrames);
+        spec.common_layers = buildCommonLayers(backgroundPng, commonDialogBox, durationInFrames)
+          .concat(buildHookBackgroundLayers(state.scenes, durationInFrames));
         spec.tts_transform = state.transformMode === "zundamon" ? "zundamon" : "";
         if (!spec.video_spec) spec.video_spec = {};
         if (!spec.video_spec.audio) spec.video_spec.audio = {};
@@ -4000,6 +4100,7 @@
             hook_diff_images: normalizeStringList(scene.hook_diff_images || []),
             hook_texts: deepClone(scene.hook_texts || {}),
             hook_text_styles: deepClone(scene.hook_text_styles || {}),
+            hook_character_layout: deepClone(scene.hook_character_layout || HOOK_CHARACTER_LAYOUT_DEFAULTS),
             hook_finalize_to_dialog: !!scene.hook_finalize_to_dialog,
             grayscale_filter: scene.grayscale_filter === "on" ? "on" : "off"
           };
@@ -4087,13 +4188,20 @@
             screen_text_line_chars: sceneConf.screen_text_line_chars != null ? normalizePx(sceneConf.screen_text_line_chars, SCREEN_TEXT_STYLE_DEFAULTS.line_chars, 1, 120) : scene.screen_text_line_chars,
             use_background_override: typeof sceneConf.use_background_override === "boolean" ? sceneConf.use_background_override : scene.use_background_override,
             background_override: sceneConf.background_override != null ? normalizeBackgroundRef(sceneConf.background_override) : scene.background_override,
-            visual_assets: sceneConf.visual_assets && typeof sceneConf.visual_assets === "object" ? deepClone(sceneConf.visual_assets) : scene.visual_assets,
+            visual_assets: (() => {
+              const assets = sceneConf.visual_assets && typeof sceneConf.visual_assets === "object"
+                ? deepClone(sceneConf.visual_assets)
+                : deepClone(scene.visual_assets || {});
+              assets.slide = normalizeSlideAssetRef(assets.slide || "");
+              return assets;
+            })(),
             speaker_side: typeof sceneConf.speaker_side === "string" ? sceneConf.speaker_side : scene.speaker_side,
             left_diff_images: Array.isArray(sceneConf.left_diff_images) ? normalizeStringList(sceneConf.left_diff_images) : scene.left_diff_images,
             right_diff_images: Array.isArray(sceneConf.right_diff_images) ? normalizeStringList(sceneConf.right_diff_images) : scene.right_diff_images,
             hook_diff_images: Array.isArray(sceneConf.hook_diff_images) ? normalizeStringList(sceneConf.hook_diff_images) : scene.hook_diff_images,
             hook_texts: sceneConf.hook_texts && typeof sceneConf.hook_texts === "object" ? deepClone(sceneConf.hook_texts) : scene.hook_texts,
             hook_text_styles: sceneConf.hook_text_styles && typeof sceneConf.hook_text_styles === "object" ? deepClone(sceneConf.hook_text_styles) : scene.hook_text_styles,
+            hook_character_layout: sceneConf.hook_character_layout && typeof sceneConf.hook_character_layout === "object" ? deepClone(sceneConf.hook_character_layout) : scene.hook_character_layout,
             hook_finalize_to_dialog: typeof sceneConf.hook_finalize_to_dialog === "boolean" ? sceneConf.hook_finalize_to_dialog : scene.hook_finalize_to_dialog,
             grayscale_filter: sceneConf.grayscale_filter === "on" ? "on" : scene.grayscale_filter,
             sub_scenes: (scene.sub_scenes || []).map((sub) => {
@@ -4537,7 +4645,7 @@
               ...scene,
               visual_assets: {
                 ...(scene.visual_assets || {}),
-                [mapped]: normalizeImageRef(target.value || "")
+                [mapped]: mapped === "slide" ? normalizeSlideAssetRef(target.value || "") : normalizeImageRef(target.value || "")
               }
             };
           }
@@ -4732,7 +4840,6 @@
       [
         el.sharedAssetsSubBackgroundInput,
         el.sharedAssetsSubBgmInput,
-        el.sharedAssetsSubSlideInput,
         el.sharedAssetsSubMonolithInput,
         el.sharedAssetsSubDialogInput,
         el.sharedAssetsSubLeftCharInput,

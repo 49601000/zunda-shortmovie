@@ -731,7 +731,7 @@
                 <input type="number" min="0" step="0.1" value="${formatSec(scene.duration)}" data-field="scene-duration" data-scene-id="${scene.id}" />
               </div>
               <div class="field">
-                <label>scene frames</label>
+                <label>scene frames(開始/長さ)</label>
                 <input readonly value="${secToFrame(scene.start)} / ${secToFrame(scene.duration)}f" data-read="scene-frames" data-scene-id="${scene.id}" />
               </div>
               <div class="field">
@@ -789,7 +789,7 @@
               <input readonly value="${formatSec(subscene.duration)}" data-read="subscene-duration" data-subscene-id="${subscene.id}" />
             </div>
             <div class="field">
-              <label>frames</label>
+              <label>frames(開始/長さ)</label>
               <input readonly value="${secToFrame(subscene.start)} / ${secToFrame(subscene.duration)}f" data-read="subscene-frames" data-subscene-id="${subscene.id}" />
             </div>
             <div class="field">

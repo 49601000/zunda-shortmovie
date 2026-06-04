@@ -92,7 +92,7 @@
         "dialog_box": "",
         "character_left": "",
         "character_right": "",
-        "hook_background": "images/backgrounds/hook-bg-dots-gn..png",
+        "hook_background": "images/backgrounds/hook-bg-dots-yl.png",
         "hook_character": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_bubble": "parts/Hook-speech-balloon.png"
       },
@@ -184,7 +184,7 @@
           }
         },
         "background": {
-          "image_path": "images/backgrounds/hook-bg-dots-gn..png"
+          "image_path": "images/backgrounds/hook-bg-dots-yl.png"
         },
         "character": {
           "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
@@ -390,7 +390,7 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "images/frames/slide/000/001.png",
+        "slide": "projects/0000/outputs/slide/slide01.png",
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
@@ -404,7 +404,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": "images/frames/slide/000/001.png"
+          "image_path": "projects/0000/outputs/slide/slide01.png"
         },
         "monolith": {
           "image_path": ""
@@ -530,7 +530,7 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "images/frames/slide/000/001.png",
+        "slide": "projects/0000/outputs/slide/slide01.png",
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
@@ -544,7 +544,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": "images/frames/slide/000/001.png"
+          "image_path": "projects/0000/outputs/slide/slide01.png"
         },
         "monolith": {
           "image_path": ""
@@ -670,7 +670,7 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "images/frames/slide/000/001.png",
+        "slide": "projects/0000/outputs/slide/slide01.png",
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
@@ -684,7 +684,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": "images/frames/slide/000/001.png"
+          "image_path": "projects/0000/outputs/slide/slide01.png"
         },
         "monolith": {
           "image_path": ""
@@ -799,7 +799,7 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "images/frames/slide/000/001.png",
+        "slide": "projects/0000/outputs/slide/slide01.png",
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
@@ -813,7 +813,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": "images/frames/slide/000/001.png"
+          "image_path": "projects/0000/outputs/slide/slide01.png"
         },
         "monolith": {
           "image_path": ""
@@ -939,7 +939,7 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "images/frames/slide/000/001.png",
+        "slide": "projects/0000/outputs/slide/slide01.png",
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
@@ -953,7 +953,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": "images/frames/slide/000/001.png"
+          "image_path": "projects/0000/outputs/slide/slide01.png"
         },
         "monolith": {
           "image_path": ""
@@ -1068,7 +1068,7 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "images/frames/slide/000/001.png",
+        "slide": "projects/0000/outputs/slide/slide01.png",
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
@@ -1082,7 +1082,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": "images/frames/slide/000/001.png"
+          "image_path": "projects/0000/outputs/slide/slide01.png"
         },
         "monolith": {
           "image_path": ""
@@ -1208,7 +1208,7 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "images/frames/slide/000/002.png",
+        "slide": "projects/0000/outputs/slide/slide02.png",
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
@@ -1222,7 +1222,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": "images/frames/slide/000/002.png"
+          "image_path": "projects/0000/outputs/slide/slide02.png"
         },
         "monolith": {
           "image_path": ""
