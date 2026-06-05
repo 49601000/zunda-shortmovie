@@ -291,10 +291,12 @@
       gap: 8px;
       align-items: start;
       padding: 10px;
-      border: 1px solid rgba(99, 217, 188, 0.32);
+      border: 1px solid rgba(147, 245, 199, 0.42);
       border-radius: 10px;
-      background: rgba(12, 49, 64, 0.68);
-      box-shadow: inset 0 1px 0 rgba(242, 248, 247, 0.05);
+      background:
+        linear-gradient(180deg, rgba(242, 248, 247, 0.15), rgba(99, 217, 188, 0.08)),
+        rgba(18, 54, 56, 0.86);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
     }
 
     .sub-row textarea {
@@ -322,6 +324,14 @@
     .inner-card {
       grid-column: span 6;
       margin-top: 4px;
+    }
+
+    .substyle-card {
+      border: 1px solid rgba(147, 245, 199, 0.42);
+      background:
+        linear-gradient(180deg, rgba(242, 248, 247, 0.15), rgba(99, 217, 188, 0.08)),
+        rgba(18, 54, 56, 0.86);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
     }
 
     .inner-card-title {
@@ -552,55 +562,55 @@
     </section>
 
     <section class="card">
-      <div class="seg-head">
-        <div class="seg-index">TITLE（別枠設定）</div>
-      </div>
-      <div class="grid">
-        <div class="field span-6">
-          <label for="titleTextInput">title text（0-1秒 / role:title セグメントへ反映）</label>
-          <input id="titleTextInput" type="text" placeholder="例: 損切ができないことって実は普通のこと" />
+      <details class="collapse">
+        <summary class="seg-index">TITLE（別枠設定）</summary>
+        <div class="grid" style="margin-top:10px">
+          <div class="field span-6">
+            <label for="titleTextInput">title text（0-1秒 / role:title セグメントへ反映）</label>
+            <input id="titleTextInput" type="text" placeholder="例: 損切ができないことって実は普通のこと" />
+          </div>
+          <div class="field span-3">
+            <label for="titleBgColorInput">title background color（黒地）</label>
+            <input id="titleBgColorInput" type="color" value="#000000" />
+          </div>
+          <div class="field span-3">
+            <label for="titleTextColorInput">title text color（白字）</label>
+            <input id="titleTextColorInput" type="color" value="#ffffff" />
+          </div>
+          <div class="field span-3">
+            <label for="titleBarHeightInput">title height px（縦幅）</label>
+            <input id="titleBarHeightInput" type="number" min="24" max="300" step="1" value="72" />
+          </div>
+          <div class="field span-3">
+            <label for="titleFontSizeInput">title font size px（文字サイズ）</label>
+            <input id="titleFontSizeInput" type="number" min="16" max="120" step="1" value="42" />
+          </div>
+          <div class="field span-3">
+            <label for="titleWidthPxInput">title width px（横幅）</label>
+            <input id="titleWidthPxInput" type="number" min="120" max="1080" step="1" value="994" />
+          </div>
+          <div class="field span-3">
+            <label for="titleLineBreakModeInput">title line break（改行ルール）</label>
+            <select id="titleLineBreakModeInput">
+              <option value="auto" selected>auto（自動折り返し）</option>
+              <option value="line_chars">line_chars（指定文字数で改行）</option>
+            </select>
+          </div>
+          <div class="field span-3">
+            <label for="titleLineCharsInput">title line chars（1行文字数）</label>
+            <input id="titleLineCharsInput" type="number" min="4" max="80" step="1" value="18" />
+          </div>
+          <div class="field span-3">
+            <label for="titleTextAlignInput">title text align（文字揃え）</label>
+            <select id="titleTextAlignInput">
+              <option value="left">left（左揃え）</option>
+              <option value="center" selected>center（中央揃え）</option>
+              <option value="right">right（右揃え）</option>
+            </select>
+          </div>
         </div>
-        <div class="field span-3">
-          <label for="titleBgColorInput">title background color（黒地）</label>
-          <input id="titleBgColorInput" type="color" value="#000000" />
-        </div>
-        <div class="field span-3">
-          <label for="titleTextColorInput">title text color（白字）</label>
-          <input id="titleTextColorInput" type="color" value="#ffffff" />
-        </div>
-        <div class="field span-3">
-          <label for="titleBarHeightInput">title height px（縦幅）</label>
-          <input id="titleBarHeightInput" type="number" min="24" max="300" step="1" value="72" />
-        </div>
-        <div class="field span-3">
-          <label for="titleFontSizeInput">title font size px（文字サイズ）</label>
-          <input id="titleFontSizeInput" type="number" min="16" max="120" step="1" value="42" />
-        </div>
-        <div class="field span-3">
-          <label for="titleWidthPxInput">title width px（横幅）</label>
-          <input id="titleWidthPxInput" type="number" min="120" max="1080" step="1" value="994" />
-        </div>
-        <div class="field span-3">
-          <label for="titleLineBreakModeInput">title line break（改行ルール）</label>
-          <select id="titleLineBreakModeInput">
-            <option value="auto" selected>auto（自動折り返し）</option>
-            <option value="line_chars">line_chars（指定文字数で改行）</option>
-          </select>
-        </div>
-        <div class="field span-3">
-          <label for="titleLineCharsInput">title line chars（1行文字数）</label>
-          <input id="titleLineCharsInput" type="number" min="4" max="80" step="1" value="18" />
-        </div>
-        <div class="field span-3">
-          <label for="titleTextAlignInput">title text align（文字揃え）</label>
-          <select id="titleTextAlignInput">
-            <option value="left">left（左揃え）</option>
-            <option value="center" selected>center（中央揃え）</option>
-            <option value="right">right（右揃え）</option>
-          </select>
-        </div>
-      </div>
-      <p class="sub" style="margin-top:8px">ここで設定したTITLEは、metadata(`title`)・titleセグメント・常時表示タイトル帯（背景の1つ上レイヤー）に同期されます。</p>
+        <p class="sub" style="margin-top:8px">ここで設定したTITLEは、metadata(`title`)・titleセグメント・常時表示タイトル帯（背景の1つ上レイヤー）に同期されます。</p>
+      </details>
     </section>
 
     <section class="card">
@@ -797,11 +807,17 @@
         { label: "めたん（強調）", value: "#ff46b4" }
       ];
       const HOOK_TEXT_STYLE_DEFAULTS = {
-        top: { font_size: 90, fill_color: "#303030", outline_color: "#ffffff", outline_scale: 1.06, fill_visible: false },
-        main: { font_size: 260, fill_color: "#e60012", outline_color: "#ffffff", outline_scale: 1.06, fill_visible: true },
-        sub: { font_size: 140, fill_color: "#303030", outline_color: "#ffffff", outline_scale: 1.06, fill_visible: false },
+        top: { font_size: 90, fill_color: "#303030", outline_color: "transparent", outline_scale: 1.06, fill_visible: false },
+        main: { font_size: 260, fill_color: "#e60012", outline_color: "transparent", outline_scale: 1.06, fill_visible: true },
+        sub: { font_size: 140, fill_color: "#303030", outline_color: "transparent", outline_scale: 1.06, fill_visible: false },
         bubble: { font_size: 64 }
       };
+      const HOOK_OUTLINE_COLOR_OPTIONS = [
+        { label: "transparent", value: "transparent" },
+        { label: "white", value: "#ffffff" },
+        { label: "black", value: "#000000" },
+        { label: "red", value: "#e60012" }
+      ];
       const HOOK_CHARACTER_LAYOUT_DEFAULTS = {
         enabled: true,
         x: 450,
@@ -2653,13 +2669,32 @@
         return normalizePx(value, fallback, 24, 360);
       };
 
+      const normalizeHookOutlineColor = (value, fallback = "transparent") => {
+        if (typeof value === "string" && value.trim().toLowerCase() === "transparent") {
+          return "transparent";
+        }
+        return normalizeColorHex(value, fallback);
+      };
+
+      const hookOutlineOptionsHtml = (selected) => {
+        const normalized = normalizeHookOutlineColor(selected, HOOK_TEXT_STYLE_DEFAULTS.top.outline_color);
+        const hasOption = HOOK_OUTLINE_COLOR_OPTIONS.some((option) => option.value === normalized);
+        const options = hasOption
+          ? HOOK_OUTLINE_COLOR_OPTIONS
+          : HOOK_OUTLINE_COLOR_OPTIONS.concat([{ label: normalized, value: normalized }]);
+        return options.map((option) => {
+          const sel = option.value === normalized ? " selected" : "";
+          return `<option value="${escapeHtml(option.value)}"${sel}>${escapeHtml(option.label)}</option>`;
+        }).join("");
+      };
+
       const buildDefaultHookTextStyles = (scene) => {
         const hook = scene?.hook_visual && typeof scene.hook_visual === "object" ? scene.hook_visual : {};
         const texts = hook.texts && typeof hook.texts === "object" ? hook.texts : {};
         const resolveLayer = (node, defaults) => ({
           font_size: normalizeHookFontSize(node?.fontSize ?? node?.font_size ?? node?.font_size_px, defaults.font_size),
           fill_color: normalizeColorHex(node?.color, defaults.fill_color),
-          outline_color: normalizeColorHex(node?.outlineColor ?? node?.strokeColor, defaults.outline_color),
+          outline_color: normalizeHookOutlineColor(node?.outlineColor ?? node?.strokeColor, defaults.outline_color),
           outline_scale: normalizeHookOutlineScale(node?.outlineScale, defaults.outline_scale),
           fill_visible: typeof node?.fillVisible === "boolean" ? node.fillVisible : defaults.fill_visible
         });
@@ -3419,7 +3454,7 @@
                   text: String(hookTexts.top || ""),
                   fontSize: normalizeHookFontSize(hookTextStyles.top?.font_size, HOOK_TEXT_STYLE_DEFAULTS.top.font_size),
                   color: normalizeColorHex(hookTextStyles.top?.fill_color, HOOK_TEXT_STYLE_DEFAULTS.top.fill_color),
-                  outlineColor: normalizeColorHex(hookTextStyles.top?.outline_color, HOOK_TEXT_STYLE_DEFAULTS.top.outline_color),
+                  outlineColor: normalizeHookOutlineColor(hookTextStyles.top?.outline_color, HOOK_TEXT_STYLE_DEFAULTS.top.outline_color),
                   outlineScale: normalizeHookOutlineScale(hookTextStyles.top?.outline_scale, HOOK_TEXT_STYLE_DEFAULTS.top.outline_scale),
                   fillVisible: false
                 },
@@ -3427,7 +3462,7 @@
                   text: String(hookTexts.main || ""),
                   fontSize: normalizeHookFontSize(hookTextStyles.main?.font_size, HOOK_TEXT_STYLE_DEFAULTS.main.font_size),
                   color: normalizeColorHex(hookTextStyles.main?.fill_color, HOOK_TEXT_STYLE_DEFAULTS.main.fill_color),
-                  outlineColor: normalizeColorHex(hookTextStyles.main?.outline_color, HOOK_TEXT_STYLE_DEFAULTS.main.outline_color),
+                  outlineColor: normalizeHookOutlineColor(hookTextStyles.main?.outline_color, HOOK_TEXT_STYLE_DEFAULTS.main.outline_color),
                   outlineScale: normalizeHookOutlineScale(hookTextStyles.main?.outline_scale, HOOK_TEXT_STYLE_DEFAULTS.main.outline_scale),
                   fillVisible: true
                 },
@@ -3435,7 +3470,7 @@
                   text: String(hookTexts.sub || ""),
                   fontSize: normalizeHookFontSize(hookTextStyles.sub?.font_size, HOOK_TEXT_STYLE_DEFAULTS.sub.font_size),
                   color: normalizeColorHex(hookTextStyles.sub?.fill_color, HOOK_TEXT_STYLE_DEFAULTS.sub.fill_color),
-                  outlineColor: normalizeColorHex(hookTextStyles.sub?.outline_color, HOOK_TEXT_STYLE_DEFAULTS.sub.outline_color),
+                  outlineColor: normalizeHookOutlineColor(hookTextStyles.sub?.outline_color, HOOK_TEXT_STYLE_DEFAULTS.sub.outline_color),
                   outlineScale: normalizeHookOutlineScale(hookTextStyles.sub?.outline_scale, HOOK_TEXT_STYLE_DEFAULTS.sub.outline_scale),
                   fillVisible: false
                 }
@@ -3916,14 +3951,11 @@
                   <label>TTSプレビュー（voice_override優先 + tts_transform適用後）</label>
                   <div class="readonly">${escapeHtml(ttsPreview || "(empty)")}</div>
                 </div>
-                <details class="collapse inner-card" open>
+                ${i !== 0 ? `
+                <details class="collapse inner-card substyle-card" open>
                   <summary class="inner-card-title">画面テキスト設定（dialog.screen_text）</summary>
                   <div class="inner-card-body">
                     <div class="grid">
-                      <div class="field span-6">
-                        <label>画面テキスト</label>
-                        <textarea name="screen_text" data-scope="scene" rows="2">${escapeHtml(scene.screen_text || "")}</textarea>
-                      </div>
                       <div class="field">
                         <label>文字サイズ(px)</label>
                         <input name="screen_text_font_size" data-scope="scene" type="number" min="12" max="200" step="1" value="${escapeHtml(scene.screen_text_font_size || SCREEN_TEXT_STYLE_DEFAULTS.font_size)}" />
@@ -3954,8 +3986,9 @@
                     </div>
                   </div>
                 </details>
+                ` : ""}
                 ${!hookPictureScene ? `
-                  <details class="collapse inner-card" open>
+                  <details class="collapse inner-card substyle-card" open>
                     <summary class="inner-card-title">SCENEレイヤー構成</summary>
                     <div class="inner-card-body">
                       ${i === 1 ? `
@@ -4000,19 +4033,17 @@
                         <div class="field span-2"><label>texts.top</label><textarea name="hook_top_text" data-scope="scene" rows="2">${escapeHtml(hookTexts.top || "")}</textarea></div>
                         <div class="field span-2"><label>texts.main</label><textarea name="hook_main_text" data-scope="scene" rows="2">${escapeHtml(hookTexts.main || "")}</textarea></div>
                         <div class="field span-2"><label>texts.sub</label><textarea name="hook_sub_text" data-scope="scene" rows="2">${escapeHtml(hookTexts.sub || "")}</textarea></div>
-                        <div class="field span-2"><label>bubble.text</label><textarea name="hook_bubble_text" data-scope="scene" rows="2">${escapeHtml(hookTexts.bubble || "")}</textarea></div>
-                        <div class="field span-2"><label>bubble font size</label><input name="hook_bubble_font_size" data-scope="scene" type="number" min="24" max="360" step="1" value="${escapeHtml(hookTextStyles.bubble?.font_size ?? HOOK_TEXT_STYLE_DEFAULTS.bubble.font_size)}" /></div>
                         <div class="field span-2"><label>top font size</label><input name="hook_top_font_size" data-scope="scene" type="number" min="24" max="360" step="1" value="${escapeHtml(hookTextStyles.top?.font_size ?? HOOK_TEXT_STYLE_DEFAULTS.top.font_size)}" /></div>
-                        <div class="field span-2"><label>top fill</label><input name="hook_top_fill_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.top?.fill_color || HOOK_TEXT_STYLE_DEFAULTS.top.fill_color)}" /></div>
-                        <div class="field span-2"><label>top outline</label><input name="hook_top_outline_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.top?.outline_color || HOOK_TEXT_STYLE_DEFAULTS.top.outline_color)}" /></div>
-                        <div class="field span-2"><label>top outline scale</label><input name="hook_top_outline_scale" data-scope="scene" type="number" min="1" max="1.3" step="0.01" value="${escapeHtml(hookTextStyles.top?.outline_scale ?? HOOK_TEXT_STYLE_DEFAULTS.top.outline_scale)}" /></div>
                         <div class="field span-2"><label>main font size</label><input name="hook_main_font_size" data-scope="scene" type="number" min="24" max="360" step="1" value="${escapeHtml(hookTextStyles.main?.font_size ?? HOOK_TEXT_STYLE_DEFAULTS.main.font_size)}" /></div>
-                        <div class="field span-2"><label>main fill</label><input name="hook_main_fill_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.main?.fill_color || HOOK_TEXT_STYLE_DEFAULTS.main.fill_color)}" /></div>
-                        <div class="field span-2"><label>main outline</label><input name="hook_main_outline_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.main?.outline_color || HOOK_TEXT_STYLE_DEFAULTS.main.outline_color)}" /></div>
-                        <div class="field span-2"><label>main outline scale</label><input name="hook_main_outline_scale" data-scope="scene" type="number" min="1" max="1.3" step="0.01" value="${escapeHtml(hookTextStyles.main?.outline_scale ?? HOOK_TEXT_STYLE_DEFAULTS.main.outline_scale)}" /></div>
                         <div class="field span-2"><label>sub font size</label><input name="hook_sub_font_size" data-scope="scene" type="number" min="24" max="360" step="1" value="${escapeHtml(hookTextStyles.sub?.font_size ?? HOOK_TEXT_STYLE_DEFAULTS.sub.font_size)}" /></div>
+                        <div class="field span-2"><label>top fill</label><input name="hook_top_fill_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.top?.fill_color || HOOK_TEXT_STYLE_DEFAULTS.top.fill_color)}" /></div>
+                        <div class="field span-2"><label>main fill</label><input name="hook_main_fill_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.main?.fill_color || HOOK_TEXT_STYLE_DEFAULTS.main.fill_color)}" /></div>
                         <div class="field span-2"><label>sub fill</label><input name="hook_sub_fill_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.sub?.fill_color || HOOK_TEXT_STYLE_DEFAULTS.sub.fill_color)}" /></div>
-                        <div class="field span-2"><label>sub outline</label><input name="hook_sub_outline_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.sub?.outline_color || HOOK_TEXT_STYLE_DEFAULTS.sub.outline_color)}" /></div>
+                        <div class="field span-2"><label>top outline</label><select name="hook_top_outline_color" data-scope="scene">${hookOutlineOptionsHtml(hookTextStyles.top?.outline_color ?? HOOK_TEXT_STYLE_DEFAULTS.top.outline_color)}</select></div>
+                        <div class="field span-2"><label>main outline</label><select name="hook_main_outline_color" data-scope="scene">${hookOutlineOptionsHtml(hookTextStyles.main?.outline_color ?? HOOK_TEXT_STYLE_DEFAULTS.main.outline_color)}</select></div>
+                        <div class="field span-2"><label>sub outline</label><select name="hook_sub_outline_color" data-scope="scene">${hookOutlineOptionsHtml(hookTextStyles.sub?.outline_color ?? HOOK_TEXT_STYLE_DEFAULTS.sub.outline_color)}</select></div>
+                        <div class="field span-2"><label>top outline scale</label><input name="hook_top_outline_scale" data-scope="scene" type="number" min="1" max="1.3" step="0.01" value="${escapeHtml(hookTextStyles.top?.outline_scale ?? HOOK_TEXT_STYLE_DEFAULTS.top.outline_scale)}" /></div>
+                        <div class="field span-2"><label>main outline scale</label><input name="hook_main_outline_scale" data-scope="scene" type="number" min="1" max="1.3" step="0.01" value="${escapeHtml(hookTextStyles.main?.outline_scale ?? HOOK_TEXT_STYLE_DEFAULTS.main.outline_scale)}" /></div>
                         <div class="field span-2"><label>sub outline scale</label><input name="hook_sub_outline_scale" data-scope="scene" type="number" min="1" max="1.3" step="0.01" value="${escapeHtml(hookTextStyles.sub?.outline_scale ?? HOOK_TEXT_STYLE_DEFAULTS.sub.outline_scale)}" /></div>
                       </div>
                     </div>
@@ -4698,7 +4729,7 @@
             } else if (styleKey === "fill_color") {
               hookTextStyles[layer].fill_color = normalizeColorHex(target.value, fallbackLayer.fill_color);
             } else if (styleKey === "outline_color") {
-              hookTextStyles[layer].outline_color = normalizeColorHex(target.value, fallbackLayer.outline_color);
+              hookTextStyles[layer].outline_color = normalizeHookOutlineColor(target.value, fallbackLayer.outline_color);
             } else if (styleKey === "outline_scale") {
               hookTextStyles[layer].outline_scale = normalizeHookOutlineScale(target.value, fallbackLayer.outline_scale);
             }
