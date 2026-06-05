@@ -50,7 +50,7 @@
       "voice_style": "normal",
       "speakerId": 2,
       "voice_speed": 1.25,
-      "voice": "認知的不協和",
+      "voice": "負けを認めない人の頭の中はだいたいこんななのだ",
       "voice_override": "",
       "character_id": "zundamon",
       "voice_profile": {
@@ -72,15 +72,15 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "認知的不協和",
+        "voice": "負けを認めない人の頭の中はだいたいこんななのだ",
         "screen_text": "",
-        "screen_text_font_size": 72,
+        "screen_text_font_size": 48,
         "screen_text_font_family": "Noto Sans JP Bold",
         "screen_text_color": "#ffffff",
         "screen_text_line_break_mode": "auto",
         "screen_text_line_chars": 18
       },
-      "screen_text_font_size": 72,
+      "screen_text_font_size": 48,
       "font_family": "Noto Sans JP Bold",
       "text_color": "#ffffff",
       "line_break_mode": "auto",
@@ -93,7 +93,7 @@
         "character_left": "",
         "character_right": "",
         "hook_background": "images/backgrounds/hook-bg-dots-yl.png",
-        "hook_character": "images/characters/zundamon/zundamon-normal-0000.png",
+        "hook_character": "images/characters/zundamon/zundamon-midpanic-0001.png",
         "hook_bubble": "parts/Hook-speech-balloon.png"
       },
       "composition": {
@@ -132,10 +132,10 @@
           "display_mode": "replace",
           "char_count": 6,
           "start_frame": 0,
-          "duration_frames": 60,
-          "end_frame": 60,
+          "duration_frames": 98,
+          "end_frame": 98,
           "start_sec": 0,
-          "duration_sec": 2
+          "duration_sec": 3.267
         }
       ],
       "lip_sync": {
@@ -153,30 +153,33 @@
         "speaker_side": "hook",
         "assets": {
           "hook": {
-            "idle": "images/characters/zundamon/zundamon-normal-0000.png",
+            "idle": "images/characters/zundamon/zundamon-midpanic-0001.png",
             "mouth_1": "images/characters/zundamon/zundamon-normal-0001.png",
-            "mouth_2": "images/characters/zundamon/zundamon-normal-00003.png"
+            "mouth_2": "images/characters/zundamon/zundamon-normal-0003.png"
           }
         }
       },
       "hook_visual": {
         "texts": {
           "top": {
-            "text": "",
+            "text": "負けを認めない人の",
+            "fontSize": 84,
             "color": "#303030",
             "outlineColor": "#ffffff",
             "outlineScale": 1.06,
             "fillVisible": false
           },
           "main": {
-            "text": "",
+            "text": "頭の中",
+            "fontSize": 180,
             "color": "#e60012",
             "outlineColor": "#ffffff",
             "outlineScale": 1.06,
             "fillVisible": true
           },
           "sub": {
-            "text": "",
+            "text": "ってだいたいこれ",
+            "fontSize": 92,
             "color": "#303030",
             "outlineColor": "#ffffff",
             "outlineScale": 1.06,
@@ -195,15 +198,16 @@
           "scale": 2,
           "objectFit": "contain",
           "objectPosition": "center top",
-          "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
+          "image_path": "images/characters/zundamon/zundamon-midpanic-0001.png",
           "lip_sync_image_paths": [
             "images/characters/zundamon/zundamon-normal-0001.png",
-            "images/characters/zundamon/zundamon-normal-00003.png"
+            "images/characters/zundamon/zundamon-normal-0003.png"
           ]
         },
         "bubble": {
           "image_path": "parts/Hook-speech-balloon.png",
-          "text": ""
+          "text": "",
+          "fontSize": 64
         },
         "finalize_to_dialog": false
       }
@@ -221,7 +225,7 @@
       "voice_style": "normal",
       "speakerId": 3,
       "voice_speed": 1.25,
-      "voice": "今日は3万円負けたのだ。でも乱数調整だから実質ノーカンなのだ",
+      "voice": "今日は3万円負けたのだ。\nでも乱数調整だから実質ノーカンなのだ",
       "voice_override": "",
       "character_id": "zundamon",
       "voice_profile": {
@@ -243,7 +247,7 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "今日は3万円負けたのだ。でも乱数調整だから実質ノーカンなのだ",
+        "voice": "今日は3万円負けたのだ。\nでも乱数調整だから実質ノーカンなのだ",
         "screen_text": "",
         "screen_text_font_size": 72,
         "screen_text_font_family": "Noto Sans JP Bold",
@@ -262,7 +266,7 @@
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
-        "character_right": "images/characters/zundamon/zundamon-midpanic0000.png",
+        "character_right": "images/characters/zundamon/zundamon-midpanic-0001.png",
         "hook_background": "",
         "hook_character": "",
         "hook_bubble": ""
@@ -289,11 +293,11 @@
           },
           "right": {
             "engine": "zundamon_engine",
-            "image_path": "images/characters/zundamon/zundamon-midpanic0000.png",
+            "image_path": "images/characters/zundamon/zundamon-midpanic-0001.png",
             "state": "speaking",
             "lip_sync_image_paths": [
-              "images/characters/zundamon/zundamon-midpanic0002.png",
-              "images/characters/zundamon/zundamon-midpanic-0001.png"
+              "images/characters/zundamon/zundamon-midpanic-0002.png",
+              "images/characters/zundamon/zundamon-midpanic-0003.png"
             ]
           }
         }
@@ -305,10 +309,10 @@
           "screen_text": "今日は3万円負けたのだ",
           "display_mode": "replace",
           "char_count": 11,
-          "start_frame": 60,
+          "start_frame": 99,
           "duration_frames": 56,
-          "end_frame": 116,
-          "start_sec": 2,
+          "end_frame": 155,
+          "start_sec": 3.3,
           "duration_sec": 1.867
         },
         {
@@ -316,10 +320,10 @@
           "screen_text": "でも乱数調整だから実質ノーカンなのだ",
           "display_mode": "replace",
           "char_count": 18,
-          "start_frame": 116,
+          "start_frame": 155,
           "duration_frames": 91,
-          "end_frame": 207,
-          "start_sec": 3.867,
+          "end_frame": 246,
+          "start_sec": 5.167,
           "duration_sec": 3.033
         }
       ],
@@ -341,9 +345,9 @@
             "idle": "images/characters/metan/metan-0.png"
           },
           "right": {
-            "idle": "images/characters/zundamon/zundamon-midpanic0000.png",
-            "mouth_1": "images/characters/zundamon/zundamon-midpanic0002.png",
-            "mouth_2": "images/characters/zundamon/zundamon-midpanic-0001.png"
+            "idle": "images/characters/zundamon/zundamon-midpanic-0001.png",
+            "mouth_1": "images/characters/zundamon/zundamon-midpanic-0002.png",
+            "mouth_2": "images/characters/zundamon/zundamon-midpanic-0003.png"
           }
         }
       }
@@ -402,7 +406,7 @@
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
-        "character_right": "images/characters/zundamon/zundamon-midpanic0000.png",
+        "character_right": "images/characters/zundamon/zundamon-midpanic-0000.png",
         "hook_background": "",
         "hook_character": "",
         "hook_bubble": ""
@@ -432,7 +436,7 @@
           },
           "right": {
             "engine": "zundamon_engine",
-            "image_path": "images/characters/zundamon/zundamon-midpanic0000.png",
+            "image_path": "images/characters/zundamon/zundamon-midpanic-0000.png",
             "state": "idle",
             "lip_sync_image_paths": []
           }
@@ -445,10 +449,10 @@
           "screen_text": "それは認知的不協和ね",
           "display_mode": "replace",
           "char_count": 10,
-          "start_frame": 207,
+          "start_frame": 246,
           "duration_frames": 43,
-          "end_frame": 250,
-          "start_sec": 6.9,
+          "end_frame": 289,
+          "start_sec": 8.2,
           "duration_sec": 1.433
         },
         {
@@ -456,10 +460,10 @@
           "screen_text": "現実とプライドが殴り合ってるのよ",
           "display_mode": "replace",
           "char_count": 16,
-          "start_frame": 250,
+          "start_frame": 289,
           "duration_frames": 68,
-          "end_frame": 318,
-          "start_sec": 8.333,
+          "end_frame": 357,
+          "start_sec": 9.633,
           "duration_sec": 2.267
         }
       ],
@@ -483,7 +487,7 @@
             "mouth_2": "images/characters/metan/metan-2.png"
           },
           "right": {
-            "idle": "images/characters/zundamon/zundamon-midpanic0000.png"
+            "idle": "images/characters/zundamon/zundamon-midpanic-0000.png"
           }
         }
       }
@@ -585,10 +589,10 @@
           "screen_text": "違うのだ。途中までは勝ってたのだ",
           "display_mode": "replace",
           "char_count": 16,
-          "start_frame": 318,
+          "start_frame": 357,
           "duration_frames": 76,
-          "end_frame": 394,
-          "start_sec": 10.6,
+          "end_frame": 433,
+          "start_sec": 11.9,
           "duration_sec": 2.533
         },
         {
@@ -596,10 +600,10 @@
           "screen_text": "流れは完全に来てたのだ",
           "display_mode": "replace",
           "char_count": 11,
-          "start_frame": 394,
+          "start_frame": 433,
           "duration_frames": 53,
-          "end_frame": 447,
-          "start_sec": 13.133,
+          "end_frame": 486,
+          "start_sec": 14.433,
           "duration_sec": 1.767
         }
       ],
@@ -682,7 +686,7 @@
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
-        "character_right": "images/characters/zundamon/zundamon-midpanic0000.png",
+        "character_right": "images/characters/zundamon/zundamon-midpanic-0000.png",
         "hook_background": "",
         "hook_character": "",
         "hook_bubble": ""
@@ -712,7 +716,7 @@
           },
           "right": {
             "engine": "zundamon_engine",
-            "image_path": "images/characters/zundamon/zundamon-midpanic0000.png",
+            "image_path": "images/characters/zundamon/zundamon-midpanic-0000.png",
             "state": "idle",
             "lip_sync_image_paths": []
           }
@@ -725,10 +729,10 @@
           "screen_text": "結果だけ来てないじゃない",
           "display_mode": "replace",
           "char_count": 12,
-          "start_frame": 447,
+          "start_frame": 486,
           "duration_frames": 42,
-          "end_frame": 489,
-          "start_sec": 14.9,
+          "end_frame": 528,
+          "start_sec": 16.2,
           "duration_sec": 1.4
         }
       ],
@@ -752,7 +756,7 @@
             "mouth_2": "images/characters/metan/metan-1.png"
           },
           "right": {
-            "idle": "images/characters/zundamon/zundamon-midpanic0000.png"
+            "idle": "images/characters/zundamon/zundamon-midpanic-0000.png"
           }
         }
       }
@@ -842,7 +846,7 @@
             "state": "speaking",
             "lip_sync_image_paths": [
               "images/characters/zundamon/zundamon-normal-0002.png",
-              "images/characters/zundamon/zundamon-normal-00003.png"
+              "images/characters/zundamon/zundamon-normal-0003.png"
             ]
           }
         }
@@ -854,10 +858,10 @@
           "screen_text": "最後に偏ったのだ",
           "display_mode": "replace",
           "char_count": 8,
-          "start_frame": 489,
+          "start_frame": 528,
           "duration_frames": 36,
-          "end_frame": 525,
-          "start_sec": 16.3,
+          "end_frame": 564,
+          "start_sec": 17.6,
           "duration_sec": 1.2
         },
         {
@@ -865,10 +869,10 @@
           "screen_text": "あれはボクのせいじゃないのだ",
           "display_mode": "replace",
           "char_count": 14,
-          "start_frame": 525,
+          "start_frame": 564,
           "duration_frames": 63,
-          "end_frame": 588,
-          "start_sec": 17.5,
+          "end_frame": 627,
+          "start_sec": 18.8,
           "duration_sec": 2.1
         }
       ],
@@ -892,7 +896,7 @@
           "right": {
             "idle": "images/characters/zundamon/zundamon-normal-0000.png",
             "mouth_1": "images/characters/zundamon/zundamon-normal-0002.png",
-            "mouth_2": "images/characters/zundamon/zundamon-normal-00003.png"
+            "mouth_2": "images/characters/zundamon/zundamon-normal-0003.png"
           }
         }
       }
@@ -950,8 +954,8 @@
         "slide": "projects/0000/outputs/slide/slide01.png",
         "monolith": "",
         "dialog_box": "",
-        "character_left": "images/characters/metan/metan-0.png",
-        "character_right": "images/characters/zundamon/zundamon-midpanic0000.png",
+        "character_left": "images/characters/metan/metan-lookside-turnoff-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_background": "",
         "hook_character": "",
         "hook_bubble": ""
@@ -972,16 +976,16 @@
         "characters": {
           "left": {
             "engine": "metan_engine",
-            "image_path": "images/characters/metan/metan-0.png",
+            "image_path": "images/characters/metan/metan-lookside-turnoff-0.png",
             "state": "speaking",
             "lip_sync_image_paths": [
-              "images/characters/metan/metan-1.png",
-              "images/characters/metan/metan-2.png"
+              "images/characters/metan/metan-lookside-turnoff-1.png",
+              "images/characters/metan/metan-lookside-turnoff-2.png"
             ]
           },
           "right": {
             "engine": "zundamon_engine",
-            "image_path": "images/characters/zundamon/zundamon-midpanic0000.png",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
             "state": "idle",
             "lip_sync_image_paths": []
           }
@@ -994,10 +998,10 @@
           "screen_text": "負けた時だけ運の話になるのね",
           "display_mode": "replace",
           "char_count": 14,
-          "start_frame": 588,
+          "start_frame": 627,
           "duration_frames": 60,
-          "end_frame": 648,
-          "start_sec": 19.6,
+          "end_frame": 687,
+          "start_sec": 20.9,
           "duration_sec": 2
         }
       ],
@@ -1016,12 +1020,12 @@
         "speaker_side": "left",
         "assets": {
           "left": {
-            "idle": "images/characters/metan/metan-0.png",
-            "mouth_1": "images/characters/metan/metan-1.png",
-            "mouth_2": "images/characters/metan/metan-2.png"
+            "idle": "images/characters/metan/metan-lookside-turnoff-0.png",
+            "mouth_1": "images/characters/metan/metan-lookside-turnoff-1.png",
+            "mouth_2": "images/characters/metan/metan-lookside-turnoff-2.png"
           },
           "right": {
-            "idle": "images/characters/zundamon/zundamon-midpanic0000.png"
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png"
           }
         }
       }
@@ -1123,10 +1127,10 @@
           "screen_text": "だって負けを認めたら、",
           "display_mode": "replace",
           "char_count": 11,
-          "start_frame": 648,
+          "start_frame": 687,
           "duration_frames": 43,
-          "end_frame": 691,
-          "start_sec": 21.6,
+          "end_frame": 730,
+          "start_sec": 22.9,
           "duration_sec": 1.433
         },
         {
@@ -1134,10 +1138,10 @@
           "screen_text": "ボクが下手だったことになるのだ",
           "display_mode": "replace",
           "char_count": 15,
-          "start_frame": 691,
+          "start_frame": 730,
           "duration_frames": 59,
-          "end_frame": 750,
-          "start_sec": 23.033,
+          "end_frame": 789,
+          "start_sec": 24.333,
           "duration_sec": 1.967
         }
       ],
@@ -1220,7 +1224,7 @@
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-0.png",
-        "character_right": "images/characters/zundamon/zundamon-midpanic0000.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_background": "",
         "hook_character": "",
         "hook_bubble": ""
@@ -1250,7 +1254,7 @@
           },
           "right": {
             "engine": "zundamon_engine",
-            "image_path": "images/characters/zundamon/zundamon-midpanic0000.png",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
             "state": "idle",
             "lip_sync_image_paths": []
           }
@@ -1263,10 +1267,10 @@
           "screen_text": "だから脳が都合のいい説明を作るのよ",
           "display_mode": "replace",
           "char_count": 17,
-          "start_frame": 750,
+          "start_frame": 789,
           "duration_frames": 72,
-          "end_frame": 822,
-          "start_sec": 25,
+          "end_frame": 861,
+          "start_sec": 26.3,
           "duration_sec": 2.4
         }
       ],
@@ -1290,7 +1294,7 @@
             "mouth_2": "images/characters/metan/metan-1.png"
           },
           "right": {
-            "idle": "images/characters/zundamon/zundamon-midpanic0000.png"
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png"
           }
         }
       }
@@ -1379,8 +1383,8 @@
             "image_path": "images/characters/zundamon/zundamon-normal-0001.png",
             "state": "speaking",
             "lip_sync_image_paths": [
-              "images/characters/zundamon/zundamon-normal-00003.png",
-              "images/characters/zundamon/zundamon-lowpanic-00002.png"
+              "images/characters/zundamon/zundamon-normal-0003.png",
+              "images/characters/zundamon/zundamon-normal-0002.png"
             ]
           }
         }
@@ -1392,10 +1396,10 @@
           "screen_text": "なるほどなのだ。",
           "display_mode": "replace",
           "char_count": 8,
-          "start_frame": 822,
+          "start_frame": 861,
           "duration_frames": 36,
-          "end_frame": 858,
-          "start_sec": 27.4,
+          "end_frame": 897,
+          "start_sec": 28.7,
           "duration_sec": 1.2
         },
         {
@@ -1403,10 +1407,10 @@
           "screen_text": "じゃあ明日もう3万円で検証するのだ",
           "display_mode": "replace",
           "char_count": 17,
-          "start_frame": 858,
+          "start_frame": 897,
           "duration_frames": 75,
-          "end_frame": 933,
-          "start_sec": 28.6,
+          "end_frame": 972,
+          "start_sec": 29.9,
           "duration_sec": 2.5
         }
       ],
@@ -1429,8 +1433,8 @@
           },
           "right": {
             "idle": "images/characters/zundamon/zundamon-normal-0001.png",
-            "mouth_1": "images/characters/zundamon/zundamon-normal-00003.png",
-            "mouth_2": "images/characters/zundamon/zundamon-lowpanic-00002.png"
+            "mouth_1": "images/characters/zundamon/zundamon-normal-0003.png",
+            "mouth_2": "images/characters/zundamon/zundamon-normal-0002.png"
           }
         }
       }
@@ -1451,8 +1455,8 @@
       "scene_010": true
     }
   },
-  "durationSec": 31.1,
-  "durationInFrames": 933,
+  "durationSec": 32.4,
+  "durationInFrames": 972,
   "fps": 30,
   "tts_transform": "",
   "video_spec": {
@@ -1478,8 +1482,8 @@
     },
     "format": {
       "fps": 30,
-      "duration": 31.1,
-      "durationInFrames": 933
+      "duration": 32.4,
+      "durationInFrames": 972
     },
     "title": "認知的不協和"
   },
@@ -1501,7 +1505,7 @@
     "line_chars": 18,
     "text_align": "center"
   },
-  "total_frames": 933,
+  "total_frames": 972,
   "common_layers": [
     {
       "layer_id": "background",
@@ -1510,7 +1514,7 @@
       "z_index": 0,
       "fit": "cover",
       "start_frame": 0,
-      "duration_frames": 933
+      "duration_frames": 972
     },
     {
       "layer_id": "hook-background-scene_001",
@@ -1519,7 +1523,7 @@
       "z_index": 0,
       "fit": "cover",
       "start_frame": 0,
-      "duration_frames": 60
+      "duration_frames": 98
     }
   ]
 }

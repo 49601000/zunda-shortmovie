@@ -239,12 +239,11 @@ npm run scene-remotion:render
 npm run scene-remotion:voicevox:initial
 npm run scene-remotion:voicevox:publish
 npm run scene-remotion:voicevox:batch
-npm run scene-remotion:audio:sync
 npm run scene-remotion:typecheck
 npm run voicevox:proxy
 ```
 
-`voicevox` は `scene-remotion:voicevox:batch` でWAVを生成したあと、`scene-remotion:audio:sync` で `projects/{id}/outputs/audio/` へ同期します。
+`voicevox` は `scene-remotion:voicevox:batch` でWAVを生成し、`projects/{id}/outputs/audio/` へ直接保存します。
 
 `voicevox:proxy` は `http://127.0.0.1:5510` で起動し、VOICEVOX Engine標準の `http://127.0.0.1:50021` にCORS付きで中継します。Final Cut Panelをブラウザで直接開いて `/speakers` がCORSで失敗する場合は、VOICEVOX Engineを起動したうえで別ターミナルから実行してください。
 

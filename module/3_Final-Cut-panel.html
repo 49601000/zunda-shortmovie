@@ -509,6 +509,7 @@
           <button id="pickWorkspaceBtn" class="secondary">02_hobby選択</button>
           <button id="reloadProjectsBtn" class="ghost" disabled>projects再読込</button>
           <button id="loadProjectRenderBtn" disabled>render draft読込</button>
+          <button id="continueProjectRenderBtn" class="ghost" disabled>続きを編集（final読込）</button>
           <button id="saveProjectRenderBtn" class="secondary" disabled>render-final-v01.jsonに書き出し・反映</button>
         </div>
       </div>
@@ -796,9 +797,10 @@
         { label: "めたん（強調）", value: "#ff46b4" }
       ];
       const HOOK_TEXT_STYLE_DEFAULTS = {
-        top: { fill_color: "#303030", outline_color: "#ffffff", outline_scale: 1.06, fill_visible: false },
-        main: { fill_color: "#e60012", outline_color: "#ffffff", outline_scale: 1.06, fill_visible: true },
-        sub: { fill_color: "#303030", outline_color: "#ffffff", outline_scale: 1.06, fill_visible: false }
+        top: { font_size: 90, fill_color: "#303030", outline_color: "#ffffff", outline_scale: 1.06, fill_visible: false },
+        main: { font_size: 260, fill_color: "#e60012", outline_color: "#ffffff", outline_scale: 1.06, fill_visible: true },
+        sub: { font_size: 140, fill_color: "#303030", outline_color: "#ffffff", outline_scale: 1.06, fill_visible: false },
+        bubble: { font_size: 64 }
       };
       const HOOK_CHARACTER_LAYOUT_DEFAULTS = {
         enabled: true,
@@ -902,6 +904,7 @@
         reloadProjectsBtn: document.getElementById("reloadProjectsBtn"),
         projectSelect: document.getElementById("projectSelect"),
         loadProjectRenderBtn: document.getElementById("loadProjectRenderBtn"),
+        continueProjectRenderBtn: document.getElementById("continueProjectRenderBtn"),
         saveProjectRenderBtn: document.getElementById("saveProjectRenderBtn"),
         projectPathHint: document.getElementById("projectPathHint"),
         engineUrlInput: document.getElementById("engineUrlInput"),
@@ -1306,6 +1309,7 @@
         el.projectSelect.disabled = !hasWorkspace || projectRows.length === 0;
         el.reloadProjectsBtn.disabled = !hasWorkspace;
         el.loadProjectRenderBtn.disabled = !hasWorkspace || !projectId;
+        el.continueProjectRenderBtn.disabled = !hasWorkspace || !projectId;
         el.saveProjectRenderBtn.disabled = !hasWorkspace || !projectId || !state.spec;
         const renderName = RENDER_FINAL_NAME;
         const displayWorkspacePrefix = hasWorkspace ? workspacePathPrefix : normalizeSubdirRef(`${PREFERRED_WORKSPACE_ROOT_NAME}/${APP_WORKSPACE_DIR_NAME}`);
@@ -2645,10 +2649,15 @@
         return Math.max(1, Math.min(1.3, Math.round(n * 100) / 100));
       };
 
+      const normalizeHookFontSize = (value, fallback) => {
+        return normalizePx(value, fallback, 24, 360);
+      };
+
       const buildDefaultHookTextStyles = (scene) => {
         const hook = scene?.hook_visual && typeof scene.hook_visual === "object" ? scene.hook_visual : {};
         const texts = hook.texts && typeof hook.texts === "object" ? hook.texts : {};
         const resolveLayer = (node, defaults) => ({
+          font_size: normalizeHookFontSize(node?.fontSize ?? node?.font_size ?? node?.font_size_px, defaults.font_size),
           fill_color: normalizeColorHex(node?.color, defaults.fill_color),
           outline_color: normalizeColorHex(node?.outlineColor ?? node?.strokeColor, defaults.outline_color),
           outline_scale: normalizeHookOutlineScale(node?.outlineScale, defaults.outline_scale),
@@ -2657,7 +2666,10 @@
         return {
           top: resolveLayer(texts.top, HOOK_TEXT_STYLE_DEFAULTS.top),
           main: resolveLayer(texts.main, HOOK_TEXT_STYLE_DEFAULTS.main),
-          sub: resolveLayer(texts.sub, HOOK_TEXT_STYLE_DEFAULTS.sub)
+          sub: resolveLayer(texts.sub, HOOK_TEXT_STYLE_DEFAULTS.sub),
+          bubble: {
+            font_size: normalizeHookFontSize(hook.bubble?.fontSize ?? hook.bubble?.font_size, HOOK_TEXT_STYLE_DEFAULTS.bubble.font_size)
+          }
         };
       };
 
@@ -3405,6 +3417,7 @@
               texts: {
                 top: {
                   text: String(hookTexts.top || ""),
+                  fontSize: normalizeHookFontSize(hookTextStyles.top?.font_size, HOOK_TEXT_STYLE_DEFAULTS.top.font_size),
                   color: normalizeColorHex(hookTextStyles.top?.fill_color, HOOK_TEXT_STYLE_DEFAULTS.top.fill_color),
                   outlineColor: normalizeColorHex(hookTextStyles.top?.outline_color, HOOK_TEXT_STYLE_DEFAULTS.top.outline_color),
                   outlineScale: normalizeHookOutlineScale(hookTextStyles.top?.outline_scale, HOOK_TEXT_STYLE_DEFAULTS.top.outline_scale),
@@ -3412,6 +3425,7 @@
                 },
                 main: {
                   text: String(hookTexts.main || ""),
+                  fontSize: normalizeHookFontSize(hookTextStyles.main?.font_size, HOOK_TEXT_STYLE_DEFAULTS.main.font_size),
                   color: normalizeColorHex(hookTextStyles.main?.fill_color, HOOK_TEXT_STYLE_DEFAULTS.main.fill_color),
                   outlineColor: normalizeColorHex(hookTextStyles.main?.outline_color, HOOK_TEXT_STYLE_DEFAULTS.main.outline_color),
                   outlineScale: normalizeHookOutlineScale(hookTextStyles.main?.outline_scale, HOOK_TEXT_STYLE_DEFAULTS.main.outline_scale),
@@ -3419,6 +3433,7 @@
                 },
                 sub: {
                   text: String(hookTexts.sub || ""),
+                  fontSize: normalizeHookFontSize(hookTextStyles.sub?.font_size, HOOK_TEXT_STYLE_DEFAULTS.sub.font_size),
                   color: normalizeColorHex(hookTextStyles.sub?.fill_color, HOOK_TEXT_STYLE_DEFAULTS.sub.fill_color),
                   outlineColor: normalizeColorHex(hookTextStyles.sub?.outline_color, HOOK_TEXT_STYLE_DEFAULTS.sub.outline_color),
                   outlineScale: normalizeHookOutlineScale(hookTextStyles.sub?.outline_scale, HOOK_TEXT_STYLE_DEFAULTS.sub.outline_scale),
@@ -3433,7 +3448,8 @@
               },
               bubble: {
                 image_path: outputVisualAssets.hook_bubble,
-                text: String(hookTexts.bubble || "")
+                text: String(hookTexts.bubble || ""),
+                fontSize: normalizeHookFontSize(hookTextStyles.bubble?.font_size, HOOK_TEXT_STYLE_DEFAULTS.bubble.font_size)
               },
               finalize_to_dialog: !!scene.hook_finalize_to_dialog
             };
@@ -3985,12 +4001,16 @@
                         <div class="field span-2"><label>texts.main</label><textarea name="hook_main_text" data-scope="scene" rows="2">${escapeHtml(hookTexts.main || "")}</textarea></div>
                         <div class="field span-2"><label>texts.sub</label><textarea name="hook_sub_text" data-scope="scene" rows="2">${escapeHtml(hookTexts.sub || "")}</textarea></div>
                         <div class="field span-2"><label>bubble.text</label><textarea name="hook_bubble_text" data-scope="scene" rows="2">${escapeHtml(hookTexts.bubble || "")}</textarea></div>
+                        <div class="field span-2"><label>bubble font size</label><input name="hook_bubble_font_size" data-scope="scene" type="number" min="24" max="360" step="1" value="${escapeHtml(hookTextStyles.bubble?.font_size ?? HOOK_TEXT_STYLE_DEFAULTS.bubble.font_size)}" /></div>
+                        <div class="field span-2"><label>top font size</label><input name="hook_top_font_size" data-scope="scene" type="number" min="24" max="360" step="1" value="${escapeHtml(hookTextStyles.top?.font_size ?? HOOK_TEXT_STYLE_DEFAULTS.top.font_size)}" /></div>
                         <div class="field span-2"><label>top fill</label><input name="hook_top_fill_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.top?.fill_color || HOOK_TEXT_STYLE_DEFAULTS.top.fill_color)}" /></div>
                         <div class="field span-2"><label>top outline</label><input name="hook_top_outline_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.top?.outline_color || HOOK_TEXT_STYLE_DEFAULTS.top.outline_color)}" /></div>
                         <div class="field span-2"><label>top outline scale</label><input name="hook_top_outline_scale" data-scope="scene" type="number" min="1" max="1.3" step="0.01" value="${escapeHtml(hookTextStyles.top?.outline_scale ?? HOOK_TEXT_STYLE_DEFAULTS.top.outline_scale)}" /></div>
+                        <div class="field span-2"><label>main font size</label><input name="hook_main_font_size" data-scope="scene" type="number" min="24" max="360" step="1" value="${escapeHtml(hookTextStyles.main?.font_size ?? HOOK_TEXT_STYLE_DEFAULTS.main.font_size)}" /></div>
                         <div class="field span-2"><label>main fill</label><input name="hook_main_fill_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.main?.fill_color || HOOK_TEXT_STYLE_DEFAULTS.main.fill_color)}" /></div>
                         <div class="field span-2"><label>main outline</label><input name="hook_main_outline_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.main?.outline_color || HOOK_TEXT_STYLE_DEFAULTS.main.outline_color)}" /></div>
                         <div class="field span-2"><label>main outline scale</label><input name="hook_main_outline_scale" data-scope="scene" type="number" min="1" max="1.3" step="0.01" value="${escapeHtml(hookTextStyles.main?.outline_scale ?? HOOK_TEXT_STYLE_DEFAULTS.main.outline_scale)}" /></div>
+                        <div class="field span-2"><label>sub font size</label><input name="hook_sub_font_size" data-scope="scene" type="number" min="24" max="360" step="1" value="${escapeHtml(hookTextStyles.sub?.font_size ?? HOOK_TEXT_STYLE_DEFAULTS.sub.font_size)}" /></div>
                         <div class="field span-2"><label>sub fill</label><input name="hook_sub_fill_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.sub?.fill_color || HOOK_TEXT_STYLE_DEFAULTS.sub.fill_color)}" /></div>
                         <div class="field span-2"><label>sub outline</label><input name="hook_sub_outline_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.sub?.outline_color || HOOK_TEXT_STYLE_DEFAULTS.sub.outline_color)}" /></div>
                         <div class="field span-2"><label>sub outline scale</label><input name="hook_sub_outline_scale" data-scope="scene" type="number" min="1" max="1.3" step="0.01" value="${escapeHtml(hookTextStyles.sub?.outline_scale ?? HOOK_TEXT_STYLE_DEFAULTS.sub.outline_scale)}" /></div>
@@ -4398,6 +4418,26 @@
         }
       };
 
+      const loadProjectFinalRender = async () => {
+        const projectId = selectedProjectId();
+        if (!projectId) {
+          setStatus("先にプロジェクトを選択してください。", "error");
+          return;
+        }
+        try {
+          const {videoDir} = await getProjectHandles(projectId);
+          const renderHandle = await videoDir.getFileHandle(RENDER_FINAL_NAME);
+          const spec = await readJson(renderHandle);
+          state.selectedProjectId = projectId;
+          await refreshProjectSlideFileCatalog(projectId, {render: false});
+          loadSpec(spec, `projects/${projectId}/outputs/video/${RENDER_FINAL_NAME}`, RENDER_FINAL_NAME);
+        } catch (error) {
+          setStatus(error && error.message ? error.message : "render-final-v01.json の読み込みに失敗しました。", "error");
+        } finally {
+          updateProjectControls();
+        }
+      };
+
       const saveProjectRender = async () => {
         const projectId = selectedProjectId();
         if (!projectId) {
@@ -4636,8 +4676,16 @@
             if (fieldName === "hook_bubble_text") hookTexts.bubble = String(target.value || "");
             return {...scene, hook_texts: hookTexts};
           }
-          if (/^hook_(top|main|sub)_(fill_color|outline_color|outline_scale)$/.test(fieldName)) {
-            const match = fieldName.match(/^hook_(top|main|sub)_(fill_color|outline_color|outline_scale)$/);
+          if (fieldName === "hook_bubble_font_size") {
+            const hookTextStyles = deepClone(scene.hook_text_styles || HOOK_TEXT_STYLE_DEFAULTS);
+            hookTextStyles.bubble = {
+              ...(hookTextStyles.bubble || HOOK_TEXT_STYLE_DEFAULTS.bubble),
+              font_size: normalizeHookFontSize(target.value, HOOK_TEXT_STYLE_DEFAULTS.bubble.font_size)
+            };
+            return {...scene, hook_text_styles: hookTextStyles};
+          }
+          if (/^hook_(top|main|sub)_(font_size|fill_color|outline_color|outline_scale)$/.test(fieldName)) {
+            const match = fieldName.match(/^hook_(top|main|sub)_(font_size|fill_color|outline_color|outline_scale)$/);
             const layer = match ? match[1] : "top";
             const styleKey = match ? match[2] : "fill_color";
             const hookTextStyles = deepClone(scene.hook_text_styles || HOOK_TEXT_STYLE_DEFAULTS);
@@ -4645,7 +4693,9 @@
             hookTextStyles[layer] = {
               ...(hookTextStyles[layer] || fallbackLayer)
             };
-            if (styleKey === "fill_color") {
+            if (styleKey === "font_size") {
+              hookTextStyles[layer].font_size = normalizeHookFontSize(target.value, fallbackLayer.font_size);
+            } else if (styleKey === "fill_color") {
               hookTextStyles[layer].fill_color = normalizeColorHex(target.value, fallbackLayer.fill_color);
             } else if (styleKey === "outline_color") {
               hookTextStyles[layer].outline_color = normalizeColorHex(target.value, fallbackLayer.outline_color);
@@ -5023,6 +5073,7 @@
         updateProjectControls();
       });
       el.loadProjectRenderBtn.addEventListener("click", loadProjectRender);
+      el.continueProjectRenderBtn.addEventListener("click", loadProjectFinalRender);
       el.saveProjectRenderBtn.addEventListener("click", saveProjectRender);
 
       const boot = () => {

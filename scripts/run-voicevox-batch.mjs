@@ -3,7 +3,7 @@ import fsp from "node:fs/promises";
 import path from "node:path";
 
 const VOICEVOX_BASE_URL = process.env.VOICEVOX_URL ?? "http://127.0.0.1:50021";
-const OUTPUT_ROOT = path.resolve(process.cwd(), "output");
+const PROJECTS_ROOT = path.resolve(process.cwd(), "projects");
 const DEFAULT_SPEAKER_ID = 3;
 const DEFAULT_SPEED_SCALE = 1.45;
 const VOICE_STYLE_TO_SPEAKER_ID = {
@@ -33,22 +33,10 @@ function normalizeRunId(raw) {
   return trimmed.padStart(3, "0");
 }
 
-function resolveNextRunId(baseOutputRoot) {
-  if (!fs.existsSync(baseOutputRoot)) return "000";
-  const names = fs.readdirSync(baseOutputRoot, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && /^\d+$/.test(entry.name))
-    .map((entry) => Number(entry.name))
-    .filter((n) => Number.isFinite(n));
-  if (!names.length) return "000";
-  return String(Math.max(...names) + 1).padStart(3, "0");
-}
-
 function resolveRunId() {
   const raw = process.env.SCENE_OUTPUT_RUN_ID;
   if (!raw || !String(raw).trim()) return "000";
-  if (String(raw).trim().toLowerCase() === "auto") {
-    return resolveNextRunId(OUTPUT_ROOT);
-  }
+  if (String(raw).trim().toLowerCase() === "auto") return "000";
   return normalizeRunId(raw);
 }
 
@@ -225,26 +213,20 @@ function resolveBatchSpecPath(runId) {
   if (explicit && String(explicit).trim()) {
     return path.resolve(process.cwd(), String(explicit).trim());
   }
-  const defaultBatchPath = path.join(OUTPUT_ROOT, runId, "audio", `voicevox-batch-spec-${runId}.json`);
-  if (fs.existsSync(defaultBatchPath)) {
-    return defaultBatchPath;
-  }
   const latestRenderSpec = findLatestProjectRenderSpec();
   if (latestRenderSpec) {
-    console.warn(`[voicevox] batch spec not found. using latest project render spec: ${latestRenderSpec}`);
     return latestRenderSpec;
   }
-  return defaultBatchPath;
+  return path.join(PROJECTS_ROOT, runId.padStart(4, "0"), "outputs", "video", "render-final-v01.json");
 }
 
 function findLatestProjectRenderSpec() {
-  const projectsDir = path.resolve(process.cwd(), "projects");
-  if (!fs.existsSync(projectsDir)) return "";
+  if (!fs.existsSync(PROJECTS_ROOT)) return "";
   const candidates = [];
-  const projectEntries = fs.readdirSync(projectsDir, { withFileTypes: true });
+  const projectEntries = fs.readdirSync(PROJECTS_ROOT, { withFileTypes: true });
   for (const projectEntry of projectEntries) {
     if (!projectEntry.isDirectory()) continue;
-    const videoDir = path.join(projectsDir, projectEntry.name, "outputs", "video");
+    const videoDir = path.join(PROJECTS_ROOT, projectEntry.name, "outputs", "video");
     if (!fs.existsSync(videoDir)) continue;
     const videoEntries = fs.readdirSync(videoDir, { withFileTypes: true });
     for (const videoEntry of videoEntries) {
@@ -259,16 +241,35 @@ function findLatestProjectRenderSpec() {
   return candidates[0]?.filePath || "";
 }
 
-function resolveAudioDir(specPath, runId) {
-  const explicit = process.env.VOICEVOX_OUTPUT_DIR;
+function normalizeProjectId(raw, fallbackRunId) {
+  const trimmed = String(raw ?? "").trim();
+  if (trimmed) return trimmed.padStart(4, "0");
+  return String(fallbackRunId || "000").padStart(4, "0");
+}
+
+function resolveProjectId(batch, specPath, runId) {
+  const explicit = process.env.SCENE_PROJECT_ID || process.env.PROJECT_ID;
   if (explicit && String(explicit).trim()) {
-    return path.resolve(process.cwd(), String(explicit).trim());
+    return normalizeProjectId(explicit, runId);
   }
-  const fileName = path.basename(specPath).toLowerCase();
-  if (fileName.startsWith("voicevox-batch-spec-")) {
-    return path.dirname(specPath);
-  }
-  return path.join(OUTPUT_ROOT, runId, "audio");
+
+  const fromSpec = String(batch?.project_id || "").trim();
+  if (fromSpec) return normalizeProjectId(fromSpec, runId);
+
+  const normalizedSpecPath = specPath.replace(/\\/g, "/");
+  const matched = normalizedSpecPath.match(/(?:^|\/)projects\/([^/]+)\//);
+  if (matched) return normalizeProjectId(matched[1], runId);
+
+  return normalizeProjectId("", runId);
+}
+
+function resolveAudioDir(specPath, batch, runId) {
+  const projectId = resolveProjectId(batch, specPath, runId);
+  return path.join(PROJECTS_ROOT, projectId, "outputs", "audio");
+}
+
+function toRelativeLabel(filePath) {
+  return path.relative(process.cwd(), filePath).replace(/\\/g, "/");
 }
 
 function isConnectionError(error) {
@@ -279,8 +280,6 @@ function isConnectionError(error) {
 async function main() {
   const runId = resolveRunId();
   const specPath = resolveBatchSpecPath(runId);
-  const audioDir = resolveAudioDir(specPath, runId);
-  const outputDirLabel = `output/${runId}/audio`;
 
   const raw = await fsp.readFile(specPath, "utf8");
   const batch = JSON.parse(raw);
@@ -288,6 +287,8 @@ async function main() {
     throw new Error("voicevox batch spec is invalid: scenes[] not found.");
   }
 
+  const audioDir = resolveAudioDir(specPath, batch, runId);
+  const outputDirLabel = toRelativeLabel(audioDir);
   await fsp.mkdir(audioDir, { recursive: true });
 
   let generated = 0;

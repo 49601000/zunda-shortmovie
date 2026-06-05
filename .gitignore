@@ -2,3 +2,4 @@
 *-mock-v*.html
 *.lnk
 /output/
+/.remotion-public/

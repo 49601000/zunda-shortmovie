@@ -4,10 +4,29 @@ import path from "node:path";
 import {spawn} from "node:child_process";
 
 const CWD = process.cwd();
-const OUTPUT_ROOT = path.resolve(CWD, "output");
 const PROJECTS_ROOT = path.resolve(CWD, "projects");
 const DEFAULT_RENDERER_ROOT = path.resolve(CWD, "..", "remotion-renderer");
 const DEFAULT_RENDER_SPEC_NAME = "src/data/render_spec.json";
+const PUBLIC_ROOT = path.resolve(CWD, "..");
+const PUBLIC_STAGING_ROOT = path.resolve(CWD, ".remotion-public");
+const PROJECT_WORKSPACE_DIR = path.basename(CWD);
+const SHARED_ASSETS_DIR = "shared-assets";
+const IMAGE_EXT_RE = /\.(png|jpe?g|webp|avif)$/i;
+const AUDIO_EXT_RE = /\.(mp3|wav|m4a|ogg)$/i;
+const ZUNDAMON_REQUIRED = [
+  "zundamon-normal-0000.png",
+  "zundamon-normal-0001.png",
+  "thinking.png",
+  "zundamon-lowpanic-00000.png",
+  "zundamon-annoy-0000.png",
+  "zundamon-normal-0002.png",
+  "zundamon-annoy-0001.png",
+  "zundamon-midpanic-0000.png",
+  "zundamon-highpanic0000.png",
+  "zundamon-lowpanic-00001.png",
+  "zundamon-midpanic-0001.png",
+  "zundamon-highpanic0001.png"
+];
 
 function normalizeRunId(raw) {
   const trimmed = String(raw ?? "").trim();
@@ -20,12 +39,22 @@ function normalizeRunId(raw) {
 }
 
 function resolveNextRunId() {
-  if (!fs.existsSync(OUTPUT_ROOT)) return "000";
-  const ids = fs
-    .readdirSync(OUTPUT_ROOT, {withFileTypes: true})
-    .filter((entry) => entry.isDirectory() && /^\d+$/.test(entry.name))
-    .map((entry) => Number(entry.name))
-    .filter((value) => Number.isFinite(value));
+  if (!fs.existsSync(PROJECTS_ROOT)) return "000";
+  const ids = [];
+  const projectEntries = fs.readdirSync(PROJECTS_ROOT, {withFileTypes: true});
+  for (const projectEntry of projectEntries) {
+    if (!projectEntry.isDirectory()) continue;
+    const videoDir = path.join(PROJECTS_ROOT, projectEntry.name, "outputs", "video");
+    if (!fs.existsSync(videoDir)) continue;
+    const videoEntries = fs.readdirSync(videoDir, {withFileTypes: true});
+    for (const videoEntry of videoEntries) {
+      if (!videoEntry.isFile()) continue;
+      const matched = videoEntry.name.match(/^psych-short-(\d+)\.mp4$/i);
+      if (!matched) continue;
+      const value = Number(matched[1]);
+      if (Number.isFinite(value)) ids.push(value);
+    }
+  }
   return ids.length ? String(Math.max(...ids) + 1).padStart(3, "0") : "000";
 }
 
@@ -106,6 +135,105 @@ function resolveSceneAudioSrc(sceneIndex, projectAudioDir) {
 
 function normalizeImageRef(value) {
   return String(value ?? "").trim().replace(/\\/g, "/").replace(/^\/+/, "");
+}
+
+function normalizeBasicPath(value) {
+  return String(value ?? "").trim().replace(/\\/g, "/").replace(/^\/+/, "").replace(/^public\//i, "");
+}
+
+function hasPublicRootPrefix(value) {
+  return new RegExp(`^(${SHARED_ASSETS_DIR}|${PROJECT_WORKSPACE_DIR})/`, "i").test(value);
+}
+
+function toPublicRootPath(value) {
+  if (!value || hasPublicRootPrefix(value)) return value;
+  if (/^projects\//i.test(value)) return `${PROJECT_WORKSPACE_DIR}/${value}`;
+  if (/^(images|audio)\//i.test(value)) return `${SHARED_ASSETS_DIR}/${value}`;
+  return value;
+}
+
+function mapLegacyAssetPrefix(value) {
+  if (/^assets\/background\//i.test(value)) {
+    return value.replace(/^assets\/background\//i, "images/backgrounds/");
+  }
+  if (/^assets\/zundamon\//i.test(value)) {
+    return value.replace(/^assets\/zundamon\//i, "images/characters/zundamon/");
+  }
+  if (/^assets\//i.test(value)) {
+    return value.replace(/^assets\//i, "images/");
+  }
+  return value;
+}
+
+function normalizeStaticPath(value) {
+  return toPublicRootPath(normalizeBasicPath(value));
+}
+
+function normalizeStaticAssetPath(value) {
+  return toPublicRootPath(mapLegacyAssetPrefix(normalizeBasicPath(value)));
+}
+
+function resolveImageCandidates(raw) {
+  const text = String(raw ?? "").trim();
+  if (!IMAGE_EXT_RE.test(text)) return [];
+
+  const normalized = normalizeStaticAssetPath(text);
+  if (hasPublicRootPrefix(normalized)) return [normalized];
+  if (/^(scene-bg-|hook-bg-)/i.test(normalized)) return [normalizeStaticAssetPath(`images/backgrounds/${normalized}`)];
+  if (/^backgrounds\//i.test(normalized)) return [normalizeStaticAssetPath(`images/${normalized}`)];
+  if (/^characters\//i.test(normalized)) return [normalizeStaticAssetPath(`images/${normalized}`)];
+  if (/^(slide|monolith|logboard|parts)\//i.test(normalized)) {
+    return [normalizeStaticAssetPath(`images/frames/${normalized}`)];
+  }
+  return [normalized];
+}
+
+function resolveBackgroundCandidates(raw) {
+  const text = String(raw ?? "").trim();
+  if (!IMAGE_EXT_RE.test(text)) return [];
+
+  const normalized = mapLegacyAssetPrefix(normalizeBasicPath(text));
+  if (hasPublicRootPrefix(normalized)) return [normalized];
+  if (normalized.includes("/")) {
+    const m = normalized.match(/^images\/backgrounds\/([^/]+)$/i);
+    if (m && !/^scene-bg-/i.test(m[1]) && !/^hook-bg-/i.test(m[1])) {
+      return [
+        normalizeStaticAssetPath(`images/backgrounds/scene-bg-${m[1]}`),
+        normalizeStaticAssetPath(normalized)
+      ];
+    }
+    return [normalizeStaticAssetPath(normalized)];
+  }
+
+  if (/^scene-bg-/i.test(normalized) || /^hook-bg-/i.test(normalized)) {
+    return [normalizeStaticAssetPath(`images/backgrounds/${normalized}`)];
+  }
+
+  return [
+    normalizeStaticAssetPath(`images/backgrounds/scene-bg-${normalized}`),
+    normalizeStaticAssetPath(`images/backgrounds/${normalized}`)
+  ];
+}
+
+function resolveAudioCandidate(raw) {
+  const normalized = normalizeStaticPath(raw);
+  return AUDIO_EXT_RE.test(normalized) ? normalized : "";
+}
+
+function collectMediaRefs(value, refs = new Set()) {
+  if (typeof value === "string") {
+    const normalized = normalizeBasicPath(value);
+    if (IMAGE_EXT_RE.test(normalized) || AUDIO_EXT_RE.test(normalized)) refs.add(normalized);
+    return refs;
+  }
+  if (Array.isArray(value)) {
+    value.forEach((item) => collectMediaRefs(item, refs));
+    return refs;
+  }
+  if (value && typeof value === "object") {
+    Object.values(value).forEach((item) => collectMediaRefs(item, refs));
+  }
+  return refs;
 }
 
 function isHookSceneLike(scene, index) {
@@ -454,6 +582,139 @@ async function syncProjectAudioToSharedAssets(projectAudioDir, rendererRoot) {
   return {copied, skipped: false};
 }
 
+function assertPathInside(root, target) {
+  const relativeBack = path.relative(root, target);
+  if (!relativeBack || relativeBack.startsWith("..") || path.isAbsolute(relativeBack)) {
+    throw new Error(`path escapes root: ${target}`);
+  }
+}
+
+async function resetPublicStagingRoot() {
+  assertPathInside(CWD, PUBLIC_STAGING_ROOT);
+  await fsp.rm(PUBLIC_STAGING_ROOT, {recursive: true, force: true});
+  await fsp.mkdir(PUBLIC_STAGING_ROOT, {recursive: true});
+}
+
+async function copyPublicAsset(relativePath, copied) {
+  const normalized = normalizeBasicPath(relativePath);
+  if (!normalized) return false;
+
+  const source = path.resolve(PUBLIC_ROOT, normalized);
+  assertPathInside(PUBLIC_ROOT, source);
+  if (!fs.existsSync(source)) return false;
+
+  const target = path.resolve(PUBLIC_STAGING_ROOT, normalized);
+  assertPathInside(PUBLIC_STAGING_ROOT, target);
+  if (copied.has(normalized)) return true;
+
+  await fsp.mkdir(path.dirname(target), {recursive: true});
+  await fsp.copyFile(source, target);
+  copied.add(normalized);
+  return true;
+}
+
+async function copyFirstExistingPublicAsset(label, candidates, copied, missing) {
+  if (!Array.isArray(candidates) || candidates.length === 0) return;
+  for (const candidate of candidates) {
+    if (await copyPublicAsset(candidate, copied)) return;
+  }
+  missing.push(`${label} -> ${candidates.join(" OR ")}`);
+}
+
+async function stageProjectAudio(projectAudioDir, copied) {
+  if (!fs.existsSync(projectAudioDir)) return {copied: 0, skipped: true};
+  const entries = await fsp.readdir(projectAudioDir, {withFileTypes: true});
+  let count = 0;
+  for (const entry of entries) {
+    if (!entry.isFile() || !/\.wav$/i.test(entry.name)) continue;
+    const source = path.join(projectAudioDir, entry.name);
+    const targetRel = `${SHARED_ASSETS_DIR}/audio/${entry.name}`;
+    const target = path.resolve(PUBLIC_STAGING_ROOT, targetRel);
+    assertPathInside(PUBLIC_STAGING_ROOT, target);
+    await fsp.mkdir(path.dirname(target), {recursive: true});
+    await fsp.copyFile(source, target);
+    copied.add(targetRel);
+    count += 1;
+  }
+  return {copied: count, skipped: false};
+}
+
+async function syncPublicStaging({rendererSpec, projectAudioDir}) {
+  await resetPublicStagingRoot();
+
+  const copied = new Set();
+  const missing = [];
+  const segments = Array.isArray(rendererSpec?.segments) ? rendererSpec.segments : [];
+
+  const stagedAudio = await stageProjectAudio(projectAudioDir, copied);
+
+  const bgm = rendererSpec?.video_spec?.audio?.bgm;
+  const bgmSrc = typeof bgm === "string" ? bgm : bgm && typeof bgm === "object" ? bgm.src : rendererSpec?.bgm?.src || rendererSpec?.bgm || "";
+  if (bgmSrc) {
+    const audioPath = resolveAudioCandidate(bgmSrc);
+    if (audioPath) await copyFirstExistingPublicAsset("bgm", [audioPath], copied, missing);
+  }
+
+  await copyFirstExistingPublicAsset(
+    "background",
+    resolveBackgroundCandidates(rendererSpec?.background ?? rendererSpec?.video_spec?.style?.background),
+    copied,
+    missing
+  );
+
+  for (const [index, segment] of segments.entries()) {
+    const id = typeof segment?.id === "string" && segment.id.trim() ? segment.id.trim() : `segment[${index}]`;
+    if (typeof segment?.audioSrc === "string" && segment.audioSrc.trim()) {
+      const audioPath = resolveAudioCandidate(segment.audioSrc);
+      if (audioPath) await copyFirstExistingPublicAsset(`${id}.audioSrc`, [audioPath], copied, missing);
+    }
+    if (typeof segment?.background_override === "string" && segment.background_override.trim()) {
+      await copyFirstExistingPublicAsset(
+        `${id}.background_override`,
+        resolveBackgroundCandidates(segment.background_override),
+        copied,
+        missing
+      );
+    }
+  }
+
+  for (const ref of collectMediaRefs(rendererSpec)) {
+    if (IMAGE_EXT_RE.test(ref)) {
+      const copiedBefore = copied.size;
+      for (const candidate of resolveImageCandidates(ref)) {
+        if (await copyPublicAsset(candidate, copied)) break;
+      }
+      if (copied.size === copiedBefore && /^projects\//i.test(ref)) {
+        missing.push(`image:${ref} -> ${resolveImageCandidates(ref).join(" OR ")}`);
+      }
+      continue;
+    }
+
+    const audioPath = resolveAudioCandidate(ref);
+    if (audioPath) {
+      await copyPublicAsset(audioPath, copied);
+    }
+  }
+
+  for (const fileName of ZUNDAMON_REQUIRED) {
+    await copyFirstExistingPublicAsset(
+      `zundamon:${fileName}`,
+      [normalizeStaticAssetPath(`images/characters/zundamon/${fileName}`)],
+      copied,
+      missing
+    );
+  }
+
+  if (missing.length > 0) {
+    throw new Error([
+      "[scene-remotion] public staging missing assets:",
+      ...missing.map((entry) => `- ${entry}`)
+    ].join("\n"));
+  }
+
+  return {copied: copied.size, stagedAudio: stagedAudio.copied, skippedAudio: stagedAudio.skipped};
+}
+
 async function syncSpecToRenderer({specPath, runId, rendererRoot, dryRun}) {
   if (!fs.existsSync(specPath)) throw new Error(`render spec not found: ${specPath}`);
   if (!fs.existsSync(rendererRoot)) throw new Error(`renderer root not found: ${rendererRoot}`);
@@ -475,8 +736,10 @@ async function syncSpecToRenderer({specPath, runId, rendererRoot, dryRun}) {
   await fsp.mkdir(path.dirname(rendererSpecPath), {recursive: true});
   await fsp.writeFile(rendererSpecPath, `${JSON.stringify(rendererSpec, null, 2)}\n`, "utf8");
   const audioResult = await syncProjectAudioToSharedAssets(projectAudioDir, rendererRoot);
+  const stagingResult = await syncPublicStaging({rendererSpec, projectAudioDir});
   console.log(`[scene-remotion] wrote: ${rendererSpecPath}`);
   console.log(`[scene-remotion] audio sync: copied=${audioResult.copied}${audioResult.skipped ? " (project audio dir not found)" : ""}`);
+  console.log(`[scene-remotion] public staging: ${path.relative(CWD, PUBLIC_STAGING_ROOT)} copied=${stagingResult.copied} audio=${stagingResult.stagedAudio}${stagingResult.skippedAudio ? " (project audio dir not found)" : ""}`);
   return {rendererSpecPath, projectId, copiedAudio: audioResult.copied};
 }
 
@@ -513,9 +776,9 @@ function windowsShellQuote(value) {
   return `"${text.replace(/(["^&|<>])/g, "^$1")}"`;
 }
 
-async function moveRenderedMovie(rendererRoot, runId, dryRun) {
+async function moveRenderedMovie(rendererRoot, projectId, runId, dryRun) {
   const source = path.join(rendererRoot, "out", "psych-short.mp4");
-  const targetDir = path.join(OUTPUT_ROOT, runId, "video");
+  const targetDir = path.join(PROJECTS_ROOT, projectId, "outputs", "video");
   const target = path.join(targetDir, `psych-short-${runId}.mp4`);
   if (dryRun) return;
   if (!fs.existsSync(source)) {
@@ -540,7 +803,7 @@ async function main() {
     return;
   }
 
-  await syncSpecToRenderer({specPath, runId, rendererRoot, dryRun});
+  const syncResult = await syncSpecToRenderer({specPath, runId, rendererRoot, dryRun});
 
   if (mode === "sync-spec") return;
   if (dryRun) {
@@ -554,7 +817,7 @@ async function main() {
   }
   if (mode === "render") {
     await runCommand("npm", ["run", "render"], {cwd: rendererRoot});
-    await moveRenderedMovie(rendererRoot, runId, dryRun);
+    await moveRenderedMovie(rendererRoot, syncResult.projectId, runId, dryRun);
     return;
   }
   if (mode === "voicevox" || mode === "voicevox:initial" || mode === "voicevox:publish") {
