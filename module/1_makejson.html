@@ -299,6 +299,12 @@
       color: #d4ece8;
     }
 
+    .project-status-select {
+      min-width: 132px;
+      padding: 7px 9px;
+      font-size: 0.86rem;
+    }
+
     .empty {
       padding: 16px 10px;
       color: var(--sub);
@@ -512,6 +518,14 @@
 
     function normalizeStatus(status) {
       return STATUS_VALUES.includes(status) ? status : "draft";
+    }
+
+    function statusOptionsHtml(currentStatus) {
+      const current = normalizeStatus(currentStatus);
+      return STATUS_VALUES.map((status) => {
+        const selected = status === current ? " selected" : "";
+        return `<option value="${escapeHtml(status)}"${selected}>${escapeHtml(status)}</option>`;
+      }).join("");
     }
 
     function sanitizeTitle(title) {
@@ -775,6 +789,22 @@
       }
     }
 
+    async function updateProjectStatus(folderName, nextStatus) {
+      if (!workspaceHandle) throw new Error("ワークスペース未接続です。");
+      const status = normalizeStatus(nextStatus);
+      const writable = await verifyPermission(workspaceHandle, "readwrite");
+      if (!writable) throw new Error("書き込み権限がありません。");
+
+      const projectsDir = await getProjectsDirHandle(false);
+      const projectDir = await projectsDir.getDirectoryHandle(folderName, { create: false });
+      const metaHandle = await projectDir.getFileHandle(META_FILENAME);
+      const meta = await readJson(metaHandle);
+      meta.status = status;
+      meta.updated_at = todayYmd();
+      await writeJson(metaHandle, meta);
+      return meta;
+    }
+
     async function loadProjects() {
       const projectsDir = await getProjectsDirHandle(false);
       const rows = [];
@@ -807,7 +837,11 @@
             <td>${escapeHtml(row.title)}</td>
             <td class="mono">${row.created_at}</td>
             <td class="mono">${row.updated_at}</td>
-            <td>${escapeHtml(row.status)}</td>
+            <td>
+              <select class="project-status-select" data-folder="${escapeHtml(row.sourceFolder)}" aria-label="${escapeHtml(row.id)} status">
+                ${statusOptionsHtml(row.status)}
+              </select>
+            </td>
             <td class="mono">${row.sourceFolder}</td>
           </tr>
         `;
@@ -829,6 +863,31 @@
         </table>
       `;
       setStatus("listSummary", `${projectRows.length}件を表示中`, "ok");
+    }
+
+    async function onProjectStatusChanged(event) {
+      const select = event.target.closest(".project-status-select");
+      if (!select) return;
+
+      const folderName = select.dataset.folder || "";
+      const row = projectRows.find((item) => item.sourceFolder === folderName);
+      const previousStatus = row ? row.status : "draft";
+      const nextStatus = normalizeStatus(select.value);
+      select.disabled = true;
+
+      try {
+        await updateProjectStatus(folderName, nextStatus);
+        if (row) {
+          row.status = nextStatus;
+          row.updated_at = todayYmd();
+        }
+        await loadProjects();
+        setStatus("listSummary", `projects/${folderName}/meta.json の status を ${nextStatus} に更新しました。`, "ok");
+      } catch (err) {
+        select.value = previousStatus;
+        select.disabled = false;
+        setStatus("listSummary", `status 更新失敗: ${err.message || err}`, "error");
+      }
     }
 
     function renderNextId() {
@@ -1661,6 +1720,7 @@
       });
 
       document.getElementById("createProjectBtn").addEventListener("click", createProject);
+      document.getElementById("projectTableWrap").addEventListener("change", onProjectStatusChanged);
       document.getElementById("projectSelect").addEventListener("change", () => {
         clearGenerated();
         syncPipelineButtons();
