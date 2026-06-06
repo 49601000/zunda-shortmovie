@@ -93,7 +93,7 @@
         "character_left": "",
         "character_right": "",
         "hook_background": "images/backgrounds/hook-bg-dots-yl.png",
-        "hook_character": "images/characters/zundamon/zundamon-midpanic-0001.png",
+        "hook_character": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_bubble": "parts/Hook-speech-balloon.png"
       },
       "composition": {
@@ -153,9 +153,9 @@
         "speaker_side": "hook",
         "assets": {
           "hook": {
-            "idle": "images/characters/zundamon/zundamon-midpanic-0001.png",
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png",
             "mouth_1": "images/characters/zundamon/zundamon-normal-0001.png",
-            "mouth_2": "images/characters/zundamon/zundamon-normal-0003.png"
+            "mouth_2": "images/characters/zundamon/zundamon-normal-0002.png"
           }
         }
       },
@@ -166,23 +166,23 @@
             "fontSize": 84,
             "color": "#303030",
             "outlineColor": "#ffffff",
-            "outlineScale": 1.06,
+            "outlineScale": 1.02,
             "fillVisible": false
           },
           "main": {
             "text": "頭の中",
-            "fontSize": 180,
+            "fontSize": 220,
             "color": "#e60012",
-            "outlineColor": "#ffffff",
-            "outlineScale": 1.06,
+            "outlineColor": "transparent",
+            "outlineScale": 1.02,
             "fillVisible": true
           },
           "sub": {
             "text": "ってだいたいこれ",
-            "fontSize": 92,
+            "fontSize": 98,
             "color": "#303030",
             "outlineColor": "#ffffff",
-            "outlineScale": 1.06,
+            "outlineScale": 1.02,
             "fillVisible": false
           }
         },
@@ -198,10 +198,10 @@
           "scale": 2,
           "objectFit": "contain",
           "objectPosition": "center top",
-          "image_path": "images/characters/zundamon/zundamon-midpanic-0001.png",
+          "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
           "lip_sync_image_paths": [
             "images/characters/zundamon/zundamon-normal-0001.png",
-            "images/characters/zundamon/zundamon-normal-0003.png"
+            "images/characters/zundamon/zundamon-normal-0002.png"
           ]
         },
         "bubble": {
@@ -296,8 +296,8 @@
             "image_path": "images/characters/zundamon/zundamon-midpanic-0001.png",
             "state": "speaking",
             "lip_sync_image_paths": [
-              "images/characters/zundamon/zundamon-midpanic-0002.png",
-              "images/characters/zundamon/zundamon-midpanic-0003.png"
+              "images/characters/zundamon/zundamon-midpanic-0000.png",
+              "images/characters/zundamon/zundamon-midpanic-0002.png"
             ]
           }
         }
@@ -317,9 +317,9 @@
         },
         {
           "sub_scene_id": "scene_002_02",
-          "screen_text": "でも乱数調整だから実質ノーカンなのだ",
+          "screen_text": "でも乱数調整だから\n実質ノーカンなのだ",
           "display_mode": "replace",
-          "char_count": 18,
+          "char_count": 19,
           "start_frame": 155,
           "duration_frames": 91,
           "end_frame": 246,
@@ -346,8 +346,8 @@
           },
           "right": {
             "idle": "images/characters/zundamon/zundamon-midpanic-0001.png",
-            "mouth_1": "images/characters/zundamon/zundamon-midpanic-0002.png",
-            "mouth_2": "images/characters/zundamon/zundamon-midpanic-0003.png"
+            "mouth_1": "images/characters/zundamon/zundamon-midpanic-0000.png",
+            "mouth_2": "images/characters/zundamon/zundamon-midpanic-0002.png"
           }
         }
       }
@@ -586,9 +586,9 @@
       "sub_scenes": [
         {
           "sub_scene_id": "scene_004_01",
-          "screen_text": "違うのだ。途中までは勝ってたのだ",
+          "screen_text": "違うのだ。\n途中までは勝ってたのだ",
           "display_mode": "replace",
-          "char_count": 16,
+          "char_count": 17,
           "start_frame": 357,
           "duration_frames": 76,
           "end_frame": 433,
@@ -685,7 +685,7 @@
         "slide": "projects/0000/outputs/slide/slide01.png",
         "monolith": "",
         "dialog_box": "",
-        "character_left": "images/characters/metan/metan-0.png",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
         "character_right": "images/characters/zundamon/zundamon-midpanic-0000.png",
         "hook_background": "",
         "hook_character": "",
@@ -707,11 +707,11 @@
         "characters": {
           "left": {
             "engine": "metan_engine",
-            "image_path": "images/characters/metan/metan-0.png",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
             "state": "speaking",
             "lip_sync_image_paths": [
-              "images/characters/metan/metan-2.png",
-              "images/characters/metan/metan-1.png"
+              "images/characters/metan/metan-lookside-2.png",
+              "images/characters/metan/metan-lookside-1.png"
             ]
           },
           "right": {
@@ -751,9 +751,9 @@
         "speaker_side": "left",
         "assets": {
           "left": {
-            "idle": "images/characters/metan/metan-0.png",
-            "mouth_1": "images/characters/metan/metan-2.png",
-            "mouth_2": "images/characters/metan/metan-1.png"
+            "idle": "images/characters/metan/metan-lookside-0.png",
+            "mouth_1": "images/characters/metan/metan-lookside-2.png",
+            "mouth_2": "images/characters/metan/metan-lookside-1.png"
           },
           "right": {
             "idle": "images/characters/zundamon/zundamon-midpanic-0000.png"
@@ -814,7 +814,7 @@
         "slide": "projects/0000/outputs/slide/slide01.png",
         "monolith": "",
         "dialog_box": "",
-        "character_left": "images/characters/metan/metan-0.png",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
         "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_background": "",
         "hook_character": "",
@@ -836,7 +836,7 @@
         "characters": {
           "left": {
             "engine": "metan_engine",
-            "image_path": "images/characters/metan/metan-0.png",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
             "state": "idle",
             "lip_sync_image_paths": []
           },
@@ -891,7 +891,7 @@
         "speaker_side": "right",
         "assets": {
           "left": {
-            "idle": "images/characters/metan/metan-0.png"
+            "idle": "images/characters/metan/metan-lookside-0.png"
           },
           "right": {
             "idle": "images/characters/zundamon/zundamon-normal-0000.png",
@@ -1083,7 +1083,7 @@
         "slide": "projects/0000/outputs/slide/slide01.png",
         "monolith": "",
         "dialog_box": "",
-        "character_left": "images/characters/metan/metan-0.png",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
         "character_right": "images/characters/zundamon/zundamon-annoy-0000.png",
         "hook_background": "",
         "hook_character": "",
@@ -1105,7 +1105,7 @@
         "characters": {
           "left": {
             "engine": "metan_engine",
-            "image_path": "images/characters/metan/metan-0.png",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
             "state": "idle",
             "lip_sync_image_paths": []
           },
@@ -1128,21 +1128,21 @@
           "display_mode": "replace",
           "char_count": 11,
           "start_frame": 687,
-          "duration_frames": 43,
-          "end_frame": 730,
+          "duration_frames": 57,
+          "end_frame": 744,
           "start_sec": 22.9,
-          "duration_sec": 1.433
+          "duration_sec": 1.9
         },
         {
           "sub_scene_id": "scene_008_02",
           "screen_text": "ボクが下手だったことになるのだ",
           "display_mode": "replace",
           "char_count": 15,
-          "start_frame": 730,
-          "duration_frames": 59,
-          "end_frame": 789,
-          "start_sec": 24.333,
-          "duration_sec": 1.967
+          "start_frame": 744,
+          "duration_frames": 78,
+          "end_frame": 822,
+          "start_sec": 24.8,
+          "duration_sec": 2.6
         }
       ],
       "lip_sync": {
@@ -1160,7 +1160,7 @@
         "speaker_side": "right",
         "assets": {
           "left": {
-            "idle": "images/characters/metan/metan-0.png"
+            "idle": "images/characters/metan/metan-lookside-0.png"
           },
           "right": {
             "idle": "images/characters/zundamon/zundamon-annoy-0000.png",
@@ -1223,7 +1223,7 @@
         "slide": "projects/0000/outputs/slide/slide02.png",
         "monolith": "",
         "dialog_box": "",
-        "character_left": "images/characters/metan/metan-0.png",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
         "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_background": "",
         "hook_character": "",
@@ -1245,11 +1245,11 @@
         "characters": {
           "left": {
             "engine": "metan_engine",
-            "image_path": "images/characters/metan/metan-0.png",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
             "state": "speaking",
             "lip_sync_image_paths": [
-              "images/characters/metan/metan-2.png",
-              "images/characters/metan/metan-1.png"
+              "images/characters/metan/metan-lookside-2.png",
+              "images/characters/metan/metan-lookside-1.png"
             ]
           },
           "right": {
@@ -1267,10 +1267,10 @@
           "screen_text": "だから脳が都合のいい説明を作るのよ",
           "display_mode": "replace",
           "char_count": 17,
-          "start_frame": 789,
+          "start_frame": 822,
           "duration_frames": 72,
-          "end_frame": 861,
-          "start_sec": 26.3,
+          "end_frame": 894,
+          "start_sec": 27.4,
           "duration_sec": 2.4
         }
       ],
@@ -1289,9 +1289,9 @@
         "speaker_side": "left",
         "assets": {
           "left": {
-            "idle": "images/characters/metan/metan-0.png",
-            "mouth_1": "images/characters/metan/metan-2.png",
-            "mouth_2": "images/characters/metan/metan-1.png"
+            "idle": "images/characters/metan/metan-lookside-0.png",
+            "mouth_1": "images/characters/metan/metan-lookside-2.png",
+            "mouth_2": "images/characters/metan/metan-lookside-1.png"
           },
           "right": {
             "idle": "images/characters/zundamon/zundamon-normal-0000.png"
@@ -1352,7 +1352,7 @@
         "slide": "projects/0000/outputs/slide/slide02.png",
         "monolith": "",
         "dialog_box": "",
-        "character_left": "images/characters/metan/metan-0.png",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
         "character_right": "images/characters/zundamon/zundamon-normal-0001.png",
         "hook_background": "",
         "hook_character": "",
@@ -1374,7 +1374,7 @@
         "characters": {
           "left": {
             "engine": "metan_engine",
-            "image_path": "images/characters/metan/metan-0.png",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
             "state": "idle",
             "lip_sync_image_paths": []
           },
@@ -1396,10 +1396,10 @@
           "screen_text": "なるほどなのだ。",
           "display_mode": "replace",
           "char_count": 8,
-          "start_frame": 861,
+          "start_frame": 894,
           "duration_frames": 36,
-          "end_frame": 897,
-          "start_sec": 28.7,
+          "end_frame": 930,
+          "start_sec": 29.8,
           "duration_sec": 1.2
         },
         {
@@ -1407,10 +1407,10 @@
           "screen_text": "じゃあ明日もう3万円で検証するのだ",
           "display_mode": "replace",
           "char_count": 17,
-          "start_frame": 897,
+          "start_frame": 930,
           "duration_frames": 75,
-          "end_frame": 972,
-          "start_sec": 29.9,
+          "end_frame": 1005,
+          "start_sec": 31,
           "duration_sec": 2.5
         }
       ],
@@ -1429,7 +1429,7 @@
         "speaker_side": "right",
         "assets": {
           "left": {
-            "idle": "images/characters/metan/metan-0.png"
+            "idle": "images/characters/metan/metan-lookside-0.png"
           },
           "right": {
             "idle": "images/characters/zundamon/zundamon-normal-0001.png",
@@ -1455,8 +1455,8 @@
       "scene_010": true
     }
   },
-  "durationSec": 32.4,
-  "durationInFrames": 972,
+  "durationSec": 33.5,
+  "durationInFrames": 1005,
   "fps": 30,
   "tts_transform": "",
   "video_spec": {
@@ -1482,8 +1482,8 @@
     },
     "format": {
       "fps": 30,
-      "duration": 32.4,
-      "durationInFrames": 972
+      "duration": 33.5,
+      "durationInFrames": 1005
     },
     "title": "認知的不協和"
   },
@@ -1505,7 +1505,7 @@
     "line_chars": 18,
     "text_align": "center"
   },
-  "total_frames": 972,
+  "total_frames": 1005,
   "common_layers": [
     {
       "layer_id": "background",
@@ -1514,7 +1514,7 @@
       "z_index": 0,
       "fit": "cover",
       "start_frame": 0,
-      "duration_frames": 972
+      "duration_frames": 1005
     },
     {
       "layer_id": "hook-background-scene_001",

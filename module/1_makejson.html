@@ -537,6 +537,66 @@
       return (await handle.requestPermission(options)) === "granted";
     }
 
+    function inferAppWorkspaceDirName() {
+      try {
+        const decodedPath = decodeURIComponent(String(window.location?.pathname || "")).replace(/\\/g, "/");
+        const parts = decodedPath.split("/").filter(Boolean);
+        const moduleIndex = parts.lastIndexOf("module");
+        if (moduleIndex > 0) return parts[moduleIndex - 1] || "";
+      } catch (_err) {
+      }
+      return "20_ショート動画v2";
+    }
+
+    const APP_WORKSPACE_DIR_NAME = inferAppWorkspaceDirName();
+    const PREFERRED_WORKSPACE_ROOT_NAME = "02_hobby";
+
+    async function getDirectoryByPath(baseDir, parts, options = {}) {
+      let current = baseDir;
+      for (const part of parts) {
+        if (!part) continue;
+        current = await current.getDirectoryHandle(part, { create: Boolean(options.create) });
+      }
+      return current;
+    }
+
+    async function getDirectoryByPathIfExists(baseDir, parts) {
+      try {
+        return await getDirectoryByPath(baseDir, parts, { create: false });
+      } catch (_err) {
+        return null;
+      }
+    }
+
+    async function directoryHasProjects(dirHandle) {
+      if (!dirHandle) return false;
+      if (dirHandle.name === "projects") return true;
+      return Boolean(await getDirectoryByPathIfExists(dirHandle, ["projects"]));
+    }
+
+    async function resolveWorkspaceSelection(selectedDir) {
+      const appDirName = APP_WORKSPACE_DIR_NAME || "";
+      const selectedName = String(selectedDir?.name || "");
+      const selectedIsPreferredRoot = selectedName.toLowerCase() === PREFERRED_WORKSPACE_ROOT_NAME.toLowerCase();
+
+      if (appDirName) {
+        const appDir = await getDirectoryByPathIfExists(selectedDir, [appDirName]);
+        if (appDir && (selectedIsPreferredRoot || await directoryHasProjects(appDir))) {
+          return { handle: appDir, label: `${selectedName}/${appDirName}` };
+        }
+
+        const hobbyDir = selectedIsPreferredRoot
+          ? selectedDir
+          : await getDirectoryByPathIfExists(selectedDir, [PREFERRED_WORKSPACE_ROOT_NAME]);
+        const nestedAppDir = hobbyDir ? await getDirectoryByPathIfExists(hobbyDir, [appDirName]) : null;
+        if (nestedAppDir) {
+          return { handle: nestedAppDir, label: `${PREFERRED_WORKSPACE_ROOT_NAME}/${appDirName}` };
+        }
+      }
+
+      return { handle: selectedDir, label: selectedName || "(workspace)" };
+    }
+
     async function writeText(fileHandle, text) {
       const writable = await fileHandle.createWritable();
       await writable.write(String(text));
@@ -568,6 +628,7 @@
 
     async function getProjectsDirHandle(create) {
       if (!workspaceHandle) throw new Error("ワークスペース未接続です。");
+      if (workspaceHandle.name === "projects") return workspaceHandle;
       return workspaceHandle.getDirectoryHandle("projects", { create });
     }
 
@@ -1391,11 +1452,12 @@
         throw new Error("ワークスペースへの書き込み許可が必要です。");
       }
 
-      workspaceHandle = handle;
+      const resolvedWorkspace = await resolveWorkspaceSelection(handle);
+      workspaceHandle = resolvedWorkspace.handle;
       document.getElementById("reloadBtn").disabled = false;
       document.getElementById("createProjectBtn").disabled = false;
       document.getElementById("projectSelect").disabled = false;
-      setStatus("workspaceStatus", "接続済み: projects/ を読み込みます。", "ok");
+      setStatus("workspaceStatus", `接続済み: ${resolvedWorkspace.label}/projects を読み込みます。`, "ok");
       await ensureProjectsRootExists();
       await loadProjects();
       clearGenerated();

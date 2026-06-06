@@ -1,72 +1,80 @@
 # short-video-v2
 
-ずんだもん系ショート動画を作るための、ブラウザ完結型の制作パネル集です。
+このREADMEを、このリポジトリの現在構成におけるSOT（Source of Truth）とします。
 
-会話ログから `projects/{id}` 配下に中間JSONを積み上げ、最後に `render-final-v01.json` を作って Remotion 側へ渡す流れです。
+ずんだもん系ショート動画を作るための、ブラウザ完結型の制作パネル集です。会話ログから `projects/{id}` 配下に中間JSONを積み上げ、最後に `projects/{id}/outputs/video/render-final-v01.json` を作って、隣接リポジトリの Remotion renderer へ渡します。
 
-## 現在の画面構成
+## SOT: 現在の入口
 
 | ファイル | 役割 |
 | --- | --- |
-| `index.html` | 全体ランチャー。各moduleへのリンクと、final JSONをrender/devするPowerShellコマンドを生成します。 |
-| `module/1_makejson.html` | 会話ログからプロジェクトを作り、summary / hook / scene / sub_scene / render draft のJSONを作ります。 |
-| `module/2_slideprompt_builder.html` | 会話ログからスライド案作成用プロンプトを作り、`03-slide_spec` とスライド個別JSONを保存します。 |
-| `module/3_Final-Cut-panel.html` | `06-render-draft` を読み込み、音声・字幕・画像・BGM・演出を調整して `render-final-v01.json` に反映します。 |
+| `index.html` | 全体ランチャー。各module / toolへのリンクと、render / dev / voicevox 用PowerShellコマンドを生成します。 |
+| `module/1_makejson.html` | 会話ログから project を作り、summary / hook / scene / sub_scene / voice_manifest / render draft のJSONを作ります。 |
+| `module/2_slideprompt_builder.html` | 会話ログと lesson_slide_plan から `03-slide_spec` とスライド個別JSONを作ります。 |
+| `module/3_Final-Cut-panel.html` | `06-render-draft` または `render-final` を読み込み、音声・字幕・画像・BGM・演出を最終調整します。 |
+| `module/tool1-timing-calc.html` | `render-final-v01.json` などを読み込み、scene / sub_scene の秒・フレームタイミングを調整する補助ツールです。 |
+| `module/tool2-hook-viewer-lens.html` | 完成済み会話劇を視聴者目線で分析するためのプロンプト生成ツールです。Final Cut連携はしません。 |
 
-## 全体フロー
+## SOT: 全体フロー
 
 ```text
 会話生成
   ↓
-module1: プロジェクト作成 / raw_conversation 保存
+module1: project作成 / raw_conversation保存
   ↓
-module2: lesson_slide_plan → 03-slide_spec 保存
+module2: lesson_slide_plan → 03-slide_spec保存
   ↓
-module1: summary / hook / scene / sub_scene / render draft 作成
+module1: summary / hook / scene / sub_scene / voice_manifest / 06-render-draft作成
   ↓
-module3: Final Cut 調整
+module3: Final Cut調整
   ↓
 projects/{id}/outputs/video/render-final-v01.json
   ↓
+npm run voicevox
+  ↓
+projects/{id}/outputs/audio/seg_NNN.wav
+  ↓
 npm run scene-remotion:render
+  ↓
+projects/{id}/outputs/video/psych-short-{run_id}.mp4
 ```
 
-## 使い方
+## SOT: ディレクトリ構成
 
-### 1. ランチャーを開く
-
-`index.html` をブラウザで開きます。
-
-ランチャーから以下を開けます。
-
-- 会話生成: `https://49601000.github.io/zund-short-prompter/`
-- JSON作成: `module/1_makejson.html`
-- スライド用プロンプト生成: `module/2_slideprompt_builder.html`
-- Final Cut Panel: `module/3_Final-Cut-panel.html`
-
-`index.html` では、`project_id` と `run_id` を入力すると次のようなコマンドをコピーできます。
-
-```powershell
-$env:SCENE_OUTPUT_RUN_ID="000"
-$env:SCENE_RENDER_SPEC_PATH="projects/0000/outputs/video/render-final-v01.json"
-npm run scene-remotion:render
+```text
+.
+├─ index.html
+├─ package.json
+├─ README.md
+├─ module/
+│  ├─ 1_makejson.html
+│  ├─ 2_slideprompt_builder.html
+│  ├─ 3_Final-Cut-panel.html
+│  ├─ tool1-timing-calc.html
+│  └─ tool2-hook-viewer-lens.html
+├─ scripts/
+│  ├─ run-scene-remotion.mjs
+│  ├─ run-voicevox-batch.mjs
+│  └─ voicevox-cors-proxy.mjs
+├─ assets/
+│  ├─ background/background-manifest.json
+│  ├─ images/frames/slide/000/*.png
+│  └─ mock/*.html
+├─ projects/
+│  └─ 0000/
+│     ├─ meta.json
+│     ├─ raw/
+│     ├─ pipeline/
+│     └─ outputs/
+│        ├─ slide/
+│        ├─ audio/
+│        └─ video/
+└─ .remotion-public/
+   ├─ 20_ショート動画v2/
+   └─ shared-assets/
 ```
 
-### 2. module1: 会話ログから動画素材JSONを作る
-
-`module/1_makejson.html` を開きます。
-
-最初に `ワークスペースを選択` で、このリポジトリのルートを選びます。ブラウザの File System Access API を使うため、Chrome / Edge 系のブラウザ推奨です。
-
-できること:
-
-- `projects/{id}` の新規作成
-- `meta.json` の作成
-- 会話ログの貼り付け、または `.txt` / `.json` から読み込み
-- pipeline JSON の段階生成
-- render draft JSON の作成
-
-作成される主な構成:
+### `projects/{id}` の標準構成
 
 ```text
 projects/{id}/
@@ -86,17 +94,60 @@ projects/{id}/
       slide_01.json
       slide_02.json
       slide_03.json
+      slide01.png
+      slide02.png
+      slide03.png
     audio/
+      seg_001.wav
+      seg_002.wav
+      voicevox-batch-result-{run_id}.json
     video/
       06-render-draft-vNN.json
+      render-final-v01.json
+      psych-short-{run_id}.mp4
 ```
+
+`projects/0000/` は現在確認できるサンプルprojectです。
+
+## 使い方
+
+### 1. ランチャーを開く
+
+`index.html` をブラウザで開きます。
+
+Chrome / Edge 系ブラウザ推奨です。各moduleは File System Access API を使うため、最初にワークスペースとしてこのリポジトリ、または親の `02_hobby` を選びます。
+
+ランチャーから開けるもの:
+
+- 会話生成: `https://49601000.github.io/zund-short-prompter/`
+- JSON作成: `module/1_makejson.html`
+- スライド用プロンプト生成: `module/2_slideprompt_builder.html`
+- Final Cut Panel: `module/3_Final-Cut-panel.html`
+- Timing Calc: `module/tool1-timing-calc.html`
+- Hook Viewer Lens: `module/tool2-hook-viewer-lens.html`
+
+### 2. module1: 会話ログから動画素材JSONを作る
+
+`module/1_makejson.html` を開きます。
+
+できること:
+
+- `projects/{id}` の新規作成
+- `meta.json` の作成
+- `raw_conversation` の保存
+- `01-summary_spec`
+- `02-hook_spec`
+- `04-scene_spec`
+- `05-sub_scene_spec`
+- `06-voice_manifest`
+- `06-render-draft`
 
 注意:
 
 - `03-slide_spec` は module2 が担当します。
-- `02-hook_spec` は現在の `04-scene_spec` 生成には使っていません。ただし `06-render-draft` 作成時に選択hookとして読み込まれます。将来 `Hook Lab -> selected_hook -> Script Forge -> scene` に戻すための拡張ポイントとして残しています。
-- module1 の `4. scene_spec 作成` は最新の `03-slide_spec-vNN.json` を読みます。
-- `6. 06-render-draft-v01.json 作成` は、hook / slide / sub_scene / voice_manifest / audio をまとめたレンダー下書きです。
+- `04-scene_spec` は最新の `03-slide_spec-vNN.json` を読みます。
+- `06-render-draft` は hook / slide / sub_scene / voice_manifest / audio をまとめたレンダー下書きです。
+- `02-hook_spec` は現在の scene 生成では直接使いません。ただし render draft 作成時に選択hookとして合流します。
 
 `02-hook_spec` の位置づけ:
 
@@ -118,9 +169,7 @@ Script Forge
 scene
 ```
 
-`02-hook_spec` は、ショート動画で特に重要な「最初の2秒」を独立して試作・選定するための予約席です。現時点では `hook_a` / `hook_b` / `hook_c` / `selected_hook` のような独立アセットを持てるようにしておき、scene生成からは独立させています。通常はプロジェクト作成時に初期ファイルが作られるため、render draft 作成時だけ選択hookとして合流します。
-
-### 3. module2: スライド用プロンプトとslide_specを作る
+### 3. module2: スライド設計JSONを作る
 
 `module/2_slideprompt_builder.html` を開きます。
 
@@ -131,7 +180,7 @@ scene
 3. ChatGPT の返答として `lesson_slide_plan` JSON を受け取る
 4. `Apply Lesson Plan JSON` で読み込む
 5. `Slide Prompt生成` で中央スライド画像用プロンプトを作る
-6. `Workspace接続` して対象projectを選ぶ
+6. Workspace接続して対象projectを選ぶ
 7. `③ slide_spec 作成 / 保存` で保存する
 
 保存先:
@@ -148,27 +197,22 @@ projects/{id}/outputs/slide/{slide_id}.json
 - `canvas_aspect_ratio`: `16:9`
 - 用途: 縦型9:16動画の中央スライド領域に差し込む画像
 
-localStorage にも中間状態を保存します。
-
-- `svrs_raw_conversation`
-- `svrs_lesson_slide_plan`
-- `svrs_slide_prompt_spec`
-- `svrs_slide_spec`
-
 ### 4. module3: render draftをFinal Cutする
 
 `module/3_Final-Cut-panel.html` を開きます。
 
 目的は、module1で作った `06-render-draft-vNN.json` を人間が確認し、最終レンダー用の `render-final-v01.json` に仕上げることです。
 
-流れ:
+主な編集対象:
 
-1. `ワークスペース選択` でリポジトリルートを選ぶ
-2. projectを選ぶ
-3. `render draft読込` で `projects/{id}/outputs/video/06-render-draft-vNN.json` を読み込む
-4. scene / sub_scene 単位で音声、字幕、表示文、スライド画像、キャラ、hook文言などを調整する
-5. 必要なら VOICEVOX endpoint、話者、スタイル、BGM、背景、shared-assets を設定する
-6. `render-final-v01.jsonに書き出し・反映` で保存する
+- VOICEVOX endpoint / 話者 / スタイル / 速度
+- scene単位の `voice` / `voice_override`
+- sub_scene単位の字幕・画面テキスト
+- title帯の文言、色、高さ、文字サイズ、幅、改行
+- 背景画像、scene単位背景override、BGM、音量
+- スライド画像、モノリス、ダイアログ枠、左右キャラ画像
+- HOOK背景、HOOKキャラ、HOOK吹き出し、HOOK文字
+- タイムラインの秒・フレームduration
 
 保存先:
 
@@ -176,40 +220,63 @@ localStorage にも中間状態を保存します。
 projects/{id}/outputs/video/render-final-v01.json
 ```
 
-主な編集対象:
+VOICEVOX endpoint の既定値:
 
-- VOICEVOX endpoint: 既定値 `http://127.0.0.1:5510`
-- VOICEVOX話者 / スタイル / 速度
-- scene単位の voice / voice_override
-- sub_scene単位の字幕・画面テキスト
-- タイトル帯の文言、色、高さ、文字サイズ、幅、改行
-- 背景画像、BGM、音量
-- スライド画像、モノリス、ダイアログ枠、左右キャラ画像
-- タイムライン duration
+```text
+http://127.0.0.1:5510
+```
 
-shared-assets 連携:
+`5510` はこのリポジトリの `voicevox:proxy` が立てるCORSプロキシです。VOICEVOX Engine本体の既定値は `http://127.0.0.1:50021` です。
 
-- 推奨ルート: `MyAntigravity/02_hobby/shared-assets`
-- 背景: `images/backgrounds`
-- BGM: `audio/bgm`
-- スライド: `assets/images/frames/slide/{run_id}` または `images/frames/slide/{run_id}`
-- モノリス: `images/monolith`
-- ダイアログ枠: `images/logboard`
-- 左キャラ: `images/characters/metan`
-- 右キャラ: `images/characters/zundamon`, `images/frames`
+ブラウザから `/speakers` 取得などがCORSで失敗する場合は、VOICEVOX Engineを起動したうえで別ターミナルから実行します。
 
-localStorage にも中間状態を保存します。
+```powershell
+npm run voicevox:proxy
+```
 
-- `svrs_video_spec`
-- `svrs_voice_settings`
-- `svrs_voice_character_defaults_v3`
-- `svrs_voicevox_system_settings_v1`
-- `svrs_voicevox_speakers_cache_v1`
-- `svrs_output_run_id`
+プロキシの転送先やポートを変える場合:
 
-## render
+```powershell
+$env:VOICEVOX_ENGINE_URL="http://127.0.0.1:50021"
+$env:VOICEVOX_PROXY_PORT="5510"
+npm run voicevox:proxy
+```
 
-Final Cut Panel で作ったJSONを指定して render します。
+### 5. 補助ツール
+
+`module/tool1-timing-calc.html`:
+
+- `render-final-v01.json` または Timing Output JSON を読み込みます。
+- scene / sub_scene の `start_sec` / `duration_sec` / frameを調整するための補助ツールです。
+- localStorage key: `sv2_timing_calc_state_v1`
+
+`module/tool2-hook-viewer-lens.html`:
+
+- 完成済みの会話劇を貼り付けます。
+- ChatGPT等へ渡す分析プロンプトを生成します。
+- `viewer_lens` と `hook_candidates` の2モードがあります。
+- projectファイル、localStorage、Final Cut Panelとの直接連携はありません。
+
+## render / dev / voicevox
+
+### 音声生成
+
+VOICEVOX Engineを起動した状態で実行します。
+
+```powershell
+$env:SCENE_OUTPUT_RUN_ID="000"
+$env:SCENE_RENDER_SPEC_PATH="projects/0000/outputs/video/render-final-v01.json"
+npm run voicevox
+```
+
+出力:
+
+```text
+projects/0000/outputs/audio/seg_001.wav
+projects/0000/outputs/audio/voicevox-batch-result-000.json
+```
+
+### Remotion render
 
 ```powershell
 $env:SCENE_OUTPUT_RUN_ID="000"
@@ -217,7 +284,13 @@ $env:SCENE_RENDER_SPEC_PATH="projects/0000/outputs/video/render-final-v01.json"
 npm run scene-remotion:render
 ```
 
-開発プレビューの場合:
+出力:
+
+```text
+projects/0000/outputs/video/psych-short-000.mp4
+```
+
+### Remotion dev preview
 
 ```powershell
 $env:SCENE_OUTPUT_RUN_ID="000"
@@ -225,11 +298,25 @@ $env:SCENE_RENDER_SPEC_PATH="projects/0000/outputs/video/render-final-v01.json"
 npm run scene-remotion:dev
 ```
 
-`index.html` のコマンド生成欄から、project_id / run_id に合わせたコマンドをコピーできます。
+### spec同期だけ確認する
+
+```powershell
+$env:SCENE_OUTPUT_RUN_ID="000"
+$env:SCENE_RENDER_SPEC_PATH="projects/0000/outputs/video/render-final-v01.json"
+npm run scene-remotion:sync-spec
+```
+
+dry-run:
+
+```powershell
+$env:SCENE_OUTPUT_RUN_ID="000"
+$env:SCENE_RENDER_SPEC_PATH="projects/0000/outputs/video/render-final-v01.json"
+node scripts/run-scene-remotion.mjs sync-spec --dry-run
+```
 
 ## npm scripts
 
-`package.json` に定義されている主なコマンドです。
+現在の推奨script:
 
 ```text
 npm run dev
@@ -238,46 +325,141 @@ npm run scene-remotion:dev
 npm run scene-remotion:render
 npm run scene-remotion:voicevox:initial
 npm run scene-remotion:voicevox:publish
+npm run scene-remotion:sync-spec
 npm run scene-remotion:voicevox:batch
+npm run scene-remotion:voicevox
 npm run scene-remotion:typecheck
 npm run voicevox:proxy
 ```
 
-`voicevox` は `scene-remotion:voicevox:batch` でWAVを生成し、`projects/{id}/outputs/audio/` へ直接保存します。
-
-`voicevox:proxy` は `http://127.0.0.1:5510` で起動し、VOICEVOX Engine標準の `http://127.0.0.1:50021` にCORS付きで中継します。Final Cut Panelをブラウザで直接開いて `/speakers` がCORSで失敗する場合は、VOICEVOX Engineを起動したうえで別ターミナルから実行してください。
-
-```powershell
-npm run voicevox:proxy
-```
-
-VOICEVOX EngineのURLやプロキシのポートを変える場合:
-
-```powershell
-$env:VOICEVOX_ENGINE_URL="http://127.0.0.1:50021"
-$env:VOICEVOX_PROXY_PORT="5510"
-npm run voicevox:proxy
-```
-
-## 現在確認できるサンプルproject
+`package.json` に定義されている全script:
 
 ```text
-projects/0000/
+dev
+voicevox
+renderer:dev
+renderer:render
+renderer:voicevox
+renderer:help
+scene-remotion:dev
+scene-remotion:render
+scene-remotion:voicevox:initial
+scene-remotion:voicevox:publish
+scene-remotion:sync-spec
+scene-remotion:render:runid
+scene-remotion:voicevox:batch
+scene-remotion:voicevox
+scene-remotion:typecheck
+voicevox:proxy
 ```
 
-確認できる成果物:
+実体がこのリポジトリにあるscript:
 
-- `meta.json`
-- `pipeline/01-summary_spec-v01.json` など
-- `pipeline/03-slide_spec-vNN.json`
-- `outputs/slide/slide_01.json` など
-- `outputs/video/render-final-v01.json`
+```text
+scripts/run-scene-remotion.mjs
+scripts/run-voicevox-batch.mjs
+scripts/voicevox-cors-proxy.mjs
+```
+
+`renderer:*` と `scene-remotion:render:runid` は `package.json` 上には残っていますが、現在のツリーには対応する `scripts/run-renderer.mjs` と `scripts/run-scene-render-by-runid.mjs` がありません。復活させるまでは、推奨scriptを正規ルートとして使います。
+
+## 環境変数
+
+| 変数 | 用途 | 既定値 |
+| --- | --- | --- |
+| `SCENE_OUTPUT_RUN_ID` | 出力動画番号。`000` のような数値、または render 側では `auto` も可。 | `000` |
+| `SCENE_RENDER_SPEC_PATH` | render / voicevox の入力JSON。 | 最新の `render-final*.json`、なければ `projects/0000/outputs/video/render-final-v01.json` |
+| `RENDER_SPEC_PATH` | `SCENE_RENDER_SPEC_PATH` の別名。 | 同上 |
+| `SCENE_PROJECT_ID` | project IDを明示指定します。 | spec内の `project_id` またはpathから推定 |
+| `PROJECT_ID` | `SCENE_PROJECT_ID` の別名。 | 同上 |
+| `SCENE_REMOTION_RENDERER_ROOT` | 隣接する Remotion renderer の場所。 | `../remotion-renderer` |
+| `REMOTION_RENDERER_ROOT` | `SCENE_REMOTION_RENDERER_ROOT` の別名。 | 同上 |
+| `VOICEVOX_URL` | batch音声生成が叩くVOICEVOX Engine URL。 | `http://127.0.0.1:50021` |
+| `VOICEVOX_BATCH_SPEC_PATH` | `npm run voicevox` 専用の入力JSON。 | `SCENE_RENDER_SPEC_PATH` |
+| `VOICEVOX_ENGINE_URL` | CORSプロキシの転送先。 | `http://127.0.0.1:50021` |
+| `VOICEVOX_PROXY_HOST` | CORSプロキシのlisten host。 | `127.0.0.1` |
+| `VOICEVOX_PROXY_PORT` / `PORT` | CORSプロキシのlisten port。 | `5510` |
+
+## Remotion連携のSOT
+
+`scripts/run-scene-remotion.mjs` が、Final Cut後のJSONを Remotion renderer 用に同期します。
+
+やっていること:
+
+- `SCENE_RENDER_SPEC_PATH` のJSONを読む
+- renderer側の `src/data/render_spec.json` へ変換して書く
+- `projects/{id}/outputs/audio/*.wav` を shared-assets 側へ同期する
+- `shared-assets` と project内の必要素材を `.remotion-public/` にステージングする
+- renderer側で `npm run dev` / `npm run render` / `npm run voicevox` / `npx tsc --noEmit` を実行する
+- render後、renderer側の `out/psych-short.mp4` を `projects/{id}/outputs/video/psych-short-{run_id}.mp4` にコピーする
+
+`.remotion-public/` はステージング領域です。手作業で編集する本体ではなく、render前の同期結果として扱います。
+
+## assets / shared-assets のSOT
+
+このリポジトリ内:
+
+```text
+assets/background/background-manifest.json
+assets/images/frames/slide/000/*.png
+assets/mock/*.html
+```
+
+Final Cut Panel の shared-assets 推奨ルート:
+
+```text
+MyAntigravity/02_hobby/shared-assets
+```
+
+主なサブフォルダ:
+
+```text
+images/backgrounds
+audio/bgm
+images/monolith
+images/logboard
+images/characters/metan
+images/characters/zundamon
+images/frames
+```
+
+Remotion用のpublic参照では、素材はおおむね次のprefixへ寄せます。
+
+```text
+shared-assets/...
+20_ショート動画v2/projects/...
+```
+
+## localStorage
+
+主な保存key:
+
+```text
+svrs_raw_conversation
+svrs_lesson_slide_plan
+svrs_slide_prompt_spec
+svrs_slide_spec
+svrs_video_spec
+svrs_voice_settings
+svrs_voice_character_defaults_v3
+svrs_voicevox_system_settings_v1
+svrs_voicevox_speakers_cache_v1
+svrs_output_run_id
+sv2_index_project_id
+sv2_index_run_id
+sv2_timing_calc_state_v1
+```
+
+localStorageは中間状態です。SOTとして残す成果物は `projects/{id}/` 配下のJSON / WAV / MP4です。
 
 ## ざっくり役割分担
 
 ```text
+index   = 入口とコマンドコピー係
 module1 = 会話ログを動画用JSONへ分解する係
-module2 = スライド画像を作るための設計図を作る係
+module2 = スライド画像の設計図を作る係
 module3 = 最後に人間が見て整える編集卓
-index   = 入口とrenderコマンドのコピー係
+tool1   = タイミング計算の補助係
+tool2   = HOOKの視聴者目線チェック係
+scripts = VOICEVOX / Remotion への橋渡し係
 ```

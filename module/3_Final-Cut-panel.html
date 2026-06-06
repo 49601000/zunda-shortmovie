@@ -327,11 +327,13 @@
     }
 
     .substyle-card {
-      border: 1px solid rgba(147, 245, 199, 0.42);
+      border: 1px solid rgba(89, 150, 224, 0.48);
       background:
-        linear-gradient(180deg, rgba(242, 248, 247, 0.15), rgba(99, 217, 188, 0.08)),
-        rgba(18, 54, 56, 0.86);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+        linear-gradient(180deg, rgba(77, 139, 218, 0.18), rgba(15, 38, 78, 0.1)),
+        rgba(4, 14, 34, 0.96);
+      box-shadow:
+        inset 0 1px 0 rgba(202, 224, 255, 0.08),
+        0 12px 30px rgba(0, 0, 0, 0.22);
     }
 
     .inner-card-title {
@@ -807,9 +809,9 @@
         { label: "めたん（強調）", value: "#ff46b4" }
       ];
       const HOOK_TEXT_STYLE_DEFAULTS = {
-        top: { font_size: 90, fill_color: "#303030", outline_color: "transparent", outline_scale: 1.06, fill_visible: false },
-        main: { font_size: 260, fill_color: "#e60012", outline_color: "transparent", outline_scale: 1.06, fill_visible: true },
-        sub: { font_size: 140, fill_color: "#303030", outline_color: "transparent", outline_scale: 1.06, fill_visible: false },
+        top: { font_size: 84, fill_color: "#303030", outline_color: "#ffffff", outline_scale: 1.02, fill_visible: false },
+        main: { font_size: 220, fill_color: "#e60012", outline_color: "transparent", outline_scale: 1.02, fill_visible: true },
+        sub: { font_size: 98, fill_color: "#303030", outline_color: "#ffffff", outline_scale: 1.02, fill_visible: false },
         bubble: { font_size: 64 }
       };
       const HOOK_OUTLINE_COLOR_OPTIONS = [
@@ -4000,14 +4002,14 @@
                       <div class="grid">
                         <div class="field span-2"><label>背景画像</label><select name="visual_background" data-scope="scene">${buildScenePartOptionsHtml("background", visualAssets.background || "")}</select></div>
                         <div class="field span-2"><label>スライド画像</label><select name="visual_slide" data-scope="scene">${buildScenePartOptionsHtml("slide", visualAssets.slide || "")}</select></div>
-                        <div class="field span-2"><label>モノリス画像</label><select name="visual_monolith" data-scope="scene">${buildScenePartOptionsHtml("monolith", visualAssets.monolith || "")}</select></div>
                         <div class="field span-2"><label>ダイアログ枠画像</label><select name="visual_dialog_box" data-scope="scene">${buildScenePartOptionsHtml("dialog_box", visualAssets.dialog_box || "")}</select></div>
                         <div class="field span-2"><label>左キャラ画像</label><select name="visual_character_left" data-scope="scene">${buildScenePartOptionsHtml("character_left", visualAssets.character_left || "")}</select></div>
-                        <div class="field span-2"><label>右キャラ画像</label><select name="visual_character_right" data-scope="scene">${buildScenePartOptionsHtml("character_right", visualAssets.character_right || "")}</select></div>
                         <div class="field span-2"><label>左キャラ差分1</label><select name="left_asset_state_1" data-scope="scene">${buildCharacterDiffOptionsHtml("left", leftDiff1)}</select></div>
-                        <div class="field span-2"><label>右キャラ差分1</label><select name="right_asset_state_1" data-scope="scene">${buildCharacterDiffOptionsHtml("right", rightDiff1)}</select></div>
                         <div class="field span-2"><label>左キャラ差分2</label><select name="left_asset_state_2" data-scope="scene">${buildCharacterDiffOptionsHtml("left", leftDiff2)}</select></div>
+                        <div class="field span-2"><label>右キャラ画像</label><select name="visual_character_right" data-scope="scene">${buildScenePartOptionsHtml("character_right", visualAssets.character_right || "")}</select></div>
+                        <div class="field span-2"><label>右キャラ差分1</label><select name="right_asset_state_1" data-scope="scene">${buildCharacterDiffOptionsHtml("right", rightDiff1)}</select></div>
                         <div class="field span-2"><label>右キャラ差分2</label><select name="right_asset_state_2" data-scope="scene">${buildCharacterDiffOptionsHtml("right", rightDiff2)}</select></div>
+                        <div class="field span-2"><label>モノリス画像</label><select name="visual_monolith" data-scope="scene">${buildScenePartOptionsHtml("monolith", visualAssets.monolith || "")}</select></div>
                         <div class="field span-2"><label>話者</label><select name="speaker_side" data-scope="scene">
                           <option value="left"${scene.speaker_side === "left" ? " selected" : ""}>左キャラ</option>
                           <option value="right"${scene.speaker_side === "right" ? " selected" : ""}>右キャラ</option>
@@ -4019,7 +4021,7 @@
                   </details>
                 ` : ""}
                 ${hookPictureScene ? `
-                  <details class="collapse inner-card" open>
+                  <details class="collapse inner-card substyle-card" open>
                     <summary class="inner-card-title">HOOK Picture</summary>
                     <div class="inner-card-body">
                       <div class="grid">
