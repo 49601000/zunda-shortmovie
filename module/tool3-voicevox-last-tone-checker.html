@@ -1,0 +1,1500 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VOICEVOX Last Tone Checker</title>
+  <style>
+    :root {
+      --bg-a: #081119;
+      --bg-b: #102236;
+      --bg-c: #17353f;
+      --panel: rgba(8, 20, 30, 0.86);
+      --panel-2: rgba(10, 28, 42, 0.76);
+      --surface: rgba(6, 16, 24, 0.9);
+      --line: rgba(99, 217, 188, 0.32);
+      --line-soft: rgba(168, 196, 194, 0.23);
+      --ink: #f2f8f7;
+      --sub: #a8c4c2;
+      --accent: #63d9bc;
+      --accent-2: #84f5db;
+      --ok: #93f5c7;
+      --warn: #ffca76;
+      --danger: #ff8f8f;
+      --shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+      background:
+        radial-gradient(120% 110% at 0% 0%, rgba(99, 217, 188, 0.18) 0%, rgba(99, 217, 188, 0) 45%),
+        radial-gradient(110% 110% at 100% 0%, rgba(255, 202, 118, 0.1) 0%, rgba(255, 202, 118, 0) 50%),
+        linear-gradient(135deg, var(--bg-a) 0%, var(--bg-b) 54%, var(--bg-c) 100%);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      border-bottom: 1px solid rgba(99, 217, 188, 0.28);
+      background: linear-gradient(90deg, #0d3f39 0%, #0c3140 35%, #102236 70%, #081119 100%);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar {
+      min-height: 66px;
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .topbarLeft {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .brandMark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(160deg, #1f7f6c, #124c58);
+      border: 1px solid rgba(147, 245, 199, 0.36);
+      box-shadow: 0 8px 20px rgba(8, 20, 30, 0.45);
+      color: #f2fff9;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .brandText,
+    .topbarTitle {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brandText {
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .topbarDivider {
+      width: 1px;
+      height: 28px;
+      background: rgba(168, 196, 194, 0.42);
+      flex: none;
+    }
+
+    .topbarTitle {
+      min-width: 0;
+      color: var(--sub);
+      font-weight: 800;
+    }
+
+    .topbarVersion {
+      color: var(--ok);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    main {
+      width: min(1480px, 100%);
+      margin: 0 auto;
+      padding: 18px 16px 28px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .toolbar,
+    .workspace,
+    .panel,
+    .sceneList,
+    .statusbar {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .toolbar,
+    .statusbar {
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(260px, 1.2fr) minmax(220px, 0.85fr) minmax(220px, 0.85fr);
+      gap: 12px;
+      align-items: end;
+    }
+
+    .workspace {
+      min-height: calc(100vh - 170px);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 290px minmax(0, 1fr) 320px;
+    }
+
+    .sceneList,
+    .panel {
+      min-width: 0;
+      box-shadow: none;
+      border-top: 0;
+      border-bottom: 0;
+      border-radius: 0;
+      background: rgba(8, 20, 30, 0.78);
+    }
+
+    .sceneList {
+      border-left: 0;
+      border-right: 1px solid var(--line-soft);
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-height: 0;
+    }
+
+    .panel {
+      border-right: 0;
+      border-left: 1px solid var(--line-soft);
+      padding: 16px;
+      display: grid;
+      align-content: start;
+      gap: 14px;
+    }
+
+    .detail {
+      min-width: 0;
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .listHead {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .sceneItems {
+      min-height: 0;
+      overflow: auto;
+      display: grid;
+      align-content: start;
+    }
+
+    .sceneBtn {
+      border: 0;
+      border-bottom: 1px solid rgba(168, 196, 194, 0.14);
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+      padding: 11px 13px;
+      display: grid;
+      gap: 5px;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .sceneBtn:hover,
+    .sceneBtn.active {
+      background: rgba(99, 217, 188, 0.12);
+    }
+
+    .sceneTop {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .sceneId {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--accent-2);
+    }
+
+    .pill {
+      flex: none;
+      border-radius: 999px;
+      padding: 2px 8px;
+      border: 1px solid rgba(147, 245, 199, 0.34);
+      color: var(--ok);
+      font-size: 11px;
+      font-weight: 800;
+      background: rgba(147, 245, 199, 0.1);
+    }
+
+    .pill.muted {
+      border-color: rgba(168, 196, 194, 0.25);
+      color: var(--sub);
+      background: rgba(168, 196, 194, 0.08);
+    }
+
+    .speaker,
+    .voicePreview,
+    .muted {
+      color: var(--sub);
+    }
+
+    .speaker {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .voicePreview {
+      font-size: 13px;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h1 { font-size: 1.2rem; }
+    h2 { font-size: 1.02rem; }
+    h3 { font-size: 0.92rem; color: var(--accent-2); }
+    p { line-height: 1.62; }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--sub);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid var(--line-soft);
+      border-radius: 10px;
+      color: var(--ink);
+      background: rgba(4, 12, 18, 0.72);
+      font: inherit;
+      outline: none;
+    }
+
+    input,
+    select {
+      min-height: 40px;
+      padding: 8px 10px;
+    }
+
+    textarea {
+      min-height: 120px;
+      padding: 10px;
+      resize: vertical;
+      line-height: 1.65;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 217, 188, 0.12);
+    }
+
+    input[type="file"] {
+      padding: 8px;
+    }
+
+    input[type="range"] {
+      padding: 0;
+      min-height: 24px;
+      accent-color: var(--accent);
+    }
+
+    button,
+    .fileLabel,
+    .downloadBtn {
+      min-height: 40px;
+      border: 1px solid rgba(99, 217, 188, 0.34);
+      border-radius: 10px;
+      padding: 8px 12px;
+      color: #062119;
+      background: linear-gradient(180deg, var(--accent-2), var(--accent));
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+    button.secondary,
+    .downloadBtn.secondary {
+      color: var(--ink);
+      background: rgba(99, 217, 188, 0.12);
+    }
+
+    button.warn {
+      color: #2a1600;
+      border-color: rgba(255, 202, 118, 0.55);
+      background: linear-gradient(180deg, #ffe1a8, var(--warn));
+    }
+
+    button:disabled,
+    .downloadBtn.disabled {
+      opacity: 0.48;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .field {
+      min-width: 0;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .metaGrid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .metaItem,
+    .audioBox,
+    .sliderBox,
+    .emptyState {
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      background: var(--panel-2);
+    }
+
+    .metaItem {
+      padding: 10px;
+      min-width: 0;
+    }
+
+    .metaLabel {
+      color: var(--sub);
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .metaValue {
+      font-size: 13px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .audioGrid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .audioBox {
+      padding: 12px;
+      display: grid;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    audio {
+      width: 100%;
+      height: 42px;
+    }
+
+    .pathText {
+      color: var(--sub);
+      font-size: 12px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .sliderBox {
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .moraPanel {
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      background: rgba(6, 16, 24, 0.72);
+      display: grid;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .moraHead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .moraList {
+      display: grid;
+      gap: 10px;
+      max-height: 420px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .phraseBox {
+      border: 1px solid rgba(168, 196, 194, 0.2);
+      border-radius: 10px;
+      background: rgba(10, 28, 42, 0.7);
+      padding: 10px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .phraseHead {
+      display: grid;
+      grid-template-columns: 1fr 92px 116px;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .phraseTitle {
+      color: var(--accent-2);
+      font-size: 13px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .moraGrid {
+      display: grid;
+      gap: 7px;
+    }
+
+    .moraRow {
+      display: grid;
+      grid-template-columns: minmax(46px, 0.5fr) repeat(3, minmax(72px, 1fr));
+      gap: 7px;
+      align-items: end;
+    }
+
+    .moraText {
+      min-height: 36px;
+      border: 1px solid rgba(99, 217, 188, 0.18);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+      background: rgba(99, 217, 188, 0.08);
+      font-weight: 800;
+    }
+
+    .miniField label {
+      margin-bottom: 4px;
+      font-size: 10px;
+    }
+
+    .miniField input {
+      min-height: 34px;
+      padding: 6px 8px;
+      font-size: 13px;
+    }
+
+    .sliderHead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .sliderValue {
+      min-width: 58px;
+      text-align: right;
+      color: var(--accent-2);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 800;
+    }
+
+    .emptyState {
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      text-align: center;
+      color: var(--sub);
+    }
+
+    .statusbar {
+      min-height: 46px;
+      color: var(--sub);
+      font-size: 13px;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .statusbar.ok { color: var(--ok); }
+    .statusbar.warn { color: var(--warn); }
+    .statusbar.danger { color: var(--danger); }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1180px) {
+      .toolbar {
+        grid-template-columns: 1fr 1fr;
+      }
+      .workspace {
+        grid-template-columns: 260px minmax(0, 1fr);
+      }
+      .panel {
+        grid-column: 1 / -1;
+        border-left: 0;
+        border-top: 1px solid var(--line-soft);
+      }
+    }
+
+    @media (max-width: 820px) {
+      .topbar {
+        align-items: flex-start;
+      }
+      .topbarLeft {
+        flex-wrap: wrap;
+      }
+      .toolbar,
+      .workspace,
+      .metaGrid,
+      .audioGrid {
+        grid-template-columns: 1fr;
+      }
+      .sceneList {
+        min-height: 300px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line-soft);
+      }
+      .phraseHead,
+      .moraRow {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="topbarLeft">
+        <div class="brandMark">T3</div>
+        <div class="brandText">VOICEVOX Last Tone Checker</div>
+        <div class="topbarDivider"></div>
+        <div class="topbarTitle">render-final 最終耳チェック</div>
+      </div>
+      <div class="topbarVersion">tool3</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="toolbar">
+      <div class="field">
+        <label for="renderFileInput">render-final-v01.json</label>
+        <input id="renderFileInput" type="file" accept=".json,application/json" />
+      </div>
+      <div class="field">
+        <label for="adjustFileInput">voicevox-adjustments.json</label>
+        <input id="adjustFileInput" type="file" accept=".json,application/json" />
+      </div>
+      <div class="field">
+        <label for="engineUrlInput">VOICEVOX endpoint</label>
+        <input id="engineUrlInput" type="url" value="http://127.0.0.1:5510" spellcheck="false" />
+        <p class="pathText">ブラウザからはCORS回避用に <code>npm run voicevox:proxy</code> を起動し、このURLのまま使うのを推奨。</p>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <aside class="sceneList">
+        <div class="listHead">
+          <h1>Scenes</h1>
+          <p class="muted" id="sceneCount">render-finalを読み込んでください</p>
+        </div>
+        <div class="sceneItems" id="sceneItems"></div>
+      </aside>
+
+      <section class="detail">
+        <div id="emptyState" class="emptyState">
+          <p>render-final-v01.json を読み込むと scene ごとの音声確認を開始できます。</p>
+        </div>
+
+        <div id="detailContent" class="hidden">
+          <div class="metaGrid">
+            <div class="metaItem">
+              <div class="metaLabel">scene_id</div>
+              <div class="metaValue" id="metaSceneId"></div>
+            </div>
+            <div class="metaItem">
+              <div class="metaLabel">speaker</div>
+              <div class="metaValue" id="metaSpeaker"></div>
+            </div>
+            <div class="metaItem">
+              <div class="metaLabel">speakerId</div>
+              <div class="metaValue" id="metaSpeakerId"></div>
+            </div>
+            <div class="metaItem">
+              <div class="metaLabel">wav_path</div>
+              <div class="metaValue" id="metaWavPath"></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="voiceText">元セリフ</label>
+            <textarea id="voiceText" readonly></textarea>
+          </div>
+
+          <div class="field">
+            <label for="voiceOverrideInput">voice_override</label>
+            <textarea id="voiceOverrideInput" placeholder="読み替える時だけ入力"></textarea>
+          </div>
+
+          <div class="audioGrid">
+            <div class="audioBox">
+              <h2>生成済みwav</h2>
+              <audio id="existingAudio" controls preload="none"></audio>
+              <div class="pathText" id="existingAudioDuration">duration=--</div>
+              <div class="pathText" id="existingAudioPath"></div>
+            </div>
+            <div class="audioBox">
+              <h2>再生成後wav</h2>
+              <audio id="generatedAudio" controls preload="none"></audio>
+              <div class="actions">
+                <a id="downloadWavLink" class="downloadBtn secondary disabled" download>再生成wavをダウンロード</a>
+              </div>
+              <div class="pathText" id="generatedAudioDuration">duration=--</div>
+              <div class="pathText" id="generatedAudioPath"></div>
+            </div>
+          </div>
+
+          <div class="moraPanel">
+            <div class="moraHead">
+              <div>
+                <h2>モーラ調整</h2>
+                <p class="pathText">accent_phrasesを取得して、違和感のある音だけpitchや長さを微調整します。</p>
+              </div>
+              <div class="actions">
+                <button id="loadMoraBtn" type="button" class="secondary" disabled>モーラ取得/更新</button>
+                <button id="resetMoraBtn" type="button" class="secondary" disabled>モーラ編集をリセット</button>
+              </div>
+            </div>
+            <div id="moraList" class="moraList">
+              <p class="pathText">まだモーラを取得していません。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <h2>調整</h2>
+        <div class="sliderBox">
+          <div class="sliderHead">
+            <label for="speedScaleInput">speedScale</label>
+            <div class="sliderValue" id="speedScaleValue">1.25</div>
+          </div>
+          <input id="speedScaleInput" type="range" min="0.5" max="2.0" step="0.01" value="1.25" />
+        </div>
+
+        <div class="sliderBox">
+          <div class="sliderHead">
+            <label for="pitchScaleInput">pitchScale</label>
+            <div class="sliderValue" id="pitchScaleValue">0.00</div>
+          </div>
+          <input id="pitchScaleInput" type="range" min="-0.15" max="0.15" step="0.01" value="0" />
+        </div>
+
+        <div class="sliderBox">
+          <div class="sliderHead">
+            <label for="intonationScaleInput">intonationScale</label>
+            <div class="sliderValue" id="intonationScaleValue">1.00</div>
+          </div>
+          <input id="intonationScaleInput" type="range" min="0" max="2" step="0.01" value="1" />
+        </div>
+
+        <div class="sliderBox">
+          <div class="sliderHead">
+            <label for="pauseLengthScaleInput">pauseLengthScale</label>
+            <div class="sliderValue" id="pauseLengthScaleValue">1.00</div>
+          </div>
+          <input id="pauseLengthScaleInput" type="range" min="0.3" max="2" step="0.01" value="1" />
+        </div>
+
+        <div class="actions">
+          <button id="regenerateBtn" type="button" class="warn" disabled>再生成</button>
+          <button id="saveSceneBtn" type="button" class="secondary" disabled>このsceneの調整を保存</button>
+          <button id="exportBtn" type="button" disabled>voicevox-adjustments.jsonを書き出し</button>
+        </div>
+      </aside>
+    </section>
+
+    <div id="statusbar" class="statusbar">待機中</div>
+  </main>
+
+  <script>
+    (() => {
+      const DEFAULT_CONTROL = {
+        speedScale: 1.25,
+        pitchScale: 0,
+        intonationScale: 1,
+        pauseLengthScale: 1
+      };
+
+      const state = {
+        renderSpec: null,
+        scenes: [],
+        adjustments: {},
+        selectedIndex: -1,
+        generatedUrl: "",
+        generatedBlob: null,
+        generatedDirtySceneId: "",
+        currentAudioQuery: null,
+        currentAudioQuerySceneId: "",
+        currentAudioQueryText: "",
+        currentAudioQuerySpeakerId: null
+      };
+
+      const el = {
+        renderFileInput: document.getElementById("renderFileInput"),
+        adjustFileInput: document.getElementById("adjustFileInput"),
+        engineUrlInput: document.getElementById("engineUrlInput"),
+        sceneCount: document.getElementById("sceneCount"),
+        sceneItems: document.getElementById("sceneItems"),
+        emptyState: document.getElementById("emptyState"),
+        detailContent: document.getElementById("detailContent"),
+        metaSceneId: document.getElementById("metaSceneId"),
+        metaSpeaker: document.getElementById("metaSpeaker"),
+        metaSpeakerId: document.getElementById("metaSpeakerId"),
+        metaWavPath: document.getElementById("metaWavPath"),
+        voiceText: document.getElementById("voiceText"),
+        voiceOverrideInput: document.getElementById("voiceOverrideInput"),
+        existingAudio: document.getElementById("existingAudio"),
+        generatedAudio: document.getElementById("generatedAudio"),
+        existingAudioDuration: document.getElementById("existingAudioDuration"),
+        generatedAudioDuration: document.getElementById("generatedAudioDuration"),
+        existingAudioPath: document.getElementById("existingAudioPath"),
+        generatedAudioPath: document.getElementById("generatedAudioPath"),
+        downloadWavLink: document.getElementById("downloadWavLink"),
+        loadMoraBtn: document.getElementById("loadMoraBtn"),
+        resetMoraBtn: document.getElementById("resetMoraBtn"),
+        moraList: document.getElementById("moraList"),
+        speedScaleInput: document.getElementById("speedScaleInput"),
+        pitchScaleInput: document.getElementById("pitchScaleInput"),
+        intonationScaleInput: document.getElementById("intonationScaleInput"),
+        pauseLengthScaleInput: document.getElementById("pauseLengthScaleInput"),
+        speedScaleValue: document.getElementById("speedScaleValue"),
+        pitchScaleValue: document.getElementById("pitchScaleValue"),
+        intonationScaleValue: document.getElementById("intonationScaleValue"),
+        pauseLengthScaleValue: document.getElementById("pauseLengthScaleValue"),
+        regenerateBtn: document.getElementById("regenerateBtn"),
+        saveSceneBtn: document.getElementById("saveSceneBtn"),
+        exportBtn: document.getElementById("exportBtn"),
+        statusbar: document.getElementById("statusbar")
+      };
+
+      const toNum = (value, fallback) => {
+        const n = Number(value);
+        return Number.isFinite(n) ? n : fallback;
+      };
+
+      const pad3 = (value) => String(value).padStart(3, "0");
+
+      const deepClone = (value) => JSON.parse(JSON.stringify(value));
+
+      const readJsonFile = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            resolve(JSON.parse(String(reader.result || "")));
+          } catch (error) {
+            reject(new Error(`JSONの読み込みに失敗しました: ${error.message}`));
+          }
+        };
+        reader.onerror = () => reject(new Error("ファイルを読み込めませんでした。"));
+        reader.readAsText(file, "utf-8");
+      });
+
+      const setStatus = (message, type = "") => {
+        el.statusbar.textContent = message;
+        el.statusbar.className = `statusbar${type ? ` ${type}` : ""}`;
+      };
+
+      const getSceneId = (scene, index) => {
+        const raw = String(scene?.scene_id || scene?.id || "").trim();
+        return raw || `scene_${pad3(index + 1)}`;
+      };
+
+      const resolveSceneOrder = (scene, index) => {
+        const matched = String(scene?.scene_id || scene?.source_scene_id || scene?.id || "").match(/(\d+)/);
+        if (matched) {
+          const n = Number.parseInt(matched[1], 10);
+          if (Number.isFinite(n) && n > 0) return n;
+        }
+        return index + 1;
+      };
+
+      const getProjectId = () => {
+        const fromSpec = String(state.renderSpec?.project_id || state.renderSpec?.projectId || "").trim();
+        return fromSpec || "0000";
+      };
+
+      const getVoiceText = (scene) => {
+        const candidates = [
+          scene?.voice,
+          scene?.voice_text,
+          scene?.dialog?.voice,
+          scene?.text,
+          scene?.voice?.text
+        ];
+        for (const value of candidates) {
+          if (typeof value === "string" && value.trim()) return value.trim();
+        }
+        return "";
+      };
+
+      const getSpeaker = (scene) => {
+        return String(
+          scene?.speaker ||
+          scene?.voicevox_speaker_name ||
+          scene?.voice_profile?.voicevox_speaker_name ||
+          ""
+        ).trim();
+      };
+
+      const getSpeakerId = (scene) => {
+        const candidates = [
+          scene?.speakerId,
+          scene?.voice_control?.speaker_id,
+          scene?.voicevox_style_id,
+          scene?.voice_profile?.voicevox_style_id
+        ];
+        for (const value of candidates) {
+          const n = Number(value);
+          if (Number.isFinite(n)) return n;
+        }
+        return 3;
+      };
+
+      const getBaseControl = (scene) => {
+        const src = scene?.voice_control && typeof scene.voice_control === "object" ? scene.voice_control : {};
+        return {
+          speedScale: toNum(src.speedScale ?? scene?.speedScale ?? scene?.voice_speed, DEFAULT_CONTROL.speedScale),
+          pitchScale: toNum(src.pitchScale, DEFAULT_CONTROL.pitchScale),
+          intonationScale: toNum(src.intonationScale, DEFAULT_CONTROL.intonationScale),
+          pauseLengthScale: toNum(src.pauseLengthScale, DEFAULT_CONTROL.pauseLengthScale)
+        };
+      };
+
+      const getCurrentControl = () => ({
+        speedScale: toNum(el.speedScaleInput.value, DEFAULT_CONTROL.speedScale),
+        pitchScale: toNum(el.pitchScaleInput.value, DEFAULT_CONTROL.pitchScale),
+        intonationScale: toNum(el.intonationScaleInput.value, DEFAULT_CONTROL.intonationScale),
+        pauseLengthScale: toNum(el.pauseLengthScaleInput.value, DEFAULT_CONTROL.pauseLengthScale)
+      });
+
+      const getActiveVoiceText = () => {
+        const scene = state.scenes[state.selectedIndex];
+        return el.voiceOverrideInput.value.trim() || getVoiceText(scene);
+      };
+
+      const getSceneAdjustment = (sceneId) => {
+        const saved = state.adjustments[sceneId];
+        return saved && typeof saved === "object" ? saved : null;
+      };
+
+      const resolveOutputWavPath = (scene, index) => {
+        const explicit = [
+          scene?.wav_path,
+          scene?.audio_path,
+          scene?.output_wav_path,
+          scene?.audio?.wav_path,
+          scene?.audio?.audio_path
+        ].find((value) => typeof value === "string" && value.trim());
+        if (explicit) return explicit.trim();
+        const fileName = `seg_${pad3(resolveSceneOrder(scene, index))}.wav`;
+        return `projects/${getProjectId()}/outputs/audio/${fileName}`;
+      };
+
+      const getSelectedOutputWavPath = () => {
+        const scene = state.scenes[state.selectedIndex];
+        if (!scene) return "";
+        const sceneId = getSceneId(scene, state.selectedIndex);
+        const saved = getSceneAdjustment(sceneId);
+        return saved?.output_wav_path || resolveOutputWavPath(scene, state.selectedIndex);
+      };
+
+      const toAudioSrc = (path) => {
+        const value = String(path || "").trim();
+        if (!value) return "";
+        if (/^(https?:|blob:|data:)/i.test(value)) return value;
+        if (value.startsWith("../") || value.startsWith("./")) return value;
+        if (value.startsWith("/")) return `..${value}`;
+        return `../${value}`;
+      };
+
+      const getDownloadName = (path) => {
+        const base = String(path || "").split(/[\\/]/).filter(Boolean).pop();
+        return base || "voicevox-regenerated.wav";
+      };
+
+      const formatDurationLabel = (durationSec) => {
+        const n = Number(durationSec);
+        if (!Number.isFinite(n) || n <= 0) return "duration=--";
+        return `duration=${n.toFixed(3)}s`;
+      };
+
+      const updateAudioDuration = (audio, target) => {
+        target.textContent = formatDurationLabel(audio.duration);
+      };
+
+      const updateSliderLabels = () => {
+        el.speedScaleValue.textContent = Number(el.speedScaleInput.value).toFixed(2);
+        el.pitchScaleValue.textContent = Number(el.pitchScaleInput.value).toFixed(2);
+        el.intonationScaleValue.textContent = Number(el.intonationScaleInput.value).toFixed(2);
+        el.pauseLengthScaleValue.textContent = Number(el.pauseLengthScaleInput.value).toFixed(2);
+      };
+
+      const setControlInputs = (control) => {
+        el.speedScaleInput.value = String(toNum(control.speedScale, DEFAULT_CONTROL.speedScale));
+        el.pitchScaleInput.value = String(toNum(control.pitchScale, DEFAULT_CONTROL.pitchScale));
+        el.intonationScaleInput.value = String(toNum(control.intonationScale, DEFAULT_CONTROL.intonationScale));
+        el.pauseLengthScaleInput.value = String(toNum(control.pauseLengthScale, DEFAULT_CONTROL.pauseLengthScale));
+        updateSliderLabels();
+      };
+
+      const clearGeneratedAudio = () => {
+        if (state.generatedUrl) URL.revokeObjectURL(state.generatedUrl);
+        state.generatedUrl = "";
+        state.generatedBlob = null;
+        state.generatedDirtySceneId = "";
+        el.generatedAudio.removeAttribute("src");
+        el.generatedAudio.load();
+        el.generatedAudioDuration.textContent = "duration=--";
+        el.downloadWavLink.removeAttribute("href");
+        el.downloadWavLink.removeAttribute("download");
+        el.downloadWavLink.classList.add("disabled");
+        el.generatedAudioPath.textContent = "未生成";
+      };
+
+      const clearMoraEditor = (message = "まだモーラを取得していません。") => {
+        state.currentAudioQuery = null;
+        state.currentAudioQuerySceneId = "";
+        state.currentAudioQueryText = "";
+        state.currentAudioQuerySpeakerId = null;
+        el.moraList.innerHTML = "";
+        const p = document.createElement("p");
+        p.className = "pathText";
+        p.textContent = message;
+        el.moraList.appendChild(p);
+        el.resetMoraBtn.disabled = true;
+      };
+
+      const renderSceneList = () => {
+        el.sceneItems.textContent = "";
+        el.sceneCount.textContent = `${state.scenes.length} scenes`;
+
+        state.scenes.forEach((scene, index) => {
+          const sceneId = getSceneId(scene, index);
+          const saved = !!getSceneAdjustment(sceneId);
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = `sceneBtn${index === state.selectedIndex ? " active" : ""}`;
+          button.dataset.index = String(index);
+          button.innerHTML = `
+            <div class="sceneTop">
+              <span class="sceneId"></span>
+              <span class="pill ${saved ? "" : "muted"}"></span>
+            </div>
+            <div class="speaker"></div>
+            <div class="voicePreview"></div>
+          `;
+          button.querySelector(".sceneId").textContent = sceneId;
+          button.querySelector(".pill").textContent = saved ? "調整済み" : "未調整";
+          button.querySelector(".speaker").textContent = getSpeaker(scene) || "speaker未設定";
+          button.querySelector(".voicePreview").textContent = getVoiceText(scene).slice(0, 64) || "voiceなし";
+          button.addEventListener("click", () => selectScene(index));
+          el.sceneItems.appendChild(button);
+        });
+      };
+
+      const selectScene = (index) => {
+        if (index < 0 || index >= state.scenes.length) return;
+        state.selectedIndex = index;
+        const scene = state.scenes[index];
+        const sceneId = getSceneId(scene, index);
+        const saved = getSceneAdjustment(sceneId);
+        const wavPath = saved?.output_wav_path || resolveOutputWavPath(scene, index);
+        const baseControl = getBaseControl(scene);
+        const savedControl = saved?.voice_control && typeof saved.voice_control === "object" ? saved.voice_control : {};
+
+        el.emptyState.classList.add("hidden");
+        el.detailContent.classList.remove("hidden");
+        el.metaSceneId.textContent = sceneId;
+        el.metaSpeaker.textContent = getSpeaker(scene) || "-";
+        el.metaSpeakerId.textContent = String(getSpeakerId(scene));
+        el.metaWavPath.textContent = wavPath;
+        el.voiceText.value = getVoiceText(scene);
+        el.voiceOverrideInput.value = typeof saved?.voice_override === "string"
+          ? saved.voice_override
+          : typeof scene?.voice_override === "string"
+            ? scene.voice_override
+            : "";
+
+        el.existingAudio.src = toAudioSrc(wavPath);
+        el.existingAudio.load();
+        el.existingAudioDuration.textContent = "duration=--";
+        el.existingAudioPath.textContent = wavPath;
+        clearGeneratedAudio();
+        clearMoraEditor(Array.isArray(saved?.accent_phrases)
+          ? "保存済みのモーラ調整があります。モーラ取得/更新で読み込めます。"
+          : "まだモーラを取得していません。");
+        setControlInputs({...baseControl, ...savedControl});
+        el.regenerateBtn.disabled = false;
+        el.saveSceneBtn.disabled = false;
+        el.loadMoraBtn.disabled = false;
+        el.exportBtn.disabled = Object.keys(state.adjustments).length === 0;
+        renderSceneList();
+      };
+
+      const loadRenderSpec = async (file) => {
+        const spec = await readJsonFile(file);
+        if (!spec || typeof spec !== "object" || !Array.isArray(spec.scenes)) {
+          throw new Error("render-final JSONに scenes[] がありません。");
+        }
+        state.renderSpec = spec;
+        state.scenes = spec.scenes;
+        state.selectedIndex = -1;
+        clearGeneratedAudio();
+        clearMoraEditor();
+        renderSceneList();
+        if (state.scenes.length) selectScene(0);
+        el.exportBtn.disabled = Object.keys(state.adjustments).length === 0;
+        setStatus(`${file.name} を読み込みました。project_id=${getProjectId()}`, "ok");
+      };
+
+      const loadAdjustments = async (file) => {
+        const payload = await readJsonFile(file);
+        if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+          throw new Error("voicevox-adjustments.json はオブジェクト形式である必要があります。");
+        }
+        state.adjustments = payload;
+        renderSceneList();
+        if (state.selectedIndex >= 0) selectScene(state.selectedIndex);
+        el.exportBtn.disabled = Object.keys(state.adjustments).length === 0;
+        setStatus(`${file.name} を読み込みました。${Object.keys(state.adjustments).length} scene分の調整があります。`, "ok");
+      };
+
+      const applyControlToQuery = (query, control) => {
+        query.speedScale = control.speedScale;
+        query.pitchScale = control.pitchScale;
+        query.intonationScale = control.intonationScale;
+        query.pauseLengthScale = control.pauseLengthScale;
+        return query;
+      };
+
+      const formatMoraNumber = (value) => {
+        const n = Number(value);
+        return Number.isFinite(n) ? String(Number(n.toFixed(4))) : "";
+      };
+
+      const readMoraNumber = (value, fallback) => {
+        const text = String(value ?? "").trim();
+        if (!text) return fallback;
+        const n = Number(text);
+        return Number.isFinite(n) ? n : fallback;
+      };
+
+      const buildMoraInput = ({ label, value, phraseIndex, moraIndex, prop, min, max, step = "0.01" }) => {
+        const wrap = document.createElement("div");
+        wrap.className = "miniField";
+        const fieldLabel = document.createElement("label");
+        fieldLabel.textContent = label;
+        const input = document.createElement("input");
+        input.type = "number";
+        input.step = step;
+        if (min != null) input.min = String(min);
+        if (max != null) input.max = String(max);
+        input.value = formatMoraNumber(value);
+        input.dataset.phraseIndex = String(phraseIndex);
+        input.dataset.moraIndex = String(moraIndex);
+        input.dataset.prop = prop;
+        input.className = "moraInput";
+        wrap.append(fieldLabel, input);
+        return wrap;
+      };
+
+      const getPhraseLabel = (phrase) => {
+        return (phrase?.moras || []).map((mora) => mora?.text || "").join("") || "空のフレーズ";
+      };
+
+      const renderMoraEditor = () => {
+        el.moraList.innerHTML = "";
+        const phrases = Array.isArray(state.currentAudioQuery?.accent_phrases)
+          ? state.currentAudioQuery.accent_phrases
+          : [];
+        if (!phrases.length) {
+          clearMoraEditor("accent_phrases がありません。読み上げ文を確認してください。");
+          return;
+        }
+
+        phrases.forEach((phrase, phraseIndex) => {
+          const box = document.createElement("div");
+          box.className = "phraseBox";
+
+          const head = document.createElement("div");
+          head.className = "phraseHead";
+          const title = document.createElement("div");
+          title.className = "phraseTitle";
+          title.textContent = `Phrase ${phraseIndex + 1}: ${getPhraseLabel(phrase)}`;
+          head.appendChild(title);
+          head.appendChild(buildMoraInput({
+            label: "accent",
+            value: phrase.accent,
+            phraseIndex,
+            moraIndex: -1,
+            prop: "accent",
+            min: 1,
+            max: Math.max(1, (phrase.moras || []).length),
+            step: "1"
+          }));
+          head.appendChild(buildMoraInput({
+            label: "pause length",
+            value: phrase.pause_mora?.vowel_length,
+            phraseIndex,
+            moraIndex: -1,
+            prop: "pause_mora.vowel_length",
+            min: 0,
+            max: 2
+          }));
+
+          const grid = document.createElement("div");
+          grid.className = "moraGrid";
+          (phrase.moras || []).forEach((mora, moraIndex) => {
+            const row = document.createElement("div");
+            row.className = "moraRow";
+            const text = document.createElement("div");
+            text.className = "moraText";
+            text.textContent = mora?.text || `#${moraIndex + 1}`;
+            row.appendChild(text);
+            row.appendChild(buildMoraInput({
+              label: "pitch",
+              value: mora?.pitch,
+              phraseIndex,
+              moraIndex,
+              prop: "pitch",
+              min: 0,
+              max: 10
+            }));
+            row.appendChild(buildMoraInput({
+              label: "vowel length",
+              value: mora?.vowel_length,
+              phraseIndex,
+              moraIndex,
+              prop: "vowel_length",
+              min: 0,
+              max: 2
+            }));
+            row.appendChild(buildMoraInput({
+              label: "consonant length",
+              value: mora?.consonant_length,
+              phraseIndex,
+              moraIndex,
+              prop: "consonant_length",
+              min: 0,
+              max: 2
+            }));
+            grid.appendChild(row);
+          });
+
+          box.append(head, grid);
+          el.moraList.appendChild(box);
+        });
+
+        el.resetMoraBtn.disabled = false;
+      };
+
+      const syncMoraEditorToQuery = () => {
+        if (!state.currentAudioQuery) return null;
+        el.moraList.querySelectorAll(".moraInput").forEach((input) => {
+          const phraseIndex = Number(input.dataset.phraseIndex);
+          const moraIndex = Number(input.dataset.moraIndex);
+          const prop = input.dataset.prop;
+          const phrase = state.currentAudioQuery.accent_phrases?.[phraseIndex];
+          if (!phrase) return;
+          if (prop === "accent") {
+            phrase.accent = Math.max(1, Math.round(readMoraNumber(input.value, phrase.accent || 1)));
+            return;
+          }
+          if (prop === "pause_mora.vowel_length") {
+            if (!phrase.pause_mora) return;
+            phrase.pause_mora.vowel_length = readMoraNumber(input.value, phrase.pause_mora.vowel_length);
+            return;
+          }
+          const mora = phrase.moras?.[moraIndex];
+          if (!mora) return;
+          mora[prop] = readMoraNumber(input.value, mora[prop]);
+        });
+        return state.currentAudioQuery;
+      };
+
+      const isCurrentAudioQueryUsable = (sceneId, text, speakerId) => {
+        return !!state.currentAudioQuery &&
+          state.currentAudioQuerySceneId === sceneId &&
+          state.currentAudioQueryText === text &&
+          Number(state.currentAudioQuerySpeakerId) === Number(speakerId);
+      };
+
+      const fetchAudioQuery = async ({ endpoint, text, speakerId }) => {
+        const queryUrl = `${endpoint}/audio_query?${new URLSearchParams({ text, speaker: String(speakerId) }).toString()}`;
+        const queryResponse = await fetch(queryUrl, { method: "POST" });
+        if (!queryResponse.ok) {
+          throw new Error(`/audio_query ${queryResponse.status}: ${await queryResponse.text()}`);
+        }
+        return queryResponse.json();
+      };
+
+      const loadMoraQuery = async ({ ignoreSaved = false } = {}) => {
+        const scene = state.scenes[state.selectedIndex];
+        if (!scene) return null;
+        const sceneId = getSceneId(scene, state.selectedIndex);
+        const speakerId = getSpeakerId(scene);
+        const text = getActiveVoiceText();
+        const endpoint = el.engineUrlInput.value.trim().replace(/\/+$/, "");
+        if (!endpoint) {
+          setStatus("VOICEVOX endpoint が空です。", "danger");
+          return null;
+        }
+        if (!text) {
+          setStatus("読み上げ文が空です。voice または voice_override を確認してください。", "danger");
+          return null;
+        }
+
+        el.loadMoraBtn.disabled = true;
+        setStatus(`${sceneId} のモーラを取得中...`);
+        try {
+          const query = applyControlToQuery(await fetchAudioQuery({ endpoint, text, speakerId }), getCurrentControl());
+          const saved = getSceneAdjustment(sceneId);
+          if (!ignoreSaved && Array.isArray(saved?.accent_phrases)) {
+            query.accent_phrases = deepClone(saved.accent_phrases);
+          }
+          state.currentAudioQuery = query;
+          state.currentAudioQuerySceneId = sceneId;
+          state.currentAudioQueryText = text;
+          state.currentAudioQuerySpeakerId = speakerId;
+          renderMoraEditor();
+          setStatus(`${sceneId} のモーラを取得しました。数値を変えてから再生成できます。`, "ok");
+          return query;
+        } catch (error) {
+          setStatus(buildVoicevoxErrorMessage(error, endpoint), "danger");
+          return null;
+        } finally {
+          el.loadMoraBtn.disabled = false;
+        }
+      };
+
+      const getPreparedAudioQuery = async ({ endpoint, sceneId, text, speakerId }) => {
+        if (isCurrentAudioQueryUsable(sceneId, text, speakerId)) {
+          return applyControlToQuery(syncMoraEditorToQuery(), getCurrentControl());
+        }
+        const query = applyControlToQuery(await fetchAudioQuery({ endpoint, text, speakerId }), getCurrentControl());
+        const saved = getSceneAdjustment(sceneId);
+        if (Array.isArray(saved?.accent_phrases)) {
+          query.accent_phrases = deepClone(saved.accent_phrases);
+        }
+        state.currentAudioQuery = query;
+        state.currentAudioQuerySceneId = sceneId;
+        state.currentAudioQueryText = text;
+        state.currentAudioQuerySpeakerId = speakerId;
+        renderMoraEditor();
+        return query;
+      };
+
+      const buildVoicevoxErrorMessage = (error, endpoint) => {
+        const raw = String(error?.message || error);
+        if (/Failed to fetch|NetworkError|Load failed/i.test(raw)) {
+          return [
+            "VOICEVOX連携に失敗しました: Failed to fetch",
+            `endpoint=${endpoint}`,
+            "対処: VOICEVOX Engineを起動したうえで、別ターミナルで npm run voicevox:proxy を起動し、endpointを http://127.0.0.1:5510 にしてください。",
+            "補足: http://127.0.0.1:50021 へブラウザから直接投げるとCORSで失敗することがあります。"
+          ].join(" / ");
+        }
+        return `VOICEVOX連携に失敗しました: ${raw}`;
+      };
+
+      const regenerate = async () => {
+        const scene = state.scenes[state.selectedIndex];
+        if (!scene) return;
+        const sceneId = getSceneId(scene, state.selectedIndex);
+        const speakerId = getSpeakerId(scene);
+        const text = el.voiceOverrideInput.value.trim() || getVoiceText(scene);
+        if (!text) {
+          setStatus("読み上げ文が空です。voice または voice_override を確認してください。", "danger");
+          return;
+        }
+
+        const endpoint = el.engineUrlInput.value.trim().replace(/\/+$/, "");
+        if (!endpoint) {
+          setStatus("VOICEVOX endpoint が空です。", "danger");
+          return;
+        }
+
+        el.regenerateBtn.disabled = true;
+        setStatus(`${sceneId} をVOICEVOXで再生成中...`);
+
+        try {
+          const audioQuery = await getPreparedAudioQuery({ endpoint, sceneId, text, speakerId });
+          const synthUrl = `${endpoint}/synthesis?${new URLSearchParams({ speaker: String(speakerId) }).toString()}`;
+          const synthResponse = await fetch(synthUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "audio/wav"
+            },
+            body: JSON.stringify(audioQuery)
+          });
+          if (!synthResponse.ok) {
+            throw new Error(`/synthesis ${synthResponse.status}: ${await synthResponse.text()}`);
+          }
+
+          if (state.generatedUrl) URL.revokeObjectURL(state.generatedUrl);
+          state.generatedBlob = await synthResponse.blob();
+          state.generatedUrl = URL.createObjectURL(state.generatedBlob);
+          state.generatedDirtySceneId = sceneId;
+          const wavPath = getSelectedOutputWavPath();
+          el.generatedAudio.src = state.generatedUrl;
+          el.generatedAudio.load();
+          el.generatedAudioDuration.textContent = "duration=--";
+          el.downloadWavLink.href = state.generatedUrl;
+          el.downloadWavLink.download = getDownloadName(wavPath);
+          el.downloadWavLink.classList.remove("disabled");
+          el.generatedAudioPath.textContent = `${wavPath} として差分JSONに記録`;
+          setStatus(`${sceneId} の再生成が完了しました。ブラウザ上で試聴できます。`, "ok");
+        } catch (error) {
+          setStatus(buildVoicevoxErrorMessage(error, endpoint), "danger");
+        } finally {
+          el.regenerateBtn.disabled = false;
+        }
+      };
+
+      const saveCurrentSceneAdjustment = () => {
+        const scene = state.scenes[state.selectedIndex];
+        if (!scene) return;
+        const sceneId = getSceneId(scene, state.selectedIndex);
+        const outputPath = getSelectedOutputWavPath();
+        const text = getActiveVoiceText();
+        const speakerId = getSpeakerId(scene);
+        const previous = getSceneAdjustment(sceneId);
+        const payload = {
+          voice_override: el.voiceOverrideInput.value.trim(),
+          voice_control: getCurrentControl(),
+          output_wav_path: outputPath
+        };
+        if (isCurrentAudioQueryUsable(sceneId, text, speakerId)) {
+          const query = syncMoraEditorToQuery();
+          if (Array.isArray(query?.accent_phrases)) {
+            payload.accent_phrases = deepClone(query.accent_phrases);
+          }
+        } else if (Array.isArray(previous?.accent_phrases)) {
+          payload.accent_phrases = previous.accent_phrases;
+        }
+        state.adjustments[sceneId] = {
+          ...payload
+        };
+        el.exportBtn.disabled = false;
+        renderSceneList();
+        setStatus(`${sceneId} の調整を保存しました。render-final JSONは変更していません。`, "ok");
+      };
+
+      const exportAdjustments = () => {
+        const ordered = {};
+        Object.keys(state.adjustments).sort().forEach((sceneId) => {
+          ordered[sceneId] = state.adjustments[sceneId];
+        });
+        const blob = new Blob([`${JSON.stringify(ordered, null, 2)}\n`], { type: "application/json;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = "voicevox-adjustments.json";
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+        setStatus("voicevox-adjustments.json を書き出しました。", "ok");
+      };
+
+      el.renderFileInput.addEventListener("change", async () => {
+        const file = el.renderFileInput.files?.[0];
+        if (!file) return;
+        try {
+          await loadRenderSpec(file);
+        } catch (error) {
+          setStatus(error.message || String(error), "danger");
+        }
+      });
+
+      el.adjustFileInput.addEventListener("change", async () => {
+        const file = el.adjustFileInput.files?.[0];
+        if (!file) return;
+        try {
+          await loadAdjustments(file);
+        } catch (error) {
+          setStatus(error.message || String(error), "danger");
+        }
+      });
+
+      [
+        el.speedScaleInput,
+        el.pitchScaleInput,
+        el.intonationScaleInput,
+        el.pauseLengthScaleInput
+      ].forEach((input) => input.addEventListener("input", updateSliderLabels));
+
+      el.voiceOverrideInput.addEventListener("input", () => {
+        clearMoraEditor("voice_override が変わりました。モーラ取得/更新で取り直してください。");
+      });
+      el.loadMoraBtn.addEventListener("click", () => loadMoraQuery());
+      el.resetMoraBtn.addEventListener("click", () => loadMoraQuery({ ignoreSaved: true }));
+      el.moraList.addEventListener("input", () => {
+        syncMoraEditorToQuery();
+      });
+      el.existingAudio.addEventListener("loadedmetadata", () => updateAudioDuration(el.existingAudio, el.existingAudioDuration));
+      el.existingAudio.addEventListener("durationchange", () => updateAudioDuration(el.existingAudio, el.existingAudioDuration));
+      el.generatedAudio.addEventListener("loadedmetadata", () => updateAudioDuration(el.generatedAudio, el.generatedAudioDuration));
+      el.generatedAudio.addEventListener("durationchange", () => updateAudioDuration(el.generatedAudio, el.generatedAudioDuration));
+      el.regenerateBtn.addEventListener("click", regenerate);
+      el.saveSceneBtn.addEventListener("click", saveCurrentSceneAdjustment);
+      el.exportBtn.addEventListener("click", exportAdjustments);
+
+      renderSceneList();
+      updateSliderLabels();
+    })();
+  </script>
+</body>
+</html>

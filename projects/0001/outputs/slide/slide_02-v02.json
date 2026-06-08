@@ -1,0 +1,8 @@
+{
+  "slide_id": "slide_02",
+  "role": "concept",
+  "title": "なぜやめられない？",
+  "body": "使ったお金がもったいなく感じて続けてしまう",
+  "visual_intent": "simple_diagram: 3000円使った→もったいない→さらに使う（ループ） / core_message: 使ったお金がもったいなく感じて続けてしまう",
+  "simple_diagram": "3000円使った→もったいない→さらに使う（ループ）"
+}

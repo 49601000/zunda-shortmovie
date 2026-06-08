@@ -1,0 +1,8 @@
+{
+  "slide_id": "slide_02",
+  "role": "concept",
+  "title": "なぜ言い訳するの？",
+  "body": "失敗した自分を認めたくないため",
+  "visual_intent": "simple_diagram: 失敗 → モヤモヤ → 言い訳 → 気持ちが楽 / core_message: 失敗した自分を認めたくないため",
+  "simple_diagram": "失敗 → モヤモヤ → 言い訳 → 気持ちが楽"
+}

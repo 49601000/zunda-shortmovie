@@ -1,0 +1,25 @@
+{
+  "project_id": "0005",
+  "source": "01-summary_spec-v01.json",
+  "hooks": [
+    {
+      "id": "hook_a",
+      "text": "",
+      "intent": "疑問型",
+      "duration_sec": 2
+    },
+    {
+      "id": "hook_b",
+      "text": "",
+      "intent": "断言型",
+      "duration_sec": 2
+    },
+    {
+      "id": "hook_c",
+      "text": "",
+      "intent": "違和感型",
+      "duration_sec": 2
+    }
+  ],
+  "selected_hook_id": "hook_a"
+}

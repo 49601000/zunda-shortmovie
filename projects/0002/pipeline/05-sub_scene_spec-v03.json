@@ -1,0 +1,434 @@
+{
+  "project_id": "0002",
+  "source": "04-scene_spec-v02.json",
+  "scenes": [
+    {
+      "scene_id": "scene_001",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "お給料まで20日あるけど財布の中にあと300円あるから実質セーフなのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_001_01",
+          "screen_text": "お給料まで20日あるけど財布の中にあ",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 0,
+          "duration_sec": 2.91
+        },
+        {
+          "sub_scene_id": "scene_001_02",
+          "screen_text": "と300円あるから実質セーフなのだ！",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 2.91,
+          "duration_sec": 2.9
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_002",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "emotion": "excited",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "どこがセーフなのよ！完全に正常性バイアスに脳を支配されてるわね",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_002_01",
+          "screen_text": "どこがセーフなのよ！",
+          "display_mode": "replace",
+          "char_count": 10,
+          "start_sec": 5.81,
+          "duration_sec": 1.61
+        },
+        {
+          "sub_scene_id": "scene_002_02",
+          "screen_text": "完全に正常性バイアスに脳を支配されて",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 7.42,
+          "duration_sec": 2.9
+        },
+        {
+          "sub_scene_id": "scene_002_03",
+          "screen_text": "るわね",
+          "display_mode": "replace",
+          "char_count": 3,
+          "start_sec": 10.32,
+          "duration_sec": 0.6
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_003",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "言いがかりなのだ。ボクの計算では、うまい棒を30本買えば1日1本で余裕で乗り切れるのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_003_01",
+          "screen_text": "言いがかりなのだ。ボクの計算では、",
+          "display_mode": "replace",
+          "char_count": 17,
+          "start_sec": 10.92,
+          "duration_sec": 2.32
+        },
+        {
+          "sub_scene_id": "scene_003_02",
+          "screen_text": "うまい棒を30本買えば1日1本で余裕",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 13.24,
+          "duration_sec": 2.45
+        },
+        {
+          "sub_scene_id": "scene_003_03",
+          "screen_text": "で乗り切れるのだ！",
+          "display_mode": "replace",
+          "char_count": 9,
+          "start_sec": 15.69,
+          "duration_sec": 1.23
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_004",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "emotion": "excited",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "計算の時点で大破綻してるわよ！そもそも今うまい棒は 税抜1本15円よ！20本すら買えないわよ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_004_01",
+          "screen_text": "計算の時点で大破綻してるわよ！",
+          "display_mode": "replace",
+          "char_count": 15,
+          "start_sec": 16.92,
+          "duration_sec": 1.91
+        },
+        {
+          "sub_scene_id": "scene_004_02",
+          "screen_text": "そもそも今うまい棒は 税抜1本15円",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 18.83,
+          "duration_sec": 2.3
+        },
+        {
+          "sub_scene_id": "scene_004_03",
+          "screen_text": "よ！20本すら買えないわよ！",
+          "display_mode": "replace",
+          "char_count": 14,
+          "start_sec": 21.13,
+          "duration_sec": 1.79
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_005",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "でも、まだお腹がグーグー鳴ってないから、ボクの体は完全に健康そのものなのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_005_01",
+          "screen_text": "でも、",
+          "display_mode": "replace",
+          "char_count": 3,
+          "start_sec": 22.92,
+          "duration_sec": 0.7
+        },
+        {
+          "sub_scene_id": "scene_005_02",
+          "screen_text": "まだお腹がグーグー鳴ってないから、",
+          "display_mode": "replace",
+          "char_count": 17,
+          "start_sec": 23.62,
+          "duration_sec": 2.68
+        },
+        {
+          "sub_scene_id": "scene_005_03",
+          "screen_text": "ボクの体は完全に健康そのものなのだ！",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 26.3,
+          "duration_sec": 2.62
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_006",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "それが正常性バイアスの恐ろしいところね。限界が来るその瞬間まで『まだ大丈夫』って現実逃避し続けるのよ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_006_01",
+          "screen_text": "それが正常性バイアスの恐ろしいところ",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 28.92,
+          "duration_sec": 2.16
+        },
+        {
+          "sub_scene_id": "scene_006_02",
+          "screen_text": "ね。",
+          "display_mode": "replace",
+          "char_count": 2,
+          "start_sec": 31.08,
+          "duration_sec": 0.7
+        },
+        {
+          "sub_scene_id": "scene_006_03",
+          "screen_text": "限界が来るその瞬間まで『まだ大丈夫』",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 31.78,
+          "duration_sec": 2.16
+        },
+        {
+          "sub_scene_id": "scene_006_04",
+          "screen_text": "って現実逃避し続けるのよ",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_sec": 33.94,
+          "duration_sec": 0.98
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_007",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "現実逃避じゃないのだ！本当にピンチになったら、誰かがご飯をくれる気がするのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_007_01",
+          "screen_text": "現実逃避じゃないのだ！",
+          "display_mode": "replace",
+          "char_count": 11,
+          "start_sec": 34.92,
+          "duration_sec": 1.69
+        },
+        {
+          "sub_scene_id": "scene_007_02",
+          "screen_text": "本当にピンチになったら、",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_sec": 36.61,
+          "duration_sec": 1.85
+        },
+        {
+          "sub_scene_id": "scene_007_03",
+          "screen_text": "誰かがご飯をくれる気がするのだ！",
+          "display_mode": "replace",
+          "char_count": 16,
+          "start_sec": 38.46,
+          "duration_sec": 2.46
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_008",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "その『根拠のない大丈夫』が一番危険なのよ。ある日突然、完全に手遅れになって詰むのよ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_008_01",
+          "screen_text": "その『根拠のない大丈夫』が一番危険な",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 40.92,
+          "duration_sec": 2.63
+        },
+        {
+          "sub_scene_id": "scene_008_02",
+          "screen_text": "のよ。ある日突然、",
+          "display_mode": "replace",
+          "char_count": 9,
+          "start_sec": 43.55,
+          "duration_sec": 1.32
+        },
+        {
+          "sub_scene_id": "scene_008_03",
+          "screen_text": "完全に手遅れになって詰むのよ",
+          "display_mode": "replace",
+          "char_count": 14,
+          "start_sec": 44.87,
+          "duration_sec": 2.05
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_009",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "でも本当に倒れるまではセーフなのだ……！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_009_01",
+          "screen_text": "でも本当に倒れるまではセーフなのだ…",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 46.92,
+          "duration_sec": 2.91
+        },
+        {
+          "sub_scene_id": "scene_009_02",
+          "screen_text": "…！",
+          "display_mode": "replace",
+          "char_count": 2,
+          "start_sec": 49.83,
+          "duration_sec": 0.6
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_010",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "emotion": "excited",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "アウトよ！手遅れになる前にその謎の生存自信を捨てて生活を改めなさい！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_010_01",
+          "screen_text": "アウトよ！",
+          "display_mode": "replace",
+          "char_count": 5,
+          "start_sec": 50.43,
+          "duration_sec": 0.81
+        },
+        {
+          "sub_scene_id": "scene_010_02",
+          "screen_text": "手遅れになる前にその謎の生存自信を捨",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 51.24,
+          "duration_sec": 2.9
+        },
+        {
+          "sub_scene_id": "scene_010_03",
+          "screen_text": "てて生活を改めなさい！",
+          "display_mode": "replace",
+          "char_count": 11,
+          "start_sec": 54.14,
+          "duration_sec": 1.77
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_011",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "voice_style": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "じゃあ正常な生活を取り戻すために、ひとまずめたんのクレカで美味しい焼き肉を食べに行くのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_011_01",
+          "screen_text": "じゃあ正常な生活を取り戻すために、",
+          "display_mode": "replace",
+          "char_count": 17,
+          "start_sec": 55.91,
+          "duration_sec": 2.27
+        },
+        {
+          "sub_scene_id": "scene_011_02",
+          "screen_text": "ひとまずめたんのクレカで美味しい焼き",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 58.18,
+          "duration_sec": 2.4
+        },
+        {
+          "sub_scene_id": "scene_011_03",
+          "screen_text": "肉を食べに行くのだ！",
+          "display_mode": "replace",
+          "char_count": 10,
+          "start_sec": 60.58,
+          "duration_sec": 1.33
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_012",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "emotion": "excited",
+      "voice_style": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "人の財布でバイアスを解決しようとするんじゃないわよ！絶対に貸さないわよ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_012_01",
+          "screen_text": "人の財布でバイアスを解決しようとする",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 61.91,
+          "duration_sec": 2.91
+        },
+        {
+          "sub_scene_id": "scene_012_02",
+          "screen_text": "んじゃないわよ！絶対に貸さないわよ",
+          "display_mode": "replace",
+          "char_count": 17,
+          "start_sec": 64.82,
+          "duration_sec": 2.74
+        }
+      ]
+    }
+  ]
+}

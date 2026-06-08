@@ -1,0 +1,262 @@
+{
+  "project_id": "0003",
+  "source": "04-scene_spec-v03.json",
+  "scenes": [
+    {
+      "scene_id": "scene_001",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "『優しいけど傷つきやすい性格です』……完全にボクなのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_001_01",
+          "screen_text": "『優しいけど傷つきやすい性格です』…",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 0,
+          "duration_sec": 2.91
+        },
+        {
+          "sub_scene_id": "scene_001_02",
+          "screen_text": "…完全にボクなのだ！",
+          "display_mode": "replace",
+          "char_count": 10,
+          "start_sec": 2.91,
+          "duration_sec": 1.61
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_002",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "emotion": "excited",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "その手の文章を見て『自分のことだ！』って思う現象を、バーナム効果って言うのよ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_002_01",
+          "screen_text": "その手の文章を見て『自分のことだ！",
+          "display_mode": "replace",
+          "char_count": 17,
+          "start_sec": 4.52,
+          "duration_sec": 2.68
+        },
+        {
+          "sub_scene_id": "scene_002_02",
+          "screen_text": "』って思う現象を、",
+          "display_mode": "replace",
+          "char_count": 9,
+          "start_sec": 7.2,
+          "duration_sec": 1.42
+        },
+        {
+          "sub_scene_id": "scene_002_03",
+          "screen_text": "バーナム効果って言うのよ",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_sec": 8.62,
+          "duration_sec": 1.9
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_003",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "でも当たってるのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_003_01",
+          "screen_text": "でも当たってるのだ！",
+          "display_mode": "replace",
+          "char_count": 10,
+          "start_sec": 10.52,
+          "duration_sec": 1.61
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_004",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "その文章、たぶん100人読んだら80人くらい『私のことだ』って思うわよ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_004_01",
+          "screen_text": "その文章、",
+          "display_mode": "replace",
+          "char_count": 5,
+          "start_sec": 12.13,
+          "duration_sec": 0.81
+        },
+        {
+          "sub_scene_id": "scene_004_02",
+          "screen_text": "たぶん100人読んだら80人くらい『",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 12.94,
+          "duration_sec": 2.91
+        },
+        {
+          "sub_scene_id": "scene_004_03",
+          "screen_text": "私のことだ』って思うわよ",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_sec": 15.85,
+          "duration_sec": 1.93
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_005",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "じゃあ『本当は天才なのに環境に恵まれていない』ってやつはどうなのだ！ボクそのものなのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_005_01",
+          "screen_text": "じゃあ『本当は天才なのに環境に恵まれ",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 17.78,
+          "duration_sec": 2.45
+        },
+        {
+          "sub_scene_id": "scene_005_02",
+          "screen_text": "ていない』ってやつはどうなのだ！",
+          "display_mode": "replace",
+          "char_count": 16,
+          "start_sec": 20.23,
+          "duration_sec": 2.18
+        },
+        {
+          "sub_scene_id": "scene_005_03",
+          "screen_text": "ボクそのものなのだ！",
+          "display_mode": "replace",
+          "char_count": 10,
+          "start_sec": 22.41,
+          "duration_sec": 1.37
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_006",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "ただの現実逃避と、都合のいい自己正当化よ。急に知性が消えたわね",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_006_01",
+          "screen_text": "ただの現実逃避と、",
+          "display_mode": "replace",
+          "char_count": 9,
+          "start_sec": 23.78,
+          "duration_sec": 1.45
+        },
+        {
+          "sub_scene_id": "scene_006_02",
+          "screen_text": "都合のいい自己正当化よ。",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_sec": 25.23,
+          "duration_sec": 1.94
+        },
+        {
+          "sub_scene_id": "scene_006_03",
+          "screen_text": "急に知性が消えたわね",
+          "display_mode": "replace",
+          "char_count": 10,
+          "start_sec": 27.17,
+          "duration_sec": 1.61
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_007",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "現実は嫌なのだ！ とりあえず未来の大成功への先行投資として、今日のランチ代を奢るのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_007_01",
+          "screen_text": "現実は嫌なのだ！",
+          "display_mode": "replace",
+          "char_count": 8,
+          "start_sec": 28.78,
+          "duration_sec": 1.14
+        },
+        {
+          "sub_scene_id": "scene_007_02",
+          "screen_text": "とりあえず未来の大成功への先行投資と",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 29.92,
+          "duration_sec": 2.57
+        },
+        {
+          "sub_scene_id": "scene_007_03",
+          "screen_text": "して、今日のランチ代を奢るのだ！",
+          "display_mode": "replace",
+          "char_count": 16,
+          "start_sec": 32.49,
+          "duration_sec": 2.29
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_008",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "ただのタカりを自己啓発風に言い換えないで",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_008_01",
+          "screen_text": "ただのタカりを自己啓発風に言い換えな",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 34.78,
+          "duration_sec": 2.91
+        },
+        {
+          "sub_scene_id": "scene_008_02",
+          "screen_text": "いで",
+          "display_mode": "replace",
+          "char_count": 2,
+          "start_sec": 37.69,
+          "duration_sec": 0.6
+        }
+      ]
+    }
+  ]
+}

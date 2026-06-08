@@ -415,6 +415,13 @@
         <p>完成済みの会話劇を貼り付けて、視聴者目線で刺さる点を分析するAI用プロンプト(GEMINI推奨)を生成します。</p>
         <a class="btn" href="./module/tool2-hook-viewer-lens.html" target="_blank" rel="noopener noreferrer">module/tool2-hook-viewer-lens.html</a>
       </article>
+
+      <article class="card">
+        <span class="tag">Tool 3</span>
+        <h2>VOICEVOX Last Tone Checker</h2>
+        <p><code>render-final-v01.json</code> と生成済みwavを最後に耳チェックし、気になるsceneだけVOICEVOXで簡易再生成します。</p>
+        <a class="btn" href="./module/tool3-voicevox-last-tone-checker.html" target="_blank" rel="noopener noreferrer">module/tool3-voicevox-last-tone-checker.html</a>
+      </article>
     </section>
 
     <p class="footer">Renderer path priority: SCENE_REMOTION_APP_PATH → ../remotion-renderer → ./remotion-renderer-v1</p>
@@ -464,6 +471,10 @@
       ].join("\n");
     }
 
+    function buildVoicevoxCommand() {
+      return buildRenderCommand("voicevox");
+    }
+
     function setStatus(message, tone) {
       el.commandStatus.textContent = message;
       el.commandStatus.className = "status" + (tone ? " " + tone : "");
@@ -502,7 +513,7 @@
     });
 
     el.copyVoicevoxBtn.addEventListener("click", () => {
-      copyText("npm run voicevox", "VOICEVOX生成コマンドをコピーしました。");
+      copyText(buildVoicevoxCommand(), "VOICEVOX生成コマンドをコピーしました。");
     });
 
     el.copyFinalDevBtn.addEventListener("click", () => {

@@ -1,0 +1,35 @@
+{
+  "project_id": "0004",
+  "source": "raw_conversation-v02.txt",
+  "title": "ずんだもん：",
+  "summary": "全20発話。主な登場はspeaker。テーマは「ずんだもん」で、めたん / あと500円買わないと送料500円がかかるのだが会話の軸。",
+  "main_topic": "ずんだもん",
+  "key_points": [
+    "speaker: ずんだもん：",
+    "speaker: めたん：",
+    "speaker: ただの強盗じゃないの"
+  ],
+  "emotional_flow": [
+    {
+      "order": 1,
+      "line": "speaker: ずんだもん：",
+      "emotion": "neutral"
+    },
+    {
+      "order": 2,
+      "line": "speaker: めたん：",
+      "emotion": "neutral"
+    },
+    {
+      "order": 3,
+      "line": "speaker: ただの強盗じゃないの",
+      "emotion": "neutral"
+    }
+  ],
+  "usable_lines": [
+    "ずんだもん：",
+    "めたん：",
+    "ただの強盗じゃないの"
+  ],
+  "created_at": "2026-06-08T12:51:26.663Z"
+}

@@ -1,0 +1,8 @@
+{
+  "slide_id": "slide_03",
+  "role": "example",
+  "title": "身近な例",
+  "body": "お金がほとんど無いのに『なんとかなる』と思い込む",
+  "visual_intent": "simple_diagram: 残金300円→『まだ大丈夫』→何もしない→生活が苦しくなる / core_message: お金がほとんど無いのに『なんとかなる』と思い込む",
+  "simple_diagram": "残金300円→『まだ大丈夫』→何もしない→生活が苦しくなる"
+}

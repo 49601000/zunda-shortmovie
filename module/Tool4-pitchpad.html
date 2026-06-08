@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PitchPad</title>
+  <style>
+    :root {
+      --bg-a: #071116;
+      --bg-b: #122733;
+      --bg-c: #214044;
+      --panel: rgba(8, 20, 28, 0.88);
+      --panel-2: rgba(13, 32, 42, 0.78);
+      --surface: rgba(5, 14, 20, 0.9);
+      --line: rgba(115, 221, 194, 0.32);
+      --line-soft: rgba(190, 210, 208, 0.2);
+      --ink: #f3faf8;
+      --sub: #aac7c3;
+      --accent: #72ddc2;
+      --accent-2: #f3c86f;
+      --ok: #9ff0c7;
+      --warn: #ffd58a;
+      --danger: #ff9c9c;
+      --shadow: 0 18px 42px rgba(0, 0, 0, 0.3);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+      background:
+        radial-gradient(120% 100% at 0% 0%, rgba(114, 221, 194, 0.18) 0%, rgba(114, 221, 194, 0) 44%),
+        radial-gradient(110% 100% at 100% 0%, rgba(243, 200, 111, 0.13) 0%, rgba(243, 200, 111, 0) 48%),
+        linear-gradient(135deg, var(--bg-a) 0%, var(--bg-b) 56%, var(--bg-c) 100%);
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      color: inherit;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .appShell {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 18px 16px 28px;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(114, 221, 194, 0.26);
+      background: linear-gradient(90deg, rgba(12, 63, 56, 0.96), rgba(12, 45, 58, 0.96), rgba(7, 17, 22, 0.96));
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .topbar {
+      width: min(1180px, 100%);
+      min-height: 66px;
+      margin: 0 auto;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brandMark {
+      width: 42px;
+      height: 42px;
+      flex: none;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(160deg, #237968, #155261);
+      border: 1px solid rgba(159, 240, 199, 0.42);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(20px, 4vw, 30px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 4px 0 0;
+      color: var(--sub);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .modeSwitch {
+      display: flex;
+      gap: 8px;
+      padding: 4px;
+      border: 1px solid var(--line-soft);
+      border-radius: 999px;
+      background: rgba(4, 12, 18, 0.5);
+    }
+
+    .modeBtn {
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--sub);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .modeBtn[aria-pressed="true"] {
+      color: #061317;
+      background: var(--accent);
+      box-shadow: 0 8px 18px rgba(114, 221, 194, 0.25);
+    }
+
+    main {
+      display: grid;
+      gap: 14px;
+    }
+
+    .notice {
+      margin-top: 14px;
+      padding: 13px 14px;
+      border: 1px solid rgba(243, 200, 111, 0.32);
+      border-radius: var(--radius);
+      background: rgba(77, 55, 17, 0.28);
+      color: #fff0cc;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .statusGrid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .statusCard,
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .statusCard {
+      min-height: 86px;
+      padding: 12px 14px;
+      display: grid;
+      align-content: center;
+      gap: 4px;
+    }
+
+    .statusLabel {
+      color: var(--sub);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .statusValue {
+      font-size: clamp(22px, 5vw, 38px);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .statusValue.small {
+      font-size: clamp(19px, 4vw, 28px);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(300px, 1.05fr) minmax(300px, 0.95fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .sideStack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .panel {
+      padding: 16px;
+    }
+
+    .panelHeader {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .hint {
+      margin: 5px 0 0;
+      color: var(--sub);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .durationGroup {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .durationBtn,
+    .actionBtn,
+    .audioBtn {
+      min-height: 44px;
+      border-radius: 10px;
+      border: 1px solid var(--line-soft);
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 850;
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+    }
+
+    .durationBtn {
+      padding: 0 13px;
+      color: var(--sub);
+    }
+
+    .durationBtn[aria-pressed="true"] {
+      color: #061317;
+      border-color: transparent;
+      background: var(--accent-2);
+    }
+
+    .pad {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .hzBtn {
+      min-height: 74px;
+      border-radius: 12px;
+      border: 1px solid rgba(114, 221, 194, 0.26);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0)),
+        rgba(8, 22, 30, 0.92);
+      color: var(--ink);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
+      font-size: clamp(18px, 5vw, 26px);
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .hzBtn .unit {
+      display: block;
+      margin-top: 2px;
+      color: var(--sub);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .hzBtn.active {
+      color: #061317;
+      border-color: transparent;
+      background: linear-gradient(180deg, #9ff0c7, #72ddc2);
+      box-shadow: 0 12px 24px rgba(114, 221, 194, 0.28);
+    }
+
+    .hzBtn:hover,
+    .durationBtn:hover,
+    .actionBtn:hover,
+    .audioBtn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(114, 221, 194, 0.55);
+    }
+
+    .hzBtn:active,
+    .durationBtn:active,
+    .actionBtn:active,
+    .audioBtn:active {
+      transform: translateY(0);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .actionBtn {
+      padding: 0 13px;
+    }
+
+    .actionBtn.primary {
+      color: #061317;
+      border-color: transparent;
+      background: var(--accent);
+    }
+
+    .loadPanel {
+      display: none;
+    }
+
+    .loadPanel.active {
+      display: block;
+    }
+
+    .fileDrop {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border: 1px dashed rgba(114, 221, 194, 0.46);
+      border-radius: 12px;
+      background: rgba(5, 14, 20, 0.55);
+    }
+
+    .fileInput {
+      width: 100%;
+      min-height: 46px;
+      color: var(--sub);
+    }
+
+    .fileName {
+      min-height: 22px;
+      color: var(--ok);
+      font-size: 13px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .audioControls {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .audioBtn {
+      padding: 0 12px;
+    }
+
+    .audioBtn.play {
+      color: #061317;
+      border-color: transparent;
+      background: var(--ok);
+    }
+
+    .audioMeta {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      background: rgba(5, 14, 20, 0.52);
+      color: var(--sub);
+      font-size: 13px;
+    }
+
+    .progressTrack {
+      width: 100%;
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(170, 199, 195, 0.18);
+    }
+
+    .progressBar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 80ms linear;
+    }
+
+    .memoBox {
+      display: grid;
+      gap: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 178px;
+      resize: vertical;
+      padding: 12px;
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      outline: none;
+      background: rgba(5, 14, 20, 0.82);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    textarea:focus,
+    .fileInput:focus,
+    button:focus-visible {
+      outline: 2px solid rgba(114, 221, 194, 0.85);
+      outline-offset: 2px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 20;
+      max-width: min(420px, calc(100vw - 32px));
+      padding: 12px 14px;
+      border: 1px solid rgba(114, 221, 194, 0.36);
+      border-radius: 12px;
+      background: rgba(5, 14, 20, 0.94);
+      color: var(--ink);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 820px) {
+      .topbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .modeSwitch {
+        width: 100%;
+      }
+
+      .modeBtn {
+        flex: 1;
+      }
+
+      .statusGrid,
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .statusCard {
+        min-height: 74px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .appShell {
+        padding-inline: 10px;
+      }
+
+      .panel {
+        padding: 12px;
+      }
+
+      .pad {
+        gap: 8px;
+      }
+
+      .hzBtn {
+        min-height: 68px;
+      }
+
+      .actions,
+      .audioControls {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <div class="brandMark" aria-hidden="true">Hz</div>
+        <div>
+          <h1>PitchPad</h1>
+          <p class="subtitle">VOICEVOX再生成前のピッチ耳メモ用ローカルツール</p>
+        </div>
+      </div>
+      <div class="modeSwitch" aria-label="モード切り替え">
+        <button class="modeBtn" id="defaultModeBtn" type="button" aria-pressed="true">デフォルト</button>
+        <button class="modeBtn" id="loadModeBtn" type="button" aria-pressed="false">読み込み</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="appShell">
+    <main>
+      <section class="notice" aria-label="このツールの前提">
+        PitchPadはVOICEVOXのイントネーションを完全再現するものではありません。元音声を毎回生成せず、「語尾を少し上げる」「この単語だけ下げる」などの方向感をブラウザ内で仮確認するための耳メモ用ツールです。音声ファイルは外部送信せず、このページ内だけで扱います。
+      </section>
+
+      <section class="statusGrid" aria-label="現在の状態">
+        <div class="statusCard">
+          <div class="statusLabel">現在のモード</div>
+          <div class="statusValue small" id="modeLabel">デフォルト</div>
+        </div>
+        <div class="statusCard">
+          <div class="statusLabel">現在のHz</div>
+          <div class="statusValue" id="currentHz">570Hz</div>
+        </div>
+        <div class="statusCard">
+          <div class="statusLabel">音の長さ</div>
+          <div class="statusValue small" id="durationLabel">0.25秒</div>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <section class="panel" aria-labelledby="padTitle">
+          <div class="panelHeader">
+            <div>
+              <h2 id="padTitle">仮ピッチパッド</h2>
+              <p class="hint">500〜600Hzを10刻みで鳴らします。上段ほど高め、下段ほど低めです。</p>
+            </div>
+          </div>
+
+          <div class="durationGroup" aria-label="音の長さ">
+            <button class="durationBtn" type="button" data-duration="0.15" aria-pressed="false">0.15秒</button>
+            <button class="durationBtn" type="button" data-duration="0.25" aria-pressed="true">0.25秒</button>
+            <button class="durationBtn" type="button" data-duration="0.40" aria-pressed="false">0.40秒</button>
+          </div>
+
+          <div class="pad" id="hzPad" aria-label="500Hzから600Hzまでのピッチボタン"></div>
+
+          <div class="actions">
+            <button class="actionBtn primary" id="copyPitchBtn" type="button">採用値をコピー</button>
+            <button class="actionBtn" id="replayBtn" type="button">もう一度鳴らす</button>
+          </div>
+        </section>
+
+        <div class="sideStack">
+          <section class="panel loadPanel" id="loadPanel" aria-labelledby="loadTitle">
+            <div class="panelHeader">
+              <div>
+                <h2 id="loadTitle">元音声の読み込み</h2>
+                <p class="hint">wav/mp3などを選択し、元音声を聞きながら別系統で仮ピッチ音を鳴らせます。</p>
+              </div>
+            </div>
+
+            <div class="fileDrop">
+              <input class="fileInput" id="audioFile" type="file" accept="audio/*,.wav,.mp3,.m4a,.ogg" />
+              <div class="fileName" id="fileName">音声ファイルは未選択です</div>
+            </div>
+
+            <div class="audioControls">
+              <button class="audioBtn play" id="playAudioBtn" type="button" disabled>再生</button>
+              <button class="audioBtn" id="stopAudioBtn" type="button" disabled>停止</button>
+            </div>
+
+            <div class="audioMeta">
+              <div id="audioStatus">読み込み待ち</div>
+              <div class="progressTrack" aria-hidden="true">
+                <div class="progressBar" id="progressBar"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="memoTitle">
+            <div class="panelHeader">
+              <div>
+                <h2 id="memoTitle">耳メモ</h2>
+                <p class="hint">語尾・単語・採用Hzのメモを残して、VOICEVOX再生成時の指示に使います。</p>
+              </div>
+            </div>
+
+            <div class="memoBox">
+              <textarea id="memo" placeholder="例:
+ラストの「なのだ」を+20くらい
+500円の「円」を少し下げる
+採用候補: pitch: 570Hz"></textarea>
+              <button class="actionBtn primary" id="copyMemoBtn" type="button">メモをコピー</button>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const frequencies = [580, 590, 600, 550, 560, 570, 520, 530, 540, 500, 510];
+      const state = {
+        mode: "default",
+        hz: 570,
+        duration: 0.25,
+        audioContext: null,
+        objectUrl: null,
+        progressTimer: null
+      };
+
+      const els = {
+        defaultModeBtn: document.getElementById("defaultModeBtn"),
+        loadModeBtn: document.getElementById("loadModeBtn"),
+        modeLabel: document.getElementById("modeLabel"),
+        currentHz: document.getElementById("currentHz"),
+        durationLabel: document.getElementById("durationLabel"),
+        hzPad: document.getElementById("hzPad"),
+        copyPitchBtn: document.getElementById("copyPitchBtn"),
+        replayBtn: document.getElementById("replayBtn"),
+        loadPanel: document.getElementById("loadPanel"),
+        audioFile: document.getElementById("audioFile"),
+        fileName: document.getElementById("fileName"),
+        playAudioBtn: document.getElementById("playAudioBtn"),
+        stopAudioBtn: document.getElementById("stopAudioBtn"),
+        audioStatus: document.getElementById("audioStatus"),
+        progressBar: document.getElementById("progressBar"),
+        memo: document.getElementById("memo"),
+        copyMemoBtn: document.getElementById("copyMemoBtn"),
+        toast: document.getElementById("toast")
+      };
+
+      const sourceAudio = new Audio();
+      sourceAudio.preload = "metadata";
+
+      function ensureAudioContext() {
+        const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextCtor) {
+          throw new Error("このブラウザはWeb Audio APIに対応していません。");
+        }
+
+        if (!state.audioContext) {
+          state.audioContext = new AudioContextCtor();
+        }
+
+        if (state.audioContext.state === "suspended") {
+          return state.audioContext.resume().then(() => state.audioContext);
+        }
+
+        return Promise.resolve(state.audioContext);
+      }
+
+      function playTone(hz = state.hz) {
+        ensureAudioContext()
+          .then((ctx) => {
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const end = now + state.duration;
+
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(hz, now);
+
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.exponentialRampToValueAtTime(0.18, now + 0.015);
+            gain.gain.setValueAtTime(0.18, Math.max(now + 0.02, end - 0.04));
+            gain.gain.exponentialRampToValueAtTime(0.0001, end);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(end + 0.02);
+          })
+          .catch((error) => {
+            showToast(error.message || "仮ピッチ音を鳴らせませんでした。");
+          });
+      }
+
+      function renderPad() {
+        els.hzPad.innerHTML = "";
+        frequencies.forEach((hz) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "hzBtn";
+          btn.dataset.hz = String(hz);
+          btn.innerHTML = `${hz}<span class="unit">Hz</span>`;
+          btn.setAttribute("aria-label", `${hz}Hzを鳴らす`);
+          btn.addEventListener("click", () => {
+            state.hz = hz;
+            updateStatus();
+            playTone(hz);
+          });
+          els.hzPad.appendChild(btn);
+        });
+      }
+
+      function updateStatus() {
+        els.modeLabel.textContent = state.mode === "load" ? "読み込み" : "デフォルト";
+        els.currentHz.textContent = `${state.hz}Hz`;
+        els.durationLabel.textContent = `${state.duration.toFixed(2)}秒`;
+        els.defaultModeBtn.setAttribute("aria-pressed", String(state.mode === "default"));
+        els.loadModeBtn.setAttribute("aria-pressed", String(state.mode === "load"));
+        els.loadPanel.classList.toggle("active", state.mode === "load");
+
+        document.querySelectorAll(".hzBtn").forEach((btn) => {
+          btn.classList.toggle("active", Number(btn.dataset.hz) === state.hz);
+        });
+
+        document.querySelectorAll(".durationBtn").forEach((btn) => {
+          btn.setAttribute("aria-pressed", String(Number(btn.dataset.duration) === state.duration));
+        });
+      }
+
+      function setMode(mode) {
+        state.mode = mode;
+        updateStatus();
+      }
+
+      function copyText(text, successMessage) {
+        if (!text.trim()) {
+          showToast("コピーする内容がありません。");
+          return;
+        }
+
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text)
+            .then(() => showToast(successMessage))
+            .catch(() => fallbackCopy(text, successMessage));
+          return;
+        }
+
+        fallbackCopy(text, successMessage);
+      }
+
+      function fallbackCopy(text, successMessage) {
+        const temp = document.createElement("textarea");
+        temp.value = text;
+        temp.setAttribute("readonly", "");
+        temp.style.position = "fixed";
+        temp.style.left = "-9999px";
+        document.body.appendChild(temp);
+        temp.select();
+
+        try {
+          const copied = document.execCommand("copy");
+          showToast(copied ? successMessage : "コピーに失敗しました。手動で選択してください。");
+        } catch {
+          showToast("コピーに失敗しました。手動で選択してください。");
+        } finally {
+          document.body.removeChild(temp);
+        }
+      }
+
+      function showToast(message) {
+        els.toast.textContent = message;
+        els.toast.classList.add("show");
+        window.clearTimeout(showToast.timer);
+        showToast.timer = window.setTimeout(() => {
+          els.toast.classList.remove("show");
+        }, 2200);
+      }
+
+      function formatTime(seconds) {
+        if (!Number.isFinite(seconds)) return "0:00";
+        const min = Math.floor(seconds / 60);
+        const sec = Math.floor(seconds % 60).toString().padStart(2, "0");
+        return `${min}:${sec}`;
+      }
+
+      function updateAudioProgress() {
+        const duration = sourceAudio.duration;
+        if (!Number.isFinite(duration) || duration <= 0) {
+          els.progressBar.style.width = "0%";
+          return;
+        }
+
+        const percent = Math.min(100, (sourceAudio.currentTime / duration) * 100);
+        els.progressBar.style.width = `${percent}%`;
+        els.audioStatus.textContent = `再生位置 ${formatTime(sourceAudio.currentTime)} / ${formatTime(duration)}`;
+      }
+
+      function clearProgressTimer() {
+        if (state.progressTimer) {
+          window.clearInterval(state.progressTimer);
+          state.progressTimer = null;
+        }
+      }
+
+      function startProgressTimer() {
+        clearProgressTimer();
+        state.progressTimer = window.setInterval(updateAudioProgress, 120);
+      }
+
+      function stopSourceAudio(reset = true) {
+        sourceAudio.pause();
+        clearProgressTimer();
+        if (reset) {
+          sourceAudio.currentTime = 0;
+        }
+        updateAudioProgress();
+        els.playAudioBtn.textContent = "再生";
+      }
+
+      function handleFileSelect(event) {
+        const file = event.target.files && event.target.files[0];
+        stopSourceAudio(true);
+
+        if (state.objectUrl) {
+          URL.revokeObjectURL(state.objectUrl);
+          state.objectUrl = null;
+        }
+
+        if (!file) {
+          els.fileName.textContent = "音声ファイルは未選択です";
+          els.audioStatus.textContent = "読み込み待ち";
+          els.playAudioBtn.disabled = true;
+          els.stopAudioBtn.disabled = true;
+          els.progressBar.style.width = "0%";
+          return;
+        }
+
+        if (!file.type.startsWith("audio/") && !/\.(wav|mp3|m4a|ogg)$/i.test(file.name)) {
+          els.audioFile.value = "";
+          els.fileName.textContent = "音声ファイルは未選択です";
+          els.audioStatus.textContent = "音声ファイルとして読み込めませんでした。";
+          showToast("wav/mp3などの音声ファイルを選択してください。");
+          return;
+        }
+
+        state.objectUrl = URL.createObjectURL(file);
+        sourceAudio.src = state.objectUrl;
+        els.fileName.textContent = `${file.name} (${Math.max(1, Math.round(file.size / 1024))}KB)`;
+        els.audioStatus.textContent = "メタデータ読み込み中";
+        els.playAudioBtn.disabled = false;
+        els.stopAudioBtn.disabled = false;
+      }
+
+      function playSourceAudio() {
+        if (!sourceAudio.src) {
+          showToast("先に音声ファイルを選択してください。");
+          return;
+        }
+
+        sourceAudio.play()
+          .then(() => {
+            els.playAudioBtn.textContent = "一時停止";
+            startProgressTimer();
+          })
+          .catch(() => {
+            showToast("元音声を再生できませんでした。ファイル形式を確認してください。");
+          });
+      }
+
+      function toggleSourceAudio() {
+        if (!sourceAudio.src) {
+          showToast("先に音声ファイルを選択してください。");
+          return;
+        }
+
+        if (sourceAudio.paused) {
+          playSourceAudio();
+        } else {
+          sourceAudio.pause();
+          clearProgressTimer();
+          els.playAudioBtn.textContent = "再生";
+          updateAudioProgress();
+        }
+      }
+
+      els.defaultModeBtn.addEventListener("click", () => setMode("default"));
+      els.loadModeBtn.addEventListener("click", () => setMode("load"));
+      els.copyPitchBtn.addEventListener("click", () => {
+        copyText(`pitch: ${state.hz}Hz`, `pitch: ${state.hz}Hz をコピーしました。`);
+      });
+      els.replayBtn.addEventListener("click", () => playTone(state.hz));
+      els.copyMemoBtn.addEventListener("click", () => {
+        copyText(els.memo.value, "メモをコピーしました。");
+      });
+      els.audioFile.addEventListener("change", handleFileSelect);
+      els.playAudioBtn.addEventListener("click", toggleSourceAudio);
+      els.stopAudioBtn.addEventListener("click", () => stopSourceAudio(true));
+
+      document.querySelectorAll(".durationBtn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.duration = Number(btn.dataset.duration);
+          updateStatus();
+        });
+      });
+
+      sourceAudio.addEventListener("loadedmetadata", () => {
+        els.audioStatus.textContent = `読み込み完了 ${formatTime(sourceAudio.duration)}`;
+        updateAudioProgress();
+      });
+      sourceAudio.addEventListener("ended", () => {
+        clearProgressTimer();
+        els.playAudioBtn.textContent = "再生";
+        updateAudioProgress();
+      });
+      sourceAudio.addEventListener("error", () => {
+        stopSourceAudio(true);
+        els.audioStatus.textContent = "音声ファイルを読み込めませんでした。";
+        showToast("音声ファイルを読み込めませんでした。");
+      });
+
+      window.addEventListener("beforeunload", () => {
+        clearProgressTimer();
+        if (state.objectUrl) {
+          URL.revokeObjectURL(state.objectUrl);
+        }
+      });
+
+      renderPad();
+      updateStatus();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "slide_id": "slide_03",
+  "role": "example",
+  "title": "身近な例",
+  "body": "性格診断や占いで『当たってる！』と感じることがある",
+  "visual_intent": "simple_diagram: 『本当は才能がある』←→『多くの人がそう思う』 / core_message: 性格診断や占いで『当たってる！』と感じることがある",
+  "simple_diagram": "『本当は才能がある』←→『多くの人がそう思う』"
+}

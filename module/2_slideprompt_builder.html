@@ -394,6 +394,7 @@
       const OUTPUT_KEY = "svrs_slide_prompt_spec";
       const SELECTED_PROJECT_KEY = "svrs_slide_prompt_builder_project_id";
       const META_FILENAME = "meta.json";
+      const WORKSPACE_FOLDER_NAME = "20_ショート動画v2";
       const PRESET_ID = "slide_canvas_whiteboard_v1";
       const CANVAS_PRESET_PARAMETER = {
         preset_id: "slide_canvas_whiteboard_v1",
@@ -509,6 +510,7 @@
       };
 
       let workspaceHandle = null;
+      let workspaceLabel = "";
       let projectRows = [];
       let slideSpec = null;
       let lessonSlidePlan = null;
@@ -528,6 +530,12 @@
 
       function selectedProjectId() {
         return el.projectSelect.value || "";
+      }
+
+      function selectedProjectPath() {
+        const projectId = selectedProjectId();
+        if (!projectId) return "";
+        return (workspaceLabel ? workspaceLabel + "\\" : "") + "projects\\" + projectId;
       }
 
       function updateSaveControls() {
@@ -587,6 +595,45 @@
 
       async function ensureDir(baseDir, name) {
         return baseDir.getDirectoryHandle(name, { create: true });
+      }
+
+      async function hasProjectsDir(dirHandle) {
+        try {
+          const projectsDir = await dirHandle.getDirectoryHandle("projects", { create: false });
+          return projectsDir.kind === "directory";
+        } catch (_err) {
+          return false;
+        }
+      }
+
+      async function resolveWorkspaceHandle(selectedHandle) {
+        try {
+          const childHandle = await selectedHandle.getDirectoryHandle(WORKSPACE_FOLDER_NAME, { create: false });
+          if (await hasProjectsDir(childHandle)) {
+            return {
+              handle: childHandle,
+              label: (selectedHandle.name ? selectedHandle.name + "\\" : "") + WORKSPACE_FOLDER_NAME
+            };
+          }
+        } catch (_err) {
+          if (selectedHandle.name === WORKSPACE_FOLDER_NAME) {
+            return {
+              handle: selectedHandle,
+              label: WORKSPACE_FOLDER_NAME
+            };
+          }
+        }
+
+        if (await hasProjectsDir(selectedHandle)) {
+          return {
+            handle: selectedHandle,
+            label: selectedHandle.name || "selected folder"
+          };
+        }
+
+        throw new Error(
+          "projects/ があるフォルダ、または " + WORKSPACE_FOLDER_NAME + " を含む親フォルダを選択してください。"
+        );
       }
 
       async function getProjectHandles(projectId) {
@@ -687,7 +734,7 @@
         rows.sort(function (a, b) { return Number(a.id) - Number(b.id); });
         projectRows = rows;
         renderProjectSelector();
-        workspaceStatus(projectRows.length + "件のprojects/を読み込みました。", false);
+        workspaceStatus((workspaceLabel ? workspaceLabel + "\\projects: " : "") + projectRows.length + "件を読み込みました。", false);
       }
 
       async function connectWorkspace() {
@@ -697,7 +744,9 @@
         const handle = await window.showDirectoryPicker({ mode: "readwrite" });
         const writable = await verifyPermission(handle, "readwrite");
         if (!writable) throw new Error("ワークスペースへの書き込み許可が必要です。");
-        workspaceHandle = handle;
+        const resolved = await resolveWorkspaceHandle(handle);
+        workspaceHandle = resolved.handle;
+        workspaceLabel = resolved.label;
         await getProjectsDirHandle(true);
         await loadProjects();
       }
@@ -740,7 +789,6 @@
             title: normalizeLine(slide.title, "無題スライド"),
             body: normalizeLine(slide.body, ""),
             visual_intent: normalizeLine(slide.visual_intent, "1メッセージを伝える最小構図"),
-            teacher_note: normalizeLine(slide.teacher_note, ""),
             simple_diagram: normalizeLine(slide.simple_diagram, "")
           };
         });
@@ -875,8 +923,7 @@
               role: "title | concept | example | summary",
               title: "",
               core_message: "",
-              simple_diagram: "",
-              teacher_note: ""
+              simple_diagram: ""
             }
           ]
         }, null, 2);
@@ -923,6 +970,7 @@
           "- role は title / concept / example / summary のいずれかを基本にする",
           "- core_message はそのスライドで伝える1文",
           "- simple_diagram は黒板に描く単純図解の指示を短く書く",
+          "- 各slideに含めるキーは slide_id / role / title / core_message / simple_diagram のみ",
           "",
           "期待出力JSON:",
           getExpectedLessonPlanJson(),
@@ -948,8 +996,7 @@
             role: normalizeLine(slide && slide.role, index === 0 ? "title" : "concept"),
             title: normalizeLine(slide && slide.title, "無題スライド"),
             core_message: normalizeLine(slide && slide.core_message, ""),
-            simple_diagram: normalizeLine(slide && slide.simple_diagram, ""),
-            teacher_note: normalizeLine(slide && slide.teacher_note, "")
+            simple_diagram: normalizeLine(slide && slide.simple_diagram, "")
           };
         });
         return normalized;
@@ -978,8 +1025,7 @@
       function visualIntentFromLessonSlide(slide) {
         const parts = [
           slide.simple_diagram ? "simple_diagram: " + slide.simple_diagram : "",
-          slide.core_message ? "core_message: " + slide.core_message : "",
-          slide.teacher_note ? "teacher_note: " + slide.teacher_note : ""
+          slide.core_message ? "core_message: " + slide.core_message : ""
         ].filter(Boolean);
         return parts.join(" / ") || "先生が黒板に描くような単純図解";
       }
@@ -997,7 +1043,6 @@
               title: slide.title,
               body: slide.core_message,
               visual_intent: visualIntentFromLessonSlide(slide),
-              teacher_note: slide.teacher_note,
               simple_diagram: slide.simple_diagram
             };
           })
@@ -1452,7 +1497,7 @@
       el.projectSelect.addEventListener("change", function () {
         if (selectedProjectId()) {
           localStorage.setItem(SELECTED_PROJECT_KEY, selectedProjectId());
-          workspaceStatus("保存先: projects/" + selectedProjectId(), false);
+          workspaceStatus("保存先: " + selectedProjectPath(), false);
         }
         updateSaveControls();
       });

@@ -721,22 +721,18 @@
       const RENDER_DRAFT_NAME = "06-render-draft-v01.json";
       const RENDER_FINAL_NAME = "render-final-v01.json";
       const VOICEVOX_COMMAND = "npm run voicevox";
+      const SCENE_1_SLIDE_01_DEFAULT_VOICE = "だいたいこれなのだ";
+      const SCENE_1_SLIDE_01_DEFAULT_SUB_TEXT = "だいたいこれ";
       const sharedConfig = window.VOICEVOX_SHARED_CONFIG || {};
-      const FALLBACK_STYLE_MAP = {
-        normal: 3,
-        tsuntsun: 7,
-        whisper: 22,
-        hisohiso: 38,
-        herohero: 75,
-        namidame: 76
-      };
-      const VOICE_STYLE_TO_SPEAKER_ID = sharedConfig.VOICE_STYLE_TO_SPEAKER_ID || FALLBACK_STYLE_MAP;
-      const SPEAKER_ID_TO_VOICE_STYLE = sharedConfig.SPEAKER_ID_TO_VOICE_STYLE || Object.keys(VOICE_STYLE_TO_SPEAKER_ID).reduce((acc, style) => {
-        acc[String(VOICE_STYLE_TO_SPEAKER_ID[style])] = style;
-        return acc;
-      }, {});
-      const DEFAULT_VOICE_STYLE = sharedConfig.DEFAULT_VOICE_STYLE || "normal";
-      const DEFAULT_SPEAKER_ID = Number(sharedConfig.DEFAULT_SPEAKER_ID) || VOICE_STYLE_TO_SPEAKER_ID[DEFAULT_VOICE_STYLE] || 3;
+      const FALLBACK_ZUNDAMON_STYLES = [
+        { id: 3, name: "ノーマル", speaker_uuid: "" },
+        { id: 7, name: "ツンツン", speaker_uuid: "" },
+        { id: 22, name: "ささやき", speaker_uuid: "" },
+        { id: 38, name: "ヒソヒソ", speaker_uuid: "" },
+        { id: 75, name: "ヘロヘロ", speaker_uuid: "" },
+        { id: 76, name: "なみだめ", speaker_uuid: "" }
+      ];
+      const DEFAULT_SPEAKER_ID = Number(sharedConfig.DEFAULT_SPEAKER_ID) || 3;
       const DEFAULT_VOICE_SPEED = Number(sharedConfig.DEFAULT_VOICE_SPEED) || 1.4;
       const VOICE_SPEED_OPTIONS = sharedConfig.VOICE_SPEED_OPTIONS || [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
       const DEFAULT_SPEED_SCALE = 1.25;
@@ -831,15 +827,6 @@
         objectPosition: "center top"
       };
 
-      const normalizeStyle = typeof sharedConfig.normalizeVoiceStyle === "function"
-        ? sharedConfig.normalizeVoiceStyle
-        : function (style) {
-            const normalized = typeof style === "string" ? style.trim() : "";
-            return Object.prototype.hasOwnProperty.call(VOICE_STYLE_TO_SPEAKER_ID, normalized)
-              ? normalized
-              : DEFAULT_VOICE_STYLE;
-          };
-
       const normalizeSpeed = typeof sharedConfig.normalizeVoiceSpeed === "function"
         ? sharedConfig.normalizeVoiceSpeed
         : function (speed) {
@@ -849,32 +836,6 @@
             return hit != null ? hit : DEFAULT_VOICE_SPEED;
           };
 
-      const inferStyleFromSpeakerId = typeof sharedConfig.inferVoiceStyleFromSpeakerId === "function"
-        ? sharedConfig.inferVoiceStyleFromSpeakerId
-        : function (speakerId) {
-            return SPEAKER_ID_TO_VOICE_STYLE[String(Number(speakerId))] || DEFAULT_VOICE_STYLE;
-          };
-
-      const resolveSpeakerId = typeof sharedConfig.resolveSpeakerIdFromSegment === "function"
-        ? sharedConfig.resolveSpeakerIdFromSegment
-        : function (segment) {
-            const style = typeof (segment && segment.voice_style) === "string" ? segment.voice_style.trim() : "";
-            if (Object.prototype.hasOwnProperty.call(VOICE_STYLE_TO_SPEAKER_ID, style)) {
-              return VOICE_STYLE_TO_SPEAKER_ID[style];
-            }
-            const legacySpeakerId = Number(segment && segment.speakerId);
-            if (Number.isFinite(legacySpeakerId)) return legacySpeakerId;
-            return DEFAULT_SPEAKER_ID;
-          };
-
-      const VOICE_STYLE_LABEL = {
-        normal: "ノーマル",
-        tsuntsun: "ツンツン",
-        whisper: "ささやき",
-        hisohiso: "ヒソヒソ",
-        herohero: "ヘロヘロ",
-        namidame: "なみだめ"
-      };
       const EMOTION_OPTIONS = [
         "normal",
         "happy",
@@ -1321,6 +1282,11 @@
 
       const selectedProjectId = () => String(el.projectSelect.value || state.selectedProjectId || "").trim();
 
+      const buildVoicevoxCommand = (projectId) => {
+        if (!projectId) return VOICEVOX_COMMAND;
+        return `$env:SCENE_PROJECT_ID="${projectId}"; $env:SCENE_RENDER_SPEC_PATH="projects/${projectId}/outputs/video/${RENDER_FINAL_NAME}"; ${VOICEVOX_COMMAND}`;
+      };
+
       const updateProjectControls = () => {
         const hasWorkspace = Boolean(workspaceHandle);
         const projectId = selectedProjectId();
@@ -1336,6 +1302,7 @@
         el.projectPathHint.textContent = projectId
           ? `${workspaceText}反映先: ${basePath}/${projectId}/outputs/video/${renderName}`
           : `${workspaceText}反映先: ${basePath}/{id}/outputs/video/${RENDER_FINAL_NAME}`;
+        el.voicevoxCommandInput.value = buildVoicevoxCommand(projectId);
       };
 
       const loadProjects = async () => {
@@ -1454,6 +1421,21 @@
       };
 
       const createSceneId = (index) => `scene_${String(index + 1).padStart(3, "0")}`;
+
+      const createSubSceneId = (sceneId, subIndex) => `${sceneId}_${String(subIndex + 1).padStart(2, "0")}`;
+
+      const normalizeSlideId = (value) => {
+        const raw = String(value || "").trim();
+        const matched = raw.match(/^slide[_-]?0*(\d+)$/i);
+        if (!matched) return raw;
+        return `slide_${String(Number(matched[1])).padStart(2, "0")}`;
+      };
+
+      const isScene1ZundamonSlide01 = (sceneIndex, characterId, slideId) => {
+        return sceneIndex === 0
+          && canonicalCharacterId(characterId) === "zundamon"
+          && normalizeSlideId(slideId) === "slide_01";
+      };
 
       const sceneIdFromSubScene = (sub, index = 0) => {
         if (typeof sub?.scene_id === "string" && sub.scene_id.trim()) return sub.scene_id.trim();
@@ -1738,12 +1720,7 @@
       };
 
       const buildFallbackSpeakersCatalog = () => {
-        const styles = Object.keys(VOICE_STYLE_TO_SPEAKER_ID).map((key) => ({
-          id: Number(VOICE_STYLE_TO_SPEAKER_ID[key]),
-          name: VOICE_STYLE_LABEL[key] || key,
-          speaker_uuid: ""
-        }));
-        return [{ name: "ずんだもん", speaker_uuid: "", styles }];
+        return [{ name: "ずんだもん", speaker_uuid: "", styles: FALLBACK_ZUNDAMON_STYLES }];
       };
 
       const readSpeakersCache = () => {
@@ -2920,9 +2897,6 @@
           createSceneId(sceneIndex);
         const saved = savedSettings[sceneId] || {};
         const speaker = String(saved.speaker || raw.speaker || "").trim();
-        const rawStyle = typeof raw.voice_style === "string" ? raw.voice_style.trim() : "";
-        const savedStyle = typeof saved.voice_style === "string" ? saved.voice_style.trim() : "";
-        const voiceStyle = normalizeStyle(savedStyle || rawStyle || DEFAULT_VOICE_STYLE);
         const rawSpeakerId = Number(raw.speakerId);
         const savedSpeakerId = Number(saved.speakerId);
         const speakerId = Number.isFinite(savedSpeakerId)
@@ -2943,13 +2917,21 @@
           saved.voicevox_style_id ?? profile.voicevox_style_id ?? raw.voicevox_style_id ?? speakerId,
           profile.voicevox_style_name
         );
+        const resolvedSlideId = String(saved.slide_id || raw.slide_id || "").trim();
+        const shouldApplyScene1Slide01Defaults = isScene1ZundamonSlide01(sceneIndex, characterId, resolvedSlideId);
         const visualAssets = saved.visual_assets && typeof saved.visual_assets === "object"
           ? saved.visual_assets
           : buildDefaultVisualAssets(raw);
         visualAssets.slide = normalizeSlideAssetRef(visualAssets.slide || "");
-        const hookTexts = saved.hook_texts && typeof saved.hook_texts === "object"
+        let hookTexts = saved.hook_texts && typeof saved.hook_texts === "object"
           ? saved.hook_texts
           : buildDefaultHookTexts(raw);
+        if (shouldApplyScene1Slide01Defaults && !String(hookTexts.sub || "").trim()) {
+          hookTexts = {
+            ...hookTexts,
+            sub: SCENE_1_SLIDE_01_DEFAULT_SUB_TEXT
+          };
+        }
         const hookTextStyles = saved.hook_text_styles && typeof saved.hook_text_styles === "object"
           ? saved.hook_text_styles
           : buildDefaultHookTextStyles(raw);
@@ -2959,6 +2941,16 @@
               ...saved.hook_character_layout
             }
           : buildDefaultHookCharacterLayout(raw);
+        const sceneVoice = typeof saved.voice === "string"
+          ? saved.voice
+          : typeof raw.voice === "string"
+            ? raw.voice
+            : typeof raw.text === "string"
+              ? raw.text
+              : subScenes.map((sub) => sub.screen_text).join("");
+        const resolvedVoice = shouldApplyScene1Slide01Defaults && !String(sceneVoice || "").trim()
+          ? SCENE_1_SLIDE_01_DEFAULT_VOICE
+          : sceneVoice;
 
         return {
           key: sceneId,
@@ -2968,19 +2960,12 @@
           role: String(raw.role || raw.scene_type || "normal"),
           event: String(raw.event || "normal"),
           scene_enabled: normalizeSceneEnabled(raw, saved),
-          slide_id: String(saved.slide_id || raw.slide_id || "").trim(),
+          slide_id: resolvedSlideId,
           speaker,
           emotion: normalizeEmotion(saved.emotion || raw.emotion || "normal"),
-          voice_style: voiceStyle,
           speakerId,
           voice_speed: normalizeSpeed(saved.voice_speed != null ? saved.voice_speed : raw.voice_speed != null ? raw.voice_speed : 1.25),
-          voice: typeof saved.voice === "string"
-            ? saved.voice
-            : typeof raw.voice === "string"
-              ? raw.voice
-              : typeof raw.text === "string"
-                ? raw.text
-                : subScenes.map((sub) => sub.screen_text).join(""),
+          voice: resolvedVoice,
           voice_override: typeof saved.voice_override === "string"
             ? saved.voice_override
             : typeof raw.voice_override === "string"
@@ -3017,6 +3002,88 @@
         };
       };
 
+      const shiftSavedSettingsForDraftScenes = (savedSettings = {}) => {
+        const shifted = {};
+        Object.entries(savedSettings || {}).forEach(([key, value]) => {
+          if (key === "__meta") {
+            shifted[key] = value;
+            return;
+          }
+          const matched = String(key).match(/^scene_(\d{3})(_\d{2})?$/);
+          if (!matched) return;
+          const n = Number(matched[1]);
+          if (!Number.isFinite(n) || n < 2) return;
+          shifted[`scene_${String(n - 1).padStart(3, "0")}${matched[2] || ""}`] = value;
+        });
+        return shifted;
+      };
+
+      const buildDefaultManualHookScene = () => normalizeSceneForState({
+        scene_id: "scene_001",
+        id: "scene_001",
+        scene_type: "hook",
+        role: "hook",
+        event: "hook",
+        slide_id: "slide_01",
+        speaker: "ずんだもん",
+        character_id: "zundamon",
+        voice: "",
+        voice_override: "",
+        sub_scenes: []
+      }, 0, {});
+
+      const normalizeManualHookScene = (scene) => ({
+        ...deepClone(scene || {}),
+        key: "scene_001",
+        scene_id: "scene_001",
+        id: "scene_001",
+        scene_type: "hook",
+        role: "hook",
+        event: String(scene?.event || "hook"),
+        slide_id: String(scene?.slide_id || "slide_01").trim(),
+        speaker: String(scene?.speaker || "ずんだもん").trim(),
+        character_id: canonicalCharacterId(scene?.character_id || "zundamon"),
+        sub_scenes: (scene?.sub_scenes || []).map((sub, subIndex) => ({
+          ...normalizeSubSceneFrameTiming(sub),
+          key: createSubSceneId("scene_001", subIndex),
+          sub_scene_id: createSubSceneId("scene_001", subIndex)
+        }))
+      });
+
+      const getManualHookSceneForDraftLoad = () => {
+        const currentFirstScene = Array.isArray(state.scenes) ? state.scenes[0] : null;
+        if (currentFirstScene && isHookScene(currentFirstScene)) {
+          return normalizeManualHookScene(currentFirstScene);
+        }
+        return buildDefaultManualHookScene();
+      };
+
+      const reindexImportedSceneAfterManualHook = (scene, importIndex) => {
+        const sceneId = createSceneId(importIndex + 1);
+        const nextSceneType = isHookScene(scene) ? "normal" : String(scene.scene_type || "normal");
+        const nextRole = isHookScene(scene) ? "normal" : String(scene.role || nextSceneType || "normal");
+        return {
+          ...scene,
+          key: sceneId,
+          scene_id: sceneId,
+          id: sceneId,
+          scene_type: nextSceneType,
+          role: nextRole,
+          sub_scenes: (scene.sub_scenes || []).map((sub, subIndex) => ({
+            ...sub,
+            key: createSubSceneId(sceneId, subIndex),
+            sub_scene_id: createSubSceneId(sceneId, subIndex)
+          }))
+        };
+      };
+
+      const prependManualHookSceneForDraftLoad = (scenes) => {
+        return [
+          getManualHookSceneForDraftLoad(),
+          ...(scenes || []).map((scene, index) => reindexImportedSceneAfterManualHook(scene, index))
+        ];
+      };
+
       const migrateFlatSegmentsToScenes = (flatSegments, savedSettings = {}) => {
         const groups = new Map();
         (flatSegments || []).forEach((raw, sourceIndex) => {
@@ -3047,19 +3114,14 @@
                   ? start + toNum(raw.duration_sec, 1)
                   : sourceIndex * 2 + 1;
 
-          const rawStyle = typeof raw.voice_style === "string" ? raw.voice_style.trim() : "";
-          const savedStyle = typeof saved.voice_style === "string" ? saved.voice_style.trim() : "";
           const speakerIdFallback = Number(raw.speakerId);
-          const baseStyle = rawStyle || savedStyle || (Number.isFinite(speakerIdFallback) ? inferStyleFromSpeakerId(speakerIdFallback) : DEFAULT_VOICE_STYLE);
-          const voiceStyle = normalizeStyle(baseStyle);
           const voiceSpeed = normalizeSpeed(saved.voice_speed != null ? saved.voice_speed : raw.voice_speed != null ? raw.voice_speed : 1.25);
           const savedSpeakerId = Number(saved.speakerId);
           const speakerId = Number.isFinite(savedSpeakerId)
             ? savedSpeakerId
-            : resolveSpeakerId({
-                voice_style: voiceStyle,
-                speakerId: raw.speakerId
-              });
+            : Number.isFinite(speakerIdFallback)
+              ? speakerIdFallback
+              : defaultSpeakerId(raw.speaker);
           const rawVoiceOverride = typeof raw.voice_override === "string" ? raw.voice_override : "";
           const savedVoiceOverride = typeof saved.voice_override === "string" ? saved.voice_override : "";
           const voiceOverride = savedVoiceOverride !== "" ? savedVoiceOverride : rawVoiceOverride;
@@ -3083,7 +3145,6 @@
               slide_id: String(raw.slide_id || "").trim(),
               speaker: String(raw.speaker || "").trim(),
               emotion,
-              voice_style: voiceStyle,
               speakerId,
               voice_speed: voiceSpeed,
               voice: typeof raw.voice === "string"
@@ -3376,7 +3437,6 @@
             slide_id: scene.slide_id,
             speaker: scene.speaker,
             emotion: normalizeEmotion(scene.emotion),
-            voice_style: normalizeStyle(scene.voice_style),
             speakerId,
             voice_speed: normalizeSpeed(scene.voice_speed),
             voice: typeof scene.voice === "string" ? scene.voice : "",
@@ -3513,8 +3573,9 @@
               voice: scene.voice,
               voice_override: scene.voice_override,
               emotion: scene.emotion,
-              voice_style: scene.voice_style,
               speakerId: scene.speakerId,
+              voicevox_style_name: scene.voicevox_style_name,
+              voicevox_style_id: scene.voicevox_style_id,
               voice_speed: scene.voice_speed,
               start_frame: startFrame,
               duration_frames: durationFrames,
@@ -3715,14 +3776,6 @@
         }).join("");
       };
 
-      const styleOptionsHtml = (selected) => {
-        return Object.keys(VOICE_STYLE_TO_SPEAKER_ID).map((styleKey) => {
-          const label = VOICE_STYLE_LABEL[styleKey] || styleKey;
-          const sel = styleKey === selected ? " selected" : "";
-          return `<option value="${styleKey}"${sel}>${label}</option>`;
-        }).join("");
-      };
-
       const emotionOptionsHtml = (selected) => {
         const normalizedSelected = normalizeEmotion(selected);
         return EMOTION_OPTIONS.map((emotionKey) => {
@@ -3917,10 +3970,6 @@
                   <select name="voice_speed" data-scope="scene">${speedOptionsHtml(scene.voice_speed)}</select>
                 </div>
                 <div class="field">
-                  <label>voice_style</label>
-                  <select name="voice_style" data-scope="scene">${styleOptionsHtml(scene.voice_style)}</select>
-                </div>
-                <div class="field">
                   <label>speaker</label>
                   <input name="speaker" data-scope="scene" type="text" value="${escapeHtml(scene.speaker || "")}" />
                 </div>
@@ -4088,9 +4137,10 @@
           const end = Math.max(start + 0.01, seg.end);
           const left = (start / duration) * 100;
           const width = Math.max(((end - start) / duration) * 100, 1.2);
+          const styleLabel = seg.voicevox_style_name || (seg.voicevox_style_id ? `style ${seg.voicevox_style_id}` : `speaker ${seg.speakerId || ""}`);
           return `
             <div class="bar" style="left:${left}%; width:${width}%" title="#${i + 1} ${formatSec(start)}-${formatSec(end)}">
-              <div>#${i + 1} ${escapeHtml(seg.voice_style)}</div>
+              <div>#${i + 1} ${escapeHtml(styleLabel)}</div>
               <div class="meta">${formatSec(start)}-${formatSec(end)} / speed ${Number(seg.voice_speed).toFixed(2)}</div>
             </div>
           `;
@@ -4156,7 +4206,6 @@
           payload[scene.scene_id] = {
             emotion: normalizeEmotion(scene.emotion),
             voice_speed: normalizeSpeed(scene.voice_speed),
-            voice_style: normalizeStyle(scene.voice_style),
             speakerId: Number.isFinite(Number(scene.speakerId)) ? Number(scene.speakerId) : undefined,
             voice: typeof scene.voice === "string" ? scene.voice : "",
             voice_override: typeof scene.voice_override === "string" ? scene.voice_override : "",
@@ -4251,7 +4300,6 @@
             ...scene,
             emotion: normalizeEmotion(sceneConf.emotion || scene.emotion),
             voice_speed: sceneConf.voice_speed != null ? normalizeSpeed(sceneConf.voice_speed) : scene.voice_speed,
-            voice_style: sceneConf.voice_style != null ? normalizeStyle(sceneConf.voice_style) : scene.voice_style,
             speakerId: Number.isFinite(Number(sceneConf.speakerId)) ? Number(sceneConf.speakerId) : scene.speakerId,
             voice: typeof sceneConf.voice === "string" ? sceneConf.voice : scene.voice,
             voice_override: typeof sceneConf.voice_override === "string" ? sceneConf.voice_override : scene.voice_override,
@@ -4310,23 +4358,33 @@
         setStatus("scene/sub_scene設定を復元しました。", "ok");
       };
 
-      const loadSpec = (spec, label, fileName = "") => {
-        const normalizedSpec = normalizeSpecForScenesSoT(spec, settingsFromStorage());
+      const loadSpec = (spec, label, fileName = "", options = {}) => {
+        const preserveManualHook = !!options.preserveManualHook;
+        const savedSettings = settingsFromStorage();
+        const normalizedSpec = normalizeSpecForScenesSoT(
+          spec,
+          preserveManualHook ? shiftSavedSettingsForDraftScenes(savedSettings) : savedSettings
+        );
         const bgmSettings = resolveBgmSettingsFromSpec(normalizedSpec);
         state.fps = resolveSpecFps(normalizedSpec);
         const frameTimedScenes = (normalizedSpec.scenes || []).map((scene) => ({
           ...scene,
           sub_scenes: (scene.sub_scenes || []).map((sub) => normalizeSubSceneFrameTiming(sub))
         }));
-        state.spec = deepClone(normalizedSpec);
+        const nextScenes = preserveManualHook ? prependManualHookSceneForDraftLoad(frameTimedScenes) : frameTimedScenes;
+        const nextSpec = {
+          ...normalizedSpec,
+          scenes: nextScenes
+        };
+        state.spec = deepClone(nextSpec);
         state.renderFileName = RENDER_FINAL_NAME;
         state.transformMode = resolveTransformMode(normalizedSpec);
         state.backgroundPng = resolveBackgroundFromSpec(normalizedSpec);
         state.bgmFile = bgmSettings.bgmFile;
         state.bgmVolume = bgmSettings.bgmVolume;
         state.bgmLoop = bgmSettings.bgmLoop;
-        state.scenes = frameTimedScenes;
-        state.titleText = resolveTitleTextFromSpec(normalizedSpec, state.scenes);
+        state.scenes = nextScenes;
+        state.titleText = resolveTitleTextFromSpec(normalizedSpec, preserveManualHook ? frameTimedScenes : state.scenes);
         const titleOverlay = resolveTitleOverlayFromSpec(normalizedSpec);
         state.titleBgColor = titleOverlay.bgColor;
         state.titleTextColor = titleOverlay.textColor;
@@ -4338,13 +4396,13 @@
         state.titleTextAlign = titleOverlay.textAlign;
         state.timelineDurationFrames = resolveInitialDurationFrames(normalizedSpec, state.scenes);
         state.timelineDurationSec = frameToSec(state.timelineDurationFrames, state.fps);
-        el.jsonInput.value = JSON.stringify(normalizedSpec, null, 2);
+        el.jsonInput.value = JSON.stringify(nextSpec, null, 2);
         applyBackgroundFileList(BACKGROUND_PNG_FILES, {selected: state.backgroundPng});
         applyBgmFileList(BGM_MP3_FILES, {selected: state.bgmFile});
         el.fpsInput.value = String(state.fps);
         el.timelineDurationInput.value = String(state.timelineDurationFrames);
         renderAll();
-        setStatus(`${label} を読み込みました。`, "ok");
+        setStatus(`${label} を読み込みました${preserveManualHook ? "（Scene1 Hookは保持し、draftはScene2以降へ配置）" : ""}。`, "ok");
         updateProjectControls();
       };
 
@@ -4443,7 +4501,7 @@
           const spec = await readJson(renderHandle);
           state.selectedProjectId = projectId;
           await refreshProjectSlideFileCatalog(projectId, {render: false});
-          loadSpec(spec, `projects/${projectId}/outputs/video/${loadedName}`, loadedName);
+          loadSpec(spec, `projects/${projectId}/outputs/video/${loadedName}`, loadedName, {preserveManualHook: true});
         } catch (error) {
           setStatus(error && error.message ? error.message : "render draft JSON の読み込みに失敗しました。", "error");
         } finally {
@@ -4629,14 +4687,6 @@
           }
           if (fieldName === "voice_speed") {
             return {...scene, voice_speed: normalizeSpeed(target.value)};
-          }
-          if (fieldName === "voice_style") {
-            const voiceStyle = normalizeStyle(target.value);
-            return {
-              ...scene,
-              voice_style: voiceStyle,
-              speakerId: resolveSpeakerId({voice_style: voiceStyle, speakerId: scene.speakerId})
-            };
           }
           if (fieldName === "speakerId") {
             const numeric = Number(target.value);

@@ -6,18 +6,6 @@ const VOICEVOX_BASE_URL = process.env.VOICEVOX_URL ?? "http://127.0.0.1:50021";
 const PROJECTS_ROOT = path.resolve(process.cwd(), "projects");
 const DEFAULT_SPEAKER_ID = 3;
 const DEFAULT_SPEED_SCALE = 1.45;
-const VOICE_STYLE_TO_SPEAKER_ID = {
-  tsuntsun: 7,
-  whisper: 22,
-  hisohiso: 38,
-  herohero: 75,
-  namidame: 76,
-  "ツンツン": 7,
-  "ささやき": 22,
-  "ヒソヒソ": 38,
-  "ヘロヘロ": 75,
-  "なみだめ": 76
-};
 const SPEAKER_NAME_TO_DEFAULT_ID = [
   { pattern: /あんこもん|天の声|ai/i, speakerId: 113 },
   { pattern: /四国メタン|四国めたん|めたん|metan/i, speakerId: 2 },
@@ -85,11 +73,6 @@ function toFiniteNumber(value, fallback) {
   return Number.isFinite(n) ? n : fallback;
 }
 
-function resolveSpeakerIdFromVoiceStyle(scene) {
-  const rawStyle = String(scene?.voice_style ?? scene?.voice_profile?.voice_style ?? "").trim();
-  return VOICE_STYLE_TO_SPEAKER_ID[rawStyle] ?? null;
-}
-
 function resolveSpeakerIdFromName(scene) {
   const rawName = String(
     scene?.voicevox_speaker_name ??
@@ -103,8 +86,6 @@ function resolveSpeakerIdFromName(scene) {
 }
 
 function resolveSpeakerId(scene) {
-  const fromStyle = resolveSpeakerIdFromVoiceStyle(scene);
-  if (Number.isFinite(fromStyle)) return fromStyle;
   const fromVoice = Number(scene?.voice?.voicevox_style_id);
   if (Number.isFinite(fromVoice)) return fromVoice;
   const fromFlat = Number(scene?.voicevox_style_id);
@@ -212,6 +193,10 @@ function resolveBatchSpecPath(runId) {
   const explicit = process.env.VOICEVOX_BATCH_SPEC_PATH || process.env.SCENE_RENDER_SPEC_PATH || process.env.RENDER_SPEC_PATH;
   if (explicit && String(explicit).trim()) {
     return path.resolve(process.cwd(), String(explicit).trim());
+  }
+  const explicitProjectId = process.env.SCENE_PROJECT_ID || process.env.PROJECT_ID;
+  if (explicitProjectId && String(explicitProjectId).trim()) {
+    return path.join(PROJECTS_ROOT, normalizeProjectId(explicitProjectId, runId), "outputs", "video", "render-final-v01.json");
   }
   const latestRenderSpec = findLatestProjectRenderSpec();
   if (latestRenderSpec) {

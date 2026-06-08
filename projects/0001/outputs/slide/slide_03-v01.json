@@ -1,0 +1,8 @@
+{
+  "slide_id": "slide_03",
+  "role": "example",
+  "title": "ガチャで考える",
+  "body": "過去の3000円は戻らないので次の課金とは別に考える",
+  "visual_intent": "simple_diagram: 過去3000円｜今1000円？（区切って比較） / core_message: 過去の3000円は戻らないので次の課金とは別に考える",
+  "simple_diagram": "過去3000円｜今1000円？（区切って比較）"
+}

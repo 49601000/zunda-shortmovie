@@ -1,0 +1,8 @@
+{
+  "slide_id": "slide_01",
+  "role": "title",
+  "title": "バーナム効果",
+  "body": "誰にでも当てはまる説明を、自分のことだと思いやすい",
+  "visual_intent": "simple_diagram: 大きな円『みんなに当てはまる』→人型『自分だけ』 / core_message: 誰にでも当てはまる説明を、自分のことだと思いやすい",
+  "simple_diagram": "大きな円『みんなに当てはまる』→人型『自分だけ』"
+}

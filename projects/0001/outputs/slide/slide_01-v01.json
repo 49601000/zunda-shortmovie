@@ -1,0 +1,8 @@
+{
+  "slide_id": "slide_01",
+  "role": "title",
+  "title": "サンクコスト効果",
+  "body": "取り戻せない過去の出費が判断をゆがめる",
+  "visual_intent": "simple_diagram: 『過去の出費』→『今の判断』 / core_message: 取り戻せない過去の出費が判断をゆがめる",
+  "simple_diagram": "『過去の出費』→『今の判断』"
+}

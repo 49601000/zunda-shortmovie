@@ -1,0 +1,102 @@
+{
+  "project_id": "0002",
+  "source": "raw_conversation-v02.txt",
+  "scenes": [
+    {
+      "scene_id": "scene_001",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "text": "お給料まで20日あるけど財布の中にあと300円あるから実質セーフなのだ！",
+      "emotion": "excited",
+      "duration_sec": 5.81
+    },
+    {
+      "scene_id": "scene_002",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "text": "どこがセーフなのよ！完全に正常性バイアスに脳を支配されてるわね",
+      "emotion": "excited",
+      "duration_sec": 5
+    },
+    {
+      "scene_id": "scene_003",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "text": "言いがかりなのだ。ボクの計算では、うまい棒を30本買えば1日1本で余裕で乗り切れるのだ！",
+      "emotion": "excited",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_004",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "text": "計算の時点で大破綻してるわよ！そもそも今うまい棒は 税抜1本15円よ！20本すら買えないわよ！",
+      "emotion": "excited",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_005",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "text": "でも、まだお腹がグーグー鳴ってないから、ボクの体は完全に健康そのものなのだ！",
+      "emotion": "excited",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_006",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "text": "それが正常性バイアスの恐ろしいところね。限界が来るその瞬間まで『まだ大丈夫』って現実逃避し続けるのよ",
+      "emotion": "neutral",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_007",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "text": "現実逃避じゃないのだ！本当にピンチになったら、誰かがご飯をくれる気がするのだ！",
+      "emotion": "excited",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_008",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "text": "その『根拠のない大丈夫』が一番危険なのよ。ある日突然、完全に手遅れになって詰むのよ",
+      "emotion": "neutral",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_009",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "text": "でも本当に倒れるまではセーフなのだ……！",
+      "emotion": "excited",
+      "duration_sec": 3.23
+    },
+    {
+      "scene_id": "scene_010",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "text": "アウトよ！手遅れになる前にその謎の生存自信を捨てて生活を改めなさい！",
+      "emotion": "excited",
+      "duration_sec": 5.48
+    },
+    {
+      "scene_id": "scene_011",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "text": "じゃあ正常な生活を取り戻すために、ひとまずめたんのクレカで美味しい焼き肉を食べに行くのだ！",
+      "emotion": "excited",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_012",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "text": "人の財布でバイアスを解決しようとするんじゃないわよ！絶対に貸さないわよ",
+      "emotion": "excited",
+      "duration_sec": 5.65
+    }
+  ]
+}

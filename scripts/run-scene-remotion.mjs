@@ -518,7 +518,6 @@ function flattenScenesToSegments(spec, projectAudioDir) {
         text_offset_y: scene?.text_offset_y,
         voice: scene?.voice || scene?.dialog?.voice || "",
         voice_override: scene?.voice_override || "",
-        voice_style: scene?.voice_style || "",
         voice_speed: scene?.voice_speed,
         speakerId: scene?.speakerId,
         background_override: scene?.background_override || sceneAssets.background || spec?.background || "",

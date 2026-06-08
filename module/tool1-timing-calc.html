@@ -584,6 +584,10 @@
       return Math.max(0, Math.round(parseSecond(value) * fps()));
     }
 
+    function sceneStartFrame(scene, sceneIndex) {
+      return secToFrame(scene.start) + (sceneIndex > 0 ? 1 : 0);
+    }
+
     function frameToSec(value) {
       return roundSec(Math.max(0, Math.round(Number(value) || 0)) / fps());
     }
@@ -629,6 +633,9 @@
         scene.subscenes = Array.isArray(scene.subscenes) ? scene.subscenes : [];
         scene.char_count = scene.subscenes.reduce((sum, subscene) => sum + parseCount(subscene.char_count), 0);
         scene.subscene_count = scene.subscenes.length;
+        scene.start_frame = sceneStartFrame(scene, sceneIndex);
+        scene.duration_frames = secToFrame(scene.duration);
+        const sceneStartFrameOffset = scene.start_frame - secToFrame(scene.start);
 
         let subsceneStart = scene.start;
         scene.subscenes.forEach((subscene, subsceneIndex) => {
@@ -639,10 +646,14 @@
           subscene.start = subsceneStart;
           subscene.duration = scene.char_count > 0 ? scene.duration * (subscene.char_count / scene.char_count) : 0;
           subscene.end = subscene.start + subscene.duration;
+          subscene.start_frame = secToFrame(subscene.start) + sceneStartFrameOffset;
+          subscene.duration_frames = secToFrame(subscene.duration);
+          subscene.end_frame = secToFrame(subscene.end);
           subsceneStart = subscene.end;
         });
 
         scene.end = scene.subscenes.length ? subsceneStart : scene.start + scene.duration;
+        scene.end_frame = secToFrame(scene.end);
         carrySceneStart = ceilToTenthSecond(scene.end);
       });
     }
@@ -663,9 +674,9 @@
           start: roundSec(scene.start),
           duration: roundSec(scene.duration),
           end: roundSec(scene.end),
-          start_frame: secToFrame(scene.start),
-          duration_frames: secToFrame(scene.duration),
-          end_frame: secToFrame(scene.end),
+          start_frame: scene.start_frame,
+          duration_frames: scene.duration_frames,
+          end_frame: scene.end_frame,
           char_count: scene.char_count,
           subscene_count: scene.subscene_count,
           collapsed: Boolean(scene.collapsed),
@@ -676,9 +687,9 @@
             start: roundSec(subscene.start),
             duration: roundSec(subscene.duration),
             end: roundSec(subscene.end),
-            start_frame: secToFrame(subscene.start),
-            duration_frames: secToFrame(subscene.duration),
-            end_frame: secToFrame(subscene.end),
+            start_frame: subscene.start_frame,
+            duration_frames: subscene.duration_frames,
+            end_frame: subscene.end_frame,
             char_count: subscene.char_count,
             char_weight_percent: Math.round(subscene.char_weight_percent * 10) / 10,
             text: subscene.text || ""
@@ -732,7 +743,7 @@
               </div>
               <div class="field">
                 <label>scene frames(開始/長さ)</label>
-                <input readonly value="${secToFrame(scene.start)} / ${secToFrame(scene.duration)}f" data-read="scene-frames" data-scene-id="${scene.id}" />
+                <input readonly value="${sceneStartFrame(scene, sceneIndex)} / ${secToFrame(scene.duration)}f" data-read="scene-frames" data-scene-id="${scene.id}" />
               </div>
               <div class="field">
                 <label>scene char_count</label>
@@ -790,7 +801,7 @@
             </div>
             <div class="field">
               <label>frames(開始/長さ)</label>
-              <input readonly value="${secToFrame(subscene.start)} / ${secToFrame(subscene.duration)}f" data-read="subscene-frames" data-subscene-id="${subscene.id}" />
+              <input readonly value="${subscene.start_frame} / ${subscene.duration_frames}f" data-read="subscene-frames" data-subscene-id="${subscene.id}" />
             </div>
             <div class="field">
               <label>end</label>
@@ -818,7 +829,7 @@
       state.scenes.forEach((scene, sceneIndex) => {
         setValue(`[data-read="scene-char-count"][data-scene-id="${scene.id}"]`, scene.char_count);
         setValue(`[data-read="scene-subscene-count"][data-scene-id="${scene.id}"]`, scene.subscene_count);
-        setValue(`[data-read="scene-frames"][data-scene-id="${scene.id}"]`, `${secToFrame(scene.start)} / ${secToFrame(scene.duration)}f`);
+        setValue(`[data-read="scene-frames"][data-scene-id="${scene.id}"]`, `${sceneStartFrame(scene, sceneIndex)} / ${secToFrame(scene.duration)}f`);
         setValue(`[data-read="scene-end"][data-scene-id="${scene.id}"]`, formatSec(scene.end));
         if (sceneIndex > 0) {
           setValue(`[data-field="scene-start"][data-scene-id="${scene.id}"]`, formatSec(scene.start));
@@ -827,7 +838,7 @@
           setValue(`[data-read="subscene-weight"][data-subscene-id="${subscene.id}"]`, formatPct(subscene.char_weight_percent));
           setValue(`[data-read="subscene-start"][data-subscene-id="${subscene.id}"]`, formatSec(subscene.start));
           setValue(`[data-read="subscene-duration"][data-subscene-id="${subscene.id}"]`, formatSec(subscene.duration));
-          setValue(`[data-read="subscene-frames"][data-subscene-id="${subscene.id}"]`, `${secToFrame(subscene.start)} / ${secToFrame(subscene.duration)}f`);
+          setValue(`[data-read="subscene-frames"][data-subscene-id="${subscene.id}"]`, `${subscene.start_frame} / ${subscene.duration_frames}f`);
           setValue(`[data-read="subscene-end"][data-subscene-id="${subscene.id}"]`, formatSec(subscene.end));
         });
       });
@@ -860,7 +871,7 @@
           <div class="timeline-row">
             <strong>scene ${scene.scene_no}</strong>
             <div class="bar-track"><div class="bar-fill" style="width: ${Math.max(2, (scene.duration / maxDuration) * 100)}%;"></div></div>
-            <div class="time-label">${formatSec(scene.start)} - ${formatSec(scene.end)}s / ${secToFrame(scene.start)}-${secToFrame(scene.end)}f</div>
+            <div class="time-label">${formatSec(scene.start)} - ${formatSec(scene.end)}s / ${scene.start_frame}-${scene.end_frame}f</div>
           </div>
         `);
         scene.subscenes.forEach((subscene) => {
@@ -868,7 +879,7 @@
             <div class="timeline-row">
               <span class="muted">sub ${subscene.subscene_id}</span>
               <div class="bar-track"><div class="bar-fill" style="width: ${Math.max(2, (subscene.duration / maxDuration) * 100)}%;"></div></div>
-              <div class="time-label">${formatSec(subscene.start)} - ${formatSec(subscene.end)}s / ${secToFrame(subscene.start)}-${secToFrame(subscene.end)}f</div>
+              <div class="time-label">${formatSec(subscene.start)} - ${formatSec(subscene.end)}s / ${subscene.start_frame}-${subscene.end_frame}f</div>
             </div>
           `);
         });

@@ -1,0 +1,25 @@
+{
+  "project_id": "0001",
+  "source": "01-summary_spec-v01.json",
+  "hooks": [
+    {
+      "id": "hook_a",
+      "text": "この会話、その理解で本当に合ってる？",
+      "intent": "疑問型",
+      "duration_sec": 2
+    },
+    {
+      "id": "hook_b",
+      "text": "この会話は順番を変えるだけで結果が変わる。",
+      "intent": "断言型",
+      "duration_sec": 2
+    },
+    {
+      "id": "hook_c",
+      "text": "この会話、正解っぽいほど遠回りになる。",
+      "intent": "違和感型",
+      "duration_sec": 2
+    }
+  ],
+  "selected_hook_id": "hook_a"
+}

@@ -1,0 +1,33 @@
+{
+  "source_type": "lesson_slide_plan",
+  "topic": "認知的不協和",
+  "lesson_goal": "人はなぜ都合のいい言い訳をしてしまうのかを理解する",
+  "slides": [
+    {
+      "slide_id": "slide_01",
+      "role": "title",
+      "title": "認知的不協和",
+      "body": "考えと現実がぶつかるとモヤモヤが生まれる",
+      "visual_intent": "simple_diagram: 『自分は正しい』⇔『失敗した』の対立 / core_message: 考えと現実がぶつかるとモヤモヤが生まれる",
+      "simple_diagram": "『自分は正しい』⇔『失敗した』の対立"
+    },
+    {
+      "slide_id": "slide_02",
+      "role": "concept",
+      "title": "なぜ言い訳するの？",
+      "body": "失敗した自分を認めたくないため",
+      "visual_intent": "simple_diagram: 失敗 → モヤモヤ → 言い訳 → 気持ちが楽 / core_message: 失敗した自分を認めたくないため",
+      "simple_diagram": "失敗 → モヤモヤ → 言い訳 → 気持ちが楽"
+    },
+    {
+      "slide_id": "slide_03",
+      "role": "example",
+      "title": "ゲーム課金の例",
+      "body": "つまらなくても『いつか面白くなる』と考えてしまう",
+      "visual_intent": "simple_diagram: 課金 → つまらない → 『将来神ゲー』 / core_message: つまらなくても『いつか面白くなる』と考えてしまう",
+      "simple_diagram": "課金 → つまらない → 『将来神ゲー』"
+    }
+  ],
+  "project_id": "0001",
+  "source": "lesson_slide_plan"
+}

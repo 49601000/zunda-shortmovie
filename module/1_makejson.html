@@ -412,7 +412,8 @@
       </div>
 
       <div class="step-grid" style="margin-top: 10px;">
-        <button id="btnLoadConversation" type="button" class="step-btn" disabled>1. 会話を読み込む</button>
+        <button id="btnSaveRawConversation" type="button" class="step-btn" disabled>0. raw_conversation.txt 保存/上書き</button>
+        <button id="btnLoadConversation" type="button" class="step-btn" disabled>1. raw_conversation-vNN.txt で保存</button>
         <button id="btnSummary" type="button" class="step-btn" disabled>2. summary_spec 作成</button>
         <button id="btnHook" type="button" class="step-btn" disabled>3. hook_spec 作成</button>
         <button id="btnScene" type="button" class="step-btn" disabled>4. scene_spec 作成</button>
@@ -930,6 +931,7 @@
       const enabled = Boolean(workspaceHandle && selectedProjectId());
       const ids = [
         "btnLoadConversation",
+        "btnSaveRawConversation",
         "btnSummary",
         "btnHook",
         "btnScene",
@@ -1276,7 +1278,6 @@
           slide_id: scene.slide_id,
           speaker: scene.speaker,
           emotion: scene.emotion || "normal",
-          voice_style: "normal",
           speakerId: defaultSpeakerId(scene.speaker),
           voice_speed: 1.25,
           voice: String(scene.text || ""),
@@ -1308,7 +1309,6 @@
         slide_id: String(scene && scene.slide_id || "").trim(),
         speaker,
         emotion: String(scene && scene.emotion || "normal").trim() || "normal",
-        voice_style: String(scene && scene.voice_style || "normal").trim() || "normal",
         speakerId: Number.isFinite(speakerId) ? speakerId : defaultSpeakerId(speaker),
         voice_speed: Number.isFinite(voiceSpeed) && voiceSpeed > 0 ? Math.round(voiceSpeed * 100) / 100 : 1.25,
         voice: typeof (scene && scene.voice) === "string" ? scene.voice : String(scene && scene.text || ""),
@@ -1344,7 +1344,6 @@
             slide_id: sceneFields.slide_id,
             speaker: sceneFields.speaker,
             emotion: sceneFields.emotion,
-            voice_style: sceneFields.voice_style,
             speakerId: sceneFields.speakerId,
             voice_speed: sceneFields.voice_speed,
             voice: sceneFields.voice,
@@ -1384,7 +1383,6 @@
             slide_id: sub.slide_id || "",
             speaker: sub.speaker || "",
             emotion: sub.emotion || "normal",
-            voice_style: sub.voice_style || "normal",
             speakerId: Number.isFinite(Number(sub.speakerId)) ? Number(sub.speakerId) : defaultSpeakerId(sub.speaker),
             voice_speed: Number.isFinite(Number(sub.voice_speed)) ? Number(sub.voice_speed) : 1.25,
             voice: "",
@@ -1473,7 +1471,6 @@
           slide_id: sub.slide_id,
           speaker: sub.speaker,
           emotion: sub.emotion,
-          voice_style: sub.voice_style,
           speakerId: sub.speakerId,
           voice_speed: sub.voice_speed,
           voice: sub.voice,
@@ -1589,22 +1586,52 @@
       return JSON.stringify(value, null, 2);
     }
 
+    function readFileAsText(file) {
+      if (file && typeof file.text === "function") return file.text();
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.addEventListener("load", () => resolve(String(reader.result || "")));
+        reader.addEventListener("error", () => reject(reader.error || new Error("ファイルの読み込みに失敗しました。")));
+        reader.readAsText(file);
+      });
+    }
+
+    function setConversationInputFromText(text) {
+      const textarea = document.getElementById("conversationInput");
+      const normalized = normalizeRawConversation(text);
+      textarea.value = normalized;
+      textarea.dispatchEvent(new Event("input", { bubbles: true }));
+      textarea.focus({ preventScroll: true });
+      return normalized;
+    }
+
     async function onConversationFileSelected(event) {
       const input = event.target;
       const file = input.files && input.files[0];
       if (!file) return;
-      const text = await file.text();
-      let normalized = text;
-      if (/\.json$/i.test(file.name)) {
-        try {
-          normalized = extractConversationFromJson(JSON.parse(text));
-        } catch (_err) {
-          normalized = text;
+
+      setStatus("pipelineStatus", `ファイル読込中: ${file.name}`, "warn");
+      try {
+        const text = await readFileAsText(file);
+        let conversationText = text;
+        if (/\.json$/i.test(file.name)) {
+          try {
+            conversationText = extractConversationFromJson(JSON.parse(text));
+          } catch (_err) {
+            conversationText = text;
+          }
         }
+        const reflected = setConversationInputFromText(conversationText);
+        if (!reflected) {
+          setStatus("pipelineStatus", `ファイル読込: ${file.name} は空でした。`, "warn");
+        } else {
+          setStatus("pipelineStatus", `raw_conversation 入力に反映しました: ${file.name}`, "ok");
+        }
+      } catch (err) {
+        setStatus("pipelineStatus", `ファイル読込失敗: ${err.message || err}`, "error");
+      } finally {
+        input.value = "";
       }
-      document.getElementById("conversationInput").value = normalizeRawConversation(normalized);
-      setStatus("pipelineStatus", `ファイル読込: ${file.name}`, "ok");
-      input.value = "";
     }
 
     async function runStep(stepName, runner) {
@@ -1626,6 +1653,17 @@
       } catch (err) {
         setStatus("pipelineStatus", `${stepName} 失敗: ${err.message || err}`, "error");
       }
+    }
+
+    async function stepSaveRawConversation(projectId) {
+      const input = document.getElementById("conversationInput");
+      const text = normalizeRawConversation(input.value);
+      if (!text) throw new Error("会話ログが空です。textarea か txt/json から入力してください。");
+      input.value = text;
+      const { rawDir } = await getProjectHandles(projectId);
+      const handle = await rawDir.getFileHandle("raw_conversation.txt", { create: true });
+      await writeText(handle, text + "\n");
+      return [{ path: `projects/${projectId}/raw/raw_conversation.txt`, note: "raw_conversation 固定ファイルを上書き保存" }];
     }
 
     async function stepLoadConversation(projectId) {
@@ -1733,7 +1771,8 @@
         }, 0);
       });
 
-      document.getElementById("btnLoadConversation").addEventListener("click", () => runStep("会話を読み込む", stepLoadConversation));
+      document.getElementById("btnSaveRawConversation").addEventListener("click", () => runStep("raw_conversation.txt 保存/上書き", stepSaveRawConversation));
+      document.getElementById("btnLoadConversation").addEventListener("click", () => runStep("raw_conversation バージョン付き保存", stepLoadConversation));
       document.getElementById("btnSummary").addEventListener("click", () => runStep("summary_spec 作成", stepSummary));
       document.getElementById("btnHook").addEventListener("click", () => runStep("hook_spec 作成", stepHook));
       document.getElementById("btnScene").addEventListener("click", () => runStep("scene_spec 作成", stepScene));

@@ -1,0 +1,33 @@
+{
+  "source_type": "lesson_slide_plan",
+  "topic": "バーナム効果",
+  "lesson_goal": "誰にでも当てはまる説明を『自分だけの特徴だ』と思ってしまう心理を知る",
+  "slides": [
+    {
+      "slide_id": "slide_01",
+      "role": "title",
+      "title": "バーナム効果",
+      "body": "誰にでも当てはまる説明を、自分のことだと思いやすい",
+      "visual_intent": "simple_diagram: 大きな円『みんなに当てはまる』→人型『自分だけ』 / core_message: 誰にでも当てはまる説明を、自分のことだと思いやすい",
+      "simple_diagram": "大きな円『みんなに当てはまる』→人型『自分だけ』"
+    },
+    {
+      "slide_id": "slide_02",
+      "role": "concept",
+      "title": "なぜ信じるの？",
+      "body": "あいまいで良い内容ほど、自分に当てはめてしまう",
+      "visual_intent": "simple_diagram: 『優しい』『悩みやすい』→『自分のことだ！』 / core_message: あいまいで良い内容ほど、自分に当てはめてしまう",
+      "simple_diagram": "『優しい』『悩みやすい』→『自分のことだ！』"
+    },
+    {
+      "slide_id": "slide_03",
+      "role": "example",
+      "title": "身近な例",
+      "body": "性格診断や占いで『当たってる！』と感じることがある",
+      "visual_intent": "simple_diagram: 『本当は才能がある』←→『多くの人がそう思う』 / core_message: 性格診断や占いで『当たってる！』と感じることがある",
+      "simple_diagram": "『本当は才能がある』←→『多くの人がそう思う』"
+    }
+  ],
+  "project_id": "0003",
+  "source": "lesson_slide_plan"
+}

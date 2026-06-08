@@ -1,0 +1,8 @@
+{
+  "slide_id": "slide_03",
+  "role": "example",
+  "title": "ゲーム課金の例",
+  "body": "つまらなくても『いつか面白くなる』と考えてしまう",
+  "visual_intent": "simple_diagram: 課金 → つまらない → 『将来神ゲー』 / core_message: つまらなくても『いつか面白くなる』と考えてしまう",
+  "simple_diagram": "課金 → つまらない → 『将来神ゲー』"
+}
