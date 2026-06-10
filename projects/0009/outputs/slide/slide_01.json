@@ -1,0 +1,8 @@
+{
+  "slide_id": "slide_01",
+  "role": "title",
+  "title": "アンカリング効果",
+  "body": "最初の数字が判断の基準になってしまう",
+  "visual_intent": "simple_diagram: 大きな数字→判断 の矢印 / core_message: 最初の数字が判断の基準になってしまう",
+  "simple_diagram": "大きな数字→判断 の矢印"
+}

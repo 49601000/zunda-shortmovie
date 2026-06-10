@@ -1,0 +1,86 @@
+{
+  "project_id": "0007",
+  "source": "raw_conversation-v03.txt",
+  "scenes": [
+    {
+      "scene_id": "scene_001",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "text": "この宝くじ、１等１０億円なのだ！買えば誰でも大富豪になれる魔法のチケットなのだ！",
+      "emotion": "excited",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_002",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "text": "当たる確率がどのくらいか知ってるのかしら？",
+      "emotion": "curious",
+      "duration_sec": 3.39
+    },
+    {
+      "scene_id": "scene_003",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "text": "そんな細かい数字はどうでもいいのだ！当たれば人生一発逆転、それだけが真実なのだ！",
+      "emotion": "excited",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_004",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "text": "１等が当たる確率は、およそ２０００万分の１らしいわよ。",
+      "emotion": "neutral",
+      "duration_sec": 4.35
+    },
+    {
+      "scene_id": "scene_005",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "text": "２０００万分の１……でも、ゼロじゃないならボクにとっては無限の夢があるのだ！",
+      "emotion": "excited",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_006",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "text": "絶望的数値とも言えるわね。",
+      "emotion": "neutral",
+      "duration_sec": 2.1
+    },
+    {
+      "scene_id": "scene_007",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "text": "１０億円のきらめきを見るか、２０００万分の１の壁を見るか。同じ宝くじなのに不思議なのだ。",
+      "emotion": "neutral",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_008",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "text": "それがフレーミング効果よ。同じことでも見せ方ひとつで印象が変わるもんなのよ。",
+      "emotion": "neutral",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_009",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "text": "なるほどなのだ！じゃあボクは『１０億円』を見ることにするのだ！",
+      "emotion": "excited",
+      "duration_sec": 5
+    },
+    {
+      "scene_id": "scene_010",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "text": "人の話聞いてた？",
+      "emotion": "curious",
+      "duration_sec": 1.6
+    }
+  ]
+}

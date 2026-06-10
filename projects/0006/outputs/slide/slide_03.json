@@ -1,0 +1,8 @@
+{
+  "slide_id": "slide_03",
+  "role": "example",
+  "title": "身近な例",
+  "body": "寝癖や言い間違いをしても、多くの人はすぐ忘れてしまう",
+  "visual_intent": "simple_diagram: 自分『やばい！』→周囲Aスマホ 周囲B勉強 周囲C晩ご飯 / core_message: 寝癖や言い間違いをしても、多くの人はすぐ忘れてしまう",
+  "simple_diagram": "自分『やばい！』→周囲Aスマホ 周囲B勉強 周囲C晩ご飯"
+}

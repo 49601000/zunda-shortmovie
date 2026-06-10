@@ -1,0 +1,94 @@
+{
+  "project_id": "0010",
+  "source": "raw_conversation-v02.txt",
+  "scenes": [
+    {
+      "scene_id": "scene_001",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "text": "後輩のあの子、絶対にボクのことが好きなのだ！完全に社内恋愛が始まってるのだ！",
+      "emotion": "excited",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_002",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "text": "はいはい。また始まったわね。どうせあなたの妄想でしょ",
+      "emotion": "neutral",
+      "duration_sec": 4.19
+    },
+    {
+      "scene_id": "scene_003",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "text": "違うのだ！いつも目が合ったら微笑みながら会釈してくれるのだ！あれは脈アリ確定演出なのだ！",
+      "emotion": "excited",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_004",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "text": "普通に挨拶されただけでしょ。この前、ご飯誘って『予定がある』って断られてたわよね？",
+      "emotion": "curious",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_005",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "text": "それはたまたま本当に予定がかぶっただけなのだ！",
+      "emotion": "excited",
+      "duration_sec": 3.71
+    },
+    {
+      "scene_id": "scene_006",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "text": "じゃあ、LINEの返信がいつも３日後なのはどうなのよ？",
+      "emotion": "curious",
+      "duration_sec": 4.35
+    },
+    {
+      "scene_id": "scene_007",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "text": "仕事が忙しくて、スマホを見る暇がないだけなのだ！",
+      "emotion": "excited",
+      "duration_sec": 3.87
+    },
+    {
+      "scene_id": "scene_008",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "text": "他のみんなとは楽しそうにランチ行ってるみたいだけど？",
+      "emotion": "curious",
+      "duration_sec": 4.19
+    },
+    {
+      "scene_id": "scene_009",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "text": "ボクを嫉妬させて気を引こうとする高度な駆け引きなのだ！",
+      "emotion": "excited",
+      "duration_sec": 4.35
+    },
+    {
+      "scene_id": "scene_010",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "text": "脈アリの証拠は全力で信じるのに、不都合なデータは全部『別の理由』でノーカンにするのね。これが確証バイアスよ",
+      "emotion": "neutral",
+      "duration_sec": 6
+    },
+    {
+      "scene_id": "scene_011",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "text": "というわけで初デート用の服を買うから、めたんボクに３万円貸すのだ！",
+      "emotion": "excited",
+      "duration_sec": 5.32
+    }
+  ]
+}

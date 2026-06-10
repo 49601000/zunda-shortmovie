@@ -1,0 +1,8 @@
+{
+  "slide_id": "slide_01",
+  "role": "title",
+  "title": "スポットライト効果",
+  "body": "人は自分が思うほど他人から見られていない",
+  "visual_intent": "simple_diagram: 自分←大きなスポットライト→周囲の人 / core_message: 人は自分が思うほど他人から見られていない",
+  "simple_diagram": "自分←大きなスポットライト→周囲の人"
+}

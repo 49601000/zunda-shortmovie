@@ -1,0 +1,310 @@
+{
+  "project_id": "0006",
+  "source": "04-scene_spec-v03.json",
+  "scenes": [
+    {
+      "scene_id": "scene_001",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "大変なのだ！ 今日、すれ違う人全員がボクの寝癖を笑ってた気がするのだ！ 絶対に世界中がボクに注目してるのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_001_01",
+          "screen_text": "大変なのだ！ 今日、",
+          "display_mode": "replace",
+          "char_count": 10,
+          "start_sec": 0,
+          "duration_sec": 1.13
+        },
+        {
+          "sub_scene_id": "scene_001_02",
+          "screen_text": "すれ違う人全員がボクの寝癖を笑ってた",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 1.13,
+          "duration_sec": 2.04
+        },
+        {
+          "sub_scene_id": "scene_001_03",
+          "screen_text": "気がするのだ！",
+          "display_mode": "replace",
+          "char_count": 7,
+          "start_sec": 3.17,
+          "duration_sec": 0.79
+        },
+        {
+          "sub_scene_id": "scene_001_04",
+          "screen_text": "絶対に世界中がボクに注目してるのだ！",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 3.96,
+          "duration_sec": 2.04
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_002",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "自意識過剰ね。スポットライト効果っていって、他人にどう見られているかを過剰に気にしちゃうものなのよ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_002_01",
+          "screen_text": "自意識過剰ね。",
+          "display_mode": "replace",
+          "char_count": 7,
+          "start_sec": 6,
+          "duration_sec": 0.86
+        },
+        {
+          "sub_scene_id": "scene_002_02",
+          "screen_text": "スポットライト効果っていって、",
+          "display_mode": "replace",
+          "char_count": 15,
+          "start_sec": 6.86,
+          "duration_sec": 1.84
+        },
+        {
+          "sub_scene_id": "scene_002_03",
+          "screen_text": "他人にどう見られているかを過剰に気に",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 8.7,
+          "duration_sec": 2.2
+        },
+        {
+          "sub_scene_id": "scene_002_04",
+          "screen_text": "しちゃうものなのよ",
+          "display_mode": "replace",
+          "char_count": 9,
+          "start_sec": 10.9,
+          "duration_sec": 1.1
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_003",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "そんなの嘘なのだ！ さっきから通行人が全員ボクの寝癖をチラ見してるのだ！ あれは絶対に監視チームなのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_003_01",
+          "screen_text": "そんなの嘘なのだ！",
+          "display_mode": "replace",
+          "char_count": 9,
+          "start_sec": 12,
+          "duration_sec": 1.08
+        },
+        {
+          "sub_scene_id": "scene_003_02",
+          "screen_text": "さっきから通行人が全員ボクの寝癖をチ",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 13.08,
+          "duration_sec": 2.16
+        },
+        {
+          "sub_scene_id": "scene_003_03",
+          "screen_text": "ラ見してるのだ！",
+          "display_mode": "replace",
+          "char_count": 8,
+          "start_sec": 15.24,
+          "duration_sec": 0.96
+        },
+        {
+          "sub_scene_id": "scene_003_04",
+          "screen_text": "あれは絶対に監視チームなのだ！",
+          "display_mode": "replace",
+          "char_count": 15,
+          "start_sec": 16.2,
+          "duration_sec": 1.8
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_004",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "それただの自意識過剰がこじれた電波よ。みんな自分のスマホか、晩ご飯のことで頭がいっぱいなんだから",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_004_01",
+          "screen_text": "それただの自意識過剰がこじれた電波よ",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 18,
+          "duration_sec": 2.25
+        },
+        {
+          "sub_scene_id": "scene_004_02",
+          "screen_text": "。みんな自分のスマホか、",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_sec": 20.25,
+          "duration_sec": 1.5
+        },
+        {
+          "sub_scene_id": "scene_004_03",
+          "screen_text": "晩ご飯のことで頭がいっぱいなんだから",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 21.75,
+          "duration_sec": 2.25
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_005",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "じゃあボクがこれだけ可愛いのに、誰も見てないって言うのだ！？ 人類の損失なのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_005_01",
+          "screen_text": "じゃあボクがこれだけ可愛いのに、",
+          "display_mode": "replace",
+          "char_count": 16,
+          "start_sec": 24,
+          "duration_sec": 2.53
+        },
+        {
+          "sub_scene_id": "scene_005_02",
+          "screen_text": "誰も見てないって言うのだ！",
+          "display_mode": "replace",
+          "char_count": 13,
+          "start_sec": 26.53,
+          "duration_sec": 2.05
+        },
+        {
+          "sub_scene_id": "scene_005_03",
+          "screen_text": "人類の損失なのだ！",
+          "display_mode": "replace",
+          "char_count": 9,
+          "start_sec": 28.58,
+          "duration_sec": 1.42
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_006",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "急にポジティブな方向に脳内変換したわね……。誰も見てないんだから、失敗しても気にしなくていいってことよ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_006_01",
+          "screen_text": "急にポジティブな方向に脳内変換したわ",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 30,
+          "duration_sec": 2.12
+        },
+        {
+          "sub_scene_id": "scene_006_02",
+          "screen_text": "ね……。誰も見てないんだから、",
+          "display_mode": "replace",
+          "char_count": 15,
+          "start_sec": 32.12,
+          "duration_sec": 1.76
+        },
+        {
+          "sub_scene_id": "scene_006_03",
+          "screen_text": "失敗しても気にしなくていいってことよ",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 33.88,
+          "duration_sec": 2.12
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_007",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "なるほどなのだ！ じゃあ、めたんの財布からこっそりお札を抜いてもバレないのだ！？",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_007_01",
+          "screen_text": "なるほどなのだ！ じゃあ、",
+          "display_mode": "replace",
+          "char_count": 13,
+          "start_sec": 36,
+          "duration_sec": 2
+        },
+        {
+          "sub_scene_id": "scene_007_02",
+          "screen_text": "めたんの財布からこっそりお札を抜いて",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 38,
+          "duration_sec": 2.77
+        },
+        {
+          "sub_scene_id": "scene_007_03",
+          "screen_text": "もバレないのだ！",
+          "display_mode": "replace",
+          "char_count": 8,
+          "start_sec": 40.77,
+          "duration_sec": 1.23
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_008",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "それはバッチリ見てるから今すぐその手を離しなさい",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_008_01",
+          "screen_text": "それはバッチリ見てるから今すぐその手",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 42,
+          "duration_sec": 2.9
+        },
+        {
+          "sub_scene_id": "scene_008_02",
+          "screen_text": "を離しなさい",
+          "display_mode": "replace",
+          "char_count": 6,
+          "start_sec": 44.9,
+          "duration_sec": 0.97
+        }
+      ]
+    }
+  ]
+}

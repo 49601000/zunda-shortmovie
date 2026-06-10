@@ -1,0 +1,8 @@
+{
+  "slide_id": "slide_02",
+  "role": "concept",
+  "title": "なぜ起きる？",
+  "body": "どれだけハマっても次の抽選確率は変わらない",
+  "visual_intent": "simple_diagram: 1000回ハズレ→抽選→確率同じ／1回ハズレ→抽選→確率同じ / core_message: どれだけハマっても次の抽選確率は変わらない",
+  "simple_diagram": "1000回ハズレ→抽選→確率同じ／1回ハズレ→抽選→確率同じ"
+}

@@ -1,0 +1,33 @@
+{
+  "source_type": "lesson_slide_plan",
+  "topic": "ギャンブラーの誤謬",
+  "lesson_goal": "過去の結果が次の確率に影響すると錯覚してしまう心理を理解する",
+  "slides": [
+    {
+      "slide_id": "slide_01",
+      "role": "title",
+      "title": "ギャンブラーの誤謬",
+      "body": "過去の結果と次の確率を結びつけてしまう思い込み",
+      "visual_intent": "simple_diagram: ハズレ→ハズレ→ハズレ→『次は当たる？』 / core_message: 過去の結果と次の確率を結びつけてしまう思い込み",
+      "simple_diagram": "ハズレ→ハズレ→ハズレ→『次は当たる？』"
+    },
+    {
+      "slide_id": "slide_02",
+      "role": "concept",
+      "title": "なぜ起きる？",
+      "body": "どれだけハマっても次の抽選確率は変わらない",
+      "visual_intent": "simple_diagram: 1000回ハズレ→抽選→確率同じ／1回ハズレ→抽選→確率同じ / core_message: どれだけハマっても次の抽選確率は変わらない",
+      "simple_diagram": "1000回ハズレ→抽選→確率同じ／1回ハズレ→抽選→確率同じ"
+    },
+    {
+      "slide_id": "slide_03",
+      "role": "example",
+      "title": "パチンコ・スロット",
+      "body": "『そろそろ来るはず』は確率の錯覚かもしれない",
+      "visual_intent": "simple_diagram: 1000Gハマり→期待↑ ／ 実際の確率→変化なし / core_message: 『そろそろ来るはず』は確率の錯覚かもしれない",
+      "simple_diagram": "1000Gハマり→期待↑ ／ 実際の確率→変化なし"
+    }
+  ],
+  "project_id": "0008",
+  "source": "lesson_slide_plan"
+}

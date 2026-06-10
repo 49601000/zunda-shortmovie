@@ -1,0 +1,8 @@
+{
+  "slide_id": "slide_01",
+  "role": "title",
+  "title": "フレーミング効果",
+  "body": "同じ情報でも見せ方で印象は変わる",
+  "visual_intent": "simple_diagram: 同じ情報→見せ方A／見せ方B→印象が変わる / core_message: 同じ情報でも見せ方で印象は変わる",
+  "simple_diagram": "同じ情報→見せ方A／見せ方B→印象が変わる"
+}

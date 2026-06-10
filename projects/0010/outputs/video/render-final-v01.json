@@ -1,0 +1,1650 @@
+{
+  "project_id": "0010",
+  "version": "v01",
+  "hook": {
+    "id": "hook_a",
+    "text": "ずんだもん、その理解で本当に合ってる？",
+    "intent": "疑問型",
+    "duration_sec": 2
+  },
+  "slides": [
+    {
+      "slide_id": "slide_01",
+      "role": "title",
+      "title": "確証バイアス",
+      "body": "自分の考えを支持する情報ばかり信じてしまう",
+      "visual_intent": "simple_diagram: 『思い込み』→『都合の良い情報だけ集める』 / core_message: 自分の考えを支持する情報ばかり信じてしまう",
+      "simple_diagram": "『思い込み』→『都合の良い情報だけ集める』"
+    },
+    {
+      "slide_id": "slide_02",
+      "role": "concept",
+      "title": "なぜ起きる？",
+      "body": "都合の良い情報は採用し、不都合な情報は別の理由で片づけてしまう",
+      "visual_intent": "simple_diagram: ○都合の良い情報→採用 ×都合の悪い情報→言い訳して無視 / core_message: 都合の良い情報は採用し、不都合な情報は別の理由で片づけてしまう",
+      "simple_diagram": "○都合の良い情報→採用 ×都合の悪い情報→言い訳して無視"
+    },
+    {
+      "slide_id": "slide_03",
+      "role": "example",
+      "title": "恋愛での例",
+      "body": "挨拶は脈アリ、断られた理由は偶然だと考えてしまう",
+      "visual_intent": "simple_diagram: 挨拶→『好き！』 誘いを断られる→『たまたま！』 / core_message: 挨拶は脈アリ、断られた理由は偶然だと考えてしまう",
+      "simple_diagram": "挨拶→『好き！』 誘いを断られる→『たまたま！』"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "scene_001",
+      "scene_id": "scene_001",
+      "scene_type": "hook",
+      "role": "hook",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_01",
+      "speaker": "議題",
+      "emotion": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "自分勝手な脈アリ判定、だいたいこんななのだ",
+      "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "自分勝手な脈アリ判定、だいたいこんななのだ",
+        "screen_text": "",
+        "screen_text_font_size": 48,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ffffff",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 48,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ffffff",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "images/backgrounds/hook-bg-dots-yl.png",
+        "slide": "",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "",
+        "character_right": "",
+        "hook_background": "images/backgrounds/hook-bg-dots-pk.png",
+        "hook_character": "images/characters/zundamon/zundamon-normal-0000.png",
+        "hook_bubble": "parts/Hook-speech-balloon.png"
+      },
+      "composition": {
+        "background": {
+          "image_path": "images/backgrounds/hook-bg-dots-yl.png"
+        },
+        "slide_area": {
+          "image_path": ""
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_001_01",
+          "screen_text": "その実質勝ち、だいたいこんななのだ",
+          "display_mode": "replace",
+          "char_count": 17,
+          "start_frame": 0,
+          "duration_frames": 78,
+          "end_frame": 78,
+          "start_sec": 0,
+          "duration_sec": 2.6
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "hook",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": false,
+        "speaker": "議題",
+        "speaker_side": "hook",
+        "assets": {
+          "hook": {
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png",
+            "mouth_1": "images/characters/zundamon/zundamon-normal-0001.png",
+            "mouth_2": "images/characters/zundamon/zundamon-normal-0002.png"
+          }
+        }
+      },
+      "hook_visual": {
+        "texts": {
+          "top": {
+            "text": "勝手に",
+            "fontSize": 84,
+            "color": "#303030",
+            "outlineColor": "#000000",
+            "outlineScale": 1.02,
+            "fillVisible": false
+          },
+          "main": {
+            "text": "脈アリ認定",
+            "fontSize": 200,
+            "color": "#e60012",
+            "outlineColor": "transparent",
+            "outlineScale": 1.02,
+            "fillVisible": true
+          },
+          "sub": {
+            "text": "ってだいたいこれ",
+            "fontSize": 98,
+            "color": "#303030",
+            "outlineColor": "#000000",
+            "outlineScale": 1.02,
+            "fillVisible": false
+          }
+        },
+        "background": {
+          "image_path": "images/backgrounds/hook-bg-dots-pk.png"
+        },
+        "character": {
+          "enabled": true,
+          "x": 450,
+          "y": 1130,
+          "width": 800,
+          "height": 820,
+          "scale": 2,
+          "objectFit": "contain",
+          "objectPosition": "center top",
+          "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
+          "lip_sync_image_paths": [
+            "images/characters/zundamon/zundamon-normal-0001.png",
+            "images/characters/zundamon/zundamon-normal-0002.png"
+          ]
+        },
+        "bubble": {
+          "image_path": "parts/Hook-speech-balloon.png",
+          "text": "",
+          "fontSize": 64
+        },
+        "finalize_to_dialog": false
+      }
+    },
+    {
+      "id": "scene_002",
+      "scene_id": "scene_002",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "後輩のあの子、絶対にボクのことが好きなのだ！完全に社内恋愛が始まってるのだ！",
+      "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "後輩のあの子、絶対にボクのことが好きなのだ！完全に社内恋愛が始まってるのだ！",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": ""
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
+            "state": "idle",
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-lookside-1.png",
+              "images/characters/metan/metan-lookside-2.png"
+            ]
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-normal-0001.png",
+              "images/characters/zundamon/zundamon-normal-0003.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_002_01",
+          "screen_text": "後輩のあの子、",
+          "display_mode": "replace",
+          "char_count": 7,
+          "start_frame": 0,
+          "duration_frames": 33,
+          "end_frame": 33,
+          "start_sec": 0,
+          "duration_sec": 1.1
+        },
+        {
+          "sub_scene_id": "scene_002_02",
+          "screen_text": "絶対にボクのことが好きなのだ！",
+          "display_mode": "replace",
+          "char_count": 15,
+          "start_frame": 33,
+          "duration_frames": 71,
+          "end_frame": 104,
+          "start_sec": 1.1,
+          "duration_sec": 2.367
+        },
+        {
+          "sub_scene_id": "scene_002_03",
+          "screen_text": "完全に社内恋愛が始まってるのだ！",
+          "display_mode": "replace",
+          "char_count": 16,
+          "start_frame": 104,
+          "duration_frames": 76,
+          "end_frame": 180,
+          "start_sec": 3.467,
+          "duration_sec": 2.533
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "ずんだもん",
+        "speaker_side": "right",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-lookside-0.png",
+            "mouth_1": "images/characters/metan/metan-lookside-1.png",
+            "mouth_2": "images/characters/metan/metan-lookside-2.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png",
+            "mouth_1": "images/characters/zundamon/zundamon-normal-0001.png",
+            "mouth_2": "images/characters/zundamon/zundamon-normal-0003.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "scene_003",
+      "scene_id": "scene_003",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "emotion": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "はいはい。また始まったわね。どうせあなたの妄想でしょ",
+      "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "はいはい。また始まったわね。どうせあなたの妄想でしょ",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff5ca3",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff5ca3",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "",
+        "character_right": "",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": ""
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "",
+            "state": "speaking",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_003_01",
+          "screen_text": "はいはい。また始まったわね。",
+          "display_mode": "replace",
+          "char_count": 14,
+          "start_frame": 180,
+          "duration_frames": 68,
+          "end_frame": 248,
+          "start_sec": 6,
+          "duration_sec": 2.267
+        },
+        {
+          "sub_scene_id": "scene_003_02",
+          "screen_text": "どうせあなたの妄想でしょ",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_frame": 248,
+          "duration_frames": 58,
+          "end_frame": 306,
+          "start_sec": 8.267,
+          "duration_sec": 1.933
+        }
+      ]
+    },
+    {
+      "id": "scene_004",
+      "scene_id": "scene_004",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "違うのだ！いつも目が合ったら微笑みながら会釈してくれるのだ！あれは脈アリ確定演出なのだ！",
+      "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "違うのだ！いつも目が合ったら微笑みながら会釈してくれるのだ！あれは脈アリ確定演出なのだ！",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "",
+        "character_right": "",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": ""
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "",
+            "state": "speaking",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_004_01",
+          "screen_text": "違うのだ！",
+          "display_mode": "replace",
+          "char_count": 5,
+          "start_frame": 306,
+          "duration_frames": 21,
+          "end_frame": 327,
+          "start_sec": 10.2,
+          "duration_sec": 0.7
+        },
+        {
+          "sub_scene_id": "scene_004_02",
+          "screen_text": "いつも目が合ったら微笑みながら会釈し",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_frame": 327,
+          "duration_frames": 74,
+          "end_frame": 401,
+          "start_sec": 10.9,
+          "duration_sec": 2.467
+        },
+        {
+          "sub_scene_id": "scene_004_03",
+          "screen_text": "てくれるのだ！",
+          "display_mode": "replace",
+          "char_count": 7,
+          "start_frame": 400,
+          "duration_frames": 29,
+          "end_frame": 429,
+          "start_sec": 13.333,
+          "duration_sec": 0.967
+        },
+        {
+          "sub_scene_id": "scene_004_04",
+          "screen_text": "あれは脈アリ確定演出なのだ！",
+          "display_mode": "replace",
+          "char_count": 14,
+          "start_frame": 429,
+          "duration_frames": 57,
+          "end_frame": 486,
+          "start_sec": 14.3,
+          "duration_sec": 1.9
+        }
+      ]
+    },
+    {
+      "id": "scene_005",
+      "scene_id": "scene_005",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "emotion": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "普通に挨拶されただけでしょ。この前、ご飯誘って『予定がある』って断られてたわよね？",
+      "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "普通に挨拶されただけでしょ。この前、ご飯誘って『予定がある』って断られてたわよね？",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff5ca3",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff5ca3",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "",
+        "character_right": "",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": ""
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "",
+            "state": "speaking",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_005_01",
+          "screen_text": "普通に挨拶されただけでしょ。この前、",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_frame": 486,
+          "duration_frames": 79,
+          "end_frame": 565,
+          "start_sec": 16.2,
+          "duration_sec": 2.633
+        },
+        {
+          "sub_scene_id": "scene_005_02",
+          "screen_text": "ご飯誘って『予定がある』って断られて",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_frame": 565,
+          "duration_frames": 79,
+          "end_frame": 644,
+          "start_sec": 18.833,
+          "duration_sec": 2.633
+        },
+        {
+          "sub_scene_id": "scene_005_03",
+          "screen_text": "たわよね？",
+          "display_mode": "replace",
+          "char_count": 5,
+          "start_frame": 644,
+          "duration_frames": 22,
+          "end_frame": 666,
+          "start_sec": 21.467,
+          "duration_sec": 0.733
+        }
+      ]
+    },
+    {
+      "id": "scene_006",
+      "scene_id": "scene_006",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "それはたまたま本当に予定がかぶっただけなのだ！",
+      "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "それはたまたま本当に予定がかぶっただけなのだ！",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "",
+        "character_right": "",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": ""
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "",
+            "state": "speaking",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_006_01",
+          "screen_text": "それはたまたま本当に予定がかぶっただ",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_frame": 666,
+          "duration_frames": 87,
+          "end_frame": 753,
+          "start_sec": 22.2,
+          "duration_sec": 2.9
+        },
+        {
+          "sub_scene_id": "scene_006_02",
+          "screen_text": "けなのだ！",
+          "display_mode": "replace",
+          "char_count": 5,
+          "start_frame": 753,
+          "duration_frames": 24,
+          "end_frame": 777,
+          "start_sec": 25.1,
+          "duration_sec": 0.8
+        }
+      ]
+    },
+    {
+      "id": "scene_007",
+      "scene_id": "scene_007",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "じゃあ、LINEの返信がいつも３日後なのはどうなのよ？",
+      "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "じゃあ、LINEの返信がいつも３日後なのはどうなのよ？",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff5ca3",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff5ca3",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "",
+        "character_right": "",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": ""
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "",
+            "state": "speaking",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_007_01",
+          "screen_text": "じゃあ、",
+          "display_mode": "replace",
+          "char_count": 4,
+          "start_frame": 777,
+          "duration_frames": 21,
+          "end_frame": 798,
+          "start_sec": 25.9,
+          "duration_sec": 0.7
+        },
+        {
+          "sub_scene_id": "scene_007_02",
+          "screen_text": "LINEの返信がいつも３日後なのはど",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_frame": 798,
+          "duration_frames": 87,
+          "end_frame": 885,
+          "start_sec": 26.6,
+          "duration_sec": 2.9
+        },
+        {
+          "sub_scene_id": "scene_007_03",
+          "screen_text": "うなのよ？",
+          "display_mode": "replace",
+          "char_count": 5,
+          "start_frame": 885,
+          "duration_frames": 23,
+          "end_frame": 908,
+          "start_sec": 29.5,
+          "duration_sec": 0.767
+        }
+      ]
+    },
+    {
+      "id": "scene_008",
+      "scene_id": "scene_008",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "仕事が忙しくて、スマホを見る暇がないだけなのだ！",
+      "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "仕事が忙しくて、スマホを見る暇がないだけなのだ！",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "",
+        "character_right": "",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": ""
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "",
+            "state": "speaking",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_008_01",
+          "screen_text": "仕事が忙しくて、",
+          "display_mode": "replace",
+          "char_count": 8,
+          "start_frame": 908,
+          "duration_frames": 39,
+          "end_frame": 947,
+          "start_sec": 30.267,
+          "duration_sec": 1.3
+        },
+        {
+          "sub_scene_id": "scene_008_02",
+          "screen_text": "スマホを見る暇がないだけなのだ！",
+          "display_mode": "replace",
+          "char_count": 16,
+          "start_frame": 946,
+          "duration_frames": 77,
+          "end_frame": 1023,
+          "start_sec": 31.533,
+          "duration_sec": 2.567
+        }
+      ]
+    },
+    {
+      "id": "scene_009",
+      "scene_id": "scene_009",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "他のみんなとは楽しそうにランチ行ってるみたいだけど？",
+      "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "他のみんなとは楽しそうにランチ行ってるみたいだけど？",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff5ca3",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff5ca3",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "",
+        "character_right": "",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": ""
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "",
+            "state": "speaking",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_009_01",
+          "screen_text": "他のみんなとは楽しそうにランチ行って",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_frame": 1024,
+          "duration_frames": 87,
+          "end_frame": 1111,
+          "start_sec": 34.133,
+          "duration_sec": 2.9
+        },
+        {
+          "sub_scene_id": "scene_009_02",
+          "screen_text": "るみたいだけど？",
+          "display_mode": "replace",
+          "char_count": 8,
+          "start_frame": 1111,
+          "duration_frames": 39,
+          "end_frame": 1150,
+          "start_sec": 37.033,
+          "duration_sec": 1.3
+        }
+      ]
+    },
+    {
+      "id": "scene_010",
+      "scene_id": "scene_010",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "ボクを嫉妬させて気を引こうとする高度な駆け引きなのだ！",
+      "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "ボクを嫉妬させて気を引こうとする高度な駆け引きなのだ！",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "",
+        "character_right": "",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": ""
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "",
+            "state": "speaking",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_010_01",
+          "screen_text": "ボクを嫉妬させて気を引こうとする高度",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_frame": 1149,
+          "duration_frames": 87,
+          "end_frame": 1236,
+          "start_sec": 38.3,
+          "duration_sec": 2.9
+        },
+        {
+          "sub_scene_id": "scene_010_02",
+          "screen_text": "な駆け引きなのだ！",
+          "display_mode": "replace",
+          "char_count": 9,
+          "start_frame": 1236,
+          "duration_frames": 44,
+          "end_frame": 1280,
+          "start_sec": 41.2,
+          "duration_sec": 1.467
+        }
+      ]
+    },
+    {
+      "id": "scene_011",
+      "scene_id": "scene_011",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "emotion": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "脈アリの証拠は全力で信じるのに、不都合なデータは全部『別の理由』でノーカンにするのね。これが確証バイアスよ",
+      "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "脈アリの証拠は全力で信じるのに、不都合なデータは全部『別の理由』でノーカンにするのね。これが確証バイアスよ",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff5ca3",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff5ca3",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "",
+        "character_right": "",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": ""
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "",
+            "state": "speaking",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_011_01",
+          "screen_text": "脈アリの証拠は全力で信じるのに、",
+          "display_mode": "replace",
+          "char_count": 16,
+          "start_frame": 1280,
+          "duration_frames": 54,
+          "end_frame": 1334,
+          "start_sec": 42.667,
+          "duration_sec": 1.8
+        },
+        {
+          "sub_scene_id": "scene_011_02",
+          "screen_text": "不都合なデータは全部『別の理由』でノ",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_frame": 1334,
+          "duration_frames": 61,
+          "end_frame": 1395,
+          "start_sec": 44.467,
+          "duration_sec": 2.033
+        },
+        {
+          "sub_scene_id": "scene_011_03",
+          "screen_text": "ーカンにするのね。",
+          "display_mode": "replace",
+          "char_count": 9,
+          "start_frame": 1395,
+          "duration_frames": 31,
+          "end_frame": 1426,
+          "start_sec": 46.5,
+          "duration_sec": 1.033
+        },
+        {
+          "sub_scene_id": "scene_011_04",
+          "screen_text": "これが確証バイアスよ",
+          "display_mode": "replace",
+          "char_count": 10,
+          "start_frame": 1426,
+          "duration_frames": 34,
+          "end_frame": 1460,
+          "start_sec": 47.533,
+          "duration_sec": 1.133
+        }
+      ]
+    },
+    {
+      "id": "scene_012",
+      "scene_id": "scene_012",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "というわけで初デート用の服を買うから、めたんボクに３万円貸すのだ！",
+      "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "というわけで初デート用の服を買うから、めたんボクに３万円貸すのだ！",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "",
+        "character_right": "",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": ""
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "",
+            "state": "speaking",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_012_01",
+          "screen_text": "というわけで初デート用の服を買うから",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_frame": 1460,
+          "duration_frames": 87,
+          "end_frame": 1547,
+          "start_sec": 48.667,
+          "duration_sec": 2.9
+        },
+        {
+          "sub_scene_id": "scene_012_02",
+          "screen_text": "、めたんボクに３万円貸すのだ！",
+          "display_mode": "replace",
+          "char_count": 15,
+          "start_frame": 1547,
+          "duration_frames": 73,
+          "end_frame": 1620,
+          "start_sec": 51.567,
+          "duration_sec": 2.433
+        }
+      ]
+    }
+  ],
+  "source": "",
+  "render_control": {
+    "scene_visibility": {
+      "scene_001": true,
+      "scene_002": true,
+      "scene_003": true,
+      "scene_004": true,
+      "scene_005": true,
+      "scene_006": true,
+      "scene_007": true,
+      "scene_008": true,
+      "scene_009": true,
+      "scene_010": true,
+      "scene_011": true,
+      "scene_012": true
+    }
+  },
+  "durationSec": 54,
+  "durationInFrames": 1620,
+  "total_frames": 1620,
+  "fps": 30,
+  "common_layers": [
+    {
+      "layer_id": "background",
+      "type": "image",
+      "src": "scene-bg-town-evening.png",
+      "z_index": 0,
+      "fit": "cover",
+      "start_frame": 0,
+      "duration_frames": 1620
+    },
+    {
+      "layer_id": "logboard",
+      "type": "image",
+      "src": "logboard/logboard-BK.png",
+      "z_index": 18,
+      "fit": "contain",
+      "start_frame": 0,
+      "duration_frames": 1620
+    },
+    {
+      "layer_id": "hook-background-scene_001",
+      "type": "image",
+      "src": "images/backgrounds/hook-bg-dots-pk.png",
+      "z_index": 0,
+      "fit": "cover",
+      "start_frame": 0,
+      "duration_frames": 78
+    }
+  ],
+  "tts_transform": "",
+  "video_spec": {
+    "audio": {
+      "tts_transform": "",
+      "bgm": "/audio/bgm/BGM-piano.mp3",
+      "bgm_volume": 0.03,
+      "bgm_loop": true
+    },
+    "style": {
+      "background": "scene-bg-town-evening.png",
+      "title_overlay": {
+        "enabled": true,
+        "bg_color": "#000000",
+        "text_color": "#ffffff",
+        "height_px": 72,
+        "font_size_px": 42,
+        "width_px": 994,
+        "line_break_mode": "auto",
+        "line_chars": 18,
+        "text_align": "center"
+      }
+    },
+    "format": {
+      "fps": 30,
+      "duration": 54,
+      "durationInFrames": 1620
+    },
+    "title": "後輩のあの子、"
+  },
+  "bgm": {
+    "src": "/audio/bgm/BGM-piano.mp3",
+    "volume": 0.03,
+    "loop": true
+  },
+  "background": "scene-bg-town-evening.png",
+  "title": "後輩のあの子、",
+  "title_overlay": {
+    "enabled": true,
+    "bg_color": "#000000",
+    "text_color": "#ffffff",
+    "height_px": 72,
+    "font_size_px": 42,
+    "width_px": 994,
+    "line_break_mode": "auto",
+    "line_chars": 18,
+    "text_align": "center"
+  }
+}

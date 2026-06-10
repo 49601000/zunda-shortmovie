@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>フック画像生成プロンプトビルダー</title>
+  <style>
+    :root {
+      --bg-a: #081119;
+      --bg-b: #102236;
+      --bg-c: #1a3a44;
+      --panel: rgba(8, 20, 30, 0.84);
+      --panel-2: rgba(12, 31, 42, 0.82);
+      --surface: rgba(8, 20, 30, 0.9);
+      --line: rgba(99, 217, 188, 0.36);
+      --line-soft: rgba(168, 196, 194, 0.25);
+      --ink: #f2f8f7;
+      --sub: #a8c4c2;
+      --accent: #63d9bc;
+      --ok: #93f5c7;
+      --danger: #ff8f8f;
+      --shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+      --radius: 16px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      background:
+        radial-gradient(140% 120% at 0% 0%, rgba(99, 217, 188, 0.2) 0%, rgba(99, 217, 188, 0) 44%),
+        radial-gradient(120% 120% at 100% 0%, rgba(255, 202, 118, 0.1) 0%, rgba(255, 202, 118, 0) 46%),
+        linear-gradient(135deg, var(--bg-a) 0%, var(--bg-b) 45%, var(--bg-c) 100%);
+      overflow-x: hidden;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(99, 217, 188, 0.28);
+      background: linear-gradient(90deg, #0d3f39 0%, #0c3140 35%, #102236 70%, #081119 100%);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar {
+      min-height: 66px;
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .topbarLeft {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .brandMark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(160deg, #1f7f6c, #124c58);
+      border: 1px solid rgba(147, 245, 199, 0.36);
+      box-shadow: 0 8px 20px rgba(8, 20, 30, 0.45);
+      color: #f2fff9;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .brandText {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .topbarDivider {
+      width: 1px;
+      height: 28px;
+      background: rgba(168, 196, 194, 0.42);
+      flex: none;
+    }
+
+    .topbarTitle {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .topbarVersion {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--ok);
+      letter-spacing: 0.04em;
+      opacity: 0.9;
+      white-space: nowrap;
+    }
+
+    main {
+      padding: 20px 16px 30px;
+    }
+
+    .wrap {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      min-width: 0;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 2.8vw, 2rem);
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+      color: var(--sub);
+      line-height: 1.55;
+    }
+
+    .hero {
+      display: grid;
+      gap: 10px;
+    }
+
+    .section {
+      margin: 0 0 8px;
+      color: var(--sub);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    label {
+      display: block;
+      color: #d8ece8;
+      font-size: 0.88rem;
+      font-weight: bold;
+      margin: 0 0 7px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(168, 196, 194, 0.35);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 12px;
+      font-size: 0.92rem;
+      outline: none;
+      box-shadow: none;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 217, 188, 0.18);
+    }
+
+    textarea {
+      min-height: 260px;
+      resize: vertical;
+      line-height: 1.55;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Yu Gothic UI", monospace;
+      white-space: pre-wrap;
+    }
+
+    button {
+      min-height: 40px;
+      padding: 10px 14px;
+      font-size: 0.86rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), #98f2dd);
+      color: #06241e;
+      transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button.secondary {
+      color: #d8ece8;
+      border: 1px solid rgba(168, 196, 194, 0.34);
+      background: rgba(8, 20, 30, 0.75);
+    }
+
+    textarea[readonly] {
+      background: rgba(8, 20, 30, 0.66);
+      border-style: dashed;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field {
+      min-width: 0;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .panel {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    @media (max-width: 700px) {
+      .row,
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .topbarLeft {
+        width: 100%;
+      }
+
+      .brandText,
+      .topbarDivider {
+        display: none;
+      }
+
+      .topbarTitle {
+        white-space: normal;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .actions {
+        justify-content: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="topbarLeft">
+        <div class="brandMark">ZSM</div>
+        <div class="brandText">ずんだもん ショート動画作成</div>
+        <div class="topbarDivider"></div>
+        <div class="topbarTitle">Hook Picture Prompt Builder</div>
+      </div>
+      <div class="topbarVersion">TOOL4</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <section class="card hero">
+        <h1>tool4:HOOK画像プロンプト生成</h1>
+        <p>TOP / MAIN / SUB と会話内容から、YouTube Shorts冒頭0〜2秒向けのHOOK画像プロンプトを生成します。</p>
+      </section>
+
+      <section class="card panel">
+        <p class="section">HOOK Text</p>
+        <div class="row">
+          <div class="field">
+            <label for="top">TOP</label>
+            <input id="top" placeholder="例：まだ舞える。。。" />
+          </div>
+
+          <div class="field">
+            <label for="main">MAIN</label>
+            <input id="main" placeholder="例：だいたいこれ" />
+          </div>
+
+          <div class="field">
+            <label for="sub">SUB</label>
+            <input id="sub" placeholder="例：サンクコスト効果" value="ってだいたいこれ" />
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <div class="card panel">
+          <div>
+            <p class="section">Conversation</p>
+            <label for="conversation">会話内容</label>
+          </div>
+          <textarea id="conversation" placeholder="ずんだもん：・・・
+めたん：・・・"></textarea>
+        </div>
+
+        <div class="card panel">
+          <div>
+            <p class="section">Output Prompt</p>
+            <label for="output">生成プロンプト</label>
+          </div>
+          <textarea id="output" readonly spellcheck="false" placeholder="ここに生成プロンプトが出ます。"></textarea>
+          <div class="actions">
+            <button id="generate" type="button">プロンプト生成</button>
+            <button id="copy" class="secondary" type="button">コピー</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function inferMood(text) {
+      const rules = [
+        {
+          keywords: ["負け", "認めない", "言い訳", "正しい", "失敗"],
+          zundamon: "焦りながらも強がっている表情、必死に言い訳しているポーズ",
+          metan: "呆れ顔で冷静にツッコミを入れる表情"
+        },
+        {
+          keywords: ["まだ舞える", "やめられない", "もったいない", "今更", "サンクコスト"],
+          zundamon: "ボロボロなのに諦めきれない表情、拳を握って前のめりになるポーズ",
+          metan: "冷静で少し呆れた表情、片手を差し出して止めるポーズ"
+        },
+        {
+          keywords: ["実質勝ち", "まくった", "基準", "アンカリング"],
+          zundamon: "ドヤ顔で勝ち誇っている表情、胸を張るポーズ",
+          metan: "半目で呆れている表情、淡々と指摘するポーズ"
+        },
+        {
+          keywords: ["今度こそ", "来る", "ギャンブラー", "確率"],
+          zundamon: "目を輝かせて期待している表情、祈るようなポーズ",
+          metan: "冷静に現実を突きつける表情"
+        },
+        {
+          keywords: ["気にしすぎ", "見られてる", "スポットライト"],
+          zundamon: "周囲の視線を気にして焦っている表情、縮こまるポーズ",
+          metan: "落ち着いて説明する表情"
+        }
+      ];
+
+      for (const rule of rules) {
+        if (rule.keywords.some((k) => text.includes(k))) {
+          return rule;
+        }
+      }
+
+      return {
+        zundamon: "感情豊かにリアクションしている表情、少し大げさなポーズ",
+        metan: "冷静にツッコミを入れる表情、落ち着いたポーズ"
+      };
+    }
+
+    function buildPrompt() {
+      const top = $("top").value.trim();
+      const main = $("main").value.trim();
+      const sub = $("sub").value.trim();
+      const conversation = $("conversation").value.trim();
+
+      if (!top || !main || !sub) {
+        alert("TOP / MAIN / SUB は全部入れてクレメンス");
+        return "";
+      }
+
+      const fullText = `${top}\n${main}\n${sub}\n${conversation}`;
+      const mood = inferMood(fullText);
+
+      return `YouTube Shorts用のHOOK画像を生成してください。
+
+画像サイズ：
+1080x1920
+縦長9:16
+スマホ視聴向け
+
+目的：
+動画冒頭0〜2秒に表示するHOOK画像。
+心理学の説明ではなく、視聴者が一瞬で「あるある」「自分のことかも」「見たことある」と感じる、動画本編から切り取ったような動きのある一コマにしてください。
+最終目標は、YouTube Shortsの一覧で見た瞬間に「ワイやん」と思わせることです。
+
+最重要原則：
+- 文字を目立たせるのではなく、内容を理解させる
+- 画像を派手にするのではなく、状況を伝える
+- 心理学用語を説明するのではなく、あるある体験を想起させる
+- MAINだけ読めれば意味が伝わる構図を最優先する
+
+重要：
+以下の3つの日本語テキストを、必ず画像内に入れてください。
+文言の改変、省略、追加は禁止です。
+HOOK本文として必ず入れる文字は、TOP / MAIN / SUB の3要素です。
+TOP / MAIN / SUB 自体の文言は改変・省略・追加しないでください。
+
+TOP：
+「${top}」
+
+MAIN：
+「${main}」
+
+SUB：
+「${sub}」
+
+テキスト配置：
+- MAINを最も大きく配置し、最初に視認されるようにする
+- TOPはMAINの上に配置
+- SUBはMAINの下に配置
+- TOPとSUBは補助情報として扱い、MAINより小さくする
+- TOPとSUBの色、装飾、影は控えめにする
+- MAINの視認性を最優先する
+- スマホ画面で一瞬見てもMAINが読めるようにする
+- 太字で読みやすい日本語タイポグラフィ
+- 文字は背景に埋もれないようにする
+- 文字数が少ない場合でも無理に画面を埋めず、余白と呼吸感を残す
+
+文字デザイン：
+- 過剰装飾は禁止
+- 虹色グラデーション、炎エフェクト、過度な発光、過度な立体化、過剰な縁取り、派手すぎるYouTubeサムネ風装飾は禁止
+- HOOK本文へ集中線、スピード線、放射線、爆発マーク、矢印、過剰な装飾フレームを付けない
+- MAINは装飾ではなく、サイズ差、太字、視線誘導で強調する
+- 高い可読性、シンプルさ、スマホ視認性、情報の理解速度を優先する
+- HOOK本文はシンプルな文字組みで見せる。エフェクトで目立たせない
+
+会話テキスト：
+- ずんだもんと四国めたんの短い会話吹き出しは入れてもOK
+- 会話は状況理解を補助するための小さな演出にする
+- 会話吹き出しは1〜2個まで、短い一言にする
+- 会話テキストはTOP / MAIN / SUBより小さく、MAINの視認性を邪魔しない
+- 会話で心理学用語を説明しすぎない。あるある体験が伝わる一言にする
+
+構図：
+- 単なる文字スライドではなく、動画冒頭の決定的瞬間のような一枚絵
+- 単なる説明スライドや文字ポスターにしない
+- 左側に四国めたん
+- 右側にずんだもん
+- 2人の表情、ポーズ、視線、距離感でHOOKの意味が伝わるようにする
+- キャラクターは下部寄りに配置し、上部〜中央のテキストを邪魔しない
+- 画面全体はYouTube Shortsらしい、あるある感のある強いフック画像にする
+
+キャラクター共通ルール：
+- 坂本アヒル氏のVOICEVOX立ち絵に近い雰囲気の、デフォルメされた2Dアニメ調
+- 完全再現ではなく、近い雰囲気、低頭身、丸みのあるシルエット、シンプルで見やすい線を重視する
+- 表情は大きく、感情とリアクションが一瞬で分かる
+- 過度にリアル、写実的、厚塗り、3D風にはしない
+- 余計な衣装変更をしない
+- YouTube Shortsの小さい画面でも誰が誰か分かるようにする
+
+ずんだもん：
+- 右側に配置
+- 明るい黄緑色の髪
+- 緑系の衣装
+- 小さくて元気なデフォルメキャラ
+- 坂本アヒル氏のずんだもん立ち絵に近い雰囲気
+- 表情は大きめ、目は丸く、リアクション芸寄り
+- 元気で感情豊か、リアクションが大きいボケ役
+
+四国めたん：
+- 左側に配置
+- ピンク〜紫系の髪
+- 落ち着いた雰囲気のデフォルメキャラ
+- 坂本アヒル氏の四国めたん立ち絵に近い雰囲気
+- ツッコミ役として、呆れ顔・冷静顔などを使う
+- 冷静で、ずんだもんに対して呆れ顔を向けるツッコミ役
+キャラクター演出：
+- ずんだもん：${mood.zundamon}
+- 四国めたん：${mood.metan}
+
+背景：
+- 背景画像は別途用意済みなので、背景の具体的内容は固定しない
+- 必要に応じて、動画本編と自然につながる汎用的な背景として扱う
+- 背景よりも、HOOKテキストとキャラクターのリアクションを優先する
+
+会話内容の参考：
+${conversation || "会話内容なし"}
+
+情報量制限ルール
+視線誘導の最優先は MAIN
+次に TOP と SUB
+次にキャラクターの表情
+それ以外の要素は補助扱い
+スマホで一瞬見た時にMAINだけ読めれば成功と考える
+禁止事項
+説明用の図解を入れない
+計算式を入れない
+数字を複数配置しない
+視聴者が読まないと理解できない要素を作らない
+TOP / MAIN / SUB 以外の大きな見出しや説明文を追加しない
+二人の短い会話吹き出しは例外として許可。ただし主役にしない
+HOOK本文を飾る集中線、スピード線、放射線、爆発マーク、矢印を入れない
+
+キャラクター
+ずんだもんは自信満々または勘違い顔
+四国めたんは呆れ顔またはツッコミ顔
+意味が伝わる構図を優先
+
+背景
+背景は状況を示す程度
+ボケ気味
+情報を読ませない
+主役にならない
+
+構図
+画面の40〜60%をHOOKテキストが占有。ただし文字数が少ない場合は無理に拡大せず余白を残す
+残りをキャラクター
+小物は最小限
+
+目標
+視聴者が0.5秒見ただけで理解できること。
+「なんか自分のことっぽい」と直感できること。
+
+デザイン方針：
+- viral social media style
+- relatable slice-of-life hook composition
+- expressive anime reaction faces
+- high readability
+- clean composition
+- bold Japanese headline
+- not a poster
+- not a textbook slide
+- not a full explanatory diagram
+- not overdecorated
+- one decisive hook moment`;
+    }
+
+    $("generate").addEventListener("click", () => {
+      $("output").value = buildPrompt();
+    });
+
+    $("copy").addEventListener("click", async () => {
+      const text = $("output").value;
+      if (!text) return;
+
+      await navigator.clipboard.writeText(text);
+      alert("コピーしました！");
+    });
+  </script>
+</body>
+</html>

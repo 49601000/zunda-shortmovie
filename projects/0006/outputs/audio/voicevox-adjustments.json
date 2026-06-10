@@ -1,0 +1,12 @@
+{
+  "scene_011": {
+    "voice_override": "ただの強盗じゃないの",
+    "voice_control": {
+      "speedScale": 0.63,
+      "pitchScale": -0.14,
+      "intonationScale": 0.35,
+      "pauseLengthScale": 0.36
+    },
+    "output_wav_path": "projects/0004/outputs/audio/seg_011.wav"
+  }
+}

@@ -1,0 +1,1681 @@
+{
+  "project_id": "0007",
+  "version": "v01",
+  "hook": {
+    "id": "hook_a",
+    "text": "ずんだもん、その理解で本当に合ってる？",
+    "intent": "疑問型",
+    "duration_sec": 2
+  },
+  "slides": [
+    {
+      "slide_id": "slide_01",
+      "role": "title",
+      "title": "フレーミング効果",
+      "body": "同じ情報でも見せ方で印象は変わる",
+      "visual_intent": "simple_diagram: 同じ情報→見せ方A／見せ方B→印象が変わる / core_message: 同じ情報でも見せ方で印象は変わる",
+      "simple_diagram": "同じ情報→見せ方A／見せ方B→印象が変わる"
+    },
+    {
+      "slide_id": "slide_02",
+      "role": "concept",
+      "title": "なぜ起きる？",
+      "body": "人は情報そのものより見せられ方の影響を受ける",
+      "visual_intent": "simple_diagram: 10億円←宝くじ→2000万分の1 / core_message: 人は情報そのものより見せられ方の影響を受ける",
+      "simple_diagram": "10億円←宝くじ→2000万分の1"
+    },
+    {
+      "slide_id": "slide_03",
+      "role": "example",
+      "title": "宝くじの見え方",
+      "body": "『10億円』と『2000万分の1』は同じ宝くじの話",
+      "visual_intent": "simple_diagram: 10億円＝夢／2000万分の1＝厳しい現実 / core_message: 『10億円』と『2000万分の1』は同じ宝くじの話",
+      "simple_diagram": "10億円＝夢／2000万分の1＝厳しい現実"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "scene_001",
+      "scene_id": "scene_001",
+      "scene_type": "hook",
+      "role": "hook",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_01",
+      "speaker": "議題",
+      "emotion": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "数字のマジック、だいたいこんななのだ",
+      "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "数字のマジック、だいたいこんななのだ",
+        "screen_text": "",
+        "screen_text_font_size": 48,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ffffff",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 48,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ffffff",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "images/backgrounds/hook-bg-dots-yl.png",
+        "slide": "",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "",
+        "character_right": "",
+        "hook_background": "images/backgrounds/hook-bg-dots-pk.png",
+        "hook_character": "images/characters/zundamon/zundamon-normal-0000.png",
+        "hook_bubble": "parts/Hook-speech-balloon.png"
+      },
+      "composition": {
+        "background": {
+          "image_path": "images/backgrounds/hook-bg-dots-yl.png"
+        },
+        "slide_area": {
+          "image_path": ""
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_001_01",
+          "screen_text": "数字のマジック、だいたいこんななのだ",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_frame": 0,
+          "duration_frames": 81,
+          "end_frame": 81,
+          "start_sec": 0,
+          "duration_sec": 2.7
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "hook",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": false,
+        "speaker": "議題",
+        "speaker_side": "hook",
+        "assets": {
+          "hook": {
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png",
+            "mouth_1": "images/characters/zundamon/zundamon-normal-0001.png",
+            "mouth_2": "images/characters/zundamon/zundamon-normal-0002.png"
+          }
+        }
+      },
+      "hook_visual": {
+        "texts": {
+          "top": {
+            "text": "数字の",
+            "fontSize": 84,
+            "color": "#303030",
+            "outlineColor": "#000000",
+            "outlineScale": 1.02,
+            "fillVisible": false
+          },
+          "main": {
+            "text": "マジック",
+            "fontSize": 200,
+            "color": "#e60012",
+            "outlineColor": "transparent",
+            "outlineScale": 1.02,
+            "fillVisible": true
+          },
+          "sub": {
+            "text": "ってだいたいこれ",
+            "fontSize": 98,
+            "color": "#303030",
+            "outlineColor": "#000000",
+            "outlineScale": 1.02,
+            "fillVisible": false
+          }
+        },
+        "background": {
+          "image_path": "images/backgrounds/hook-bg-dots-pk.png"
+        },
+        "character": {
+          "enabled": true,
+          "x": 450,
+          "y": 1130,
+          "width": 800,
+          "height": 820,
+          "scale": 2,
+          "objectFit": "contain",
+          "objectPosition": "center top",
+          "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
+          "lip_sync_image_paths": [
+            "images/characters/zundamon/zundamon-normal-0001.png",
+            "images/characters/zundamon/zundamon-normal-0002.png"
+          ]
+        },
+        "bubble": {
+          "image_path": "parts/Hook-speech-balloon.png",
+          "text": "",
+          "fontSize": 64
+        },
+        "finalize_to_dialog": false
+      }
+    },
+    {
+      "id": "scene_002",
+      "scene_id": "scene_002",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "この宝くじあたれば１０億円なのだ！買えば誰でも大富豪になれる魔法のチケットなのだ！",
+      "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "この宝くじあたれば１０億円なのだ！買えば誰でも大富豪になれる魔法のチケットなのだ！",
+        "screen_text": "",
+        "screen_text_font_size": 66,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 20
+      },
+      "screen_text_font_size": 66,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 20,
+      "visual_assets": {
+        "background": "",
+        "slide": "projects/0007/outputs/slide/slide01.png",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "projects/0007/outputs/slide/slide01.png"
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-normal-0001.png",
+              "images/characters/zundamon/zundamon-normal-0002.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_002_01",
+          "screen_text": "この宝くじ、あたれば\n１０億円なのだ！",
+          "display_mode": "replace",
+          "char_count": 19,
+          "start_frame": 82,
+          "duration_frames": 69,
+          "end_frame": 151,
+          "start_sec": 2.733,
+          "duration_sec": 2.3
+        },
+        {
+          "sub_scene_id": "scene_002_02",
+          "screen_text": "買えば誰でも大富豪になれる\n魔法のチケットなのだ！",
+          "display_mode": "replace",
+          "char_count": 25,
+          "start_frame": 151,
+          "duration_frames": 96,
+          "end_frame": 247,
+          "start_sec": 5.033,
+          "duration_sec": 3.2
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "ずんだもん",
+        "speaker_side": "right",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-0.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png",
+            "mouth_1": "images/characters/zundamon/zundamon-normal-0001.png",
+            "mouth_2": "images/characters/zundamon/zundamon-normal-0002.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "scene_003",
+      "scene_id": "scene_003",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "emotion": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "当たる確率がどのくらいか知ってるのかしら？",
+      "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "当たる確率がどのくらいか知ってるのかしら？",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff5ca3",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff5ca3",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "projects/0007/outputs/slide/slide01.png",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "projects/0007/outputs/slide/slide01.png"
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-1.png",
+              "images/characters/metan/metan-2.png"
+            ]
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_003_01",
+          "screen_text": "当たる確率がどのくらいか\n知ってるのかしら？",
+          "display_mode": "replace",
+          "char_count": 22,
+          "start_frame": 247,
+          "duration_frames": 69,
+          "end_frame": 316,
+          "start_sec": 8.233,
+          "duration_sec": 2.3
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "めたん",
+        "speaker_side": "left",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-0.png",
+            "mouth_1": "images/characters/metan/metan-1.png",
+            "mouth_2": "images/characters/metan/metan-2.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "scene_004",
+      "scene_id": "scene_004",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "そんな細かい数字はどうでもいいのだ！当たれば人生一発逆転、それだけが真実なのだ！",
+      "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "そんな細かい数字はどうでもいいのだ！当たれば人生一発逆転、それだけが真実なのだ！",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "projects/0007/outputs/slide/slide01.png",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "projects/0007/outputs/slide/slide01.png"
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-normal-0001.png",
+              "images/characters/zundamon/zundamon-normal-0002.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_004_01",
+          "screen_text": "そんな細かい数字はどうでもいいのだ！",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_frame": 316,
+          "duration_frames": 81,
+          "end_frame": 397,
+          "start_sec": 10.533,
+          "duration_sec": 2.7
+        },
+        {
+          "sub_scene_id": "scene_004_02",
+          "screen_text": "当たれば人生一発逆転、",
+          "display_mode": "replace",
+          "char_count": 11,
+          "start_frame": 397,
+          "duration_frames": 50,
+          "end_frame": 447,
+          "start_sec": 13.233,
+          "duration_sec": 1.667
+        },
+        {
+          "sub_scene_id": "scene_004_03",
+          "screen_text": "それだけが真実なのだ！",
+          "display_mode": "replace",
+          "char_count": 11,
+          "start_frame": 447,
+          "duration_frames": 50,
+          "end_frame": 497,
+          "start_sec": 14.9,
+          "duration_sec": 1.667
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "ずんだもん",
+        "speaker_side": "right",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-0.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png",
+            "mouth_1": "images/characters/zundamon/zundamon-normal-0001.png",
+            "mouth_2": "images/characters/zundamon/zundamon-normal-0002.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "scene_005",
+      "scene_id": "scene_005",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "emotion": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "１等が当たる確率は、およそ２０００万分の１らしいわよ。",
+      "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "１等が当たる確率は、およそ２０００万分の１らしいわよ。",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff5ca3",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff5ca3",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "projects/0007/outputs/slide/slide01.png",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "projects/0007/outputs/slide/slide01.png"
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-lookside-1.png",
+              "images/characters/metan/metan-lookside-2.png"
+            ]
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_005_01",
+          "screen_text": "１等が当たる確率は、",
+          "display_mode": "replace",
+          "char_count": 10,
+          "start_frame": 497,
+          "duration_frames": 34,
+          "end_frame": 531,
+          "start_sec": 16.567,
+          "duration_sec": 1.133
+        },
+        {
+          "sub_scene_id": "scene_005_02",
+          "screen_text": "およそ２０００万分の１\nらしいわよ。",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_frame": 531,
+          "duration_frames": 59,
+          "end_frame": 590,
+          "start_sec": 17.7,
+          "duration_sec": 1.967
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "めたん",
+        "speaker_side": "left",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-lookside-0.png",
+            "mouth_1": "images/characters/metan/metan-lookside-1.png",
+            "mouth_2": "images/characters/metan/metan-lookside-2.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "scene_006",
+      "scene_id": "scene_006",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "２０００万分の１……でも、ゼロじゃないならボクにとっては無限の夢があるのだ！",
+      "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "２０００万分の１……でも、ゼロじゃないならボクにとっては無限の夢があるのだ！",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "projects/0007/outputs/slide/slide03.png",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
+        "character_right": "images/characters/zundamon/zundamon-lowpanic-00000.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "projects/0007/outputs/slide/slide03.png"
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
+            "state": "idle",
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-lookside-1.png",
+              "images/characters/metan/metan-lookside-2.png"
+            ]
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-lowpanic-00000.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-lowpanic-00001.png",
+              "images/characters/zundamon/zundamon-lowpanic-00002.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_006_01",
+          "screen_text": "２０００万分の１……\nでも、ゼロじゃないなら",
+          "display_mode": "replace",
+          "char_count": 22,
+          "start_frame": 590,
+          "duration_frames": 74,
+          "end_frame": 664,
+          "start_sec": 19.667,
+          "duration_sec": 2.467
+        },
+        {
+          "sub_scene_id": "scene_006_02",
+          "screen_text": "ボクにとっては\n無限の夢があるのだ！",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_frame": 664,
+          "duration_frames": 61,
+          "end_frame": 725,
+          "start_sec": 22.133,
+          "duration_sec": 2.033
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "ずんだもん",
+        "speaker_side": "right",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-lookside-0.png",
+            "mouth_1": "images/characters/metan/metan-lookside-1.png",
+            "mouth_2": "images/characters/metan/metan-lookside-2.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-lowpanic-00000.png",
+            "mouth_1": "images/characters/zundamon/zundamon-lowpanic-00001.png",
+            "mouth_2": "images/characters/zundamon/zundamon-lowpanic-00002.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "scene_007",
+      "scene_id": "scene_007",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "絶望的数値とも言えるわね。",
+      "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "絶望的数値とも言えるわね。",
+        "screen_text": "",
+        "screen_text_font_size": 66,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff5ca3",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 20
+      },
+      "screen_text_font_size": 66,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff5ca3",
+      "line_break_mode": "auto",
+      "line_chars": 20,
+      "visual_assets": {
+        "background": "",
+        "slide": "projects/0007/outputs/slide/slide03.png",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
+        "character_right": "images/characters/zundamon/zundamon-lowpanic-00000.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "projects/0007/outputs/slide/slide03.png"
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-lookside-1.png",
+              "images/characters/metan/metan-lookside-2.png"
+            ]
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-lowpanic-00000.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_007_01",
+          "screen_text": "絶望的数値とも言えるわね。",
+          "display_mode": "replace",
+          "char_count": 13,
+          "start_frame": 725,
+          "duration_frames": 54,
+          "end_frame": 779,
+          "start_sec": 24.167,
+          "duration_sec": 1.8
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "めたん",
+        "speaker_side": "left",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-lookside-0.png",
+            "mouth_1": "images/characters/metan/metan-lookside-1.png",
+            "mouth_2": "images/characters/metan/metan-lookside-2.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-lowpanic-00000.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "scene_008",
+      "scene_id": "scene_008",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "１０億円のきらめきと２０００万分の１の壁。同じ宝くじなのに不思議なのだ。",
+      "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "１０億円のきらめきと２０００万分の１の壁。同じ宝くじなのに不思議なのだ。",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "projects/0007/outputs/slide/slide03.png",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "projects/0007/outputs/slide/slide03.png"
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-normal-0001.png",
+              "images/characters/zundamon/zundamon-normal-0002.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_008_01",
+          "screen_text": "１０億円のきらめきと\n２０００万分の１の壁。",
+          "display_mode": "replace",
+          "char_count": 22,
+          "start_frame": 779,
+          "duration_frames": 93,
+          "end_frame": 872,
+          "start_sec": 25.967,
+          "duration_sec": 3.1
+        },
+        {
+          "sub_scene_id": "scene_008_02",
+          "screen_text": "同じ宝くじなのに不思議なのだ。",
+          "display_mode": "replace",
+          "char_count": 15,
+          "start_frame": 872,
+          "duration_frames": 63,
+          "end_frame": 935,
+          "start_sec": 29.067,
+          "duration_sec": 2.1
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "ずんだもん",
+        "speaker_side": "right",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-lookside-0.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png",
+            "mouth_1": "images/characters/zundamon/zundamon-normal-0001.png",
+            "mouth_2": "images/characters/zundamon/zundamon-normal-0002.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "scene_009",
+      "scene_id": "scene_009",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "emotion": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "それがフレーミング効果よ。同じことでも見せ方ひとつで印象が変わるもんなのよ。",
+      "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "それがフレーミング効果よ。同じことでも見せ方ひとつで印象が変わるもんなのよ。",
+        "screen_text": "",
+        "screen_text_font_size": 66,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff5ca3",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 20
+      },
+      "screen_text_font_size": 66,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff5ca3",
+      "line_break_mode": "auto",
+      "line_chars": 20,
+      "visual_assets": {
+        "background": "",
+        "slide": "projects/0007/outputs/slide/slide02.png",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "projects/0007/outputs/slide/slide02.png"
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-1.png",
+              "images/characters/metan/metan-2.png"
+            ]
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_009_01",
+          "screen_text": "それがフレーミング効果よ。\n同じことでも",
+          "display_mode": "replace",
+          "char_count": 20,
+          "start_frame": 935,
+          "duration_frames": 66,
+          "end_frame": 1001,
+          "start_sec": 31.167,
+          "duration_sec": 2.2
+        },
+        {
+          "sub_scene_id": "scene_009_02",
+          "screen_text": "見せ方ひとつで印象が\n変わるものなのよ。",
+          "display_mode": "replace",
+          "char_count": 20,
+          "start_frame": 1001,
+          "duration_frames": 66,
+          "end_frame": 1067,
+          "start_sec": 33.367,
+          "duration_sec": 2.2
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "めたん",
+        "speaker_side": "left",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-0.png",
+            "mouth_1": "images/characters/metan/metan-1.png",
+            "mouth_2": "images/characters/metan/metan-2.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "scene_010",
+      "scene_id": "scene_010",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "emotion": "normal",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "なるほどなのだ！じゃあボクは『１０億円』を見ることにするのだ！",
+      "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "なるほどなのだ！じゃあボクは『１０億円』を見ることにするのだ！",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "projects/0007/outputs/slide/slide02.png",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
+        "character_right": "images/characters/zundamon/zundamon-lowpanic-00000.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "projects/0007/outputs/slide/slide02.png"
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-lowpanic-00000.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-lowpanic-00001.png",
+              "images/characters/zundamon/zundamon-lowpanic-00002.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_010_01",
+          "screen_text": "なるほどなのだ！ じゃあ\nボクは『１０億円』の夢を",
+          "display_mode": "replace",
+          "char_count": 25,
+          "start_frame": 1067,
+          "duration_frames": 96,
+          "end_frame": 1163,
+          "start_sec": 35.567,
+          "duration_sec": 3.2
+        },
+        {
+          "sub_scene_id": "scene_010_02",
+          "screen_text": "見ることにするのだ！",
+          "display_mode": "replace",
+          "char_count": 10,
+          "start_frame": 1163,
+          "duration_frames": 39,
+          "end_frame": 1202,
+          "start_sec": 38.767,
+          "duration_sec": 1.3
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "ずんだもん",
+        "speaker_side": "right",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-lookside-0.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-lowpanic-00000.png",
+            "mouth_1": "images/characters/zundamon/zundamon-lowpanic-00001.png",
+            "mouth_2": "images/characters/zundamon/zundamon-lowpanic-00002.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "scene_011",
+      "scene_id": "scene_011",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "emotion": "normal",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "人の話聞いてた？",
+      "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2,
+        "speedScale": 1.25
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "speedScale": 1.25,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "人の話聞いてた？",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff46b4",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff46b4",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "projects/0007/outputs/slide/slide02.png",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "images/characters/metan/metan-lookside-turnoff-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "projects/0007/outputs/slide/slide02.png"
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-lookside-turnoff-0.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-lookside-turnoff-1.png",
+              "images/characters/metan/metan-lookside-turnoff-2.png"
+            ]
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_011_01",
+          "screen_text": "人の話聞いてた？",
+          "display_mode": "replace",
+          "char_count": 8,
+          "start_frame": 1202,
+          "duration_frames": 36,
+          "end_frame": 1238,
+          "start_sec": 40.067,
+          "duration_sec": 1.2
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "めたん",
+        "speaker_side": "left",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-lookside-turnoff-0.png",
+            "mouth_1": "images/characters/metan/metan-lookside-turnoff-1.png",
+            "mouth_2": "images/characters/metan/metan-lookside-turnoff-2.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png"
+          }
+        }
+      }
+    }
+  ],
+  "source": "",
+  "render_control": {
+    "scene_visibility": {
+      "scene_001": true,
+      "scene_002": true,
+      "scene_003": true,
+      "scene_004": true,
+      "scene_005": true,
+      "scene_006": true,
+      "scene_007": true,
+      "scene_008": true,
+      "scene_009": true,
+      "scene_010": true,
+      "scene_011": true
+    }
+  },
+  "durationSec": 41.267,
+  "durationInFrames": 1238,
+  "total_frames": 1238,
+  "fps": 30,
+  "common_layers": [
+    {
+      "layer_id": "background",
+      "type": "image",
+      "src": "scene-bg-classroom-daytime.png",
+      "z_index": 0,
+      "fit": "cover",
+      "start_frame": 0,
+      "duration_frames": 1238
+    },
+    {
+      "layer_id": "logboard",
+      "type": "image",
+      "src": "logboard/logboard-BK.png",
+      "z_index": 18,
+      "fit": "contain",
+      "start_frame": 0,
+      "duration_frames": 1238
+    },
+    {
+      "layer_id": "hook-background-scene_001",
+      "type": "image",
+      "src": "images/backgrounds/hook-bg-dots-pk.png",
+      "z_index": 0,
+      "fit": "cover",
+      "start_frame": 0,
+      "duration_frames": 81
+    }
+  ],
+  "tts_transform": "",
+  "video_spec": {
+    "audio": {
+      "tts_transform": "",
+      "bgm": "/audio/bgm/BGM-piano.mp3",
+      "bgm_volume": 0.05,
+      "bgm_loop": true
+    },
+    "style": {
+      "background": "scene-bg-classroom-daytime.png",
+      "title_overlay": {
+        "enabled": true,
+        "bg_color": "#000000",
+        "text_color": "#ffffff",
+        "height_px": 72,
+        "font_size_px": 42,
+        "width_px": 994,
+        "line_break_mode": "auto",
+        "line_chars": 18,
+        "text_align": "center"
+      }
+    },
+    "format": {
+      "fps": 30,
+      "duration": 41.267,
+      "durationInFrames": 1238
+    },
+    "title": "この宝くじ、１等１０億円なのだ！"
+  },
+  "bgm": {
+    "src": "/audio/bgm/BGM-piano.mp3",
+    "volume": 0.05,
+    "loop": true
+  },
+  "background": "scene-bg-classroom-daytime.png",
+  "title": "この宝くじ、１等１０億円なのだ！",
+  "title_overlay": {
+    "enabled": true,
+    "bg_color": "#000000",
+    "text_color": "#ffffff",
+    "height_px": 72,
+    "font_size_px": 42,
+    "width_px": 994,
+    "line_break_mode": "auto",
+    "line_chars": 18,
+    "text_align": "center"
+  }
+}

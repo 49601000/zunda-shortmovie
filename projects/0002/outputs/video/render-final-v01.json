@@ -88,9 +88,9 @@
         "dialog_box": "",
         "character_left": "",
         "character_right": "",
-        "hook_background": "images/backgrounds/hook-bg-dots-pk.png",
-        "hook_character": "images/characters/zundamon/zundamon-normal-0000.png",
-        "hook_bubble": "parts/Hook-speech-balloon.png"
+        "hook_background": "images/backgrounds/HOOK002.png",
+        "hook_character": "",
+        "hook_bubble": ""
       },
       "composition": {
         "background": {
@@ -134,31 +134,10 @@
           "duration_sec": 2.6
         }
       ],
-      "lip_sync": {
-        "enabled": true,
-        "mode": "hook",
-        "interval_ms": 210,
-        "frames": [
-          "idle",
-          "mouth_1",
-          "mouth_2",
-          "mouth_1"
-        ],
-        "mute_non_speaking_side_to_idle": false,
-        "speaker": "議題",
-        "speaker_side": "hook",
-        "assets": {
-          "hook": {
-            "idle": "images/characters/zundamon/zundamon-normal-0000.png",
-            "mouth_1": "images/characters/zundamon/zundamon-normal-0001.png",
-            "mouth_2": "images/characters/zundamon/zundamon-normal-0002.png"
-          }
-        }
-      },
       "hook_visual": {
         "texts": {
           "top": {
-            "text": "だいじょうぶ？",
+            "text": "",
             "fontSize": 84,
             "color": "#303030",
             "outlineColor": "#ffffff",
@@ -166,7 +145,7 @@
             "fillVisible": false
           },
           "main": {
-            "text": "実質セーフ",
+            "text": "",
             "fontSize": 190,
             "color": "#e60012",
             "outlineColor": "transparent",
@@ -174,7 +153,7 @@
             "fillVisible": true
           },
           "sub": {
-            "text": "ってだいたいこれ",
+            "text": "",
             "fontSize": 98,
             "color": "#303030",
             "outlineColor": "#ffffff",
@@ -183,7 +162,7 @@
           }
         },
         "background": {
-          "image_path": "images/backgrounds/hook-bg-dots-pk.png"
+          "image_path": "images/backgrounds/HOOK002.png"
         },
         "character": {
           "enabled": true,
@@ -194,14 +173,11 @@
           "scale": 2,
           "objectFit": "contain",
           "objectPosition": "center top",
-          "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
-          "lip_sync_image_paths": [
-            "images/characters/zundamon/zundamon-normal-0001.png",
-            "images/characters/zundamon/zundamon-normal-0002.png"
-          ]
+          "image_path": "",
+          "lip_sync_image_paths": []
         },
         "bubble": {
-          "image_path": "parts/Hook-speech-balloon.png",
+          "image_path": "",
           "text": "",
           "fontSize": 64
         },
@@ -312,7 +288,7 @@
         },
         {
           "sub_scene_id": "scene_002_02",
-          "screen_text": "300円あるから実質セーフ\nなのだ！",
+          "screen_text": "300円あるから\n実質セーフなのだ！",
           "display_mode": "replace",
           "char_count": 18,
           "start_frame": 156,
@@ -718,7 +694,7 @@
       "sub_scenes": [
         {
           "sub_scene_id": "scene_005_01",
-          "screen_text": "計算の時点で大破綻してるわよ！",
+          "screen_text": "計算の時点で\n大破綻してるわよ！",
           "display_mode": "replace",
           "char_count": 15,
           "start_frame": 544,
@@ -781,7 +757,7 @@
       "scene_type": "normal",
       "role": "normal",
       "event": "normal",
-      "scene_enabled": true,
+      "scene_enabled": false,
       "slide_id": "slide_02",
       "speaker": "ずんだもん",
       "emotion": "normal",
@@ -920,7 +896,7 @@
       "scene_type": "normal",
       "role": "normal",
       "event": "normal",
-      "scene_enabled": true,
+      "scene_enabled": false,
       "slide_id": "slide_02",
       "speaker": "めたん",
       "emotion": "normal",
@@ -1059,7 +1035,7 @@
       "scene_type": "normal",
       "role": "normal",
       "event": "normal",
-      "scene_enabled": true,
+      "scene_enabled": false,
       "slide_id": "slide_02",
       "speaker": "ずんだもん",
       "emotion": "normal",
@@ -1198,7 +1174,7 @@
       "scene_type": "normal",
       "role": "normal",
       "event": "normal",
-      "scene_enabled": true,
+      "scene_enabled": false,
       "slide_id": "slide_02",
       "speaker": "めたん",
       "emotion": "normal",
@@ -1427,10 +1403,10 @@
           "screen_text": "でも本当に倒れるまでは\nセーフなのだ……！",
           "display_mode": "replace",
           "char_count": 21,
-          "start_frame": 1354,
+          "start_frame": 736,
           "duration_frames": 75,
-          "end_frame": 1429,
-          "start_sec": 45.133,
+          "end_frame": 811,
+          "start_sec": 24.533,
           "duration_sec": 2.5
         }
       ],
@@ -1555,10 +1531,10 @@
           "screen_text": "アウトよ！\n手遅れになる前に",
           "display_mode": "replace",
           "char_count": 14,
-          "start_frame": 1429,
+          "start_frame": 811,
           "duration_frames": 53,
-          "end_frame": 1482,
-          "start_sec": 47.633,
+          "end_frame": 864,
+          "start_sec": 27.033,
           "duration_sec": 1.767
         },
         {
@@ -1566,10 +1542,10 @@
           "screen_text": "その謎の自信を捨てて生活を改めなさい！",
           "display_mode": "replace",
           "char_count": 19,
-          "start_frame": 1482,
+          "start_frame": 864,
           "duration_frames": 73,
-          "end_frame": 1555,
-          "start_sec": 49.4,
+          "end_frame": 937,
+          "start_sec": 28.8,
           "duration_sec": 2.433
         }
       ],
@@ -1694,10 +1670,10 @@
           "screen_text": "じゃあ正常な生活を\n取り戻すために、ひとまず",
           "display_mode": "replace",
           "char_count": 22,
-          "start_frame": 1555,
+          "start_frame": 937,
           "duration_frames": 83,
-          "end_frame": 1638,
-          "start_sec": 51.833,
+          "end_frame": 1020,
+          "start_sec": 31.233,
           "duration_sec": 2.767
         },
         {
@@ -1705,10 +1681,10 @@
           "screen_text": "めたんのクレカで美味しい焼き肉を食べに行くのだ！",
           "display_mode": "replace",
           "char_count": 24,
-          "start_frame": 1638,
+          "start_frame": 1020,
           "duration_frames": 91,
-          "end_frame": 1729,
-          "start_sec": 54.6,
+          "end_frame": 1111,
+          "start_sec": 34,
           "duration_sec": 3.033
         }
       ],
@@ -1833,10 +1809,10 @@
           "screen_text": "人の財布でバイアスを\n解決しようと",
           "display_mode": "replace",
           "char_count": 17,
-          "start_frame": 1729,
+          "start_frame": 1111,
           "duration_frames": 62,
-          "end_frame": 1791,
-          "start_sec": 57.633,
+          "end_frame": 1173,
+          "start_sec": 37.033,
           "duration_sec": 2.067
         },
         {
@@ -1844,10 +1820,10 @@
           "screen_text": "するんじゃないわよ\n絶対に奢らないわよ！！",
           "display_mode": "replace",
           "char_count": 21,
-          "start_frame": 1791,
+          "start_frame": 1173,
           "duration_frames": 73,
-          "end_frame": 1864,
-          "start_sec": 59.7,
+          "end_frame": 1246,
+          "start_sec": 39.1,
           "duration_sec": 2.433
         }
       ],
@@ -1885,19 +1861,19 @@
       "scene_003": true,
       "scene_004": true,
       "scene_005": true,
-      "scene_006": true,
-      "scene_007": true,
-      "scene_008": true,
-      "scene_009": true,
+      "scene_006": false,
+      "scene_007": false,
+      "scene_008": false,
+      "scene_009": false,
       "scene_010": true,
       "scene_011": true,
       "scene_012": true,
       "scene_013": true
     }
   },
-  "durationSec": 62.133,
-  "durationInFrames": 1864,
-  "total_frames": 1864,
+  "durationSec": 41.15,
+  "durationInFrames": 1245,
+  "total_frames": 1245,
   "fps": 30,
   "common_layers": [
     {
@@ -1907,12 +1883,12 @@
       "z_index": 0,
       "fit": "cover",
       "start_frame": 0,
-      "duration_frames": 1864
+      "duration_frames": 1245
     },
     {
       "layer_id": "hook-background-scene_001",
       "type": "image",
-      "src": "images/backgrounds/hook-bg-dots-pk.png",
+      "src": "images/backgrounds/HOOK002.png",
       "z_index": 0,
       "fit": "cover",
       "start_frame": 0,
@@ -1943,8 +1919,8 @@
     },
     "format": {
       "fps": 30,
-      "duration": 62.133,
-      "durationInFrames": 1864
+      "duration": 45.133,
+      "durationInFrames": 1354
     },
     "title": "お給料まで20日あるけど財布の中にあ"
   },

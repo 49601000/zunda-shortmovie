@@ -1,0 +1,33 @@
+{
+  "source_type": "lesson_slide_plan",
+  "topic": "フレーミング効果",
+  "lesson_goal": "同じ情報でも見せ方によって印象や判断が変わることを理解する",
+  "slides": [
+    {
+      "slide_id": "slide_01",
+      "role": "title",
+      "title": "フレーミング効果",
+      "body": "同じ情報でも見せ方で印象は変わる",
+      "visual_intent": "simple_diagram: 同じ情報→見せ方A／見せ方B→印象が変わる / core_message: 同じ情報でも見せ方で印象は変わる",
+      "simple_diagram": "同じ情報→見せ方A／見せ方B→印象が変わる"
+    },
+    {
+      "slide_id": "slide_02",
+      "role": "concept",
+      "title": "なぜ起きる？",
+      "body": "人は情報そのものより見せられ方の影響を受ける",
+      "visual_intent": "simple_diagram: 10億円←宝くじ→2000万分の1 / core_message: 人は情報そのものより見せられ方の影響を受ける",
+      "simple_diagram": "10億円←宝くじ→2000万分の1"
+    },
+    {
+      "slide_id": "slide_03",
+      "role": "example",
+      "title": "宝くじの見え方",
+      "body": "『10億円』と『2000万分の1』は同じ宝くじの話",
+      "visual_intent": "simple_diagram: 10億円＝夢／2000万分の1＝厳しい現実 / core_message: 『10億円』と『2000万分の1』は同じ宝くじの話",
+      "simple_diagram": "10億円＝夢／2000万分の1＝厳しい現実"
+    }
+  ],
+  "project_id": "0007",
+  "source": "lesson_slide_plan"
+}

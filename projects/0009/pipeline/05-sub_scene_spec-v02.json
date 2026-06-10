@@ -1,0 +1,246 @@
+{
+  "project_id": "0009",
+  "source": "04-scene_spec-v02.json",
+  "scenes": [
+    {
+      "scene_id": "scene_001",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "ボクは奇跡の生還を果たした勇者なのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_001_01",
+          "screen_text": "ボクは奇跡の生還を果たした勇者なのだ",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 0,
+          "duration_sec": 2.9
+        },
+        {
+          "sub_scene_id": "scene_001_02",
+          "screen_text": "！",
+          "display_mode": "replace",
+          "char_count": 1,
+          "start_sec": 2.9,
+          "duration_sec": 0.6
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_002",
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "で今日の収支はどうだったのよ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_002_01",
+          "screen_text": "で今日の収支はどうだったのよ",
+          "display_mode": "replace",
+          "char_count": 14,
+          "start_sec": 3.5,
+          "duration_sec": 2.26
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_003",
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "マイナス9万円からの奇跡の連チャンで7万円まくったのだ！ つまり……ほぼ勝ちなのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_003_01",
+          "screen_text": "マイナス9万円からの奇跡の連チャンで",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 5.76,
+          "duration_sec": 2.63
+        },
+        {
+          "sub_scene_id": "scene_003_02",
+          "screen_text": "7万円まくったのだ！",
+          "display_mode": "replace",
+          "char_count": 10,
+          "start_sec": 8.39,
+          "duration_sec": 1.46
+        },
+        {
+          "sub_scene_id": "scene_003_03",
+          "screen_text": "つまり……ほぼ勝ちなのだ！",
+          "display_mode": "replace",
+          "char_count": 13,
+          "start_sec": 9.85,
+          "duration_sec": 1.91
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_004",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "普通に2万円負けよ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_004_01",
+          "screen_text": "普通に2万円負けよ",
+          "display_mode": "replace",
+          "char_count": 9,
+          "start_sec": 11.76,
+          "duration_sec": 1.6
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_005",
+      "slide_id": "slide_02",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "でも、マイナス9万から見たら7万円勝ってるのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_005_01",
+          "screen_text": "でも、",
+          "display_mode": "replace",
+          "char_count": 3,
+          "start_sec": 13.36,
+          "duration_sec": 0.7
+        },
+        {
+          "sub_scene_id": "scene_005_02",
+          "screen_text": "マイナス9万から見たら7万円勝ってる",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 14.06,
+          "duration_sec": 2.9
+        },
+        {
+          "sub_scene_id": "scene_005_03",
+          "screen_text": "のだ！",
+          "display_mode": "replace",
+          "char_count": 3,
+          "start_sec": 16.96,
+          "duration_sec": 0.6
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_006",
+      "slide_id": "slide_02",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "その“マイナス9万から見たら”が罠なのよ。最初の数字が基準になって判断がズレる。これがアンカリング効果ね",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_006_01",
+          "screen_text": "その“マイナス9万から見たら”が罠な",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 17.56,
+          "duration_sec": 2.08
+        },
+        {
+          "sub_scene_id": "scene_006_02",
+          "screen_text": "のよ。",
+          "display_mode": "replace",
+          "char_count": 3,
+          "start_sec": 19.64,
+          "duration_sec": 0.7
+        },
+        {
+          "sub_scene_id": "scene_006_03",
+          "screen_text": "最初の数字が基準になって判断がズレる",
+          "display_mode": "replace",
+          "char_count": 18,
+          "start_sec": 20.34,
+          "duration_sec": 2.08
+        },
+        {
+          "sub_scene_id": "scene_006_04",
+          "screen_text": "。これがアンカリング効果ね",
+          "display_mode": "replace",
+          "char_count": 13,
+          "start_sec": 22.42,
+          "duration_sec": 1.14
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_007",
+      "slide_id": "slide_03",
+      "speaker": "ずんだもん",
+      "emotion": "excited",
+      "speakerId": 3,
+      "voice_speed": 1.25,
+      "voice": "でも心は勝ってるのだ！ だから焼き肉で祝勝会なのだ！",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_007_01",
+          "screen_text": "でも心は勝ってるのだ！",
+          "display_mode": "replace",
+          "char_count": 11,
+          "start_sec": 23.56,
+          "duration_sec": 1.84
+        },
+        {
+          "sub_scene_id": "scene_007_02",
+          "screen_text": "だから焼き肉で祝勝会なのだ！",
+          "display_mode": "replace",
+          "char_count": 14,
+          "start_sec": 25.4,
+          "duration_sec": 2.35
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_008",
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "emotion": "neutral",
+      "speakerId": 2,
+      "voice_speed": 1.25,
+      "voice": "気持ちで勝っても、お財布の中は負けてるわよ",
+      "voice_override": "",
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_008_01",
+          "screen_text": "気持ちで勝っても、",
+          "display_mode": "replace",
+          "char_count": 9,
+          "start_sec": 27.75,
+          "duration_sec": 1.45
+        },
+        {
+          "sub_scene_id": "scene_008_02",
+          "screen_text": "お財布の中は負けてるわよ",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_sec": 29.2,
+          "duration_sec": 1.94
+        }
+      ]
+    }
+  ]
+}
