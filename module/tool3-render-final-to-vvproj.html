@@ -1,0 +1,1199 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tool3 render-final to vvproj</title>
+  <style>
+    :root {
+      --bg-a: #081119;
+      --bg-b: #102236;
+      --bg-c: #1a3a44;
+      --panel: rgba(8, 20, 30, 0.84);
+      --panel-2: rgba(12, 31, 42, 0.82);
+      --surface: rgba(8, 20, 30, 0.9);
+      --line: rgba(99, 217, 188, 0.36);
+      --line-soft: rgba(168, 196, 194, 0.25);
+      --ink: #f2f8f7;
+      --sub: #a8c4c2;
+      --accent: #63d9bc;
+      --accent-2: #84f5db;
+      --ok: #93f5c7;
+      --warn: #ffca76;
+      --danger: #ff8f8f;
+      --shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+      background:
+        radial-gradient(140% 120% at 0% 0%, rgba(99, 217, 188, 0.2) 0%, rgba(99, 217, 188, 0) 44%),
+        radial-gradient(120% 120% at 100% 0%, rgba(255, 202, 118, 0.1) 0%, rgba(255, 202, 118, 0) 46%),
+        linear-gradient(135deg, var(--bg-a) 0%, var(--bg-b) 45%, var(--bg-c) 100%);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      border-bottom: 1px solid rgba(99, 217, 188, 0.28);
+      background: linear-gradient(90deg, #0d3f39 0%, #0c3140 35%, #102236 70%, #081119 100%);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar {
+      min-height: 66px;
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .topbarLeft {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .brandMark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(160deg, #1f7f6c, #124c58);
+      border: 1px solid rgba(147, 245, 199, 0.36);
+      box-shadow: 0 8px 20px rgba(8, 20, 30, 0.45);
+      color: #f2fff9;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .brandText,
+    .topbarTitle {
+      color: #f2f8f7;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .brandText { font-size: 18px; }
+    .topbarTitle {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 16px;
+    }
+
+    .topbarDivider {
+      width: 1px;
+      height: 28px;
+      background: rgba(168, 196, 194, 0.42);
+      flex: none;
+    }
+
+    .topbarVersion {
+      color: var(--ok);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .wrap {
+      width: min(1320px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+      padding: 20px 16px 28px;
+    }
+
+    .card {
+      min-width: 0;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      box-shadow: var(--shadow);
+    }
+
+    h1,
+    h2 {
+      margin: 0;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    h1 { font-size: clamp(1.35rem, 2.6vw, 2rem); }
+    h2 { font-size: 1.05rem; }
+
+    p {
+      margin: 0;
+      color: var(--sub);
+      line-height: 1.55;
+    }
+
+    code {
+      padding: 1px 5px;
+      border-radius: 6px;
+      background: rgba(8, 20, 30, 0.72);
+      color: #dff9f2;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    .hero,
+    .stack { display: grid; gap: 12px; }
+
+    .toolbar,
+    .row,
+    .inlineHead {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .toolbar { justify-content: space-between; }
+
+    button,
+    .fileBtn {
+      min-height: 38px;
+      border: 0;
+      border-radius: 11px;
+      padding: 9px 13px;
+      color: #05342e;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 150ms ease, filter 150ms ease;
+      text-decoration: none;
+    }
+
+    button:hover,
+    .fileBtn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+
+    button:disabled {
+      opacity: 0.52;
+      cursor: default;
+      transform: none;
+      filter: none;
+    }
+
+    button.ghost,
+    .fileBtn.ghost {
+      color: #d8ece8;
+      border: 1px solid rgba(168, 196, 194, 0.34);
+      background: rgba(8, 20, 30, 0.75);
+    }
+
+    button.warn {
+      color: #332407;
+      background: linear-gradient(135deg, var(--warn), #ffe1a3);
+    }
+
+    input[type="file"] {
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      opacity: 0;
+      position: absolute;
+      pointer-events: none;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--sub);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    input[type="url"],
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line-soft);
+      border-radius: 10px;
+      padding: 9px 10px;
+      color: var(--ink);
+      background: rgba(8, 20, 30, 0.72);
+      font: inherit;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 250px;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(132, 245, 219, 0.75);
+      box-shadow: 0 0 0 3px rgba(99, 217, 188, 0.12);
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .formGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .metricGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      padding: 10px;
+      border: 1px solid var(--line-soft);
+      border-radius: 10px;
+      background: rgba(8, 20, 30, 0.52);
+      min-width: 0;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--sub);
+      font-size: 0.76rem;
+      font-weight: 800;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 1.25rem;
+      line-height: 1.2;
+      word-break: break-word;
+    }
+
+    .checkRow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .checkRow input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+    .statusbar {
+      min-height: 24px;
+      padding: 9px 10px;
+      border: 1px solid var(--line-soft);
+      border-radius: 10px;
+      background: rgba(8, 20, 30, 0.54);
+      color: var(--sub);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .statusbar.ok { color: var(--ok); border-color: rgba(147, 245, 199, 0.5); }
+    .statusbar.warn { color: var(--warn); border-color: rgba(255, 202, 118, 0.5); }
+    .statusbar.danger { color: var(--danger); border-color: rgba(255, 143, 143, 0.5); }
+
+    .sceneList {
+      max-height: 560px;
+      overflow: auto;
+      display: grid;
+      gap: 8px;
+      padding-right: 2px;
+    }
+
+    .sceneItem {
+      padding: 10px;
+      border: 1px solid var(--line-soft);
+      border-radius: 10px;
+      background: rgba(8, 20, 30, 0.52);
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .sceneTop {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .sceneId {
+      font-weight: 900;
+      color: #eafff8;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(147, 245, 199, 0.38);
+      color: var(--ok);
+      background: rgba(10, 45, 35, 0.68);
+      font-size: 0.72rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .pill.muted {
+      color: var(--sub);
+      border-color: rgba(168, 196, 194, 0.26);
+      background: rgba(8, 20, 30, 0.72);
+    }
+
+    .pill.warn {
+      color: var(--warn);
+      border-color: rgba(255, 202, 118, 0.46);
+      background: rgba(70, 44, 10, 0.44);
+    }
+
+    .sceneMeta,
+    .sceneText {
+      color: var(--sub);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .sceneText { color: #d8ece8; }
+
+    .progressWrap {
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(8, 20, 30, 0.82);
+      border: 1px solid var(--line-soft);
+    }
+
+    .progressBar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--warn));
+      transition: width 180ms ease;
+    }
+
+    .hidden { display: none; }
+
+    @media (max-width: 880px) {
+      .grid2 { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .topbarLeft { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="topbarLeft">
+        <div class="brandMark">VV</div>
+        <div class="brandText">Short Video Tools</div>
+        <div class="topbarDivider"></div>
+        <div class="topbarTitle">render-final to vvproj</div>
+      </div>
+      <div class="topbarVersion">TOOL3</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card hero">
+      <div class="toolbar">
+        <div class="stack">
+          <h1>tool3:render-final → VOICEVOX project</h1>
+          <p><code>render-final-v01.json</code> の有効sceneをVOICEVOXの <code>.vvproj</code> に変換します。</p>
+        </div>
+        <div class="row">
+          <label class="fileBtn" for="renderFileInput">JSON読込</label>
+          <input id="renderFileInput" type="file" accept=".json,application/json" />
+          <label class="fileBtn ghost" for="vvprojFileInput">vvproj読込</label>
+          <input id="vvprojFileInput" type="file" accept=".vvproj,.json,application/json" />
+          <button id="convertBtn" type="button" disabled>vvproj生成</button>
+          <button id="downloadBtn" type="button" class="warn" disabled>vvproj保存</button>
+        </div>
+      </div>
+      <div class="statusbar" id="statusbar">render-final-v01.json を読み込んでください。</div>
+      <div class="progressWrap" aria-hidden="true">
+        <div class="progressBar" id="progressBar"></div>
+      </div>
+    </section>
+
+    <section class="grid2">
+      <div class="stack">
+        <section class="card stack">
+          <div class="inlineHead">
+            <h2>変換設定</h2>
+          </div>
+          <div class="formGrid">
+            <label>
+              VOICEVOX endpoint
+              <input id="engineUrlInput" type="url" value="http://127.0.0.1:5510" spellcheck="false" />
+            </label>
+            <label>
+              appVersion
+              <input id="appVersionInput" type="text" value="0.25.2" spellcheck="false" />
+            </label>
+            <label>
+              出力ファイル名
+              <input id="filenameInput" type="text" value="voicevox-project.vvproj" spellcheck="false" />
+            </label>
+            <label>
+              styleId未設定時
+              <input id="fallbackStyleInput" type="number" value="3" min="0" step="1" />
+            </label>
+          </div>
+          <div class="row">
+            <label class="checkRow"><input id="enabledOnlyInput" type="checkbox" checked /> scene_enabled=falseを除外</label>
+            <label class="checkRow"><input id="skipEmptyInput" type="checkbox" checked /> 読み上げ文なしを除外</label>
+            <label class="checkRow"><input id="useOverrideInput" type="checkbox" checked /> voice_overrideを優先</label>
+          </div>
+          <div class="row">
+            <button id="copyProxyCommandBtn" type="button" class="ghost">npm run voicevox:proxy をコピー</button>
+            <button id="testEngineBtn" type="button" class="ghost">接続確認</button>
+          </div>
+          <p>ブラウザで直接 <code>http://127.0.0.1:50021</code> を叩くとCORSで失敗することがあります。VOICEVOX Engineを起動し、別ターミナルで <code>npm run voicevox:proxy</code> を使う構成を推奨します。</p>
+        </section>
+
+        <section class="card stack">
+          <div class="toolbar">
+            <h2>話者別プリセット上書き</h2>
+            <button id="applyPresetBtn" type="button" class="warn" disabled>プリセットで上書き</button>
+          </div>
+          <div class="metricGrid">
+            <div class="metric">
+              <span>ずんだもん系</span>
+              <strong>speed 1.44</strong>
+              <p>pitch 0 / intonation 1</p>
+            </div>
+            <div class="metric">
+              <span>めたん系</span>
+              <strong>speed 1.35</strong>
+              <p>pitch -0.03 / intonation 0.8</p>
+            </div>
+          </div>
+          <p>読み込んだ、または生成済みの <code>.vvproj</code> に対して <code>query.speedScale</code>、<code>query.pitchScale</code>、<code>query.intonationScale</code> を上書きします。</p>
+        </section>
+
+        <section class="card stack">
+          <div class="inlineHead">
+            <h2>読み込み内容</h2>
+          </div>
+          <div class="metricGrid">
+            <div class="metric"><span>project_id</span><strong id="projectIdMetric">-</strong></div>
+            <div class="metric"><span>title</span><strong id="titleMetric">-</strong></div>
+            <div class="metric"><span>scene</span><strong id="sceneMetric">0</strong></div>
+            <div class="metric"><span>変換対象</span><strong id="targetMetric">0</strong></div>
+          </div>
+        </section>
+
+        <section class="card stack">
+          <div class="inlineHead">
+            <h2>対象scene</h2>
+          </div>
+          <div class="sceneList" id="sceneList">
+            <p>まだJSONを読み込んでいません。</p>
+          </div>
+        </section>
+      </div>
+
+      <section class="card stack">
+        <div class="toolbar">
+          <h2>vvproj preview</h2>
+          <button id="copyJsonBtn" type="button" class="ghost" disabled>JSONコピー</button>
+        </div>
+        <textarea id="outputText" spellcheck="false" placeholder="生成後に .vvproj のJSONが入ります。"></textarea>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const VOICEVOX_ENGINE_ID_FALLBACK = "074fc39e-678b-4c13-8916-ffca8d505d1d";
+    const METAN_SPEAKER_UUID = "7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff";
+    const ZUNDAMON_SPEAKER_UUID = "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9";
+    const VOICE_PRESETS = {
+      zundamon: { speedScale: 1.44, pitchScale: 0, intonationScale: 1 },
+      metan: { speedScale: 1.35, pitchScale: -0.03, intonationScale: 0.8 }
+    };
+    const METAN_STYLE_IDS = new Set([2, 0, 6, 4, 36, 37, 41]);
+    const ZUNDAMON_STYLE_IDS = new Set([3, 1, 7, 5, 22, 38, 75, 76, 77, 78]);
+    const KNOWN_SPEAKER_UUID_BY_STYLE_ID = new Map([
+      [2, METAN_SPEAKER_UUID],
+      [6, METAN_SPEAKER_UUID],
+      [3, ZUNDAMON_SPEAKER_UUID],
+      [22, ZUNDAMON_SPEAKER_UUID],
+      [38, ZUNDAMON_SPEAKER_UUID],
+      [76, ZUNDAMON_SPEAKER_UUID]
+    ]);
+
+    const el = {
+      renderFileInput: document.getElementById("renderFileInput"),
+      vvprojFileInput: document.getElementById("vvprojFileInput"),
+      convertBtn: document.getElementById("convertBtn"),
+      downloadBtn: document.getElementById("downloadBtn"),
+      applyPresetBtn: document.getElementById("applyPresetBtn"),
+      engineUrlInput: document.getElementById("engineUrlInput"),
+      appVersionInput: document.getElementById("appVersionInput"),
+      filenameInput: document.getElementById("filenameInput"),
+      fallbackStyleInput: document.getElementById("fallbackStyleInput"),
+      enabledOnlyInput: document.getElementById("enabledOnlyInput"),
+      skipEmptyInput: document.getElementById("skipEmptyInput"),
+      useOverrideInput: document.getElementById("useOverrideInput"),
+      copyProxyCommandBtn: document.getElementById("copyProxyCommandBtn"),
+      testEngineBtn: document.getElementById("testEngineBtn"),
+      copyJsonBtn: document.getElementById("copyJsonBtn"),
+      statusbar: document.getElementById("statusbar"),
+      progressBar: document.getElementById("progressBar"),
+      projectIdMetric: document.getElementById("projectIdMetric"),
+      titleMetric: document.getElementById("titleMetric"),
+      sceneMetric: document.getElementById("sceneMetric"),
+      targetMetric: document.getElementById("targetMetric"),
+      sceneList: document.getElementById("sceneList"),
+      outputText: document.getElementById("outputText")
+    };
+
+    const state = {
+      renderSpec: null,
+      sourceFileName: "",
+      targets: [],
+      generatedText: "",
+      generatedBlobUrl: ""
+    };
+
+    const setStatus = (message, type = "") => {
+      el.statusbar.textContent = message;
+      el.statusbar.className = `statusbar${type ? ` ${type}` : ""}`;
+    };
+
+    const setProgress = (done, total) => {
+      const pct = total > 0 ? Math.max(0, Math.min(100, Math.round((done / total) * 100))) : 0;
+      el.progressBar.style.width = `${pct}%`;
+    };
+
+    const toNum = (value, fallback) => {
+      const n = Number(value);
+      return Number.isFinite(n) ? n : fallback;
+    };
+
+    const pad3 = (value) => String(value).padStart(3, "0");
+
+    const deepClone = (value) => JSON.parse(JSON.stringify(value));
+
+    const createUuid = () => {
+      if (crypto && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (char) => {
+        const r = Math.random() * 16 | 0;
+        const v = char === "x" ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    };
+
+    const safeFilename = (value, fallback) => {
+      const raw = String(value || "").trim() || fallback;
+      const cleaned = raw.replace(/[\\/:*?"<>|]+/g, "_").replace(/\s+/g, " ").trim();
+      return cleaned.toLowerCase().endsWith(".vvproj") ? cleaned : `${cleaned}.vvproj`;
+    };
+
+    const copyTextToClipboard = async (text) => {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.setAttribute("readonly", "");
+      area.style.position = "fixed";
+      area.style.left = "-9999px";
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand("copy");
+      area.remove();
+    };
+
+    const readJsonFile = (file) => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          resolve(JSON.parse(String(reader.result || "")));
+        } catch (error) {
+          reject(new Error(`JSONの読み込みに失敗しました: ${error.message}`));
+        }
+      };
+      reader.onerror = () => reject(new Error("ファイルを読み込めませんでした。"));
+      reader.readAsText(file, "utf-8");
+    });
+
+    const getEndpoint = () => el.engineUrlInput.value.trim().replace(/\/+$/, "");
+
+    const getSceneId = (scene, index) => {
+      const raw = String(scene?.scene_id || scene?.id || "").trim();
+      return raw || `scene_${pad3(index + 1)}`;
+    };
+
+    const getVoiceText = (scene) => {
+      const candidates = el.useOverrideInput.checked
+        ? [scene?.voice_override, scene?.voice, scene?.dialog?.voice, scene?.voice_text, scene?.text]
+        : [scene?.voice, scene?.dialog?.voice, scene?.voice_text, scene?.text, scene?.voice_override];
+      for (const value of candidates) {
+        if (typeof value === "string" && value.trim()) return value.trim();
+      }
+      return "";
+    };
+
+    const getSpeakerLabel = (scene) => {
+      return String(
+        scene?.speaker ||
+        scene?.voice_profile?.voicevox_speaker_name ||
+        scene?.voicevox_speaker_name ||
+        ""
+      ).trim();
+    };
+
+    const getStyleName = (scene) => {
+      return String(scene?.voice_profile?.voicevox_style_name || scene?.voicevox_style_name || "").trim();
+    };
+
+    const getStyleId = (scene) => {
+      const candidates = [
+        scene?.voice_control?.speaker_id,
+        scene?.speakerId,
+        scene?.voice_profile?.voicevox_style_id,
+        scene?.voicevox_style_id
+      ];
+      for (const value of candidates) {
+        const n = Number(value);
+        if (Number.isFinite(n)) return n;
+      }
+      return toNum(el.fallbackStyleInput.value, 3);
+    };
+
+    const getControl = (scene) => {
+      const control = scene?.voice_control && typeof scene.voice_control === "object" ? scene.voice_control : {};
+      return {
+        speedScale: toNum(control.speedScale ?? control.speed_scale ?? scene?.voice_speed, null),
+        pitchScale: toNum(control.pitchScale ?? control.pitch_scale, null),
+        intonationScale: toNum(control.intonationScale ?? control.intonation_scale, null),
+        volumeScale: toNum(control.volumeScale ?? control.volume_scale, null),
+        prePhonemeLength: toNum(control.prePhonemeLength ?? control.pre_phoneme_length, null),
+        postPhonemeLength: toNum(control.postPhonemeLength ?? control.post_phoneme_length, null),
+        pauseLength: toNum(control.pauseLength ?? control.pause_length, null),
+        pauseLengthScale: toNum(control.pauseLengthScale ?? control.pause_length_scale, null)
+      };
+    };
+
+    const applyControlToQuery = (query, scene) => {
+      const next = deepClone(query);
+      const control = getControl(scene);
+      Object.entries(control).forEach(([key, value]) => {
+        if (value == null) return;
+        next[key] = value;
+      });
+      return next;
+    };
+
+    const normalizeTargets = () => {
+      const scenes = Array.isArray(state.renderSpec?.scenes) ? state.renderSpec.scenes : [];
+      return scenes.map((scene, index) => {
+        const text = getVoiceText(scene);
+        const enabled = scene?.scene_enabled !== false;
+        const styleId = getStyleId(scene);
+        const excludedByEnabled = el.enabledOnlyInput.checked && !enabled;
+        const excludedByEmpty = el.skipEmptyInput.checked && !text;
+        return {
+          scene,
+          index,
+          sceneId: getSceneId(scene, index),
+          enabled,
+          text,
+          styleId,
+          speaker: getSpeakerLabel(scene),
+          styleName: getStyleName(scene),
+          active: !excludedByEnabled && !excludedByEmpty
+        };
+      });
+    };
+
+    const refreshTargets = () => {
+      state.targets = normalizeTargets();
+      renderSummary();
+      renderSceneList();
+    };
+
+    const renderSummary = () => {
+      const spec = state.renderSpec || {};
+      const scenes = Array.isArray(spec.scenes) ? spec.scenes : [];
+      const targets = state.targets.filter((target) => target.active);
+      el.projectIdMetric.textContent = String(spec.project_id || spec.projectId || "-");
+      el.titleMetric.textContent = String(spec.title || spec.hook?.text || state.sourceFileName || "-");
+      el.sceneMetric.textContent = String(scenes.length);
+      el.targetMetric.textContent = String(targets.length);
+
+      const title = String(spec.title || spec.project_id || "").trim();
+      if (title && (!el.filenameInput.dataset.touched || !el.filenameInput.value.trim())) {
+        el.filenameInput.value = safeFilename(title, "voicevox-project.vvproj");
+      }
+    };
+
+    const renderSceneList = () => {
+      el.sceneList.innerHTML = "";
+      if (!state.renderSpec) {
+        const p = document.createElement("p");
+        p.textContent = "まだJSONを読み込んでいません。";
+        el.sceneList.appendChild(p);
+        return;
+      }
+
+      state.targets.forEach((target) => {
+        const item = document.createElement("div");
+        item.className = "sceneItem";
+        const pillClass = target.active ? "" : target.enabled ? "warn" : "muted";
+        const pillText = target.active ? "変換対象" : target.enabled ? "除外" : "disabled";
+        item.innerHTML = `
+          <div class="sceneTop">
+            <div class="sceneId"></div>
+            <span class="pill ${pillClass}"></span>
+          </div>
+          <div class="sceneMeta"></div>
+          <div class="sceneText"></div>
+        `;
+        item.querySelector(".sceneId").textContent = target.sceneId;
+        item.querySelector(".pill").textContent = pillText;
+        item.querySelector(".sceneMeta").textContent = `${target.speaker || "speaker未設定"} / styleId=${target.styleId}${target.styleName ? ` / ${target.styleName}` : ""}`;
+        item.querySelector(".sceneText").textContent = target.text || "読み上げ文なし";
+        el.sceneList.appendChild(item);
+      });
+    };
+
+    const fetchJson = async (url, options = {}) => {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error(`${url} ${response.status}: ${await response.text()}`);
+      }
+      return response.json();
+    };
+
+    const fetchText = async (url) => {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`${url} ${response.status}: ${await response.text()}`);
+      return response.text();
+    };
+
+    const buildVoicevoxErrorMessage = (error) => {
+      const endpoint = getEndpoint();
+      const raw = String(error?.message || error);
+      if (/Failed to fetch|NetworkError|Load failed/i.test(raw)) {
+        return [
+          "VOICEVOX連携に失敗しました: Failed to fetch",
+          `endpoint=${endpoint}`,
+          "対処: VOICEVOX Engineを起動し、別ターミナルで npm run voicevox:proxy を起動してください。",
+          "そのうえで endpoint を http://127.0.0.1:5510 にします。"
+        ].join(" / ");
+      }
+      return `VOICEVOX連携に失敗しました: ${raw}`;
+    };
+
+    const fetchEngineInfo = async () => {
+      const endpoint = getEndpoint();
+      const info = {
+        appVersion: el.appVersionInput.value.trim() || "0.25.2",
+        engineId: VOICEVOX_ENGINE_ID_FALLBACK,
+        speakerUuidByStyleId: new Map(KNOWN_SPEAKER_UUID_BY_STYLE_ID)
+      };
+
+      try {
+        const version = await fetchText(`${endpoint}/version`);
+        if (version.trim()) {
+          info.appVersion = version.trim().replace(/^"|"$/g, "");
+          el.appVersionInput.value = info.appVersion;
+        }
+      } catch {
+        // /version が古いEngineやプロキシで失敗しても変換自体は続ける。
+      }
+
+      try {
+        const manifest = await fetchJson(`${endpoint}/engine_manifest`);
+        if (manifest?.uuid) info.engineId = manifest.uuid;
+      } catch {
+        info.engineId = VOICEVOX_ENGINE_ID_FALLBACK;
+      }
+
+      const speakers = await fetchJson(`${endpoint}/speakers`);
+      speakers.forEach((speaker) => {
+        const uuid = speaker?.speaker_uuid;
+        if (!uuid) return;
+        (speaker.styles || []).forEach((style) => {
+          const styleId = Number(style?.id);
+          if (Number.isFinite(styleId)) info.speakerUuidByStyleId.set(styleId, uuid);
+        });
+      });
+
+      return info;
+    };
+
+    const fetchAudioQuery = async ({ text, styleId }) => {
+      const endpoint = getEndpoint();
+      const url = `${endpoint}/audio_query?${new URLSearchParams({ text, speaker: String(styleId) }).toString()}`;
+      return fetchJson(url, { method: "POST" });
+    };
+
+    const pick = (...values) => values.find((value) => value !== undefined);
+
+    const camelMora = (mora) => {
+      const next = {
+        text: pick(mora?.text, ""),
+        vowel: pick(mora?.vowel, ""),
+        vowelLength: pick(mora?.vowelLength, mora?.vowel_length, 0),
+        pitch: pick(mora?.pitch, 0)
+      };
+      const consonant = pick(mora?.consonant, undefined);
+      const consonantLength = pick(mora?.consonantLength, mora?.consonant_length, undefined);
+      if (consonant !== undefined) next.consonant = consonant;
+      if (consonantLength !== undefined) next.consonantLength = consonantLength;
+      return next;
+    };
+
+    const camelPhrase = (phrase) => {
+      const next = {
+        moras: (phrase?.moras || []).map(camelMora),
+        accent: pick(phrase?.accent, 1),
+        isInterrogative: pick(phrase?.isInterrogative, phrase?.is_interrogative, false)
+      };
+      const pause = pick(phrase?.pauseMora, phrase?.pause_mora, undefined);
+      if (pause) next.pauseMora = camelMora(pause);
+      return next;
+    };
+
+    const camelAudioQuery = (query) => {
+      const phrases = pick(query?.accentPhrases, query?.accent_phrases, []);
+      const next = {
+        accentPhrases: phrases.map(camelPhrase),
+        speedScale: pick(query?.speedScale, query?.speed_scale, 1),
+        pitchScale: pick(query?.pitchScale, query?.pitch_scale, 0),
+        intonationScale: pick(query?.intonationScale, query?.intonation_scale, 1),
+        volumeScale: pick(query?.volumeScale, query?.volume_scale, 1),
+        prePhonemeLength: pick(query?.prePhonemeLength, query?.pre_phoneme_length, 0.1),
+        postPhonemeLength: pick(query?.postPhonemeLength, query?.post_phoneme_length, 0.1),
+        pauseLengthScale: pick(query?.pauseLengthScale, query?.pause_length_scale, 1),
+        outputSamplingRate: pick(query?.outputSamplingRate, query?.output_sampling_rate, 24000),
+        outputStereo: pick(query?.outputStereo, query?.output_stereo, false),
+        kana: pick(query?.kana, "")
+      };
+      const pauseLength = pick(query?.pauseLength, query?.pause_length, undefined);
+      if (pauseLength !== undefined && pauseLength !== null) next.pauseLength = pauseLength;
+      return next;
+    };
+
+    const buildEmptySong = () => {
+      const trackId = createUuid();
+      return {
+        tpqn: 480,
+        tempos: [{ position: 0, bpm: 120 }],
+        timeSignatures: [{ measureNumber: 1, beats: 4, beatType: 4 }],
+        tracks: {
+          [trackId]: {
+            name: "無名トラック",
+            keyRangeAdjustment: 0,
+            volumeRangeAdjustment: 0,
+            notes: [],
+            pitchEditData: [],
+            volumeEditData: [],
+            phonemeTimingEditData: {},
+            solo: false,
+            mute: false,
+            gain: 1,
+            pan: 0
+          }
+        },
+        trackOrder: [trackId]
+      };
+    };
+
+    const buildVvproj = async () => {
+      if (!state.renderSpec) throw new Error("render-final JSONを先に読み込んでください。");
+      const targets = state.targets.filter((target) => target.active);
+      if (!targets.length) throw new Error("変換対象のsceneがありません。");
+
+      const info = await fetchEngineInfo();
+      const audioKeys = [];
+      const audioItems = {};
+
+      for (const [index, target] of targets.entries()) {
+        setProgress(index, targets.length);
+        setStatus(`${target.sceneId} の audio_query を取得中... (${index + 1}/${targets.length})`);
+        const rawQuery = await fetchAudioQuery({ text: target.text, styleId: target.styleId });
+        const query = camelAudioQuery(applyControlToQuery(rawQuery, target.scene));
+        const speakerUuid = info.speakerUuidByStyleId.get(target.styleId);
+        if (!speakerUuid) {
+          throw new Error(`${target.sceneId}: styleId=${target.styleId} に対応する speaker_uuid が見つかりません。`);
+        }
+        const key = createUuid();
+        audioKeys.push(key);
+        audioItems[key] = {
+          text: target.text,
+          voice: {
+            engineId: info.engineId,
+            speakerId: speakerUuid,
+            styleId: target.styleId
+          },
+          query
+        };
+      }
+      setProgress(targets.length, targets.length);
+
+      return {
+        appVersion: info.appVersion,
+        talk: { audioKeys, audioItems },
+        song: buildEmptySong()
+      };
+    };
+
+    const updateDownloadUrl = () => {
+      if (state.generatedBlobUrl) URL.revokeObjectURL(state.generatedBlobUrl);
+      const blob = new Blob([`${state.generatedText}\n`], { type: "application/json;charset=utf-8" });
+      state.generatedBlobUrl = URL.createObjectURL(blob);
+    };
+
+    const enableVvprojActions = () => {
+      const hasText = !!String(state.generatedText || el.outputText.value || "").trim();
+      el.downloadBtn.disabled = !hasText;
+      el.copyJsonBtn.disabled = !hasText;
+      el.applyPresetBtn.disabled = !hasText;
+    };
+
+    const getCurrentVvproj = () => {
+      const text = String(el.outputText.value || state.generatedText || "").trim();
+      if (!text) throw new Error(".vvproj JSONがありません。vvproj読込またはvvproj生成を先に実行してください。");
+      const parsed = JSON.parse(text);
+      if (!parsed || typeof parsed !== "object" || !parsed.talk || typeof parsed.talk !== "object") {
+        throw new Error("VOICEVOX project形式ではありません。talk が見つかりません。");
+      }
+      if (!parsed.talk.audioItems || typeof parsed.talk.audioItems !== "object") {
+        throw new Error("VOICEVOX project形式ではありません。talk.audioItems が見つかりません。");
+      }
+      return parsed;
+    };
+
+    const classifyAudioItem = (item) => {
+      const voice = item?.voice || {};
+      const speakerId = String(voice.speakerId || voice.speaker_id || "").trim();
+      const styleId = Number(voice.styleId ?? voice.style_id);
+      if (speakerId === ZUNDAMON_SPEAKER_UUID) return "zundamon";
+      if (speakerId === METAN_SPEAKER_UUID) return "metan";
+      if (Number.isFinite(styleId) && ZUNDAMON_STYLE_IDS.has(styleId)) return "zundamon";
+      if (Number.isFinite(styleId) && METAN_STYLE_IDS.has(styleId)) return "metan";
+      return "";
+    };
+
+    const applyVoicePresets = () => {
+      const vvproj = getCurrentVvproj();
+      const counts = { zundamon: 0, metan: 0, skipped: 0 };
+
+      Object.values(vvproj.talk.audioItems).forEach((item) => {
+        const presetKey = classifyAudioItem(item);
+        if (!presetKey) {
+          counts.skipped += 1;
+          return;
+        }
+        if (!item.query || typeof item.query !== "object") item.query = {};
+        Object.assign(item.query, VOICE_PRESETS[presetKey]);
+        counts[presetKey] += 1;
+      });
+
+      state.generatedText = JSON.stringify(vvproj, null, 2);
+      el.outputText.value = state.generatedText;
+      updateDownloadUrl();
+      enableVvprojActions();
+      setStatus(`プリセット上書き完了: ずんだもん系=${counts.zundamon} / めたん系=${counts.metan} / 対象外=${counts.skipped}`, "ok");
+    };
+
+    const convert = async () => {
+      el.convertBtn.disabled = true;
+      el.downloadBtn.disabled = true;
+      el.copyJsonBtn.disabled = true;
+      el.applyPresetBtn.disabled = true;
+      el.outputText.value = "";
+      state.generatedText = "";
+      setProgress(0, 1);
+
+      try {
+        refreshTargets();
+        const vvproj = await buildVvproj();
+        state.generatedText = JSON.stringify(vvproj, null, 2);
+        el.outputText.value = state.generatedText;
+        updateDownloadUrl();
+        enableVvprojActions();
+        setStatus(`.vvproj を生成しました。audioItems=${vvproj.talk.audioKeys.length}`, "ok");
+      } catch (error) {
+        setProgress(0, 1);
+        setStatus(buildVoicevoxErrorMessage(error), "danger");
+      } finally {
+        el.convertBtn.disabled = !state.renderSpec;
+      }
+    };
+
+    const download = () => {
+      state.generatedText = String(el.outputText.value || state.generatedText || "");
+      if (!state.generatedText.trim()) return;
+      updateDownloadUrl();
+      const a = document.createElement("a");
+      a.href = state.generatedBlobUrl;
+      a.download = safeFilename(el.filenameInput.value, "voicevox-project.vvproj");
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setStatus(`${a.download} を保存しました。`, "ok");
+    };
+
+    const loadRenderSpec = async (file) => {
+      const spec = await readJsonFile(file);
+      if (!spec || typeof spec !== "object" || !Array.isArray(spec.scenes)) {
+        throw new Error("scenes[] が見つかりません。render-final-v01.json を指定してください。");
+      }
+      state.renderSpec = spec;
+      state.sourceFileName = file.name;
+      state.generatedText = "";
+      el.outputText.value = "";
+      el.downloadBtn.disabled = true;
+      el.copyJsonBtn.disabled = true;
+      el.applyPresetBtn.disabled = true;
+      refreshTargets();
+      el.convertBtn.disabled = false;
+      setProgress(0, 1);
+      setStatus(`${file.name} を読み込みました。変換対象=${state.targets.filter((target) => target.active).length}`, "ok");
+    };
+
+    const loadVvproj = async (file) => {
+      const vvproj = await readJsonFile(file);
+      if (!vvproj || typeof vvproj !== "object" || !vvproj.talk?.audioItems) {
+        throw new Error("VOICEVOX project形式ではありません。talk.audioItems が見つかりません。");
+      }
+      state.generatedText = JSON.stringify(vvproj, null, 2);
+      el.outputText.value = state.generatedText;
+      el.filenameInput.value = safeFilename(file.name, "voicevox-project.vvproj");
+      el.filenameInput.dataset.touched = "true";
+      updateDownloadUrl();
+      enableVvprojActions();
+      const count = Object.keys(vvproj.talk.audioItems || {}).length;
+      setProgress(1, 1);
+      setStatus(`${file.name} を読み込みました。audioItems=${count}`, "ok");
+    };
+
+    const testEngine = async () => {
+      el.testEngineBtn.disabled = true;
+      try {
+        const info = await fetchEngineInfo();
+        setStatus(`VOICEVOX接続OK: appVersion=${info.appVersion} / speaker styles=${info.speakerUuidByStyleId.size}`, "ok");
+      } catch (error) {
+        setStatus(buildVoicevoxErrorMessage(error), "danger");
+      } finally {
+        el.testEngineBtn.disabled = false;
+      }
+    };
+
+    el.renderFileInput.addEventListener("change", async () => {
+      const file = el.renderFileInput.files?.[0];
+      if (!file) return;
+      try {
+        await loadRenderSpec(file);
+      } catch (error) {
+        setStatus(error.message || String(error), "danger");
+      } finally {
+        el.renderFileInput.value = "";
+      }
+    });
+
+    el.vvprojFileInput.addEventListener("change", async () => {
+      const file = el.vvprojFileInput.files?.[0];
+      if (!file) return;
+      try {
+        await loadVvproj(file);
+      } catch (error) {
+        setStatus(error.message || String(error), "danger");
+      } finally {
+        el.vvprojFileInput.value = "";
+      }
+    });
+
+    el.convertBtn.addEventListener("click", convert);
+    el.downloadBtn.addEventListener("click", download);
+    el.testEngineBtn.addEventListener("click", testEngine);
+    el.applyPresetBtn.addEventListener("click", () => {
+      try {
+        applyVoicePresets();
+      } catch (error) {
+        setStatus(`プリセット上書きに失敗しました: ${error.message || String(error)}`, "danger");
+      }
+    });
+
+    el.copyJsonBtn.addEventListener("click", async () => {
+      try {
+        await copyTextToClipboard(el.outputText.value);
+        setStatus(".vvproj JSONをコピーしました。", "ok");
+      } catch {
+        setStatus("コピーに失敗しました。プレビュー欄から手動でコピーしてください。", "danger");
+      }
+    });
+
+    el.copyProxyCommandBtn.addEventListener("click", async () => {
+      try {
+        await copyTextToClipboard("npm run voicevox:proxy");
+        setStatus("npm run voicevox:proxy をコピーしました。", "ok");
+      } catch {
+        setStatus("コピーに失敗しました。npm run voicevox:proxy を手動でコピーしてください。", "danger");
+      }
+    });
+
+    [
+      el.enabledOnlyInput,
+      el.skipEmptyInput,
+      el.useOverrideInput,
+      el.fallbackStyleInput
+    ].forEach((input) => {
+      input.addEventListener("change", () => {
+        if (!state.renderSpec) return;
+        refreshTargets();
+        setStatus(`変換対象を更新しました。対象=${state.targets.filter((target) => target.active).length}`, "ok");
+      });
+    });
+
+    el.filenameInput.addEventListener("input", () => {
+      el.filenameInput.dataset.touched = "true";
+    });
+
+    el.outputText.addEventListener("input", () => {
+      state.generatedText = el.outputText.value;
+      enableVvprojActions();
+    });
+  </script>
+</body>
+</html>

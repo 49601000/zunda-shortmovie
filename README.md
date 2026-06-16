@@ -12,10 +12,11 @@
 | `module/1_makejson.html` | 会話ログから project を作り、summary / hook / scene / sub_scene / voice_manifest / render draft のJSONを作ります。 |
 | `module/2_slideprompt_builder.html` | 会話ログと lesson_slide_plan から `03-slide_spec` とスライド個別JSONを作ります。 |
 | `module/3_Final-Cut-panel.html` | `06-render-draft` または `render-final` を読み込み、音声・字幕・画像・BGM・演出を最終調整します。 |
-| `module/tool1-timing-calc.html` | `render-final-v01.json` などを読み込み、scene / sub_scene の秒・フレームタイミングを調整する補助ツールです。 |
-| `module/tool2-hook-viewer-lens.html` | 完成済み会話劇を視聴者目線で分析するためのプロンプト生成ツールです。Final Cut連携はしません。 |
-| `module/tool3-voicevox-last-tone-checker.html` | `render-final-v01.json` と生成済みwavを最後に耳チェックし、気になるsceneだけVOICEVOXで簡易再生成します。 |
-| `module/tool4-hook-pic-builder.html` | TOP / MAIN / SUB と会話内容から、Shorts冒頭0〜2秒向けのHOOK画像生成プロンプトを作ります。 |
+| `module/tool1-hook-viewer-lens.html` | 完成済み会話劇を視聴者目線で分析するためのプロンプト生成ツールです。Final Cut連携はしません。 |
+| `module/tool2-hook-pic-builder.html` | TOP / MAIN / SUB と会話内容から、Shorts冒頭0〜2秒向けのHOOK画像生成プロンプトを作ります。 |
+| `module/tool3-render-final-to-vvproj.html` | `render-final-v01.json` をVOICEVOXで後修正できる `.vvproj` に変換し、話者別スケールも上書きできます。 |
+| `module/tool4-wav-duration-checker.html` | WAVファイルまたはフォルダを読み込み、各音声の再生時間を一覧確認してCSVで出力します。 |
+| `module/tool5-timing-calc.html` | `render-final-v01.json` などを読み込み、scene / sub_scene の秒・フレームタイミングを調整する補助ツールです。 |
 
 ## SOT: 全体フロー
 
@@ -29,8 +30,9 @@ module2: lesson_slide_plan → 03-slide_spec保存
 module1: summary / hook / scene / sub_scene / voice_manifest / 06-render-draft作成
   ↓
 module3: Final Cut調整
-  ├─ 必要に応じて tool4: HOOK画像プロンプト生成
-  └─ 必要に応じて tool1/tool3: timing / voice最終確認
+  ├─ 必要に応じて tool2: HOOK画像プロンプト生成
+  ├─ 必要に応じて tool3: vvproj変換 / VOICEVOX後修正
+  └─ 必要に応じて tool5: timing調整
   ↓
 projects/{id}/outputs/video/render-final-v01.json
   ↓
@@ -54,10 +56,11 @@ projects/{id}/outputs/video/psych-short-{run_id}.mp4
 │  ├─ 1_makejson.html
 │  ├─ 2_slideprompt_builder.html
 │  ├─ 3_Final-Cut-panel.html
-│  ├─ tool1-timing-calc.html
-│  ├─ tool2-hook-viewer-lens.html
-│  ├─ tool3-voicevox-last-tone-checker.html
-│  └─ tool4-hook-pic-builder.html
+│  ├─ tool1-hook-viewer-lens.html
+│  ├─ tool2-hook-pic-builder.html
+│  ├─ tool3-render-final-to-vvproj.html
+│  ├─ tool4-wav-duration-checker.html
+│  └─ tool5-timing-calc.html
 ├─ scripts/
 │  ├─ run-scene-remotion.mjs
 │  ├─ run-voicevox-batch.mjs
@@ -129,10 +132,11 @@ Chrome / Edge 系ブラウザ推奨です。各moduleは File System Access API 
 - JSON作成: `module/1_makejson.html`
 - スライド用プロンプト生成: `module/2_slideprompt_builder.html`
 - Final Cut Panel: `module/3_Final-Cut-panel.html`
-- Timing Calc: `module/tool1-timing-calc.html`
-- Hook Viewer Lens: `module/tool2-hook-viewer-lens.html`
-- VOICEVOX Last Tone Checker: `module/tool3-voicevox-last-tone-checker.html`
-- HOOK画像プロンプト生成: `module/tool4-hook-pic-builder.html`
+- Hook Viewer Lens: `module/tool1-hook-viewer-lens.html`
+- HOOK画像プロンプト生成: `module/tool2-hook-pic-builder.html`
+- render-final to vvproj: `module/tool3-render-final-to-vvproj.html`
+- WAV Duration Checker: `module/tool4-wav-duration-checker.html`
+- Timing Calc: `module/tool5-timing-calc.html`
 
 ### 2. module1: 会話ログから動画素材JSONを作る
 
@@ -259,26 +263,14 @@ npm run voicevox:proxy
 
 ### 5. 補助ツール
 
-`module/tool1-timing-calc.html`:
-
-- `render-final-v01.json` または Timing Output JSON を読み込みます。
-- scene / sub_scene の `start_sec` / `duration_sec` / frameを調整するための補助ツールです。
-- localStorage key: `sv2_timing_calc_state_v1`
-
-`module/tool2-hook-viewer-lens.html`:
+`module/tool1-hook-viewer-lens.html`:
 
 - 完成済みの会話劇を貼り付けます。
 - ChatGPT等へ渡す分析プロンプトを生成します。
 - `viewer_lens` と `hook_candidates` の2モードがあります。
 - projectファイル、localStorage、Final Cut Panelとの直接連携はありません。
 
-`module/tool3-voicevox-last-tone-checker.html`:
-
-- `render-final-v01.json` と生成済みwavを読み込みます。
-- 最終レンダー前に、sceneごとの音声を耳で確認します。
-- 気になるsceneだけVOICEVOXで簡易再生成し、差し替え前の確認に使います。
-
-`module/tool4-hook-pic-builder.html`:
+`module/tool2-hook-pic-builder.html`:
 
 - TOP / MAIN / SUB と会話内容から、ChatGPT画像生成用のHOOK画像プロンプトを作ります。
 - 対象はYouTube Shorts冒頭0〜2秒で表示するHOOK画像です。
@@ -288,6 +280,23 @@ npm run voicevox:proxy
 - ずんだもんは右、四国めたんは左に置く想定です。低頭身・丸いシルエット・大きい表情の2Dデフォルメキャラとして指定します。
 - 二人の短い会話吹き出しは入れてOKです。ただし1〜2個まで、MAINの視認性を邪魔しない補助要素にします。
 - HOOK本文への集中線、スピード線、放射線、爆発マーク、矢印などの派手なエフェクトは禁止です。文字サイズ・太字・配置で読ませます。
+
+`module/tool3-render-final-to-vvproj.html`:
+
+- `render-final-v01.json` を読み込み、VOICEVOXで開ける `.vvproj` を生成します。
+- 既存 `.vvproj` を読み込み、ずんだもん系/めたん系の `speedScale` / `pitchScale` / `intonationScale` を一括上書きできます。
+- ブラウザからVOICEVOX Engineへつなぐ場合は `npm run voicevox:proxy` を使います。
+
+`module/tool4-wav-duration-checker.html`:
+
+- WAVファイルまたはフォルダを読み込みます。
+- 各音声の再生時間を一覧確認し、JSON / CSVとしてコピーまたはCSV保存できます。
+
+`module/tool5-timing-calc.html`:
+
+- `render-final-v01.json` または Timing Output JSON を読み込みます。
+- scene / sub_scene の `start_sec` / `duration_sec` / frameを調整するための補助ツールです。
+- localStorage key: `sv2_timing_calc_state_v1`
 
 ## render / dev / voicevox
 
@@ -498,9 +507,10 @@ index   = 入口とコマンドコピー係
 module1 = 会話ログを動画用JSONへ分解する係
 module2 = スライド画像の設計図を作る係
 module3 = 最後に人間が見て整える編集卓
-tool1   = タイミング計算の補助係
-tool2   = HOOKの視聴者目線チェック係
-tool3   = VOICEVOX音声の最終耳チェック係
-tool4   = HOOK画像生成プロンプトを作る係
+tool1   = HOOKの視聴者目線チェック係
+tool2   = HOOK画像生成プロンプトを作る係
+tool3   = render-finalをvvprojへ変換する係
+tool4   = WAVの長さを確認する係
+tool5   = タイミング計算の補助係
 scripts = VOICEVOX / Remotion への橋渡し係
 ```
