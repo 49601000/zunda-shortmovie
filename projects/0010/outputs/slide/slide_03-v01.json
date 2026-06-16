@@ -1,8 +1,0 @@
-{
-  "slide_id": "slide_03",
-  "role": "example",
-  "title": "恋愛での例",
-  "body": "挨拶は脈アリ、断られた理由は偶然だと考えてしまう",
-  "visual_intent": "simple_diagram: 挨拶→『好き！』 誘いを断られる→『たまたま！』 / core_message: 挨拶は脈アリ、断られた理由は偶然だと考えてしまう",
-  "simple_diagram": "挨拶→『好き！』 誘いを断られる→『たまたま！』"
-}

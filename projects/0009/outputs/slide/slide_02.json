@@ -1,8 +1,0 @@
-{
-  "slide_id": "slide_02",
-  "role": "concept",
-  "title": "なぜ起きる？",
-  "body": "最初の数字に引っぱられて、本当の結果を見失う",
-  "visual_intent": "simple_diagram: -9万円（基準）→ +7万円戻す → 『勝った気分』 ／ 実際→ -2万円 / core_message: 最初の数字に引っぱられて、本当の結果を見失う",
-  "simple_diagram": "-9万円（基準）→ +7万円戻す → 『勝った気分』 ／ 実際→ -2万円"
-}

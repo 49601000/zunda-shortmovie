@@ -1,8 +1,0 @@
-{
-  "slide_id": "slide_02",
-  "role": "concept",
-  "title": "なぜ起こる？",
-  "body": "不安な現実を受け入れたくないため、問題を小さく考えてしまう",
-  "visual_intent": "simple_diagram: 問題発生→『まだ平気』→対策しない→問題拡大 / core_message: 不安な現実を受け入れたくないため、問題を小さく考えてしまう",
-  "simple_diagram": "問題発生→『まだ平気』→対策しない→問題拡大"
-}

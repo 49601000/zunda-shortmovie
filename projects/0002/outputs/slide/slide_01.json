@@ -1,8 +1,0 @@
-{
-  "slide_id": "slide_01",
-  "role": "title",
-  "title": "正常性バイアス",
-  "body": "人は危険な状況でも『まだ大丈夫』と思い込みやすい",
-  "visual_intent": "simple_diagram: 危険→『大丈夫』→行動しない / core_message: 人は危険な状況でも『まだ大丈夫』と思い込みやすい",
-  "simple_diagram": "危険→『大丈夫』→行動しない"
-}

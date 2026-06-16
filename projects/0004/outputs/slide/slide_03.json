@@ -1,8 +1,0 @@
-{
-  "slide_id": "slide_03",
-  "role": "example",
-  "title": "ネット通販のあるある",
-  "body": "『あと1品で送料無料』で予定外の買い物をしてしまう",
-  "visual_intent": "simple_diagram: 商品購入 → あと500円で送料無料 → 不要な商品追加 / core_message: 『あと1品で送料無料』で予定外の買い物をしてしまう",
-  "simple_diagram": "商品購入 → あと500円で送料無料 → 不要な商品追加"
-}

@@ -1,8 +1,0 @@
-{
-  "slide_id": "slide_03",
-  "role": "example",
-  "title": "パチンコ・スロット",
-  "body": "『そろそろ来るはず』は確率の錯覚かもしれない",
-  "visual_intent": "simple_diagram: 1000Gハマり→期待↑ ／ 実際の確率→変化なし / core_message: 『そろそろ来るはず』は確率の錯覚かもしれない",
-  "simple_diagram": "1000Gハマり→期待↑ ／ 実際の確率→変化なし"
-}

@@ -1,8 +1,0 @@
-{
-  "slide_id": "slide_01",
-  "role": "title",
-  "title": "ギャンブラーの誤謬",
-  "body": "過去の結果と次の確率を結びつけてしまう思い込み",
-  "visual_intent": "simple_diagram: ハズレ→ハズレ→ハズレ→『次は当たる？』 / core_message: 過去の結果と次の確率を結びつけてしまう思い込み",
-  "simple_diagram": "ハズレ→ハズレ→ハズレ→『次は当たる？』"
-}

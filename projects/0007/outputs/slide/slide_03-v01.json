@@ -1,8 +1,0 @@
-{
-  "slide_id": "slide_03",
-  "role": "example",
-  "title": "宝くじの見え方",
-  "body": "『10億円』と『2000万分の1』は同じ宝くじの話",
-  "visual_intent": "simple_diagram: 10億円＝夢／2000万分の1＝厳しい現実 / core_message: 『10億円』と『2000万分の1』は同じ宝くじの話",
-  "simple_diagram": "10億円＝夢／2000万分の1＝厳しい現実"
-}

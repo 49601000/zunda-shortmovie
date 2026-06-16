@@ -1,8 +1,0 @@
-{
-  "slide_id": "slide_02",
-  "role": "concept",
-  "title": "なぜ起こる？",
-  "body": "送料を払う損を避けようとして、不要な物を買ってしまう",
-  "visual_intent": "simple_diagram: 送料500円→嫌 → 追加購入500円以上 → 出費増加 / core_message: 送料を払う損を避けようとして、不要な物を買ってしまう",
-  "simple_diagram": "送料500円→嫌 → 追加購入500円以上 → 出費増加"
-}

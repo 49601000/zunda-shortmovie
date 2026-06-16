@@ -1,8 +1,0 @@
-{
-  "slide_id": "slide_01",
-  "role": "title",
-  "title": "損失回避バイアス",
-  "body": "人は『得する』より『損したくない』を強く感じる",
-  "visual_intent": "simple_diagram: 得する😊 ←→ 損する😣（損の方を大きく描く） / core_message: 人は『得する』より『損したくない』を強く感じる",
-  "simple_diagram": "得する😊 ←→ 損する😣（損の方を大きく描く）"
-}
