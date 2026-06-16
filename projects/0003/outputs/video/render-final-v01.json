@@ -88,7 +88,7 @@
         "dialog_box": "",
         "character_left": "",
         "character_right": "",
-        "hook_background": "images/backgrounds/hook-bg-dots-yl.png",
+        "hook_background": "images/backgrounds/HOOK003.png",
         "hook_character": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_bubble": "parts/Hook-speech-balloon.png"
       },
@@ -158,7 +158,7 @@
       "hook_visual": {
         "texts": {
           "top": {
-            "text": "その",
+            "text": "",
             "fontSize": 84,
             "color": "#303030",
             "outlineColor": "#000000",
@@ -166,7 +166,7 @@
             "fillVisible": false
           },
           "main": {
-            "text": "当たってる！",
+            "text": "",
             "fontSize": 160,
             "color": "#e60012",
             "outlineColor": "transparent",
@@ -174,7 +174,7 @@
             "fillVisible": true
           },
           "sub": {
-            "text": "ってだいたいこれ",
+            "text": "",
             "fontSize": 98,
             "color": "#303030",
             "outlineColor": "#000000",
@@ -183,7 +183,7 @@
           }
         },
         "background": {
-          "image_path": "images/backgrounds/hook-bg-dots-yl.png"
+          "image_path": "images/backgrounds/HOOK003.png"
         },
         "character": {
           "enabled": true,
@@ -205,7 +205,7 @@
           "text": "",
           "fontSize": 64
         },
-        "finalize_to_dialog": false
+        "finalize_to_dialog": true
       }
     },
     {
@@ -1339,18 +1339,9 @@
       "duration_frames": 1178
     },
     {
-      "layer_id": "logboard",
-      "type": "image",
-      "src": "logboard/logboard-BK.png",
-      "z_index": 18,
-      "fit": "contain",
-      "start_frame": 0,
-      "duration_frames": 1178
-    },
-    {
       "layer_id": "hook-background-scene_001",
       "type": "image",
-      "src": "images/backgrounds/hook-bg-dots-yl.png",
+      "src": "images/backgrounds/HOOK003.png",
       "z_index": 0,
       "fit": "cover",
       "start_frame": 0,

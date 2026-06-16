@@ -5,7 +5,7 @@ import path from "node:path";
 const VOICEVOX_BASE_URL = process.env.VOICEVOX_URL ?? "http://127.0.0.1:50021";
 const PROJECTS_ROOT = path.resolve(process.cwd(), "projects");
 const DEFAULT_SPEAKER_ID = 3;
-const DEFAULT_SPEED_SCALE = 1.45;
+const DEFAULT_VOICE_SPEED = 1.3;
 const SPEAKER_NAME_TO_DEFAULT_ID = [
   { pattern: /あんこもん|天の声|ai/i, speakerId: 113 },
   { pattern: /四国メタン|四国めたん|めたん|metan/i, speakerId: 2 },
@@ -101,14 +101,8 @@ function resolveSpeakerId(scene) {
   return DEFAULT_SPEAKER_ID;
 }
 
-function resolveSpeedScale(scene) {
-  return toFiniteNumber(
-    scene?.voice_speed,
-    toFiniteNumber(
-      scene?.speedScale,
-      toFiniteNumber(scene?.voice_control?.speedScale, toFiniteNumber(scene?.voice_profile?.speedScale, DEFAULT_SPEED_SCALE))
-    )
-  );
+function resolveVoiceSpeed(scene) {
+  return toFiniteNumber(scene?.voice_speed, DEFAULT_VOICE_SPEED);
 }
 
 function resolveSceneOrder(scene, index) {
@@ -149,9 +143,9 @@ function isSceneRenderEnabled(batch, scene, index) {
   return true;
 }
 
-function applyVoiceControl(audioQuery, scene, fallbackSpeed) {
+function applyVoiceControl(audioQuery, scene) {
   const control = scene?.voice_control && typeof scene.voice_control === "object" ? scene.voice_control : {};
-  audioQuery.speedScale = resolveSpeedScale({...scene, speedScale: toFiniteNumber(scene?.speedScale, toFiniteNumber(control.speedScale, fallbackSpeed))});
+  audioQuery.speedScale = resolveVoiceSpeed(scene);
   audioQuery.pitchScale = toFiniteNumber(control.pitchScale, audioQuery.pitchScale);
   audioQuery.intonationScale = toFiniteNumber(control.intonationScale, audioQuery.intonationScale);
   audioQuery.volumeScale = toFiniteNumber(control.volumeScale, audioQuery.volumeScale);
@@ -172,7 +166,7 @@ async function synthesizeVoice({ text, speakerId, scene }) {
   });
   await assertOk(queryResponse, "audio_query");
   const audioQuery = await queryResponse.json();
-  applyVoiceControl(audioQuery, scene, resolveSpeedScale(scene));
+  applyVoiceControl(audioQuery, scene);
 
   const synthResponse = await fetch(
     `${VOICEVOX_BASE_URL}/synthesis?${new URLSearchParams({ speaker: String(speakerId) }).toString()}`,
@@ -299,16 +293,16 @@ async function main() {
     const durationSec = resolveWavDurationSec(audioBuffer);
     await fsp.writeFile(outputPath, audioBuffer);
 
-    const speedScale = resolveSpeedScale(scene);
+    const voiceSpeed = resolveVoiceSpeed(scene);
     const durationLabel = durationSec != null ? `${Number(durationSec.toFixed(3))}s` : "n/a";
-    console.log(`Generated: ${fileName} speakerId=${speakerId} speedScale=${speedScale} duration=${durationLabel}`);
+    console.log(`Generated: ${fileName} speakerId=${speakerId} voice_speed=${voiceSpeed} duration=${durationLabel}`);
 
     results.push({
       scene_index: scene.scene_index,
       scene_id: scene.scene_id || "",
       source_scene_id: scene.source_scene_id || "",
       speaker_id: speakerId,
-      speedScale,
+      voice_speed: voiceSpeed,
       audio_file: fileName,
       audio_path: `${outputDirLabel}/${fileName}`,
       duration_sec: durationSec != null ? Number(durationSec.toFixed(3)) : null

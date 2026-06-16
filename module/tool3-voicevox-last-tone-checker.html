@@ -629,6 +629,7 @@
         <label for="engineUrlInput">VOICEVOX endpoint</label>
         <input id="engineUrlInput" type="url" value="http://127.0.0.1:5510" spellcheck="false" />
         <p class="pathText">ブラウザからはCORS回避用に <code>npm run voicevox:proxy</code> を起動し、このURLのまま使うのを推奨。</p>
+        <button id="copyProxyCommandBtn" type="button" class="secondary">npm run voicevox:proxy をコピー</button>
       </div>
     </section>
 
@@ -784,6 +785,7 @@
         renderFileInput: document.getElementById("renderFileInput"),
         adjustFileInput: document.getElementById("adjustFileInput"),
         engineUrlInput: document.getElementById("engineUrlInput"),
+        copyProxyCommandBtn: document.getElementById("copyProxyCommandBtn"),
         sceneCount: document.getElementById("sceneCount"),
         sceneItems: document.getElementById("sceneItems"),
         emptyState: document.getElementById("emptyState"),
@@ -821,6 +823,22 @@
       const toNum = (value, fallback) => {
         const n = Number(value);
         return Number.isFinite(n) ? n : fallback;
+      };
+
+      const copyTextToClipboard = async (text) => {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          await navigator.clipboard.writeText(text);
+          return;
+        }
+        const area = document.createElement("textarea");
+        area.value = text;
+        area.setAttribute("readonly", "");
+        area.style.position = "fixed";
+        area.style.left = "-9999px";
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
       };
 
       const pad3 = (value) => String(value).padStart(3, "0");
@@ -1466,6 +1484,15 @@
           await loadAdjustments(file);
         } catch (error) {
           setStatus(error.message || String(error), "danger");
+        }
+      });
+
+      el.copyProxyCommandBtn.addEventListener("click", async () => {
+        try {
+          await copyTextToClipboard("npm run voicevox:proxy");
+          setStatus("npm run voicevox:proxy をコピーしました。", "ok");
+        } catch (error) {
+          setStatus("コピーに失敗しました。npm run voicevox:proxy を手動でコピーしてください。", "danger");
         }
       });
 

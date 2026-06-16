@@ -1279,7 +1279,7 @@
           speaker: scene.speaker,
           emotion: scene.emotion || "normal",
           speakerId: defaultSpeakerId(scene.speaker),
-          voice_speed: 1.25,
+          voice_speed: 1.3,
           voice: String(scene.text || ""),
           voice_override: "",
           sub_scenes: subScenes
@@ -1310,7 +1310,7 @@
         speaker,
         emotion: String(scene && scene.emotion || "normal").trim() || "normal",
         speakerId: Number.isFinite(speakerId) ? speakerId : defaultSpeakerId(speaker),
-        voice_speed: Number.isFinite(voiceSpeed) && voiceSpeed > 0 ? Math.round(voiceSpeed * 100) / 100 : 1.25,
+        voice_speed: Number.isFinite(voiceSpeed) && voiceSpeed > 0 ? Math.round(voiceSpeed * 100) / 100 : 1.3,
         voice: typeof (scene && scene.voice) === "string" ? scene.voice : String(scene && scene.text || ""),
         voice_override: typeof (scene && scene.voice_override) === "string" ? scene.voice_override : ""
       };
@@ -1384,7 +1384,7 @@
             speaker: sub.speaker || "",
             emotion: sub.emotion || "normal",
             speakerId: Number.isFinite(Number(sub.speakerId)) ? Number(sub.speakerId) : defaultSpeakerId(sub.speaker),
-            voice_speed: Number.isFinite(Number(sub.voice_speed)) ? Number(sub.voice_speed) : 1.25,
+            voice_speed: Number.isFinite(Number(sub.voice_speed)) ? Number(sub.voice_speed) : 1.3,
             voice: "",
             voice_override: typeof sub.voice_override === "string" ? sub.voice_override : "",
             sub_scenes: []

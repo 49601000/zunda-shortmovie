@@ -504,7 +504,6 @@ function flattenScenesToSegments(spec, projectAudioDir) {
         slide_id: scene?.slide_id || "",
         role,
         speaker: scene?.speaker || "",
-        emotion: scene?.emotion || "",
         screen_text: String(sub?.screen_text || scene?.dialog?.screen_text || scene?.screen_text || ""),
         text_color: scene?.text_color || scene?.dialog?.screen_text_color || "",
         bg_color: scene?.bg_color,

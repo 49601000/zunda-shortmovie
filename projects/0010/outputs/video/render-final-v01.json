@@ -43,22 +43,19 @@
       "scene_enabled": true,
       "slide_id": "slide_01",
       "speaker": "議題",
-      "emotion": "normal",
       "speakerId": 3,
-      "voice_speed": 1.25,
-      "voice": "自分勝手な脈アリ判定、だいたいこんななのだ",
+      "voice_speed": 1.34,
+      "voice": "完全に社内恋愛が始まってるのだ！",
       "voice_override": "",
       "character_id": "zundamon",
       "voice_profile": {
         "character_id": "zundamon",
         "voicevox_speaker_name": "ずんだもん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
+        "voicevox_style_id": 3
       },
       "voice_control": {
         "speaker_id": 3,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -68,7 +65,7 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "自分勝手な脈アリ判定、だいたいこんななのだ",
+        "voice": "完全に社内恋愛が始まってるのだ！",
         "screen_text": "",
         "screen_text_font_size": 48,
         "screen_text_font_family": "Noto Sans JP Bold",
@@ -88,7 +85,7 @@
         "dialog_box": "",
         "character_left": "",
         "character_right": "",
-        "hook_background": "images/backgrounds/hook-bg-dots-pk.png",
+        "hook_background": "images/backgrounds/HOOK010.png",
         "hook_character": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_bubble": "parts/Hook-speech-balloon.png"
       },
@@ -124,14 +121,14 @@
       "sub_scenes": [
         {
           "sub_scene_id": "scene_001_01",
-          "screen_text": "その実質勝ち、だいたいこんななのだ",
+          "screen_text": "完全に社内恋愛が始まってるのだ！",
           "display_mode": "replace",
-          "char_count": 17,
+          "char_count": 16,
           "start_frame": 0,
-          "duration_frames": 78,
-          "end_frame": 78,
+          "duration_frames": 66,
+          "end_frame": 66,
           "start_sec": 0,
-          "duration_sec": 2.6
+          "duration_sec": 2.2
         }
       ],
       "lip_sync": {
@@ -158,7 +155,7 @@
       "hook_visual": {
         "texts": {
           "top": {
-            "text": "勝手に",
+            "text": "",
             "fontSize": 84,
             "color": "#303030",
             "outlineColor": "#000000",
@@ -166,7 +163,7 @@
             "fillVisible": false
           },
           "main": {
-            "text": "脈アリ認定",
+            "text": "",
             "fontSize": 200,
             "color": "#e60012",
             "outlineColor": "transparent",
@@ -174,7 +171,7 @@
             "fillVisible": true
           },
           "sub": {
-            "text": "ってだいたいこれ",
+            "text": "",
             "fontSize": 98,
             "color": "#303030",
             "outlineColor": "#000000",
@@ -183,7 +180,7 @@
           }
         },
         "background": {
-          "image_path": "images/backgrounds/hook-bg-dots-pk.png"
+          "image_path": "images/backgrounds/HOOK010.png"
         },
         "character": {
           "enabled": true,
@@ -203,6 +200,10 @@
         "bubble": {
           "image_path": "parts/Hook-speech-balloon.png",
           "text": "",
+          "x": 80,
+          "y": 1230,
+          "width": 520,
+          "height": 400,
           "fontSize": 64
         },
         "finalize_to_dialog": false
@@ -214,25 +215,22 @@
       "scene_type": "normal",
       "role": "normal",
       "event": "normal",
-      "scene_enabled": true,
+      "scene_enabled": false,
       "slide_id": "slide_01",
       "speaker": "ずんだもん",
-      "emotion": "normal",
       "speakerId": 3,
-      "voice_speed": 1.25,
-      "voice": "後輩のあの子、絶対にボクのことが好きなのだ！完全に社内恋愛が始まってるのだ！",
+      "voice_speed": 1.3,
+      "voice": "",
       "voice_override": "",
       "character_id": "zundamon",
       "voice_profile": {
         "character_id": "zundamon",
         "voicevox_speaker_name": "ずんだもん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
+        "voicevox_style_id": 3
       },
       "voice_control": {
         "speaker_id": 3,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -242,17 +240,147 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "後輩のあの子、絶対にボクのことが好きなのだ！完全に社内恋愛が始まってるのだ！",
+        "voice": "",
         "screen_text": "",
         "screen_text_font_size": 72,
         "screen_text_font_family": "Noto Sans JP Bold",
-        "screen_text_color": "#86d654",
+        "screen_text_color": "#ffffff",
         "screen_text_line_break_mode": "auto",
         "screen_text_line_chars": 18
       },
       "screen_text_font_size": 72,
       "font_family": "Noto Sans JP Bold",
-      "text_color": "#86d654",
+      "text_color": "#ffffff",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "projects/0010/outputs/slide/slide01.png",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "images/characters/metan/metan-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "projects/0010/outputs/slide/slide01.png"
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-0.png",
+            "state": "idle",
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-1.png",
+              "images/characters/metan/metan-2.png"
+            ]
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-normal-0001.png",
+              "images/characters/zundamon/zundamon-normal-0002.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_002_01",
+          "screen_text": "完全に社内恋愛が始まってるのだ！",
+          "display_mode": "replace",
+          "char_count": 16,
+          "start_frame": 0,
+          "duration_frames": 77,
+          "end_frame": 77,
+          "start_sec": 0,
+          "duration_sec": 2.567
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "ずんだもん",
+        "speaker_side": "right",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-0.png",
+            "mouth_1": "images/characters/metan/metan-1.png",
+            "mouth_2": "images/characters/metan/metan-2.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png",
+            "mouth_1": "images/characters/zundamon/zundamon-normal-0001.png",
+            "mouth_2": "images/characters/zundamon/zundamon-normal-0002.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "scene_003",
+      "scene_id": "scene_003",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_01",
+      "speaker": "めたん",
+      "speakerId": 2,
+      "voice_speed": 1.3,
+      "voice": "始まったわね。どうせあなたの妄想でしょ",
+      "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "始まったわね。どうせあなたの妄想でしょ",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#eb74aa",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#eb74aa",
       "line_break_mode": "auto",
       "line_chars": 18,
       "visual_assets": {
@@ -260,7 +388,7 @@
         "slide": "",
         "monolith": "",
         "dialog_box": "",
-        "character_left": "images/characters/metan/metan-lookside-0.png",
+        "character_left": "images/characters/metan/metan-lookside-turnoff-0.png",
         "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_background": "",
         "hook_character": "",
@@ -282,12 +410,145 @@
         "characters": {
           "left": {
             "engine": "metan_engine",
-            "image_path": "images/characters/metan/metan-lookside-0.png",
-            "state": "idle",
+            "image_path": "images/characters/metan/metan-lookside-turnoff-0.png",
+            "state": "speaking",
             "lip_sync_image_paths": [
-              "images/characters/metan/metan-lookside-1.png",
-              "images/characters/metan/metan-lookside-2.png"
+              "images/characters/metan/metan-lookside-turnoff-1.png",
+              "images/characters/metan/metan-lookside-turnoff-2.png"
             ]
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_003_01",
+          "screen_text": "始まったわね。",
+          "display_mode": "replace",
+          "char_count": 7,
+          "start_frame": 66,
+          "duration_frames": 23,
+          "end_frame": 89,
+          "start_sec": 2.2,
+          "duration_sec": 0.767
+        },
+        {
+          "sub_scene_id": "scene_003_02",
+          "screen_text": "どうせあなたの妄想でしょ",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_frame": 89,
+          "duration_frames": 39,
+          "end_frame": 128,
+          "start_sec": 2.967,
+          "duration_sec": 1.3
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "めたん",
+        "speaker_side": "left",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-lookside-turnoff-0.png",
+            "mouth_1": "images/characters/metan/metan-lookside-turnoff-1.png",
+            "mouth_2": "images/characters/metan/metan-lookside-turnoff-2.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "scene_004",
+      "scene_id": "scene_004",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_01",
+      "speaker": "ずんだもん",
+      "speakerId": 3,
+      "voice_speed": 1.3,
+      "voice": "いつも目が合ったらニコニコ会釈してくれるのだ！あれは脈アリ確定演出なのだ！",
+      "voice_override": "",
+      "character_id": "zundamon",
+      "voice_profile": {
+        "character_id": "zundamon",
+        "voicevox_speaker_name": "ずんだもん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 3
+      },
+      "voice_control": {
+        "speaker_id": 3,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "いつも目が合ったらニコニコ会釈してくれるのだ！あれは脈アリ確定演出なのだ！",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#86d654",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#86d654",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "images/characters/metan/metan-lookside-turnoff-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": ""
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-lookside-turnoff-0.png",
+            "state": "idle",
+            "lip_sync_image_paths": []
           },
           "right": {
             "engine": "zundamon_engine",
@@ -295,7 +556,7 @@
             "state": "speaking",
             "lip_sync_image_paths": [
               "images/characters/zundamon/zundamon-normal-0001.png",
-              "images/characters/zundamon/zundamon-normal-0003.png"
+              "images/characters/zundamon/zundamon-normal-0002.png"
             ]
           }
         }
@@ -303,37 +564,37 @@
       "effects": [],
       "sub_scenes": [
         {
-          "sub_scene_id": "scene_002_01",
-          "screen_text": "後輩のあの子、",
-          "display_mode": "replace",
-          "char_count": 7,
-          "start_frame": 0,
-          "duration_frames": 33,
-          "end_frame": 33,
-          "start_sec": 0,
-          "duration_sec": 1.1
-        },
-        {
-          "sub_scene_id": "scene_002_02",
-          "screen_text": "絶対にボクのことが好きなのだ！",
-          "display_mode": "replace",
-          "char_count": 15,
-          "start_frame": 33,
-          "duration_frames": 71,
-          "end_frame": 104,
-          "start_sec": 1.1,
-          "duration_sec": 2.367
-        },
-        {
-          "sub_scene_id": "scene_002_03",
-          "screen_text": "完全に社内恋愛が始まってるのだ！",
+          "sub_scene_id": "scene_004_01",
+          "screen_text": "いつも目が合ったら\nニコニコ会釈",
           "display_mode": "replace",
           "char_count": 16,
-          "start_frame": 104,
-          "duration_frames": 76,
-          "end_frame": 180,
-          "start_sec": 3.467,
-          "duration_sec": 2.533
+          "start_frame": 128,
+          "duration_frames": 50,
+          "end_frame": 178,
+          "start_sec": 4.267,
+          "duration_sec": 1.667
+        },
+        {
+          "sub_scene_id": "scene_004_02",
+          "screen_text": "してくれるのだ！",
+          "display_mode": "replace",
+          "char_count": 8,
+          "start_frame": 178,
+          "duration_frames": 25,
+          "end_frame": 203,
+          "start_sec": 5.933,
+          "duration_sec": 0.833
+        },
+        {
+          "sub_scene_id": "scene_004_03",
+          "screen_text": "あれは脈アリ確定\n演出なのだ！",
+          "display_mode": "replace",
+          "char_count": 15,
+          "start_frame": 203,
+          "duration_frames": 47,
+          "end_frame": 250,
+          "start_sec": 6.767,
+          "duration_sec": 1.567
         }
       ],
       "lip_sync": {
@@ -351,263 +612,15 @@
         "speaker_side": "right",
         "assets": {
           "left": {
-            "idle": "images/characters/metan/metan-lookside-0.png",
-            "mouth_1": "images/characters/metan/metan-lookside-1.png",
-            "mouth_2": "images/characters/metan/metan-lookside-2.png"
+            "idle": "images/characters/metan/metan-lookside-turnoff-0.png"
           },
           "right": {
             "idle": "images/characters/zundamon/zundamon-normal-0000.png",
             "mouth_1": "images/characters/zundamon/zundamon-normal-0001.png",
-            "mouth_2": "images/characters/zundamon/zundamon-normal-0003.png"
+            "mouth_2": "images/characters/zundamon/zundamon-normal-0002.png"
           }
         }
       }
-    },
-    {
-      "id": "scene_003",
-      "scene_id": "scene_003",
-      "scene_type": "normal",
-      "role": "normal",
-      "event": "normal",
-      "scene_enabled": true,
-      "slide_id": "slide_01",
-      "speaker": "めたん",
-      "emotion": "normal",
-      "speakerId": 2,
-      "voice_speed": 1.25,
-      "voice": "はいはい。また始まったわね。どうせあなたの妄想でしょ",
-      "voice_override": "",
-      "character_id": "metan",
-      "voice_profile": {
-        "character_id": "metan",
-        "voicevox_speaker_name": "四国めたん",
-        "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 2,
-        "speedScale": 1.25
-      },
-      "voice_control": {
-        "speaker_id": 2,
-        "speedScale": 1.25,
-        "pitchScale": 0,
-        "intonationScale": 1,
-        "volumeScale": 1,
-        "prePhonemeLength": 0.1,
-        "postPhonemeLength": 0.1,
-        "pauseLength": null,
-        "pauseLengthScale": 1
-      },
-      "dialog": {
-        "voice": "はいはい。また始まったわね。どうせあなたの妄想でしょ",
-        "screen_text": "",
-        "screen_text_font_size": 72,
-        "screen_text_font_family": "Noto Sans JP Bold",
-        "screen_text_color": "#ff5ca3",
-        "screen_text_line_break_mode": "auto",
-        "screen_text_line_chars": 18
-      },
-      "screen_text_font_size": 72,
-      "font_family": "Noto Sans JP Bold",
-      "text_color": "#ff5ca3",
-      "line_break_mode": "auto",
-      "line_chars": 18,
-      "visual_assets": {
-        "background": "",
-        "slide": "",
-        "monolith": "",
-        "dialog_box": "",
-        "character_left": "",
-        "character_right": "",
-        "hook_background": "",
-        "hook_character": "",
-        "hook_bubble": ""
-      },
-      "composition": {
-        "background": {
-          "image_path": ""
-        },
-        "slide_area": {
-          "image_path": ""
-        },
-        "monolith": {
-          "image_path": ""
-        },
-        "dialog_box": {
-          "image_path": ""
-        },
-        "characters": {
-          "left": {
-            "engine": "metan_engine",
-            "image_path": "",
-            "state": "speaking",
-            "lip_sync_image_paths": []
-          },
-          "right": {
-            "engine": "zundamon_engine",
-            "image_path": "",
-            "state": "idle",
-            "lip_sync_image_paths": []
-          }
-        }
-      },
-      "effects": [],
-      "sub_scenes": [
-        {
-          "sub_scene_id": "scene_003_01",
-          "screen_text": "はいはい。また始まったわね。",
-          "display_mode": "replace",
-          "char_count": 14,
-          "start_frame": 180,
-          "duration_frames": 68,
-          "end_frame": 248,
-          "start_sec": 6,
-          "duration_sec": 2.267
-        },
-        {
-          "sub_scene_id": "scene_003_02",
-          "screen_text": "どうせあなたの妄想でしょ",
-          "display_mode": "replace",
-          "char_count": 12,
-          "start_frame": 248,
-          "duration_frames": 58,
-          "end_frame": 306,
-          "start_sec": 8.267,
-          "duration_sec": 1.933
-        }
-      ]
-    },
-    {
-      "id": "scene_004",
-      "scene_id": "scene_004",
-      "scene_type": "normal",
-      "role": "normal",
-      "event": "normal",
-      "scene_enabled": true,
-      "slide_id": "slide_01",
-      "speaker": "ずんだもん",
-      "emotion": "normal",
-      "speakerId": 3,
-      "voice_speed": 1.25,
-      "voice": "違うのだ！いつも目が合ったら微笑みながら会釈してくれるのだ！あれは脈アリ確定演出なのだ！",
-      "voice_override": "",
-      "character_id": "zundamon",
-      "voice_profile": {
-        "character_id": "zundamon",
-        "voicevox_speaker_name": "ずんだもん",
-        "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
-      },
-      "voice_control": {
-        "speaker_id": 3,
-        "speedScale": 1.25,
-        "pitchScale": 0,
-        "intonationScale": 1,
-        "volumeScale": 1,
-        "prePhonemeLength": 0.1,
-        "postPhonemeLength": 0.1,
-        "pauseLength": null,
-        "pauseLengthScale": 1
-      },
-      "dialog": {
-        "voice": "違うのだ！いつも目が合ったら微笑みながら会釈してくれるのだ！あれは脈アリ確定演出なのだ！",
-        "screen_text": "",
-        "screen_text_font_size": 72,
-        "screen_text_font_family": "Noto Sans JP Bold",
-        "screen_text_color": "#86d654",
-        "screen_text_line_break_mode": "auto",
-        "screen_text_line_chars": 18
-      },
-      "screen_text_font_size": 72,
-      "font_family": "Noto Sans JP Bold",
-      "text_color": "#86d654",
-      "line_break_mode": "auto",
-      "line_chars": 18,
-      "visual_assets": {
-        "background": "",
-        "slide": "",
-        "monolith": "",
-        "dialog_box": "",
-        "character_left": "",
-        "character_right": "",
-        "hook_background": "",
-        "hook_character": "",
-        "hook_bubble": ""
-      },
-      "composition": {
-        "background": {
-          "image_path": ""
-        },
-        "slide_area": {
-          "image_path": ""
-        },
-        "monolith": {
-          "image_path": ""
-        },
-        "dialog_box": {
-          "image_path": ""
-        },
-        "characters": {
-          "left": {
-            "engine": "metan_engine",
-            "image_path": "",
-            "state": "idle",
-            "lip_sync_image_paths": []
-          },
-          "right": {
-            "engine": "zundamon_engine",
-            "image_path": "",
-            "state": "speaking",
-            "lip_sync_image_paths": []
-          }
-        }
-      },
-      "effects": [],
-      "sub_scenes": [
-        {
-          "sub_scene_id": "scene_004_01",
-          "screen_text": "違うのだ！",
-          "display_mode": "replace",
-          "char_count": 5,
-          "start_frame": 306,
-          "duration_frames": 21,
-          "end_frame": 327,
-          "start_sec": 10.2,
-          "duration_sec": 0.7
-        },
-        {
-          "sub_scene_id": "scene_004_02",
-          "screen_text": "いつも目が合ったら微笑みながら会釈し",
-          "display_mode": "replace",
-          "char_count": 18,
-          "start_frame": 327,
-          "duration_frames": 74,
-          "end_frame": 401,
-          "start_sec": 10.9,
-          "duration_sec": 2.467
-        },
-        {
-          "sub_scene_id": "scene_004_03",
-          "screen_text": "てくれるのだ！",
-          "display_mode": "replace",
-          "char_count": 7,
-          "start_frame": 400,
-          "duration_frames": 29,
-          "end_frame": 429,
-          "start_sec": 13.333,
-          "duration_sec": 0.967
-        },
-        {
-          "sub_scene_id": "scene_004_04",
-          "screen_text": "あれは脈アリ確定演出なのだ！",
-          "display_mode": "replace",
-          "char_count": 14,
-          "start_frame": 429,
-          "duration_frames": 57,
-          "end_frame": 486,
-          "start_sec": 14.3,
-          "duration_sec": 1.9
-        }
-      ]
     },
     {
       "id": "scene_005",
@@ -618,22 +631,19 @@
       "scene_enabled": true,
       "slide_id": "slide_01",
       "speaker": "めたん",
-      "emotion": "normal",
       "speakerId": 2,
-      "voice_speed": 1.25,
-      "voice": "普通に挨拶されただけでしょ。この前、ご飯誘って『予定がある』って断られてたわよね？",
+      "voice_speed": 1.3,
+      "voice": "普通に挨拶されただけでしょ。ご飯誘って『予定がある』って断られてたわよね？",
       "voice_override": "",
       "character_id": "metan",
       "voice_profile": {
         "character_id": "metan",
         "voicevox_speaker_name": "四国めたん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 2,
-        "speedScale": 1.25
+        "voicevox_style_id": 2
       },
       "voice_control": {
         "speaker_id": 2,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -643,7 +653,7 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "普通に挨拶されただけでしょ。この前、ご飯誘って『予定がある』って断られてたわよね？",
+        "voice": "普通に挨拶されただけでしょ。ご飯誘って『予定がある』って断られてたわよね？",
         "screen_text": "",
         "screen_text_font_size": 72,
         "screen_text_font_family": "Noto Sans JP Bold",
@@ -658,11 +668,11 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "",
+        "slide": "projects/0010/outputs/slide/slide03.png",
         "monolith": "",
         "dialog_box": "",
-        "character_left": "",
-        "character_right": "",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
+        "character_right": "images/characters/zundamon/zundamon-annoy-0000.png",
         "hook_background": "",
         "hook_character": "",
         "hook_bubble": ""
@@ -672,7 +682,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": ""
+          "image_path": "projects/0010/outputs/slide/slide03.png"
         },
         "monolith": {
           "image_path": ""
@@ -683,13 +693,16 @@
         "characters": {
           "left": {
             "engine": "metan_engine",
-            "image_path": "",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
             "state": "speaking",
-            "lip_sync_image_paths": []
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-lookside-1.png",
+              "images/characters/metan/metan-lookside-2.png"
+            ]
           },
           "right": {
             "engine": "zundamon_engine",
-            "image_path": "",
+            "image_path": "images/characters/zundamon/zundamon-annoy-0000.png",
             "state": "idle",
             "lip_sync_image_paths": []
           }
@@ -699,38 +712,62 @@
       "sub_scenes": [
         {
           "sub_scene_id": "scene_005_01",
-          "screen_text": "普通に挨拶されただけでしょ。この前、",
+          "screen_text": "普通に挨拶された\nだけでしょ。",
           "display_mode": "replace",
-          "char_count": 18,
-          "start_frame": 486,
-          "duration_frames": 79,
-          "end_frame": 565,
-          "start_sec": 16.2,
-          "duration_sec": 2.633
+          "char_count": 15,
+          "start_frame": 250,
+          "duration_frames": 42,
+          "end_frame": 292,
+          "start_sec": 8.333,
+          "duration_sec": 1.4
         },
         {
           "sub_scene_id": "scene_005_02",
-          "screen_text": "ご飯誘って『予定がある』って断られて",
+          "screen_text": "ご飯誘って\n『予定がある』って",
           "display_mode": "replace",
-          "char_count": 18,
-          "start_frame": 565,
-          "duration_frames": 79,
-          "end_frame": 644,
-          "start_sec": 18.833,
-          "duration_sec": 2.633
+          "char_count": 15,
+          "start_frame": 292,
+          "duration_frames": 42,
+          "end_frame": 334,
+          "start_sec": 9.733,
+          "duration_sec": 1.4
         },
         {
           "sub_scene_id": "scene_005_03",
-          "screen_text": "たわよね？",
+          "screen_text": "断られてたわよね？",
           "display_mode": "replace",
-          "char_count": 5,
-          "start_frame": 644,
-          "duration_frames": 22,
-          "end_frame": 666,
-          "start_sec": 21.467,
-          "duration_sec": 0.733
+          "char_count": 9,
+          "start_frame": 334,
+          "duration_frames": 25,
+          "end_frame": 359,
+          "start_sec": 11.133,
+          "duration_sec": 0.833
         }
-      ]
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "めたん",
+        "speaker_side": "left",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-lookside-0.png",
+            "mouth_1": "images/characters/metan/metan-lookside-1.png",
+            "mouth_2": "images/characters/metan/metan-lookside-2.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-annoy-0000.png"
+          }
+        }
+      }
     },
     {
       "id": "scene_006",
@@ -741,22 +778,19 @@
       "scene_enabled": true,
       "slide_id": "slide_02",
       "speaker": "ずんだもん",
-      "emotion": "normal",
       "speakerId": 3,
-      "voice_speed": 1.25,
-      "voice": "それはたまたま本当に予定がかぶっただけなのだ！",
+      "voice_speed": 1.3,
+      "voice": "たまたま本当に予定がかぶっただけなのだ！",
       "voice_override": "",
       "character_id": "zundamon",
       "voice_profile": {
         "character_id": "zundamon",
         "voicevox_speaker_name": "ずんだもん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
+        "voicevox_style_id": 3
       },
       "voice_control": {
         "speaker_id": 3,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -766,7 +800,7 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "それはたまたま本当に予定がかぶっただけなのだ！",
+        "voice": "たまたま本当に予定がかぶっただけなのだ！",
         "screen_text": "",
         "screen_text_font_size": 72,
         "screen_text_font_family": "Noto Sans JP Bold",
@@ -781,11 +815,11 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "",
+        "slide": "projects/0010/outputs/slide/slide03.png",
         "monolith": "",
         "dialog_box": "",
-        "character_left": "",
-        "character_right": "",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
+        "character_right": "images/characters/zundamon/zundamon-annoy-0000.png",
         "hook_background": "",
         "hook_character": "",
         "hook_bubble": ""
@@ -795,7 +829,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": ""
+          "image_path": "projects/0010/outputs/slide/slide03.png"
         },
         "monolith": {
           "image_path": ""
@@ -806,15 +840,18 @@
         "characters": {
           "left": {
             "engine": "metan_engine",
-            "image_path": "",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
             "state": "idle",
             "lip_sync_image_paths": []
           },
           "right": {
             "engine": "zundamon_engine",
-            "image_path": "",
+            "image_path": "images/characters/zundamon/zundamon-annoy-0000.png",
             "state": "speaking",
-            "lip_sync_image_paths": []
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-annoy-0001.png",
+              "images/characters/zundamon/zundamon-annoy-0002.png"
+            ]
           }
         }
       },
@@ -822,27 +859,51 @@
       "sub_scenes": [
         {
           "sub_scene_id": "scene_006_01",
-          "screen_text": "それはたまたま本当に予定がかぶっただ",
+          "screen_text": "たまたま本当に\n予定が",
           "display_mode": "replace",
-          "char_count": 18,
-          "start_frame": 666,
-          "duration_frames": 87,
-          "end_frame": 753,
-          "start_sec": 22.2,
-          "duration_sec": 2.9
+          "char_count": 11,
+          "start_frame": 359,
+          "duration_frames": 36,
+          "end_frame": 395,
+          "start_sec": 11.967,
+          "duration_sec": 1.2
         },
         {
           "sub_scene_id": "scene_006_02",
-          "screen_text": "けなのだ！",
+          "screen_text": "かぶっただけなのだ！",
           "display_mode": "replace",
-          "char_count": 5,
-          "start_frame": 753,
-          "duration_frames": 24,
-          "end_frame": 777,
-          "start_sec": 25.1,
-          "duration_sec": 0.8
+          "char_count": 10,
+          "start_frame": 395,
+          "duration_frames": 33,
+          "end_frame": 428,
+          "start_sec": 13.167,
+          "duration_sec": 1.1
         }
-      ]
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "ずんだもん",
+        "speaker_side": "right",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-lookside-0.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-annoy-0000.png",
+            "mouth_1": "images/characters/zundamon/zundamon-annoy-0001.png",
+            "mouth_2": "images/characters/zundamon/zundamon-annoy-0002.png"
+          }
+        }
+      }
     },
     {
       "id": "scene_007",
@@ -853,244 +914,8 @@
       "scene_enabled": true,
       "slide_id": "slide_02",
       "speaker": "めたん",
-      "emotion": "normal",
       "speakerId": 2,
-      "voice_speed": 1.25,
-      "voice": "じゃあ、LINEの返信がいつも３日後なのはどうなのよ？",
-      "voice_override": "",
-      "character_id": "metan",
-      "voice_profile": {
-        "character_id": "metan",
-        "voicevox_speaker_name": "四国めたん",
-        "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 2,
-        "speedScale": 1.25
-      },
-      "voice_control": {
-        "speaker_id": 2,
-        "speedScale": 1.25,
-        "pitchScale": 0,
-        "intonationScale": 1,
-        "volumeScale": 1,
-        "prePhonemeLength": 0.1,
-        "postPhonemeLength": 0.1,
-        "pauseLength": null,
-        "pauseLengthScale": 1
-      },
-      "dialog": {
-        "voice": "じゃあ、LINEの返信がいつも３日後なのはどうなのよ？",
-        "screen_text": "",
-        "screen_text_font_size": 72,
-        "screen_text_font_family": "Noto Sans JP Bold",
-        "screen_text_color": "#ff5ca3",
-        "screen_text_line_break_mode": "auto",
-        "screen_text_line_chars": 18
-      },
-      "screen_text_font_size": 72,
-      "font_family": "Noto Sans JP Bold",
-      "text_color": "#ff5ca3",
-      "line_break_mode": "auto",
-      "line_chars": 18,
-      "visual_assets": {
-        "background": "",
-        "slide": "",
-        "monolith": "",
-        "dialog_box": "",
-        "character_left": "",
-        "character_right": "",
-        "hook_background": "",
-        "hook_character": "",
-        "hook_bubble": ""
-      },
-      "composition": {
-        "background": {
-          "image_path": ""
-        },
-        "slide_area": {
-          "image_path": ""
-        },
-        "monolith": {
-          "image_path": ""
-        },
-        "dialog_box": {
-          "image_path": ""
-        },
-        "characters": {
-          "left": {
-            "engine": "metan_engine",
-            "image_path": "",
-            "state": "speaking",
-            "lip_sync_image_paths": []
-          },
-          "right": {
-            "engine": "zundamon_engine",
-            "image_path": "",
-            "state": "idle",
-            "lip_sync_image_paths": []
-          }
-        }
-      },
-      "effects": [],
-      "sub_scenes": [
-        {
-          "sub_scene_id": "scene_007_01",
-          "screen_text": "じゃあ、",
-          "display_mode": "replace",
-          "char_count": 4,
-          "start_frame": 777,
-          "duration_frames": 21,
-          "end_frame": 798,
-          "start_sec": 25.9,
-          "duration_sec": 0.7
-        },
-        {
-          "sub_scene_id": "scene_007_02",
-          "screen_text": "LINEの返信がいつも３日後なのはど",
-          "display_mode": "replace",
-          "char_count": 18,
-          "start_frame": 798,
-          "duration_frames": 87,
-          "end_frame": 885,
-          "start_sec": 26.6,
-          "duration_sec": 2.9
-        },
-        {
-          "sub_scene_id": "scene_007_03",
-          "screen_text": "うなのよ？",
-          "display_mode": "replace",
-          "char_count": 5,
-          "start_frame": 885,
-          "duration_frames": 23,
-          "end_frame": 908,
-          "start_sec": 29.5,
-          "duration_sec": 0.767
-        }
-      ]
-    },
-    {
-      "id": "scene_008",
-      "scene_id": "scene_008",
-      "scene_type": "normal",
-      "role": "normal",
-      "event": "normal",
-      "scene_enabled": true,
-      "slide_id": "slide_02",
-      "speaker": "ずんだもん",
-      "emotion": "normal",
-      "speakerId": 3,
-      "voice_speed": 1.25,
-      "voice": "仕事が忙しくて、スマホを見る暇がないだけなのだ！",
-      "voice_override": "",
-      "character_id": "zundamon",
-      "voice_profile": {
-        "character_id": "zundamon",
-        "voicevox_speaker_name": "ずんだもん",
-        "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
-      },
-      "voice_control": {
-        "speaker_id": 3,
-        "speedScale": 1.25,
-        "pitchScale": 0,
-        "intonationScale": 1,
-        "volumeScale": 1,
-        "prePhonemeLength": 0.1,
-        "postPhonemeLength": 0.1,
-        "pauseLength": null,
-        "pauseLengthScale": 1
-      },
-      "dialog": {
-        "voice": "仕事が忙しくて、スマホを見る暇がないだけなのだ！",
-        "screen_text": "",
-        "screen_text_font_size": 72,
-        "screen_text_font_family": "Noto Sans JP Bold",
-        "screen_text_color": "#86d654",
-        "screen_text_line_break_mode": "auto",
-        "screen_text_line_chars": 18
-      },
-      "screen_text_font_size": 72,
-      "font_family": "Noto Sans JP Bold",
-      "text_color": "#86d654",
-      "line_break_mode": "auto",
-      "line_chars": 18,
-      "visual_assets": {
-        "background": "",
-        "slide": "",
-        "monolith": "",
-        "dialog_box": "",
-        "character_left": "",
-        "character_right": "",
-        "hook_background": "",
-        "hook_character": "",
-        "hook_bubble": ""
-      },
-      "composition": {
-        "background": {
-          "image_path": ""
-        },
-        "slide_area": {
-          "image_path": ""
-        },
-        "monolith": {
-          "image_path": ""
-        },
-        "dialog_box": {
-          "image_path": ""
-        },
-        "characters": {
-          "left": {
-            "engine": "metan_engine",
-            "image_path": "",
-            "state": "idle",
-            "lip_sync_image_paths": []
-          },
-          "right": {
-            "engine": "zundamon_engine",
-            "image_path": "",
-            "state": "speaking",
-            "lip_sync_image_paths": []
-          }
-        }
-      },
-      "effects": [],
-      "sub_scenes": [
-        {
-          "sub_scene_id": "scene_008_01",
-          "screen_text": "仕事が忙しくて、",
-          "display_mode": "replace",
-          "char_count": 8,
-          "start_frame": 908,
-          "duration_frames": 39,
-          "end_frame": 947,
-          "start_sec": 30.267,
-          "duration_sec": 1.3
-        },
-        {
-          "sub_scene_id": "scene_008_02",
-          "screen_text": "スマホを見る暇がないだけなのだ！",
-          "display_mode": "replace",
-          "char_count": 16,
-          "start_frame": 946,
-          "duration_frames": 77,
-          "end_frame": 1023,
-          "start_sec": 31.533,
-          "duration_sec": 2.567
-        }
-      ]
-    },
-    {
-      "id": "scene_009",
-      "scene_id": "scene_009",
-      "scene_type": "normal",
-      "role": "normal",
-      "event": "normal",
-      "scene_enabled": true,
-      "slide_id": "slide_02",
-      "speaker": "めたん",
-      "emotion": "normal",
-      "speakerId": 2,
-      "voice_speed": 1.25,
+      "voice_speed": 1.3,
       "voice": "他のみんなとは楽しそうにランチ行ってるみたいだけど？",
       "voice_override": "",
       "character_id": "metan",
@@ -1098,12 +923,10 @@
         "character_id": "metan",
         "voicevox_speaker_name": "四国めたん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 2,
-        "speedScale": 1.25
+        "voicevox_style_id": 2
       },
       "voice_control": {
         "speaker_id": 2,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -1128,11 +951,11 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "",
+        "slide": "projects/0010/outputs/slide/slide03.png",
         "monolith": "",
         "dialog_box": "",
-        "character_left": "",
-        "character_right": "",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_background": "",
         "hook_character": "",
         "hook_bubble": ""
@@ -1142,7 +965,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": ""
+          "image_path": "projects/0010/outputs/slide/slide03.png"
         },
         "monolith": {
           "image_path": ""
@@ -1153,13 +976,16 @@
         "characters": {
           "left": {
             "engine": "metan_engine",
-            "image_path": "",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
             "state": "speaking",
-            "lip_sync_image_paths": []
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-lookside-1.png",
+              "images/characters/metan/metan-lookside-2.png"
+            ]
           },
           "right": {
             "engine": "zundamon_engine",
-            "image_path": "",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
             "state": "idle",
             "lip_sync_image_paths": []
           }
@@ -1168,54 +994,75 @@
       "effects": [],
       "sub_scenes": [
         {
-          "sub_scene_id": "scene_009_01",
-          "screen_text": "他のみんなとは楽しそうにランチ行って",
+          "sub_scene_id": "scene_007_01",
+          "screen_text": "他のみんなとは\n楽しそうに",
           "display_mode": "replace",
-          "char_count": 18,
-          "start_frame": 1024,
-          "duration_frames": 87,
-          "end_frame": 1111,
-          "start_sec": 34.133,
-          "duration_sec": 2.9
+          "char_count": 13,
+          "start_frame": 428,
+          "duration_frames": 34,
+          "end_frame": 462,
+          "start_sec": 14.267,
+          "duration_sec": 1.133
         },
         {
-          "sub_scene_id": "scene_009_02",
-          "screen_text": "るみたいだけど？",
+          "sub_scene_id": "scene_007_02",
+          "screen_text": "ランチ行ってる\nみたいだけど？",
           "display_mode": "replace",
-          "char_count": 8,
-          "start_frame": 1111,
+          "char_count": 15,
+          "start_frame": 462,
           "duration_frames": 39,
-          "end_frame": 1150,
-          "start_sec": 37.033,
+          "end_frame": 501,
+          "start_sec": 15.4,
           "duration_sec": 1.3
         }
-      ]
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "めたん",
+        "speaker_side": "left",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-lookside-0.png",
+            "mouth_1": "images/characters/metan/metan-lookside-1.png",
+            "mouth_2": "images/characters/metan/metan-lookside-2.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png"
+          }
+        }
+      }
     },
     {
-      "id": "scene_010",
-      "scene_id": "scene_010",
+      "id": "scene_008",
+      "scene_id": "scene_008",
       "scene_type": "normal",
       "role": "normal",
       "event": "normal",
       "scene_enabled": true,
-      "slide_id": "slide_03",
+      "slide_id": "slide_02",
       "speaker": "ずんだもん",
-      "emotion": "normal",
       "speakerId": 3,
-      "voice_speed": 1.25,
-      "voice": "ボクを嫉妬させて気を引こうとする高度な駆け引きなのだ！",
+      "voice_speed": 1.3,
+      "voice": "ボクを嫉妬させようとする高度な駆け引きなのだ！",
       "voice_override": "",
       "character_id": "zundamon",
       "voice_profile": {
         "character_id": "zundamon",
         "voicevox_speaker_name": "ずんだもん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
+        "voicevox_style_id": 3
       },
       "voice_control": {
         "speaker_id": 3,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -1225,7 +1072,7 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "ボクを嫉妬させて気を引こうとする高度な駆け引きなのだ！",
+        "voice": "ボクを嫉妬させようとする高度な駆け引きなのだ！",
         "screen_text": "",
         "screen_text_font_size": 72,
         "screen_text_font_family": "Noto Sans JP Bold",
@@ -1240,11 +1087,11 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "",
+        "slide": "projects/0010/outputs/slide/slide03.png",
         "monolith": "",
         "dialog_box": "",
-        "character_left": "",
-        "character_right": "",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
+        "character_right": "images/characters/zundamon/zundamon-annoy-0000.png",
         "hook_background": "",
         "hook_character": "",
         "hook_bubble": ""
@@ -1254,7 +1101,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": ""
+          "image_path": "projects/0010/outputs/slide/slide03.png"
         },
         "monolith": {
           "image_path": ""
@@ -1265,69 +1112,93 @@
         "characters": {
           "left": {
             "engine": "metan_engine",
-            "image_path": "",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
             "state": "idle",
             "lip_sync_image_paths": []
           },
           "right": {
             "engine": "zundamon_engine",
-            "image_path": "",
+            "image_path": "images/characters/zundamon/zundamon-annoy-0000.png",
             "state": "speaking",
-            "lip_sync_image_paths": []
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-annoy-0001.png",
+              "images/characters/zundamon/zundamon-annoy-0002.png"
+            ]
           }
         }
       },
       "effects": [],
       "sub_scenes": [
         {
-          "sub_scene_id": "scene_010_01",
-          "screen_text": "ボクを嫉妬させて気を引こうとする高度",
+          "sub_scene_id": "scene_008_01",
+          "screen_text": "ボクを嫉妬\nさせようとする",
           "display_mode": "replace",
-          "char_count": 18,
-          "start_frame": 1149,
-          "duration_frames": 87,
-          "end_frame": 1236,
-          "start_sec": 38.3,
-          "duration_sec": 2.9
+          "char_count": 13,
+          "start_frame": 501,
+          "duration_frames": 39,
+          "end_frame": 540,
+          "start_sec": 16.7,
+          "duration_sec": 1.3
         },
         {
-          "sub_scene_id": "scene_010_02",
-          "screen_text": "な駆け引きなのだ！",
+          "sub_scene_id": "scene_008_02",
+          "screen_text": "高度な駆け引き\nなのだ！",
           "display_mode": "replace",
-          "char_count": 9,
-          "start_frame": 1236,
-          "duration_frames": 44,
-          "end_frame": 1280,
-          "start_sec": 41.2,
-          "duration_sec": 1.467
+          "char_count": 12,
+          "start_frame": 540,
+          "duration_frames": 36,
+          "end_frame": 576,
+          "start_sec": 18,
+          "duration_sec": 1.2
         }
-      ]
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "ずんだもん",
+        "speaker_side": "right",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-lookside-0.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-annoy-0000.png",
+            "mouth_1": "images/characters/zundamon/zundamon-annoy-0001.png",
+            "mouth_2": "images/characters/zundamon/zundamon-annoy-0002.png"
+          }
+        }
+      }
     },
     {
-      "id": "scene_011",
-      "scene_id": "scene_011",
+      "id": "scene_009",
+      "scene_id": "scene_009",
       "scene_type": "normal",
       "role": "normal",
       "event": "normal",
       "scene_enabled": true,
       "slide_id": "slide_03",
       "speaker": "めたん",
-      "emotion": "normal",
       "speakerId": 2,
-      "voice_speed": 1.25,
-      "voice": "脈アリの証拠は全力で信じるのに、不都合なデータは全部『別の理由』でノーカンにするのね。これが確証バイアスよ",
+      "voice_speed": 1.3,
+      "voice": "都合のいい証拠は集めて、不都合な証拠は無視なのね。これが確証バイアスよ",
       "voice_override": "",
       "character_id": "metan",
       "voice_profile": {
         "character_id": "metan",
         "voicevox_speaker_name": "四国めたん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 2,
-        "speedScale": 1.25
+        "voicevox_style_id": 2
       },
       "voice_control": {
         "speaker_id": 2,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -1337,7 +1208,7 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "脈アリの証拠は全力で信じるのに、不都合なデータは全部『別の理由』でノーカンにするのね。これが確証バイアスよ",
+        "voice": "都合のいい証拠は集めて、不都合な証拠は無視なのね。これが確証バイアスよ",
         "screen_text": "",
         "screen_text_font_size": 72,
         "screen_text_font_family": "Noto Sans JP Bold",
@@ -1352,11 +1223,11 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "",
+        "slide": "projects/0010/outputs/slide/slide03.png",
         "monolith": "",
         "dialog_box": "",
-        "character_left": "",
-        "character_right": "",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
+        "character_right": "images/characters/zundamon/zundamon-annoy-0000.png",
         "hook_background": "",
         "hook_character": "",
         "hook_bubble": ""
@@ -1366,7 +1237,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": ""
+          "image_path": "projects/0010/outputs/slide/slide03.png"
         },
         "monolith": {
           "image_path": ""
@@ -1377,13 +1248,16 @@
         "characters": {
           "left": {
             "engine": "metan_engine",
-            "image_path": "",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
             "state": "speaking",
-            "lip_sync_image_paths": []
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-lookside-1.png",
+              "images/characters/metan/metan-lookside-2.png"
+            ]
           },
           "right": {
             "engine": "zundamon_engine",
-            "image_path": "",
+            "image_path": "images/characters/zundamon/zundamon-annoy-0000.png",
             "state": "idle",
             "lip_sync_image_paths": []
           }
@@ -1392,63 +1266,75 @@
       "effects": [],
       "sub_scenes": [
         {
-          "sub_scene_id": "scene_011_01",
-          "screen_text": "脈アリの証拠は全力で信じるのに、",
+          "sub_scene_id": "scene_009_01",
+          "screen_text": "都合のいい証拠は\n集めて",
           "display_mode": "replace",
-          "char_count": 16,
-          "start_frame": 1280,
-          "duration_frames": 54,
-          "end_frame": 1334,
-          "start_sec": 42.667,
-          "duration_sec": 1.8
+          "char_count": 12,
+          "start_frame": 576,
+          "duration_frames": 40,
+          "end_frame": 616,
+          "start_sec": 19.2,
+          "duration_sec": 1.333
         },
         {
-          "sub_scene_id": "scene_011_02",
-          "screen_text": "不都合なデータは全部『別の理由』でノ",
+          "sub_scene_id": "scene_009_02",
+          "screen_text": "不都合な証拠は\n無視なのね",
           "display_mode": "replace",
-          "char_count": 18,
-          "start_frame": 1334,
-          "duration_frames": 61,
-          "end_frame": 1395,
-          "start_sec": 44.467,
-          "duration_sec": 2.033
+          "char_count": 13,
+          "start_frame": 616,
+          "duration_frames": 43,
+          "end_frame": 659,
+          "start_sec": 20.533,
+          "duration_sec": 1.433
         },
         {
-          "sub_scene_id": "scene_011_03",
-          "screen_text": "ーカンにするのね。",
+          "sub_scene_id": "scene_009_03",
+          "screen_text": "これが\n確証バイアスよ",
           "display_mode": "replace",
-          "char_count": 9,
-          "start_frame": 1395,
-          "duration_frames": 31,
-          "end_frame": 1426,
-          "start_sec": 46.5,
-          "duration_sec": 1.033
-        },
-        {
-          "sub_scene_id": "scene_011_04",
-          "screen_text": "これが確証バイアスよ",
-          "display_mode": "replace",
-          "char_count": 10,
-          "start_frame": 1426,
-          "duration_frames": 34,
-          "end_frame": 1460,
-          "start_sec": 47.533,
-          "duration_sec": 1.133
+          "char_count": 11,
+          "start_frame": 659,
+          "duration_frames": 36,
+          "end_frame": 695,
+          "start_sec": 21.967,
+          "duration_sec": 1.2
         }
-      ]
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "めたん",
+        "speaker_side": "left",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-lookside-0.png",
+            "mouth_1": "images/characters/metan/metan-lookside-1.png",
+            "mouth_2": "images/characters/metan/metan-lookside-2.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-annoy-0000.png"
+          }
+        }
+      }
     },
     {
-      "id": "scene_012",
-      "scene_id": "scene_012",
+      "id": "scene_010",
+      "scene_id": "scene_010",
       "scene_type": "normal",
       "role": "normal",
       "event": "normal",
       "scene_enabled": true,
       "slide_id": "slide_03",
       "speaker": "ずんだもん",
-      "emotion": "normal",
       "speakerId": 3,
-      "voice_speed": 1.25,
+      "voice_speed": 1.3,
       "voice": "というわけで初デート用の服を買うから、めたんボクに３万円貸すのだ！",
       "voice_override": "",
       "character_id": "zundamon",
@@ -1456,12 +1342,10 @@
         "character_id": "zundamon",
         "voicevox_speaker_name": "ずんだもん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
+        "voicevox_style_id": 3
       },
       "voice_control": {
         "speaker_id": 3,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -1486,11 +1370,11 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "",
+        "slide": "projects/0010/outputs/slide/slide01.png",
         "monolith": "",
         "dialog_box": "",
-        "character_left": "",
-        "character_right": "",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_background": "",
         "hook_character": "",
         "hook_bubble": ""
@@ -1500,7 +1384,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": ""
+          "image_path": "projects/0010/outputs/slide/slide01.png"
         },
         "monolith": {
           "image_path": ""
@@ -1511,14 +1395,164 @@
         "characters": {
           "left": {
             "engine": "metan_engine",
-            "image_path": "",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
             "state": "idle",
             "lip_sync_image_paths": []
           },
           "right": {
             "engine": "zundamon_engine",
-            "image_path": "",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
             "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/zundamon/zundamon-normal-0001.png",
+              "images/characters/zundamon/zundamon-normal-0002.png"
+            ]
+          }
+        }
+      },
+      "effects": [],
+      "sub_scenes": [
+        {
+          "sub_scene_id": "scene_010_01",
+          "screen_text": "というわけで\n初デート用",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_frame": 695,
+          "duration_frames": 39,
+          "end_frame": 734,
+          "start_sec": 23.167,
+          "duration_sec": 1.3
+        },
+        {
+          "sub_scene_id": "scene_010_02",
+          "screen_text": "の服を買うから\nめたん、",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_frame": 734,
+          "duration_frames": 39,
+          "end_frame": 773,
+          "start_sec": 24.467,
+          "duration_sec": 1.3
+        },
+        {
+          "sub_scene_id": "scene_010_03",
+          "screen_text": "ボクに３万円\n貸すのだ！",
+          "display_mode": "replace",
+          "char_count": 12,
+          "start_frame": 773,
+          "duration_frames": 36,
+          "end_frame": 809,
+          "start_sec": 25.767,
+          "duration_sec": 1.2
+        }
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "ずんだもん",
+        "speaker_side": "right",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-lookside-0.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png",
+            "mouth_1": "images/characters/zundamon/zundamon-normal-0001.png",
+            "mouth_2": "images/characters/zundamon/zundamon-normal-0002.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "scene_011",
+      "scene_id": "scene_011",
+      "scene_type": "normal",
+      "role": "normal",
+      "event": "normal",
+      "scene_enabled": true,
+      "slide_id": "slide_03",
+      "speaker": "めたん",
+      "speakerId": 2,
+      "voice_speed": 1.3,
+      "voice": "人のはなし聞かなすぎよ",
+      "voice_override": "",
+      "character_id": "metan",
+      "voice_profile": {
+        "character_id": "metan",
+        "voicevox_speaker_name": "四国めたん",
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2
+      },
+      "voice_control": {
+        "speaker_id": 2,
+        "pitchScale": 0,
+        "intonationScale": 1,
+        "volumeScale": 1,
+        "prePhonemeLength": 0.1,
+        "postPhonemeLength": 0.1,
+        "pauseLength": null,
+        "pauseLengthScale": 1
+      },
+      "dialog": {
+        "voice": "人のはなし聞かなすぎよ",
+        "screen_text": "",
+        "screen_text_font_size": 72,
+        "screen_text_font_family": "Noto Sans JP Bold",
+        "screen_text_color": "#ff46b4",
+        "screen_text_line_break_mode": "auto",
+        "screen_text_line_chars": 18
+      },
+      "screen_text_font_size": 72,
+      "font_family": "Noto Sans JP Bold",
+      "text_color": "#ff46b4",
+      "line_break_mode": "auto",
+      "line_chars": 18,
+      "visual_assets": {
+        "background": "",
+        "slide": "projects/0010/outputs/slide/slide01.png",
+        "monolith": "",
+        "dialog_box": "",
+        "character_left": "images/characters/metan/metan-lookside-turnoff-0.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
+        "hook_background": "",
+        "hook_character": "",
+        "hook_bubble": ""
+      },
+      "composition": {
+        "background": {
+          "image_path": ""
+        },
+        "slide_area": {
+          "image_path": "projects/0010/outputs/slide/slide01.png"
+        },
+        "monolith": {
+          "image_path": ""
+        },
+        "dialog_box": {
+          "image_path": ""
+        },
+        "characters": {
+          "left": {
+            "engine": "metan_engine",
+            "image_path": "images/characters/metan/metan-lookside-turnoff-0.png",
+            "state": "speaking",
+            "lip_sync_image_paths": [
+              "images/characters/metan/metan-lookside-turnoff-1.png",
+              "images/characters/metan/metan-lookside-turnoff-2.png"
+            ]
+          },
+          "right": {
+            "engine": "zundamon_engine",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
+            "state": "idle",
             "lip_sync_image_paths": []
           }
         }
@@ -1526,35 +1560,48 @@
       "effects": [],
       "sub_scenes": [
         {
-          "sub_scene_id": "scene_012_01",
-          "screen_text": "というわけで初デート用の服を買うから",
+          "sub_scene_id": "scene_011_01",
+          "screen_text": "人の話、\n聞かなすぎよ",
           "display_mode": "replace",
-          "char_count": 18,
-          "start_frame": 1460,
-          "duration_frames": 87,
-          "end_frame": 1547,
-          "start_sec": 48.667,
-          "duration_sec": 2.9
-        },
-        {
-          "sub_scene_id": "scene_012_02",
-          "screen_text": "、めたんボクに３万円貸すのだ！",
-          "display_mode": "replace",
-          "char_count": 15,
-          "start_frame": 1547,
-          "duration_frames": 73,
-          "end_frame": 1620,
-          "start_sec": 51.567,
-          "duration_sec": 2.433
+          "char_count": 11,
+          "start_frame": 809,
+          "duration_frames": 39,
+          "end_frame": 848,
+          "start_sec": 26.967,
+          "duration_sec": 1.3
         }
-      ]
+      ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "scene",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": true,
+        "speaker": "めたん",
+        "speaker_side": "left",
+        "assets": {
+          "left": {
+            "idle": "images/characters/metan/metan-lookside-turnoff-0.png",
+            "mouth_1": "images/characters/metan/metan-lookside-turnoff-1.png",
+            "mouth_2": "images/characters/metan/metan-lookside-turnoff-2.png"
+          },
+          "right": {
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png"
+          }
+        }
+      }
     }
   ],
   "source": "",
   "render_control": {
     "scene_visibility": {
       "scene_001": true,
-      "scene_002": true,
+      "scene_002": false,
       "scene_003": true,
       "scene_004": true,
       "scene_005": true,
@@ -1563,23 +1610,22 @@
       "scene_008": true,
       "scene_009": true,
       "scene_010": true,
-      "scene_011": true,
-      "scene_012": true
+      "scene_011": true
     }
   },
-  "durationSec": 54,
-  "durationInFrames": 1620,
-  "total_frames": 1620,
+  "durationSec": 28.267,
+  "durationInFrames": 848,
+  "total_frames": 848,
   "fps": 30,
   "common_layers": [
     {
       "layer_id": "background",
       "type": "image",
-      "src": "scene-bg-town-evening.png",
+      "src": "scene-bg-town-daytime.png",
       "z_index": 0,
       "fit": "cover",
       "start_frame": 0,
-      "duration_frames": 1620
+      "duration_frames": 848
     },
     {
       "layer_id": "logboard",
@@ -1588,16 +1634,16 @@
       "z_index": 18,
       "fit": "contain",
       "start_frame": 0,
-      "duration_frames": 1620
+      "duration_frames": 848
     },
     {
       "layer_id": "hook-background-scene_001",
       "type": "image",
-      "src": "images/backgrounds/hook-bg-dots-pk.png",
+      "src": "images/backgrounds/HOOK010.png",
       "z_index": 0,
       "fit": "cover",
       "start_frame": 0,
-      "duration_frames": 78
+      "duration_frames": 66
     }
   ],
   "tts_transform": "",
@@ -1605,11 +1651,11 @@
     "audio": {
       "tts_transform": "",
       "bgm": "/audio/bgm/BGM-piano.mp3",
-      "bgm_volume": 0.03,
+      "bgm_volume": 0.04,
       "bgm_loop": true
     },
     "style": {
-      "background": "scene-bg-town-evening.png",
+      "background": "scene-bg-town-daytime.png",
       "title_overlay": {
         "enabled": true,
         "bg_color": "#000000",
@@ -1624,18 +1670,18 @@
     },
     "format": {
       "fps": 30,
-      "duration": 54,
-      "durationInFrames": 1620
+      "duration": 28.267,
+      "durationInFrames": 848
     },
-    "title": "後輩のあの子、"
+    "title": "完全に社内恋愛が始まってるのだ！"
   },
   "bgm": {
     "src": "/audio/bgm/BGM-piano.mp3",
-    "volume": 0.03,
+    "volume": 0.04,
     "loop": true
   },
-  "background": "scene-bg-town-evening.png",
-  "title": "後輩のあの子、",
+  "background": "scene-bg-town-daytime.png",
+  "title": "完全に社内恋愛が始まってるのだ！",
   "title_overlay": {
     "enabled": true,
     "bg_color": "#000000",

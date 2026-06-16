@@ -43,7 +43,6 @@
       "scene_enabled": true,
       "slide_id": "slide_01",
       "speaker": "議題",
-      "emotion": "normal",
       "speakerId": 3,
       "voice_speed": 1.25,
       "voice": "ちょっと気にしすぎ、だいたいこんななのだ",
@@ -53,12 +52,10 @@
         "character_id": "zundamon",
         "voicevox_speaker_name": "ずんだもん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
+        "voicevox_style_id": 3
       },
       "voice_control": {
         "speaker_id": 3,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -88,7 +85,7 @@
         "dialog_box": "",
         "character_left": "",
         "character_right": "",
-        "hook_background": "images/backgrounds/hook-bg-dots-bl.png",
+        "hook_background": "images/backgrounds/HOOK006.png",
         "hook_character": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_bubble": "parts/Hook-speech-balloon.png"
       },
@@ -158,7 +155,7 @@
       "hook_visual": {
         "texts": {
           "top": {
-            "text": "ちょっと",
+            "text": "",
             "fontSize": 84,
             "color": "#303030",
             "outlineColor": "#000000",
@@ -166,7 +163,7 @@
             "fillVisible": false
           },
           "main": {
-            "text": "気にしすぎ ",
+            "text": "",
             "fontSize": 160,
             "color": "#e60012",
             "outlineColor": "transparent",
@@ -174,7 +171,7 @@
             "fillVisible": true
           },
           "sub": {
-            "text": "ってだいたいこれ",
+            "text": "",
             "fontSize": 98,
             "color": "#303030",
             "outlineColor": "#000000",
@@ -183,7 +180,7 @@
           }
         },
         "background": {
-          "image_path": "images/backgrounds/hook-bg-dots-bl.png"
+          "image_path": "images/backgrounds/HOOK006.png"
         },
         "character": {
           "enabled": true,
@@ -203,6 +200,10 @@
         "bubble": {
           "image_path": "parts/Hook-speech-balloon.png",
           "text": "",
+          "x": 80,
+          "y": 1230,
+          "width": 520,
+          "height": 400,
           "fontSize": 64
         },
         "finalize_to_dialog": false
@@ -217,7 +218,6 @@
       "scene_enabled": true,
       "slide_id": "slide_01",
       "speaker": "ずんだもん",
-      "emotion": "normal",
       "speakerId": 76,
       "voice_speed": 1.25,
       "voice": "大変なのだ！ 今日すれ違う人全員がボクの寝癖を笑ってた気がするのだ！ 絶対に世界中がボクに注目してるのだ！",
@@ -227,12 +227,10 @@
         "character_id": "zundamon",
         "voicevox_speaker_name": "ずんだもん",
         "voicevox_style_name": "なみだめ",
-        "voicevox_style_id": 76,
-        "speedScale": 1.25
+        "voicevox_style_id": 76
       },
       "voice_control": {
         "speaker_id": 76,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -367,7 +365,6 @@
       "scene_enabled": true,
       "slide_id": "slide_01",
       "speaker": "めたん",
-      "emotion": "normal",
       "speakerId": 2,
       "voice_speed": 1.25,
       "voice": "自意識過剰ね。スポットライト効果っていって他人にどう見られているかを過剰に気にしちゃうものなのよ",
@@ -377,12 +374,10 @@
         "character_id": "metan",
         "voicevox_speaker_name": "四国めたん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 2,
-        "speedScale": 1.25
+        "voicevox_style_id": 2
       },
       "voice_control": {
         "speaker_id": 2,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -517,7 +512,6 @@
       "scene_enabled": true,
       "slide_id": "slide_01",
       "speaker": "ずんだもん",
-      "emotion": "normal",
       "speakerId": 3,
       "voice_speed": 1.25,
       "voice": "そんなの嘘なのだ！ さっきから通行人が全員ボクの寝癖をチラ見してるのだ！ あれは絶対に監視チームなのだ！",
@@ -527,12 +521,10 @@
         "character_id": "zundamon",
         "voicevox_speaker_name": "ずんだもん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
+        "voicevox_style_id": 3
       },
       "voice_control": {
         "speaker_id": 3,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -667,7 +659,6 @@
       "scene_enabled": true,
       "slide_id": "slide_02",
       "speaker": "めたん",
-      "emotion": "normal",
       "speakerId": 2,
       "voice_speed": 1.25,
       "voice": "それただの自意識過剰がこじれた電波よ。みんな自分のスマホか晩ご飯のことで頭がいっぱいなんだから",
@@ -677,12 +668,10 @@
         "character_id": "metan",
         "voicevox_speaker_name": "四国めたん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 2,
-        "speedScale": 1.25
+        "voicevox_style_id": 2
       },
       "voice_control": {
         "speaker_id": 2,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -817,7 +806,6 @@
       "scene_enabled": true,
       "slide_id": "slide_02",
       "speaker": "ずんだもん",
-      "emotion": "normal",
       "speakerId": 3,
       "voice_speed": 1.25,
       "voice": "じゃあボクがこれだけ可愛いのに誰も見てないって言うのだ！？ 人類の損失なのだ！",
@@ -827,12 +815,10 @@
         "character_id": "zundamon",
         "voicevox_speaker_name": "ずんだもん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
+        "voicevox_style_id": 3
       },
       "voice_control": {
         "speaker_id": 3,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -967,7 +953,6 @@
       "scene_enabled": true,
       "slide_id": "slide_02",
       "speaker": "めたん",
-      "emotion": "normal",
       "speakerId": 2,
       "voice_speed": 1.25,
       "voice": "急にポジティブな方向に脳内変換したわね……。誰も見てないんだから、失敗しても気にしなくていいってことよ",
@@ -977,12 +962,10 @@
         "character_id": "metan",
         "voicevox_speaker_name": "四国めたん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 2,
-        "speedScale": 1.25
+        "voicevox_style_id": 2
       },
       "voice_control": {
         "speaker_id": 2,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -1117,7 +1100,6 @@
       "scene_enabled": true,
       "slide_id": "slide_03",
       "speaker": "ずんだもん",
-      "emotion": "normal",
       "speakerId": 3,
       "voice_speed": 1.25,
       "voice": "なるほどなのだ！ じゃあめたんの財布からこっそりお札を抜いてもバレないのだ！？",
@@ -1127,12 +1109,10 @@
         "character_id": "zundamon",
         "voicevox_speaker_name": "ずんだもん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
+        "voicevox_style_id": 3
       },
       "voice_control": {
         "speaker_id": 3,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -1256,7 +1236,6 @@
       "scene_enabled": true,
       "slide_id": "slide_03",
       "speaker": "めたん",
-      "emotion": "normal",
       "speakerId": 6,
       "voice_speed": 1.25,
       "voice": "それはバッチリ見てるから今すぐその手を離しなさい",
@@ -1266,12 +1245,10 @@
         "character_id": "metan",
         "voicevox_speaker_name": "四国めたん",
         "voicevox_style_name": "ツンツン",
-        "voicevox_style_id": 6,
-        "speedScale": 1.25
+        "voicevox_style_id": 6
       },
       "voice_control": {
         "speaker_id": 6,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -1405,18 +1382,9 @@
       "duration_frames": 1365
     },
     {
-      "layer_id": "logboard",
-      "type": "image",
-      "src": "logboard/logboard-BK.png",
-      "z_index": 18,
-      "fit": "contain",
-      "start_frame": 0,
-      "duration_frames": 1365
-    },
-    {
       "layer_id": "hook-background-scene_001",
       "type": "image",
-      "src": "images/backgrounds/hook-bg-dots-bl.png",
+      "src": "images/backgrounds/HOOK006.png",
       "z_index": 0,
       "fit": "cover",
       "start_frame": 0,

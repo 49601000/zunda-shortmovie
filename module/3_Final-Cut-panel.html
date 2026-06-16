@@ -668,8 +668,8 @@
           <div class="field span-3">
             <label for="bgmVolumeInput">BGM音量（ナレーションとのバランス）</label>
             <div class="row" style="margin-top:0">
-              <input id="bgmVolumeInput" type="range" min="0" max="1" step="0.01" value="0.2" />
-              <div class="badge" id="bgmVolumeValue">20%</div>
+              <input id="bgmVolumeInput" type="range" min="0" max="1" step="0.01" value="0.04" />
+              <div class="badge" id="bgmVolumeValue">4%</div>
             </div>
           </div>
         </div>
@@ -721,8 +721,6 @@
       const RENDER_DRAFT_NAME = "06-render-draft-v01.json";
       const RENDER_FINAL_NAME = "render-final-v01.json";
       const VOICEVOX_COMMAND = "npm run voicevox";
-      const SCENE_1_SLIDE_01_DEFAULT_VOICE = "だいたいこれなのだ";
-      const SCENE_1_SLIDE_01_DEFAULT_SUB_TEXT = "だいたいこれ";
       const sharedConfig = window.VOICEVOX_SHARED_CONFIG || {};
       const FALLBACK_ZUNDAMON_STYLES = [
         { id: 3, name: "ノーマル", speaker_uuid: "" },
@@ -733,12 +731,12 @@
         { id: 76, name: "なみだめ", speaker_uuid: "" }
       ];
       const DEFAULT_SPEAKER_ID = Number(sharedConfig.DEFAULT_SPEAKER_ID) || 3;
-      const DEFAULT_VOICE_SPEED = Number(sharedConfig.DEFAULT_VOICE_SPEED) || 1.4;
-      const VOICE_SPEED_OPTIONS = sharedConfig.VOICE_SPEED_OPTIONS || [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
-      const DEFAULT_SPEED_SCALE = 1.25;
+      const DEFAULT_VOICE_SPEED = 1.44;
+      const DEFAULT_BGM_VOLUME = 0.04;
+      const MIN_VOICE_SPEED = 0.5;
+      const MAX_VOICE_SPEED = 2.0;
       const DEFAULT_VOICE_CONTROL = {
         speaker_id: DEFAULT_SPEAKER_ID,
-        speedScale: DEFAULT_SPEED_SCALE,
         pitchScale: 0,
         intonationScale: 1,
         volumeScale: 1,
@@ -827,47 +825,13 @@
         objectPosition: "center top"
       };
 
-      const normalizeSpeed = typeof sharedConfig.normalizeVoiceSpeed === "function"
-        ? sharedConfig.normalizeVoiceSpeed
-        : function (speed) {
-            const n = Number(speed);
-            if (!Number.isFinite(n)) return DEFAULT_VOICE_SPEED;
-            const hit = VOICE_SPEED_OPTIONS.find((v) => Math.abs(v - n) < 0.0001);
-            return hit != null ? hit : DEFAULT_VOICE_SPEED;
-          };
-
-      const EMOTION_OPTIONS = [
-        "normal",
-        "happy",
-        "thinking",
-        "surprised",
-        "sad",
-        "annoyed",
-        "laugh",
-        "provoke",
-        "low-panic",
-        "mid-panic",
-        "high-panic",
-        "low-cheat",
-        "mid-cheat",
-        "high-cheat"
-      ];
-      const EMOTION_LABEL = {
-        normal: "normal",
-        happy: "happy",
-        thinking: "thinking",
-        surprised: "surprised",
-        sad: "sad",
-        annoyed: "annoyed",
-        laugh: "laugh",
-        provoke: "provoke",
-        "low-panic": "low-panic",
-        "mid-panic": "mid-panic",
-        "high-panic": "high-panic",
-        "low-cheat": "low-cheat",
-        "mid-cheat": "mid-cheat",
-        "high-cheat": "high-cheat"
+      const normalizeSpeed = (speed) => {
+        const n = Number(speed);
+        if (!Number.isFinite(n)) return DEFAULT_VOICE_SPEED;
+        const rounded = Math.round(n * 100) / 100;
+        return Math.max(MIN_VOICE_SPEED, Math.min(MAX_VOICE_SPEED, rounded));
       };
+
       let BACKGROUND_PNG_FILES = [
         "classroom-daytime.png",
         "classroom-evening.png",
@@ -947,7 +911,7 @@
         transformMode: "none",
         backgroundPng: "",
         bgmFile: "",
-        bgmVolume: 0.2,
+        bgmVolume: DEFAULT_BGM_VOLUME,
         bgmLoop: true,
         fps: 30,
         timelineDurationFrames: null,
@@ -1424,19 +1388,6 @@
 
       const createSubSceneId = (sceneId, subIndex) => `${sceneId}_${String(subIndex + 1).padStart(2, "0")}`;
 
-      const normalizeSlideId = (value) => {
-        const raw = String(value || "").trim();
-        const matched = raw.match(/^slide[_-]?0*(\d+)$/i);
-        if (!matched) return raw;
-        return `slide_${String(Number(matched[1])).padStart(2, "0")}`;
-      };
-
-      const isScene1ZundamonSlide01 = (sceneIndex, characterId, slideId) => {
-        return sceneIndex === 0
-          && canonicalCharacterId(characterId) === "zundamon"
-          && normalizeSlideId(slideId) === "slide_01";
-      };
-
       const sceneIdFromSubScene = (sub, index = 0) => {
         if (typeof sub?.scene_id === "string" && sub.scene_id.trim()) return sub.scene_id.trim();
         const id = String(sub?.sub_scene_id || sub?.id || "").trim();
@@ -1559,7 +1510,7 @@
             : true;
         return {
           bgmFile,
-          bgmVolume: normalizeBgmVolume(volumeCandidate, 0.2),
+          bgmVolume: normalizeBgmVolume(volumeCandidate, DEFAULT_BGM_VOLUME),
           bgmLoop: Boolean(loop)
         };
       };
@@ -1629,6 +1580,12 @@
         return out;
       };
 
+      const sortAssetNames = (list) => {
+        return [...(Array.isArray(list) ? list : [])].sort((a, b) =>
+          String(a || "").localeCompare(String(b || ""), "ja", {numeric: true, sensitivity: "base"})
+        );
+      };
+
       const normalizeRunId = (raw) => {
         const trimmed = String(raw == null ? "" : raw).trim();
         if (!trimmed) return "000";
@@ -1682,7 +1639,7 @@
             seen.add(v);
             out.push(v);
           });
-        return out;
+        return sortAssetNames(out);
       };
 
       const getSharedAssetsSubdirConfigFromUi = () => ({
@@ -1834,7 +1791,6 @@
           const style = resolveStyleFromSpeaker(speakerName, savedVoice.voicevox_style_id, savedVoice.voicevox_style_name);
           next[id] = {
             display_name: savedRow.display_name || template.display_name,
-            speedScale: toNum(savedRow.speedScale, DEFAULT_SPEED_SCALE),
             voice: {
               voicevox_speaker_name: speakerName,
               voicevox_style_name: style.name || "",
@@ -1851,7 +1807,6 @@
           const row = characters[id];
           payload.characters[id] = {
             display_name: row.display_name,
-            speedScale: toNum(row.speedScale, DEFAULT_SPEED_SCALE),
             voice: {
               voicevox_speaker_name: row.voice.voicevox_speaker_name,
               voicevox_style_name: row.voice.voicevox_style_name,
@@ -2414,13 +2369,6 @@
         }
       };
 
-      const normalizeEmotion = (emotion) => {
-        const raw = typeof emotion === "string" ? emotion.trim().toLowerCase() : "";
-        if (!raw) return "normal";
-        if (EMOTION_OPTIONS.includes(raw)) return raw;
-        return "normal";
-      };
-
       const resolveTransformMode = (spec) => {
         const topLevelMode = typeof spec?.tts_transform === "string" ? spec.tts_transform.trim() : "";
         if (topLevelMode) return topLevelMode.toLowerCase();
@@ -2523,8 +2471,7 @@
               ? item.screen_text
               : typeof item?.text === "string"
                 ? item.text
-                : "",
-            emotion: item?.emotion || "normal"
+                : ""
           };
         });
       };
@@ -2598,7 +2545,6 @@
         const base = {...DEFAULT_VOICE_CONTROL, ...(raw || {})};
         return {
           speaker_id: toNum(base.speaker_id, DEFAULT_VOICE_CONTROL.speaker_id),
-          speedScale: toNum(base.speedScale, DEFAULT_SPEED_SCALE),
           pitchScale: toNum(base.pitchScale, DEFAULT_VOICE_CONTROL.pitchScale),
           intonationScale: toNum(base.intonationScale, DEFAULT_VOICE_CONTROL.intonationScale),
           volumeScale: toNum(base.volumeScale, DEFAULT_VOICE_CONTROL.volumeScale),
@@ -2762,7 +2708,7 @@
 
       const buildSelectOptionsHtml = (selected, values, emptyLabel = "(未指定)") => {
         const selectedValue = normalizeImageRef(selected || "");
-        const list = normalizeStringList(values || []);
+        const list = sortAssetNames(normalizeStringList(values || []));
         if (selectedValue && !list.includes(selectedValue)) list.unshift(selectedValue);
         return [
           `<option value="">${escapeHtml(emptyLabel)}</option>`,
@@ -2776,7 +2722,7 @@
       const buildSlideOptionsHtml = (selected) => {
         const projectId = selectedProjectId();
         const selectedValue = normalizeSlideAssetRef(selected || "", projectId);
-        const list = normalizeStringList((projectSlideFileCatalog || []).map((value) => normalizeSlideAssetRef(value, projectId)));
+        const list = sortAssetNames(normalizeStringList((projectSlideFileCatalog || []).map((value) => normalizeSlideAssetRef(value, projectId))));
         if (selectedValue && !list.includes(selectedValue)) list.unshift(selectedValue);
         return [
           `<option value="">${escapeHtml("(未指定)")}</option>`,
@@ -2918,20 +2864,13 @@
           profile.voicevox_style_name
         );
         const resolvedSlideId = String(saved.slide_id || raw.slide_id || "").trim();
-        const shouldApplyScene1Slide01Defaults = isScene1ZundamonSlide01(sceneIndex, characterId, resolvedSlideId);
         const visualAssets = saved.visual_assets && typeof saved.visual_assets === "object"
           ? saved.visual_assets
           : buildDefaultVisualAssets(raw);
         visualAssets.slide = normalizeSlideAssetRef(visualAssets.slide || "");
-        let hookTexts = saved.hook_texts && typeof saved.hook_texts === "object"
+        const hookTexts = saved.hook_texts && typeof saved.hook_texts === "object"
           ? saved.hook_texts
           : buildDefaultHookTexts(raw);
-        if (shouldApplyScene1Slide01Defaults && !String(hookTexts.sub || "").trim()) {
-          hookTexts = {
-            ...hookTexts,
-            sub: SCENE_1_SLIDE_01_DEFAULT_SUB_TEXT
-          };
-        }
         const hookTextStyles = saved.hook_text_styles && typeof saved.hook_text_styles === "object"
           ? saved.hook_text_styles
           : buildDefaultHookTextStyles(raw);
@@ -2948,9 +2887,6 @@
             : typeof raw.text === "string"
               ? raw.text
               : subScenes.map((sub) => sub.screen_text).join("");
-        const resolvedVoice = shouldApplyScene1Slide01Defaults && !String(sceneVoice || "").trim()
-          ? SCENE_1_SLIDE_01_DEFAULT_VOICE
-          : sceneVoice;
 
         return {
           key: sceneId,
@@ -2962,10 +2898,9 @@
           scene_enabled: normalizeSceneEnabled(raw, saved),
           slide_id: resolvedSlideId,
           speaker,
-          emotion: normalizeEmotion(saved.emotion || raw.emotion || "normal"),
           speakerId,
-          voice_speed: normalizeSpeed(saved.voice_speed != null ? saved.voice_speed : raw.voice_speed != null ? raw.voice_speed : 1.25),
-          voice: resolvedVoice,
+          voice_speed: normalizeSpeed(saved.voice_speed != null ? saved.voice_speed : raw.voice_speed != null ? raw.voice_speed : DEFAULT_VOICE_SPEED),
+          voice: sceneVoice,
           voice_override: typeof saved.voice_override === "string"
             ? saved.voice_override
             : typeof raw.voice_override === "string"
@@ -2975,7 +2910,6 @@
           voicevox_speaker_name: speakerName,
           voicevox_style_name: voicevoxStyle.name || "",
           voicevox_style_id: Number(voicevoxStyle.id) || speakerId,
-          speedScale: toNum(saved.speedScale ?? profile.speedScale ?? raw.speedScale ?? raw.voice_control?.speedScale, DEFAULT_SPEED_SCALE),
           screen_text: typeof saved.screen_text === "string" ? saved.screen_text : getScreenTextFromSceneLike(raw),
           screen_text_font_size: normalizeScreenTextFontSize(
             saved.screen_text_font_size ?? dialog.screen_text_font_size ?? raw.screen_text_font_size,
@@ -3115,7 +3049,7 @@
                   : sourceIndex * 2 + 1;
 
           const speakerIdFallback = Number(raw.speakerId);
-          const voiceSpeed = normalizeSpeed(saved.voice_speed != null ? saved.voice_speed : raw.voice_speed != null ? raw.voice_speed : 1.25);
+          const voiceSpeed = normalizeSpeed(saved.voice_speed != null ? saved.voice_speed : raw.voice_speed != null ? raw.voice_speed : DEFAULT_VOICE_SPEED);
           const savedSpeakerId = Number(saved.speakerId);
           const speakerId = Number.isFinite(savedSpeakerId)
             ? savedSpeakerId
@@ -3125,10 +3059,6 @@
           const rawVoiceOverride = typeof raw.voice_override === "string" ? raw.voice_override : "";
           const savedVoiceOverride = typeof saved.voice_override === "string" ? saved.voice_override : "";
           const voiceOverride = savedVoiceOverride !== "" ? savedVoiceOverride : rawVoiceOverride;
-          const savedEmotion = typeof saved.emotion === "string" ? saved.emotion : "";
-          const rawEmotion = typeof raw.emotion === "string" ? raw.emotion : "";
-          const emotion = normalizeEmotion(savedEmotion.trim() || rawEmotion.trim() || "normal");
-
           if (!groups.has(sceneId)) {
             const characterId = canonicalCharacterId(raw.character_id || raw.speaker || "");
             const character = characters[characterId] || characters.zundamon || Object.values(characters)[0] || null;
@@ -3144,7 +3074,6 @@
               scene_enabled: true,
               slide_id: String(raw.slide_id || "").trim(),
               speaker: String(raw.speaker || "").trim(),
-              emotion,
               speakerId,
               voice_speed: voiceSpeed,
               voice: typeof raw.voice === "string"
@@ -3157,7 +3086,6 @@
               voicevox_speaker_name: speakerName,
               voicevox_style_name: voicevoxStyle.name || "",
               voicevox_style_id: Number(voicevoxStyle.id) || speakerId,
-              speedScale: DEFAULT_SPEED_SCALE,
               screen_text: "",
               screen_text_font_size: SCREEN_TEXT_STYLE_DEFAULTS.font_size,
               screen_text_font_family: SCREEN_TEXT_STYLE_DEFAULTS.font_family,
@@ -3175,7 +3103,7 @@
               hook_text_styles: deepClone(HOOK_TEXT_STYLE_DEFAULTS),
               hook_finalize_to_dialog: false,
               grayscale_filter: "off",
-              voice_control: normalizeVoiceControl({speaker_id: speakerId, speedScale: DEFAULT_SPEED_SCALE}),
+              voice_control: normalizeVoiceControl({speaker_id: speakerId}),
               sub_scenes: []
             });
           }
@@ -3402,7 +3330,6 @@
           const style = resolveStyleFromSpeaker(speakerName, scene.voicevox_style_id ?? speakerId, scene.voicevox_style_name);
           const voiceControl = normalizeVoiceControl(scene.voice_control || {});
           voiceControl.speaker_id = Number(style.id) || speakerId;
-          voiceControl.speedScale = toNum(scene.speedScale, DEFAULT_SPEED_SCALE);
           const visualAssets = scene.visual_assets && typeof scene.visual_assets === "object" ? scene.visual_assets : {};
           const outputVisualAssets = {
             background: stripCommonAssetValue(visualAssets.background || "", commonBackground),
@@ -3436,7 +3363,6 @@
             scene_enabled: scene.scene_enabled !== false,
             slide_id: scene.slide_id,
             speaker: scene.speaker,
-            emotion: normalizeEmotion(scene.emotion),
             speakerId,
             voice_speed: normalizeSpeed(scene.voice_speed),
             voice: typeof scene.voice === "string" ? scene.voice : "",
@@ -3446,8 +3372,7 @@
               character_id: canonicalCharacterId(scene.character_id),
               voicevox_speaker_name: speakerName,
               voicevox_style_name: style.name || "",
-              voicevox_style_id: Number(style.id) || 0,
-              speedScale: voiceControl.speedScale
+              voicevox_style_id: Number(style.id) || 0
             },
             voice_control: voiceControl,
             dialog: {
@@ -3546,6 +3471,10 @@
               bubble: {
                 image_path: outputVisualAssets.hook_bubble,
                 text: String(hookTexts.bubble || ""),
+                x: 80,
+                y: 1230,
+                width: 520,
+                height: 400,
                 fontSize: normalizeHookFontSize(hookTextStyles.bubble?.font_size, HOOK_TEXT_STYLE_DEFAULTS.bubble.font_size)
               },
               finalize_to_dialog: !!scene.hook_finalize_to_dialog
@@ -3572,7 +3501,6 @@
               screen_text: sub.screen_text,
               voice: scene.voice,
               voice_override: scene.voice_override,
-              emotion: scene.emotion,
               speakerId: scene.speakerId,
               voicevox_style_name: scene.voicevox_style_name,
               voicevox_style_id: scene.voicevox_style_id,
@@ -3701,7 +3629,7 @@
         spec.video_spec.audio.tts_transform = spec.tts_transform;
 
         const bgmFile = normalizeBgmRef(state.bgmFile);
-        const bgmVolume = normalizeBgmVolume(state.bgmVolume, 0.2);
+        const bgmVolume = normalizeBgmVolume(state.bgmVolume, DEFAULT_BGM_VOLUME);
         const bgmLoop = Boolean(state.bgmLoop);
         if (bgmFile) {
           spec.video_spec.audio.bgm = `/audio/bgm/${bgmFile}`;
@@ -3768,23 +3696,6 @@
         el.jsonOutput.value = JSON.stringify(spec, null, 2);
       };
 
-      const speedOptionsHtml = (selected) => {
-        return VOICE_SPEED_OPTIONS.map((v) => {
-          const label = v === 1 ? "1.00 normal" : v.toFixed(2);
-          const sel = Math.abs(v - selected) < 0.0001 ? " selected" : "";
-          return `<option value="${v}"${sel}>${label}</option>`;
-        }).join("");
-      };
-
-      const emotionOptionsHtml = (selected) => {
-        const normalizedSelected = normalizeEmotion(selected);
-        return EMOTION_OPTIONS.map((emotionKey) => {
-          const label = EMOTION_LABEL[emotionKey] || emotionKey;
-          const sel = emotionKey === normalizedSelected ? " selected" : "";
-          return `<option value="${emotionKey}"${sel}>${label}</option>`;
-        }).join("");
-      };
-
       const characterOptionsHtml = (selected) => {
         const selectedId = canonicalCharacterId(selected);
         return Object.keys(characters).map((id) => {
@@ -3841,10 +3752,6 @@
               <div class="field">
                 <label>style id</label>
                 <input type="text" readonly value="${escapeHtml(row.voice.voicevox_style_id)}" />
-              </div>
-              <div class="field">
-                <label>default speedScale</label>
-                <input data-field="speedScale" type="number" step="0.01" value="${escapeHtml(row.speedScale)}" />
               </div>
             </div>
           `;
@@ -3958,16 +3865,8 @@
                   <input name="speakerId" data-scope="scene" type="number" min="0" step="1" value="${Number(chosenStyle.id) || speakerId}" />
                 </div>
                 <div class="field">
-                  <label>speedScale</label>
-                  <input name="speedScale" data-scope="scene" type="number" min="0.1" step="0.01" value="${escapeHtml(scene.speedScale ?? DEFAULT_SPEED_SCALE)}" />
-                </div>
-                <div class="field">
-                  <label>emotion</label>
-                  <select name="emotion" data-scope="scene">${emotionOptionsHtml(scene.emotion || "normal")}</select>
-                </div>
-                <div class="field">
                   <label>voice_speed</label>
-                  <select name="voice_speed" data-scope="scene">${speedOptionsHtml(scene.voice_speed)}</select>
+                  <input name="voice_speed" data-scope="scene" type="number" min="${MIN_VOICE_SPEED}" max="${MAX_VOICE_SPEED}" step="0.01" value="${normalizeSpeed(scene.voice_speed).toFixed(2)}" />
                 </div>
                 <div class="field">
                   <label>speaker</label>
@@ -4149,8 +4048,8 @@
 
       const renderBgmControls = () => {
         applyBgmFileList(BGM_MP3_FILES, {selected: state.bgmFile});
-        el.bgmVolumeInput.value = String(normalizeBgmVolume(state.bgmVolume, 0.2));
-        el.bgmVolumeValue.textContent = `${Math.round(normalizeBgmVolume(state.bgmVolume, 0.2) * 100)}%`;
+        el.bgmVolumeInput.value = String(normalizeBgmVolume(state.bgmVolume, DEFAULT_BGM_VOLUME));
+        el.bgmVolumeValue.textContent = `${Math.round(normalizeBgmVolume(state.bgmVolume, DEFAULT_BGM_VOLUME) * 100)}%`;
       };
 
       const renderAll = () => {
@@ -4204,7 +4103,6 @@
           const savedVisualAssets = deepClone(scene.visual_assets || {});
           savedVisualAssets.slide = normalizeSlideAssetRef(savedVisualAssets.slide || "");
           payload[scene.scene_id] = {
-            emotion: normalizeEmotion(scene.emotion),
             voice_speed: normalizeSpeed(scene.voice_speed),
             speakerId: Number.isFinite(Number(scene.speakerId)) ? Number(scene.speakerId) : undefined,
             voice: typeof scene.voice === "string" ? scene.voice : "",
@@ -4213,7 +4111,6 @@
             scene_type: hookPictureScene ? "hook" : (scene.scene_type || "normal"),
             character_id: canonicalCharacterId(scene.character_id),
             voicevox_style_id: Number(scene.voicevox_style_id) || undefined,
-            speedScale: toNum(scene.speedScale, DEFAULT_SPEED_SCALE),
             screen_text: typeof scene.screen_text === "string" ? scene.screen_text : "",
             screen_text_font_size: normalizeScreenTextFontSize(scene.screen_text_font_size, SCREEN_TEXT_STYLE_DEFAULTS.font_size),
             screen_text_font_family: String(scene.screen_text_font_family || SCREEN_TEXT_STYLE_DEFAULTS.font_family),
@@ -4256,7 +4153,7 @@
           titleLineChars: normalizePx(state.titleLineChars, 18, 4, 80),
           titleTextAlign: normalizeTitleTextAlign(state.titleTextAlign),
           bgmFile: normalizeBgmRef(state.bgmFile),
-          bgmVolume: normalizeBgmVolume(state.bgmVolume, 0.2),
+          bgmVolume: normalizeBgmVolume(state.bgmVolume, DEFAULT_BGM_VOLUME),
           bgmLoop: Boolean(state.bgmLoop),
           fps: currentFps(),
           timelineDurationFrames: normalizeFrame(state.timelineDurationFrames, 0)
@@ -4298,7 +4195,6 @@
           const sceneConf = saved[scene.scene_id] || {};
           return {
             ...scene,
-            emotion: normalizeEmotion(sceneConf.emotion || scene.emotion),
             voice_speed: sceneConf.voice_speed != null ? normalizeSpeed(sceneConf.voice_speed) : scene.voice_speed,
             speakerId: Number.isFinite(Number(sceneConf.speakerId)) ? Number(sceneConf.speakerId) : scene.speakerId,
             voice: typeof sceneConf.voice === "string" ? sceneConf.voice : scene.voice,
@@ -4307,7 +4203,6 @@
             scene_type: typeof sceneConf.scene_type === "string" ? sceneConf.scene_type : scene.scene_type,
             character_id: sceneConf.character_id != null ? canonicalCharacterId(sceneConf.character_id) : scene.character_id,
             voicevox_style_id: Number.isFinite(Number(sceneConf.voicevox_style_id)) ? Number(sceneConf.voicevox_style_id) : scene.voicevox_style_id,
-            speedScale: Number.isFinite(Number(sceneConf.speedScale)) ? Number(sceneConf.speedScale) : scene.speedScale,
             screen_text: typeof sceneConf.screen_text === "string" ? sceneConf.screen_text : scene.screen_text,
             screen_text_font_size: sceneConf.screen_text_font_size != null ? normalizeScreenTextFontSize(sceneConf.screen_text_font_size, SCREEN_TEXT_STYLE_DEFAULTS.font_size) : scene.screen_text_font_size,
             screen_text_font_family: typeof sceneConf.screen_text_font_family === "string" ? sceneConf.screen_text_font_family : scene.screen_text_font_family,
@@ -4644,9 +4539,6 @@
             };
           }
 
-          if (fieldName === "emotion") {
-            return {...scene, emotion: normalizeEmotion(target.value)};
-          }
           if (fieldName === "scene_enabled") {
             return {...scene, scene_enabled: !!target.checked};
           }
@@ -4667,8 +4559,7 @@
               voicevox_speaker_name: speakerName,
               voicevox_style_name: style.name || "",
               voicevox_style_id: Number(style.id) || scene.voicevox_style_id,
-              speakerId: Number(style.id) || scene.speakerId,
-              speedScale: toNum(scene.speedScale, character?.speedScale ?? DEFAULT_SPEED_SCALE)
+              speakerId: Number(style.id) || scene.speakerId
             };
           }
           if (fieldName === "voicevox_style_id") {
@@ -4681,9 +4572,6 @@
               voicevox_style_name: style.name || "",
               speakerId: Number(style.id) || scene.speakerId
             };
-          }
-          if (fieldName === "speedScale") {
-            return {...scene, speedScale: toNum(target.value, DEFAULT_SPEED_SCALE)};
           }
           if (fieldName === "voice_speed") {
             return {...scene, voice_speed: normalizeSpeed(target.value)};
@@ -4963,8 +4851,6 @@
           const style = resolveStyleFromSpeaker(row.voice.voicevox_speaker_name, input.value, null);
           row.voice.voicevox_style_id = Number(style.id) || 0;
           row.voice.voicevox_style_name = style.name || "";
-        } else if (field === "speedScale") {
-          row.speedScale = toNum(input.value, DEFAULT_SPEED_SCALE);
         }
         characters[characterId] = row;
         state.scenes = state.scenes.map((scene) => {
@@ -4975,8 +4861,7 @@
             voicevox_speaker_name: row.voice.voicevox_speaker_name,
             voicevox_style_name: style.name || row.voice.voicevox_style_name,
             voicevox_style_id: Number(style.id) || row.voice.voicevox_style_id,
-            speakerId: Number(style.id) || scene.speakerId,
-            speedScale: toNum(scene.speedScale, row.speedScale)
+            speakerId: Number(style.id) || scene.speakerId
           };
         });
         renderAll();
@@ -5186,7 +5071,7 @@
           state.titleLineChars = 18;
           state.titleTextAlign = "center";
           state.bgmFile = "";
-          state.bgmVolume = 0.2;
+          state.bgmVolume = DEFAULT_BGM_VOLUME;
           state.bgmLoop = true;
           state.fps = 30;
           state.timelineDurationFrames = 30;
@@ -5212,7 +5097,7 @@
           state.titleLineChars = 18;
           state.titleTextAlign = "center";
           state.bgmFile = "";
-          state.bgmVolume = 0.2;
+          state.bgmVolume = DEFAULT_BGM_VOLUME;
           state.bgmLoop = true;
           state.fps = 30;
           state.timelineDurationFrames = 30;

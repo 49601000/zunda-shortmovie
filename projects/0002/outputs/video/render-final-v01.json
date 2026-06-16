@@ -43,22 +43,19 @@
       "scene_enabled": true,
       "slide_id": "slide_01",
       "speaker": "議題",
-      "emotion": "normal",
       "speakerId": 3,
-      "voice_speed": 1.25,
-      "voice": "実質セーフってじつはだいたいこんななのだ",
+      "voice_speed": 1.3,
+      "voice": "給料まで20日、財布に300円！実質セーフなのだ！",
       "voice_override": "",
       "character_id": "zundamon",
       "voice_profile": {
         "character_id": "zundamon",
         "voicevox_speaker_name": "ずんだもん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
+        "voicevox_style_id": 3
       },
       "voice_control": {
         "speaker_id": 3,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -68,7 +65,7 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "実質セーフってじつはだいたいこんななのだ",
+        "voice": "給料まで20日、財布に300円！実質セーフなのだ！",
         "screen_text": "",
         "screen_text_font_size": 48,
         "screen_text_font_family": "Noto Sans JP Bold",
@@ -89,8 +86,8 @@
         "character_left": "",
         "character_right": "",
         "hook_background": "images/backgrounds/HOOK002.png",
-        "hook_character": "",
-        "hook_bubble": ""
+        "hook_character": "images/characters/zundamon/zundamon-annoy-0000.png",
+        "hook_bubble": "parts/Hook-speech-balloon.png"
       },
       "composition": {
         "background": {
@@ -124,29 +121,50 @@
       "sub_scenes": [
         {
           "sub_scene_id": "scene_001_01",
-          "screen_text": "実質セーフってじつはだいたいこんななのだ",
+          "screen_text": "給料まで20日、財布に300円！実質セーフなのだ！",
           "display_mode": "replace",
-          "char_count": 20,
+          "char_count": 25,
           "start_frame": 0,
-          "duration_frames": 78,
-          "end_frame": 78,
+          "duration_frames": 95,
+          "end_frame": 95,
           "start_sec": 0,
-          "duration_sec": 2.6
+          "duration_sec": 3.167
         }
       ],
+      "lip_sync": {
+        "enabled": true,
+        "mode": "hook",
+        "interval_ms": 210,
+        "frames": [
+          "idle",
+          "mouth_1",
+          "mouth_2",
+          "mouth_1"
+        ],
+        "mute_non_speaking_side_to_idle": false,
+        "speaker": "議題",
+        "speaker_side": "hook",
+        "assets": {
+          "hook": {
+            "idle": "images/characters/zundamon/zundamon-annoy-0000.png",
+            "mouth_1": "images/characters/zundamon/zundamon-annoy-0001.png",
+            "mouth_2": "images/characters/zundamon/zundamon-annoy-0002.png"
+          }
+        }
+      },
       "hook_visual": {
         "texts": {
           "top": {
             "text": "",
             "fontSize": 84,
             "color": "#303030",
-            "outlineColor": "#ffffff",
+            "outlineColor": "#000000",
             "outlineScale": 1.02,
             "fillVisible": false
           },
           "main": {
             "text": "",
-            "fontSize": 190,
+            "fontSize": 200,
             "color": "#e60012",
             "outlineColor": "transparent",
             "outlineScale": 1.02,
@@ -156,7 +174,7 @@
             "text": "",
             "fontSize": 98,
             "color": "#303030",
-            "outlineColor": "#ffffff",
+            "outlineColor": "#000000",
             "outlineScale": 1.02,
             "fillVisible": false
           }
@@ -173,12 +191,19 @@
           "scale": 2,
           "objectFit": "contain",
           "objectPosition": "center top",
-          "image_path": "",
-          "lip_sync_image_paths": []
+          "image_path": "images/characters/zundamon/zundamon-annoy-0000.png",
+          "lip_sync_image_paths": [
+            "images/characters/zundamon/zundamon-annoy-0001.png",
+            "images/characters/zundamon/zundamon-annoy-0002.png"
+          ]
         },
         "bubble": {
-          "image_path": "",
+          "image_path": "parts/Hook-speech-balloon.png",
           "text": "",
+          "x": 80,
+          "y": 1230,
+          "width": 520,
+          "height": 400,
           "fontSize": 64
         },
         "finalize_to_dialog": false
@@ -190,25 +215,22 @@
       "scene_type": "normal",
       "role": "normal",
       "event": "normal",
-      "scene_enabled": true,
+      "scene_enabled": false,
       "slide_id": "slide_01",
       "speaker": "ずんだもん",
-      "emotion": "normal",
       "speakerId": 3,
-      "voice_speed": 1.25,
-      "voice": "お給料まではつかあるけど財布の中にあと300円あるから実質セーフなのだ！",
+      "voice_speed": 1.34,
+      "voice": "",
       "voice_override": "",
       "character_id": "zundamon",
       "voice_profile": {
         "character_id": "zundamon",
         "voicevox_speaker_name": "ずんだもん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
+        "voicevox_style_id": 3
       },
       "voice_control": {
         "speaker_id": 3,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -218,17 +240,17 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "お給料まではつかあるけど財布の中にあと300円あるから実質セーフなのだ！",
+        "voice": "",
         "screen_text": "",
         "screen_text_font_size": 72,
         "screen_text_font_family": "Noto Sans JP Bold",
-        "screen_text_color": "#a6ff6b",
+        "screen_text_color": "#86d654",
         "screen_text_line_break_mode": "auto",
         "screen_text_line_chars": 18
       },
       "screen_text_font_size": 72,
       "font_family": "Noto Sans JP Bold",
-      "text_color": "#a6ff6b",
+      "text_color": "#86d654",
       "line_break_mode": "auto",
       "line_chars": 18,
       "visual_assets": {
@@ -236,7 +258,7 @@
         "slide": "",
         "monolith": "",
         "dialog_box": "",
-        "character_left": "images/characters/metan/metan-lookside-0.png",
+        "character_left": "images/characters/metan/metan-0.png",
         "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_background": "",
         "hook_character": "",
@@ -258,7 +280,7 @@
         "characters": {
           "left": {
             "engine": "metan_engine",
-            "image_path": "images/characters/metan/metan-lookside-0.png",
+            "image_path": "images/characters/metan/metan-0.png",
             "state": "idle",
             "lip_sync_image_paths": []
           },
@@ -277,25 +299,25 @@
       "sub_scenes": [
         {
           "sub_scene_id": "scene_002_01",
-          "screen_text": "お給料まで20日あるけど\n財布の中にあと",
+          "screen_text": "給料まで２０日、\n財布に３００円。",
           "display_mode": "replace",
-          "char_count": 20,
-          "start_frame": 79,
+          "char_count": 17,
+          "start_frame": 90,
           "duration_frames": 77,
-          "end_frame": 156,
-          "start_sec": 2.633,
+          "end_frame": 167,
+          "start_sec": 3,
           "duration_sec": 2.567
         },
         {
           "sub_scene_id": "scene_002_02",
-          "screen_text": "300円あるから\n実質セーフなのだ！",
+          "screen_text": "実質セーフなのだ！",
           "display_mode": "replace",
-          "char_count": 18,
-          "start_frame": 156,
-          "duration_frames": 70,
-          "end_frame": 226,
-          "start_sec": 5.2,
-          "duration_sec": 2.333
+          "char_count": 9,
+          "start_frame": 167,
+          "duration_frames": 43,
+          "end_frame": 210,
+          "start_sec": 5.567,
+          "duration_sec": 1.433
         }
       ],
       "lip_sync": {
@@ -313,7 +335,7 @@
         "speaker_side": "right",
         "assets": {
           "left": {
-            "idle": "images/characters/metan/metan-lookside-0.png"
+            "idle": "images/characters/metan/metan-0.png"
           },
           "right": {
             "idle": "images/characters/zundamon/zundamon-normal-0000.png",
@@ -332,22 +354,19 @@
       "scene_enabled": true,
       "slide_id": "slide_01",
       "speaker": "めたん",
-      "emotion": "normal",
-      "speakerId": 6,
-      "voice_speed": 1.25,
-      "voice": "どこがセーフなのよ！完全に正常性バイアス に脳を支配されてるわね",
+      "speakerId": 2,
+      "voice_speed": 1.34,
+      "voice": "アウトよ！完全に正常性バイアスに脳を支配されてるわね！",
       "voice_override": "",
       "character_id": "metan",
       "voice_profile": {
         "character_id": "metan",
         "voicevox_speaker_name": "四国めたん",
-        "voicevox_style_name": "ツンツン",
-        "voicevox_style_id": 6,
-        "speedScale": 1.25
+        "voicevox_style_name": "ノーマル",
+        "voicevox_style_id": 2
       },
       "voice_control": {
-        "speaker_id": 6,
-        "speedScale": 1.25,
+        "speaker_id": 2,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -357,7 +376,7 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "どこがセーフなのよ！完全に正常性バイアス に脳を支配されてるわね",
+        "voice": "アウトよ！完全に正常性バイアスに脳を支配されてるわね！",
         "screen_text": "",
         "screen_text_font_size": 72,
         "screen_text_font_family": "Noto Sans JP Bold",
@@ -375,7 +394,7 @@
         "slide": "projects/0002/outputs/slide/slide01.png",
         "monolith": "",
         "dialog_box": "",
-        "character_left": "images/characters/metan/metan-lookside-turnoff-0.png",
+        "character_left": "images/characters/metan/metan-lookside-0.png",
         "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_background": "",
         "hook_character": "",
@@ -397,11 +416,11 @@
         "characters": {
           "left": {
             "engine": "metan_engine",
-            "image_path": "images/characters/metan/metan-lookside-turnoff-0.png",
+            "image_path": "images/characters/metan/metan-lookside-0.png",
             "state": "speaking",
             "lip_sync_image_paths": [
-              "images/characters/metan/metan-lookside-turnoff-1.png",
-              "images/characters/metan/metan-lookside-turnoff-2.png"
+              "images/characters/metan/metan-lookside-1.png",
+              "images/characters/metan/metan-lookside-2.png"
             ]
           },
           "right": {
@@ -416,25 +435,25 @@
       "sub_scenes": [
         {
           "sub_scene_id": "scene_003_01",
-          "screen_text": "どこがセーフなのよ！",
+          "screen_text": "アウトよ！完全に\n正常性バイアスに",
           "display_mode": "replace",
-          "char_count": 10,
-          "start_frame": 226,
-          "duration_frames": 42,
-          "end_frame": 268,
-          "start_sec": 7.533,
-          "duration_sec": 1.4
+          "char_count": 17,
+          "start_frame": 95,
+          "duration_frames": 61,
+          "end_frame": 156,
+          "start_sec": 3.167,
+          "duration_sec": 2.033
         },
         {
           "sub_scene_id": "scene_003_02",
-          "screen_text": "完全に正常性バイアスに\n脳を支配されてるわね",
+          "screen_text": "脳を支配されてるわね！",
           "display_mode": "replace",
-          "char_count": 22,
-          "start_frame": 268,
-          "duration_frames": 93,
-          "end_frame": 361,
-          "start_sec": 8.933,
-          "duration_sec": 3.1
+          "char_count": 11,
+          "start_frame": 156,
+          "duration_frames": 39,
+          "end_frame": 195,
+          "start_sec": 5.2,
+          "duration_sec": 1.3
         }
       ],
       "lip_sync": {
@@ -452,9 +471,9 @@
         "speaker_side": "left",
         "assets": {
           "left": {
-            "idle": "images/characters/metan/metan-lookside-turnoff-0.png",
-            "mouth_1": "images/characters/metan/metan-lookside-turnoff-1.png",
-            "mouth_2": "images/characters/metan/metan-lookside-turnoff-2.png"
+            "idle": "images/characters/metan/metan-lookside-0.png",
+            "mouth_1": "images/characters/metan/metan-lookside-1.png",
+            "mouth_2": "images/characters/metan/metan-lookside-2.png"
           },
           "right": {
             "idle": "images/characters/zundamon/zundamon-normal-0000.png"
@@ -471,22 +490,19 @@
       "scene_enabled": true,
       "slide_id": "slide_01",
       "speaker": "ずんだもん",
-      "emotion": "normal",
       "speakerId": 3,
-      "voice_speed": 1.25,
-      "voice": "言いがかりなのだ。ボクの計算では、うまい棒を30本買えば1日1本でも余裕なのだ！",
+      "voice_speed": 1.34,
+      "voice": "計算上うまい棒1日いっぽんで余裕なのだ！",
       "voice_override": "",
       "character_id": "zundamon",
       "voice_profile": {
         "character_id": "zundamon",
         "voicevox_speaker_name": "ずんだもん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
+        "voicevox_style_id": 3
       },
       "voice_control": {
         "speaker_id": 3,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -496,7 +512,7 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "言いがかりなのだ。ボクの計算では、うまい棒を30本買えば1日1本でも余裕なのだ！",
+        "voice": "計算上うまい棒1日いっぽんで余裕なのだ！",
         "screen_text": "",
         "screen_text_font_size": 72,
         "screen_text_font_family": "Noto Sans JP Bold",
@@ -555,25 +571,14 @@
       "sub_scenes": [
         {
           "sub_scene_id": "scene_004_01",
-          "screen_text": "言いがかりなのだ。\nボクの計算では、",
+          "screen_text": "計算上、うまい棒\n1日1本で余裕なのだ！",
           "display_mode": "replace",
-          "char_count": 18,
-          "start_frame": 361,
+          "char_count": 20,
+          "start_frame": 195,
           "duration_frames": 80,
-          "end_frame": 441,
-          "start_sec": 12.033,
+          "end_frame": 275,
+          "start_sec": 6.5,
           "duration_sec": 2.667
-        },
-        {
-          "sub_scene_id": "scene_004_02",
-          "screen_text": "うまい棒を30本買えば\n1日1本でも余裕なのだ",
-          "display_mode": "replace",
-          "char_count": 23,
-          "start_frame": 441,
-          "duration_frames": 103,
-          "end_frame": 544,
-          "start_sec": 14.7,
-          "duration_sec": 3.433
         }
       ],
       "lip_sync": {
@@ -608,24 +613,21 @@
       "role": "normal",
       "event": "normal",
       "scene_enabled": true,
-      "slide_id": "slide_01",
+      "slide_id": "slide_02",
       "speaker": "めたん",
-      "emotion": "normal",
       "speakerId": 2,
-      "voice_speed": 1.25,
-      "voice": "計算の時点で大破綻してるわよ！そもそも今うまい棒は税抜1本15円よ！20本も買えないわよ！",
+      "voice_speed": 1.34,
+      "voice": "20本も買えないわよ！",
       "voice_override": "",
       "character_id": "metan",
       "voice_profile": {
         "character_id": "metan",
         "voicevox_speaker_name": "四国めたん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 2,
-        "speedScale": 1.25
+        "voicevox_style_id": 2
       },
       "voice_control": {
         "speaker_id": 2,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -635,7 +637,7 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "計算の時点で大破綻してるわよ！そもそも今うまい棒は税抜1本15円よ！20本も買えないわよ！",
+        "voice": "20本も買えないわよ！",
         "screen_text": "",
         "screen_text_font_size": 72,
         "screen_text_font_family": "Noto Sans JP Bold",
@@ -694,36 +696,14 @@
       "sub_scenes": [
         {
           "sub_scene_id": "scene_005_01",
-          "screen_text": "計算の時点で\n大破綻してるわよ！",
-          "display_mode": "replace",
-          "char_count": 15,
-          "start_frame": 544,
-          "duration_frames": 61,
-          "end_frame": 605,
-          "start_sec": 18.133,
-          "duration_sec": 2.033
-        },
-        {
-          "sub_scene_id": "scene_005_02",
-          "screen_text": "そもそも今うまい棒は \n税抜1本15円よ！",
-          "display_mode": "replace",
-          "char_count": 21,
-          "start_frame": 605,
-          "duration_frames": 86,
-          "end_frame": 691,
-          "start_sec": 20.167,
-          "duration_sec": 2.867
-        },
-        {
-          "sub_scene_id": "scene_005_03",
           "screen_text": "20本も買えないわよ！",
           "display_mode": "replace",
           "char_count": 11,
-          "start_frame": 691,
-          "duration_frames": 45,
-          "end_frame": 736,
-          "start_sec": 23.033,
-          "duration_sec": 1.5
+          "start_frame": 275,
+          "duration_frames": 40,
+          "end_frame": 315,
+          "start_sec": 9.167,
+          "duration_sec": 1.333
         }
       ],
       "lip_sync": {
@@ -757,25 +737,22 @@
       "scene_type": "normal",
       "role": "normal",
       "event": "normal",
-      "scene_enabled": false,
+      "scene_enabled": true,
       "slide_id": "slide_02",
       "speaker": "ずんだもん",
-      "emotion": "normal",
       "speakerId": 3,
-      "voice_speed": 1.25,
-      "voice": "でも、まだおなかはグーグー鳴ってないからボクの体は完全に健康そのものなのだ！",
+      "voice_speed": 1.34,
+      "voice": "さいあく誰かがご飯くれる気がするのだ！",
       "voice_override": "",
       "character_id": "zundamon",
       "voice_profile": {
         "character_id": "zundamon",
         "voicevox_speaker_name": "ずんだもん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
+        "voicevox_style_id": 3
       },
       "voice_control": {
         "speaker_id": 3,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -785,7 +762,7 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "でも、まだおなかはグーグー鳴ってないからボクの体は完全に健康そのものなのだ！",
+        "voice": "さいあく誰かがご飯くれる気がするのだ！",
         "screen_text": "",
         "screen_text_font_size": 72,
         "screen_text_font_family": "Noto Sans JP Bold",
@@ -804,284 +781,6 @@
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-lookside-0.png",
-        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
-        "hook_background": "",
-        "hook_character": "",
-        "hook_bubble": ""
-      },
-      "composition": {
-        "background": {
-          "image_path": ""
-        },
-        "slide_area": {
-          "image_path": "projects/0002/outputs/slide/slide01.png"
-        },
-        "monolith": {
-          "image_path": ""
-        },
-        "dialog_box": {
-          "image_path": ""
-        },
-        "characters": {
-          "left": {
-            "engine": "metan_engine",
-            "image_path": "images/characters/metan/metan-lookside-0.png",
-            "state": "idle",
-            "lip_sync_image_paths": []
-          },
-          "right": {
-            "engine": "zundamon_engine",
-            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
-            "state": "speaking",
-            "lip_sync_image_paths": [
-              "images/characters/zundamon/zundamon-normal-0001.png",
-              "images/characters/zundamon/zundamon-normal-0002.png"
-            ]
-          }
-        }
-      },
-      "effects": [],
-      "sub_scenes": [
-        {
-          "sub_scene_id": "scene_006_01",
-          "screen_text": "でもまだお腹はグーグー\n鳴ってないから、",
-          "display_mode": "replace",
-          "char_count": 20,
-          "start_frame": 736,
-          "duration_frames": 80,
-          "end_frame": 816,
-          "start_sec": 24.533,
-          "duration_sec": 2.667
-        },
-        {
-          "sub_scene_id": "scene_006_02",
-          "screen_text": "ボクの体は完全に\n健康そのものなのだ！",
-          "display_mode": "replace",
-          "char_count": 19,
-          "start_frame": 816,
-          "duration_frames": 76,
-          "end_frame": 892,
-          "start_sec": 27.2,
-          "duration_sec": 2.533
-        }
-      ],
-      "lip_sync": {
-        "enabled": true,
-        "mode": "scene",
-        "interval_ms": 210,
-        "frames": [
-          "idle",
-          "mouth_1",
-          "mouth_2",
-          "mouth_1"
-        ],
-        "mute_non_speaking_side_to_idle": true,
-        "speaker": "ずんだもん",
-        "speaker_side": "right",
-        "assets": {
-          "left": {
-            "idle": "images/characters/metan/metan-lookside-0.png"
-          },
-          "right": {
-            "idle": "images/characters/zundamon/zundamon-normal-0000.png",
-            "mouth_1": "images/characters/zundamon/zundamon-normal-0001.png",
-            "mouth_2": "images/characters/zundamon/zundamon-normal-0002.png"
-          }
-        }
-      }
-    },
-    {
-      "id": "scene_007",
-      "scene_id": "scene_007",
-      "scene_type": "normal",
-      "role": "normal",
-      "event": "normal",
-      "scene_enabled": false,
-      "slide_id": "slide_02",
-      "speaker": "めたん",
-      "emotion": "normal",
-      "speakerId": 2,
-      "voice_speed": 1.25,
-      "voice": "それが正常性バイアスの恐ろしいところね。限界が来るまでまだ大丈夫って思い続けるのよ",
-      "voice_override": "",
-      "character_id": "metan",
-      "voice_profile": {
-        "character_id": "metan",
-        "voicevox_speaker_name": "四国めたん",
-        "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 2,
-        "speedScale": 1.25
-      },
-      "voice_control": {
-        "speaker_id": 2,
-        "speedScale": 1.25,
-        "pitchScale": 0,
-        "intonationScale": 1,
-        "volumeScale": 1,
-        "prePhonemeLength": 0.1,
-        "postPhonemeLength": 0.1,
-        "pauseLength": null,
-        "pauseLengthScale": 1
-      },
-      "dialog": {
-        "voice": "それが正常性バイアスの恐ろしいところね。限界が来るまでまだ大丈夫って思い続けるのよ",
-        "screen_text": "",
-        "screen_text_font_size": 64,
-        "screen_text_font_family": "Noto Sans JP Bold",
-        "screen_text_color": "#ff5ca3",
-        "screen_text_line_break_mode": "auto",
-        "screen_text_line_chars": 18
-      },
-      "screen_text_font_size": 64,
-      "font_family": "Noto Sans JP Bold",
-      "text_color": "#ff5ca3",
-      "line_break_mode": "auto",
-      "line_chars": 18,
-      "visual_assets": {
-        "background": "",
-        "slide": "projects/0002/outputs/slide/slide02.png",
-        "monolith": "",
-        "dialog_box": "",
-        "character_left": "images/characters/metan/metan-lookside-turnoff-0.png",
-        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
-        "hook_background": "",
-        "hook_character": "",
-        "hook_bubble": ""
-      },
-      "composition": {
-        "background": {
-          "image_path": ""
-        },
-        "slide_area": {
-          "image_path": "projects/0002/outputs/slide/slide02.png"
-        },
-        "monolith": {
-          "image_path": ""
-        },
-        "dialog_box": {
-          "image_path": ""
-        },
-        "characters": {
-          "left": {
-            "engine": "metan_engine",
-            "image_path": "images/characters/metan/metan-lookside-turnoff-0.png",
-            "state": "speaking",
-            "lip_sync_image_paths": [
-              "images/characters/metan/metan-lookside-turnoff-1.png",
-              "images/characters/metan/metan-lookside-turnoff-2.png"
-            ]
-          },
-          "right": {
-            "engine": "zundamon_engine",
-            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
-            "state": "idle",
-            "lip_sync_image_paths": []
-          }
-        }
-      },
-      "effects": [],
-      "sub_scenes": [
-        {
-          "sub_scene_id": "scene_007_01",
-          "screen_text": "それが正常性バイアスの\n恐ろしいところね。",
-          "display_mode": "replace",
-          "char_count": 21,
-          "start_frame": 892,
-          "duration_frames": 76,
-          "end_frame": 968,
-          "start_sec": 29.733,
-          "duration_sec": 2.533
-        },
-        {
-          "sub_scene_id": "scene_007_02",
-          "screen_text": "限界が来るまで『まだ大丈夫』って思い続けるのよ",
-          "display_mode": "replace",
-          "char_count": 23,
-          "start_frame": 968,
-          "duration_frames": 83,
-          "end_frame": 1051,
-          "start_sec": 32.267,
-          "duration_sec": 2.767
-        }
-      ],
-      "lip_sync": {
-        "enabled": true,
-        "mode": "scene",
-        "interval_ms": 210,
-        "frames": [
-          "idle",
-          "mouth_1",
-          "mouth_2",
-          "mouth_1"
-        ],
-        "mute_non_speaking_side_to_idle": true,
-        "speaker": "めたん",
-        "speaker_side": "left",
-        "assets": {
-          "left": {
-            "idle": "images/characters/metan/metan-lookside-turnoff-0.png",
-            "mouth_1": "images/characters/metan/metan-lookside-turnoff-1.png",
-            "mouth_2": "images/characters/metan/metan-lookside-turnoff-2.png"
-          },
-          "right": {
-            "idle": "images/characters/zundamon/zundamon-normal-0000.png"
-          }
-        }
-      }
-    },
-    {
-      "id": "scene_008",
-      "scene_id": "scene_008",
-      "scene_type": "normal",
-      "role": "normal",
-      "event": "normal",
-      "scene_enabled": false,
-      "slide_id": "slide_02",
-      "speaker": "ずんだもん",
-      "emotion": "normal",
-      "speakerId": 3,
-      "voice_speed": 1.25,
-      "voice": "そんなことないのだ！本当にピンチになったら誰かがご飯をくれる気がするのだ！",
-      "voice_override": "",
-      "character_id": "zundamon",
-      "voice_profile": {
-        "character_id": "zundamon",
-        "voicevox_speaker_name": "ずんだもん",
-        "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
-      },
-      "voice_control": {
-        "speaker_id": 3,
-        "speedScale": 1.25,
-        "pitchScale": 0,
-        "intonationScale": 1,
-        "volumeScale": 1,
-        "prePhonemeLength": 0.1,
-        "postPhonemeLength": 0.1,
-        "pauseLength": null,
-        "pauseLengthScale": 1
-      },
-      "dialog": {
-        "voice": "そんなことないのだ！本当にピンチになったら誰かがご飯をくれる気がするのだ！",
-        "screen_text": "",
-        "screen_text_font_size": 72,
-        "screen_text_font_family": "Noto Sans JP Bold",
-        "screen_text_color": "#86d654",
-        "screen_text_line_break_mode": "auto",
-        "screen_text_line_chars": 18
-      },
-      "screen_text_font_size": 72,
-      "font_family": "Noto Sans JP Bold",
-      "text_color": "#86d654",
-      "line_break_mode": "auto",
-      "line_chars": 18,
-      "visual_assets": {
-        "background": "",
-        "slide": "projects/0002/outputs/slide/slide02.png",
-        "monolith": "",
-        "dialog_box": "",
-        "character_left": "images/characters/metan/metan-lookside-0.png",
         "character_right": "images/characters/zundamon/zundamon-annoy-0000.png",
         "hook_background": "",
         "hook_character": "",
@@ -1092,7 +791,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": "projects/0002/outputs/slide/slide02.png"
+          "image_path": "projects/0002/outputs/slide/slide01.png"
         },
         "monolith": {
           "image_path": ""
@@ -1121,26 +820,15 @@
       "effects": [],
       "sub_scenes": [
         {
-          "sub_scene_id": "scene_008_01",
-          "screen_text": "そんなことないのだ！\n本当にピンチになったら、",
+          "sub_scene_id": "scene_006_01",
+          "screen_text": "最悪、誰かがご飯くれる\n気がするのだ！",
           "display_mode": "replace",
-          "char_count": 23,
-          "start_frame": 1051,
-          "duration_frames": 83,
-          "end_frame": 1134,
-          "start_sec": 35.033,
-          "duration_sec": 2.767
-        },
-        {
-          "sub_scene_id": "scene_008_02",
-          "screen_text": "誰かがご飯をくれる気が\nするのだ！",
-          "display_mode": "replace",
-          "char_count": 17,
-          "start_frame": 1134,
-          "duration_frames": 61,
-          "end_frame": 1195,
-          "start_sec": 37.8,
-          "duration_sec": 2.033
+          "char_count": 19,
+          "start_frame": 315,
+          "duration_frames": 65,
+          "end_frame": 380,
+          "start_sec": 10.5,
+          "duration_sec": 2.167
         }
       ],
       "lip_sync": {
@@ -1169,30 +857,27 @@
       }
     },
     {
-      "id": "scene_009",
-      "scene_id": "scene_009",
+      "id": "scene_007",
+      "scene_id": "scene_007",
       "scene_type": "normal",
       "role": "normal",
       "event": "normal",
-      "scene_enabled": false,
+      "scene_enabled": true,
       "slide_id": "slide_02",
       "speaker": "めたん",
-      "emotion": "normal",
       "speakerId": 2,
-      "voice_speed": 1.25,
-      "voice": "その『根拠のない大丈夫』が一番危険なのよ。ある日突然手遅れになってつむわよ",
+      "voice_speed": 1.34,
+      "voice": "その大丈夫が一番危険なのよ！",
       "voice_override": "",
       "character_id": "metan",
       "voice_profile": {
         "character_id": "metan",
         "voicevox_speaker_name": "四国めたん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 2,
-        "speedScale": 1.25
+        "voicevox_style_id": 2
       },
       "voice_control": {
         "speaker_id": 2,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -1202,7 +887,7 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "その『根拠のない大丈夫』が一番危険なのよ。ある日突然手遅れになってつむわよ",
+        "voice": "その大丈夫が一番危険なのよ！",
         "screen_text": "",
         "screen_text_font_size": 72,
         "screen_text_font_family": "Noto Sans JP Bold",
@@ -1217,7 +902,7 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "projects/0002/outputs/slide/slide02.png",
+        "slide": "projects/0002/outputs/slide/slide03-2.png",
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-lookside-0.png",
@@ -1231,7 +916,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": "projects/0002/outputs/slide/slide02.png"
+          "image_path": "projects/0002/outputs/slide/slide03-2.png"
         },
         "monolith": {
           "image_path": ""
@@ -1260,26 +945,15 @@
       "effects": [],
       "sub_scenes": [
         {
-          "sub_scene_id": "scene_009_01",
-          "screen_text": "その『根拠のない大丈夫』が一番危険なのよ。",
+          "sub_scene_id": "scene_007_01",
+          "screen_text": "その『大丈夫』が\n一番危険なのよ！",
           "display_mode": "replace",
-          "char_count": 21,
-          "start_frame": 1195,
-          "duration_frames": 86,
-          "end_frame": 1281,
-          "start_sec": 39.833,
-          "duration_sec": 2.867
-        },
-        {
-          "sub_scene_id": "scene_009_02",
-          "screen_text": "ある日突然、手遅れに\nなってツむわよ",
-          "display_mode": "replace",
-          "char_count": 18,
-          "start_frame": 1281,
-          "duration_frames": 73,
-          "end_frame": 1354,
-          "start_sec": 42.7,
-          "duration_sec": 2.433
+          "char_count": 17,
+          "start_frame": 380,
+          "duration_frames": 54,
+          "end_frame": 434,
+          "start_sec": 12.667,
+          "duration_sec": 1.8
         }
       ],
       "lip_sync": {
@@ -1308,30 +982,27 @@
       }
     },
     {
-      "id": "scene_010",
-      "scene_id": "scene_010",
+      "id": "scene_008",
+      "scene_id": "scene_008",
       "scene_type": "normal",
       "role": "normal",
       "event": "normal",
       "scene_enabled": true,
       "slide_id": "slide_03",
       "speaker": "ずんだもん",
-      "emotion": "normal",
       "speakerId": 3,
-      "voice_speed": 1.25,
-      "voice": "でも本当に倒れるまではセーフなのだ……！",
+      "voice_speed": 1.34,
+      "voice": "じゃあ今日はめたんの奢りで焼肉なのだ！",
       "voice_override": "",
       "character_id": "zundamon",
       "voice_profile": {
         "character_id": "zundamon",
         "voicevox_speaker_name": "ずんだもん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
+        "voicevox_style_id": 3
       },
       "voice_control": {
         "speaker_id": 3,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -1341,7 +1012,7 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "でも本当に倒れるまではセーフなのだ……！",
+        "voice": "じゃあ今日はめたんの奢りで焼肉なのだ！",
         "screen_text": "",
         "screen_text_font_size": 72,
         "screen_text_font_family": "Noto Sans JP Bold",
@@ -1356,11 +1027,11 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "projects/0002/outputs/slide/slide02.png",
+        "slide": "projects/0002/outputs/slide/slide03-2.png",
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-lookside-0.png",
-        "character_right": "images/characters/zundamon/zundamon-midpanic-0000.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_background": "",
         "hook_character": "",
         "hook_bubble": ""
@@ -1370,7 +1041,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": "projects/0002/outputs/slide/slide02.png"
+          "image_path": "projects/0002/outputs/slide/slide03-2.png"
         },
         "monolith": {
           "image_path": ""
@@ -1387,11 +1058,11 @@
           },
           "right": {
             "engine": "zundamon_engine",
-            "image_path": "images/characters/zundamon/zundamon-midpanic-0000.png",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
             "state": "speaking",
             "lip_sync_image_paths": [
-              "images/characters/zundamon/zundamon-midpanic-0001.png",
-              "images/characters/zundamon/zundamon-midpanic-0002.png"
+              "images/characters/zundamon/zundamon-normal-0001.png",
+              "images/characters/zundamon/zundamon-normal-0002.png"
             ]
           }
         }
@@ -1399,15 +1070,26 @@
       "effects": [],
       "sub_scenes": [
         {
-          "sub_scene_id": "scene_010_01",
-          "screen_text": "でも本当に倒れるまでは\nセーフなのだ……！",
+          "sub_scene_id": "scene_008_01",
+          "screen_text": "じゃあ今日はめたんの\n",
           "display_mode": "replace",
-          "char_count": 21,
-          "start_frame": 736,
-          "duration_frames": 75,
-          "end_frame": 811,
-          "start_sec": 24.533,
-          "duration_sec": 2.5
+          "char_count": 11,
+          "start_frame": 434,
+          "duration_frames": 34,
+          "end_frame": 468,
+          "start_sec": 14.467,
+          "duration_sec": 1.133
+        },
+        {
+          "sub_scene_id": "scene_008_02",
+          "screen_text": "おごりで焼肉なのだ！",
+          "display_mode": "replace",
+          "char_count": 10,
+          "start_frame": 468,
+          "duration_frames": 31,
+          "end_frame": 499,
+          "start_sec": 15.6,
+          "duration_sec": 1.033
         }
       ],
       "lip_sync": {
@@ -1428,38 +1110,35 @@
             "idle": "images/characters/metan/metan-lookside-0.png"
           },
           "right": {
-            "idle": "images/characters/zundamon/zundamon-midpanic-0000.png",
-            "mouth_1": "images/characters/zundamon/zundamon-midpanic-0001.png",
-            "mouth_2": "images/characters/zundamon/zundamon-midpanic-0002.png"
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png",
+            "mouth_1": "images/characters/zundamon/zundamon-normal-0001.png",
+            "mouth_2": "images/characters/zundamon/zundamon-normal-0002.png"
           }
         }
       }
     },
     {
-      "id": "scene_011",
-      "scene_id": "scene_011",
+      "id": "scene_009",
+      "scene_id": "scene_009",
       "scene_type": "normal",
       "role": "normal",
       "event": "normal",
       "scene_enabled": true,
       "slide_id": "slide_03",
       "speaker": "めたん",
-      "emotion": "normal",
       "speakerId": 2,
-      "voice_speed": 1.25,
-      "voice": "アウトよ！手遅れになる前にその謎の自信を捨てて生活を改めなさい！",
+      "voice_speed": 1.34,
+      "voice": "なんで私のお金で乗り切ろうとするのよ！絶対貸さないわよ！",
       "voice_override": "",
       "character_id": "metan",
       "voice_profile": {
         "character_id": "metan",
         "voicevox_speaker_name": "四国めたん",
         "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 2,
-        "speedScale": 1.25
+        "voicevox_style_id": 2
       },
       "voice_control": {
         "speaker_id": 2,
-        "speedScale": 1.25,
         "pitchScale": 0,
         "intonationScale": 1,
         "volumeScale": 1,
@@ -1469,7 +1148,7 @@
         "pauseLengthScale": 1
       },
       "dialog": {
-        "voice": "アウトよ！手遅れになる前にその謎の自信を捨てて生活を改めなさい！",
+        "voice": "なんで私のお金で乗り切ろうとするのよ！絶対貸さないわよ！",
         "screen_text": "",
         "screen_text_font_size": 72,
         "screen_text_font_family": "Noto Sans JP Bold",
@@ -1484,11 +1163,11 @@
       "line_chars": 18,
       "visual_assets": {
         "background": "",
-        "slide": "projects/0002/outputs/slide/slide03.png",
+        "slide": "projects/0002/outputs/slide/slide03-2.png",
         "monolith": "",
         "dialog_box": "",
         "character_left": "images/characters/metan/metan-lookside-turnoff-0.png",
-        "character_right": "images/characters/zundamon/zundamon-midpanic-0000.png",
+        "character_right": "images/characters/zundamon/zundamon-normal-0000.png",
         "hook_background": "",
         "hook_character": "",
         "hook_bubble": ""
@@ -1498,7 +1177,7 @@
           "image_path": ""
         },
         "slide_area": {
-          "image_path": "projects/0002/outputs/slide/slide03.png"
+          "image_path": "projects/0002/outputs/slide/slide03-2.png"
         },
         "monolith": {
           "image_path": ""
@@ -1518,7 +1197,7 @@
           },
           "right": {
             "engine": "zundamon_engine",
-            "image_path": "images/characters/zundamon/zundamon-midpanic-0000.png",
+            "image_path": "images/characters/zundamon/zundamon-normal-0000.png",
             "state": "idle",
             "lip_sync_image_paths": []
           }
@@ -1527,26 +1206,26 @@
       "effects": [],
       "sub_scenes": [
         {
-          "sub_scene_id": "scene_011_01",
-          "screen_text": "アウトよ！\n手遅れになる前に",
-          "display_mode": "replace",
-          "char_count": 14,
-          "start_frame": 811,
-          "duration_frames": 53,
-          "end_frame": 864,
-          "start_sec": 27.033,
-          "duration_sec": 1.767
-        },
-        {
-          "sub_scene_id": "scene_011_02",
-          "screen_text": "その謎の自信を捨てて生活を改めなさい！",
+          "sub_scene_id": "scene_009_01",
+          "screen_text": "なんで私のお金で\n乗り切ろうとするのよ",
           "display_mode": "replace",
           "char_count": 19,
-          "start_frame": 864,
-          "duration_frames": 73,
-          "end_frame": 937,
-          "start_sec": 28.8,
-          "duration_sec": 2.433
+          "start_frame": 499,
+          "duration_frames": 66,
+          "end_frame": 565,
+          "start_sec": 16.633,
+          "duration_sec": 2.2
+        },
+        {
+          "sub_scene_id": "scene_009_02",
+          "screen_text": "絶対おごらないわよ！",
+          "display_mode": "replace",
+          "char_count": 10,
+          "start_frame": 565,
+          "duration_frames": 35,
+          "end_frame": 600,
+          "start_sec": 18.833,
+          "duration_sec": 1.167
         }
       ],
       "lip_sync": {
@@ -1569,285 +1248,7 @@
             "mouth_2": "images/characters/metan/metan-lookside-turnoff-2.png"
           },
           "right": {
-            "idle": "images/characters/zundamon/zundamon-midpanic-0000.png"
-          }
-        }
-      }
-    },
-    {
-      "id": "scene_012",
-      "scene_id": "scene_012",
-      "scene_type": "normal",
-      "role": "normal",
-      "event": "normal",
-      "scene_enabled": true,
-      "slide_id": "slide_03",
-      "speaker": "ずんだもん",
-      "emotion": "normal",
-      "speakerId": 3,
-      "voice_speed": 1.25,
-      "voice": "じゃあ正常な生活を取り戻すために、ひとまずめたんのクレカで美味しい焼き肉を食べに行くのだ！",
-      "voice_override": "",
-      "character_id": "zundamon",
-      "voice_profile": {
-        "character_id": "zundamon",
-        "voicevox_speaker_name": "ずんだもん",
-        "voicevox_style_name": "ノーマル",
-        "voicevox_style_id": 3,
-        "speedScale": 1.25
-      },
-      "voice_control": {
-        "speaker_id": 3,
-        "speedScale": 1.25,
-        "pitchScale": 0,
-        "intonationScale": 1,
-        "volumeScale": 1,
-        "prePhonemeLength": 0.1,
-        "postPhonemeLength": 0.1,
-        "pauseLength": null,
-        "pauseLengthScale": 1
-      },
-      "dialog": {
-        "voice": "じゃあ正常な生活を取り戻すために、ひとまずめたんのクレカで美味しい焼き肉を食べに行くのだ！",
-        "screen_text": "",
-        "screen_text_font_size": 68,
-        "screen_text_font_family": "Noto Sans JP Bold",
-        "screen_text_color": "#86d654",
-        "screen_text_line_break_mode": "auto",
-        "screen_text_line_chars": 20
-      },
-      "screen_text_font_size": 68,
-      "font_family": "Noto Sans JP Bold",
-      "text_color": "#86d654",
-      "line_break_mode": "auto",
-      "line_chars": 20,
-      "visual_assets": {
-        "background": "",
-        "slide": "projects/0002/outputs/slide/slide03.png",
-        "monolith": "",
-        "dialog_box": "",
-        "character_left": "images/characters/metan/metan-lookside-0.png",
-        "character_right": "images/characters/zundamon/zundamon-lowpanic-00000.png",
-        "hook_background": "",
-        "hook_character": "",
-        "hook_bubble": ""
-      },
-      "composition": {
-        "background": {
-          "image_path": ""
-        },
-        "slide_area": {
-          "image_path": "projects/0002/outputs/slide/slide03.png"
-        },
-        "monolith": {
-          "image_path": ""
-        },
-        "dialog_box": {
-          "image_path": ""
-        },
-        "characters": {
-          "left": {
-            "engine": "metan_engine",
-            "image_path": "images/characters/metan/metan-lookside-0.png",
-            "state": "idle",
-            "lip_sync_image_paths": []
-          },
-          "right": {
-            "engine": "zundamon_engine",
-            "image_path": "images/characters/zundamon/zundamon-lowpanic-00000.png",
-            "state": "speaking",
-            "lip_sync_image_paths": [
-              "images/characters/zundamon/zundamon-lowpanic-00001.png",
-              "images/characters/zundamon/zundamon-lowpanic-00002.png"
-            ]
-          }
-        }
-      },
-      "effects": [],
-      "sub_scenes": [
-        {
-          "sub_scene_id": "scene_012_01",
-          "screen_text": "じゃあ正常な生活を\n取り戻すために、ひとまず",
-          "display_mode": "replace",
-          "char_count": 22,
-          "start_frame": 937,
-          "duration_frames": 83,
-          "end_frame": 1020,
-          "start_sec": 31.233,
-          "duration_sec": 2.767
-        },
-        {
-          "sub_scene_id": "scene_012_02",
-          "screen_text": "めたんのクレカで美味しい焼き肉を食べに行くのだ！",
-          "display_mode": "replace",
-          "char_count": 24,
-          "start_frame": 1020,
-          "duration_frames": 91,
-          "end_frame": 1111,
-          "start_sec": 34,
-          "duration_sec": 3.033
-        }
-      ],
-      "lip_sync": {
-        "enabled": true,
-        "mode": "scene",
-        "interval_ms": 210,
-        "frames": [
-          "idle",
-          "mouth_1",
-          "mouth_2",
-          "mouth_1"
-        ],
-        "mute_non_speaking_side_to_idle": true,
-        "speaker": "ずんだもん",
-        "speaker_side": "right",
-        "assets": {
-          "left": {
-            "idle": "images/characters/metan/metan-lookside-0.png"
-          },
-          "right": {
-            "idle": "images/characters/zundamon/zundamon-lowpanic-00000.png",
-            "mouth_1": "images/characters/zundamon/zundamon-lowpanic-00001.png",
-            "mouth_2": "images/characters/zundamon/zundamon-lowpanic-00002.png"
-          }
-        }
-      }
-    },
-    {
-      "id": "scene_013",
-      "scene_id": "scene_013",
-      "scene_type": "normal",
-      "role": "normal",
-      "event": "normal",
-      "scene_enabled": true,
-      "slide_id": "slide_03",
-      "speaker": "めたん",
-      "emotion": "normal",
-      "speakerId": 6,
-      "voice_speed": 1.25,
-      "voice": "人の財布でバイアスを解決しようとするんじゃないわよ！絶対におごらないわよ",
-      "voice_override": "",
-      "character_id": "metan",
-      "voice_profile": {
-        "character_id": "metan",
-        "voicevox_speaker_name": "四国めたん",
-        "voicevox_style_name": "ツンツン",
-        "voicevox_style_id": 6,
-        "speedScale": 1.25
-      },
-      "voice_control": {
-        "speaker_id": 6,
-        "speedScale": 1.25,
-        "pitchScale": 0,
-        "intonationScale": 1,
-        "volumeScale": 1,
-        "prePhonemeLength": 0.1,
-        "postPhonemeLength": 0.1,
-        "pauseLength": null,
-        "pauseLengthScale": 1
-      },
-      "dialog": {
-        "voice": "人の財布でバイアスを解決しようとするんじゃないわよ！絶対におごらないわよ",
-        "screen_text": "",
-        "screen_text_font_size": 72,
-        "screen_text_font_family": "Noto Sans JP Bold",
-        "screen_text_color": "#ff46b4",
-        "screen_text_line_break_mode": "auto",
-        "screen_text_line_chars": 18
-      },
-      "screen_text_font_size": 72,
-      "font_family": "Noto Sans JP Bold",
-      "text_color": "#ff46b4",
-      "line_break_mode": "auto",
-      "line_chars": 18,
-      "visual_assets": {
-        "background": "",
-        "slide": "projects/0002/outputs/slide/slide01.png",
-        "monolith": "",
-        "dialog_box": "",
-        "character_left": "images/characters/metan/metan-lookside-turnoff-0.png",
-        "character_right": "images/characters/zundamon/zundamon-lowpanic-00000.png",
-        "hook_background": "",
-        "hook_character": "",
-        "hook_bubble": ""
-      },
-      "composition": {
-        "background": {
-          "image_path": ""
-        },
-        "slide_area": {
-          "image_path": "projects/0002/outputs/slide/slide01.png"
-        },
-        "monolith": {
-          "image_path": ""
-        },
-        "dialog_box": {
-          "image_path": ""
-        },
-        "characters": {
-          "left": {
-            "engine": "metan_engine",
-            "image_path": "images/characters/metan/metan-lookside-turnoff-0.png",
-            "state": "speaking",
-            "lip_sync_image_paths": [
-              "images/characters/metan/metan-lookside-turnoff-1.png",
-              "images/characters/metan/metan-lookside-turnoff-2.png"
-            ]
-          },
-          "right": {
-            "engine": "zundamon_engine",
-            "image_path": "images/characters/zundamon/zundamon-lowpanic-00000.png",
-            "state": "idle",
-            "lip_sync_image_paths": []
-          }
-        }
-      },
-      "effects": [],
-      "sub_scenes": [
-        {
-          "sub_scene_id": "scene_013_01",
-          "screen_text": "人の財布でバイアスを\n解決しようと",
-          "display_mode": "replace",
-          "char_count": 17,
-          "start_frame": 1111,
-          "duration_frames": 62,
-          "end_frame": 1173,
-          "start_sec": 37.033,
-          "duration_sec": 2.067
-        },
-        {
-          "sub_scene_id": "scene_013_02",
-          "screen_text": "するんじゃないわよ\n絶対に奢らないわよ！！",
-          "display_mode": "replace",
-          "char_count": 21,
-          "start_frame": 1173,
-          "duration_frames": 73,
-          "end_frame": 1246,
-          "start_sec": 39.1,
-          "duration_sec": 2.433
-        }
-      ],
-      "lip_sync": {
-        "enabled": true,
-        "mode": "scene",
-        "interval_ms": 210,
-        "frames": [
-          "idle",
-          "mouth_1",
-          "mouth_2",
-          "mouth_1"
-        ],
-        "mute_non_speaking_side_to_idle": true,
-        "speaker": "めたん",
-        "speaker_side": "left",
-        "assets": {
-          "left": {
-            "idle": "images/characters/metan/metan-lookside-turnoff-0.png",
-            "mouth_1": "images/characters/metan/metan-lookside-turnoff-1.png",
-            "mouth_2": "images/characters/metan/metan-lookside-turnoff-2.png"
-          },
-          "right": {
-            "idle": "images/characters/zundamon/zundamon-lowpanic-00000.png"
+            "idle": "images/characters/zundamon/zundamon-normal-0000.png"
           }
         }
       }
@@ -1857,33 +1258,29 @@
   "render_control": {
     "scene_visibility": {
       "scene_001": true,
-      "scene_002": true,
+      "scene_002": false,
       "scene_003": true,
       "scene_004": true,
       "scene_005": true,
-      "scene_006": false,
-      "scene_007": false,
-      "scene_008": false,
-      "scene_009": false,
-      "scene_010": true,
-      "scene_011": true,
-      "scene_012": true,
-      "scene_013": true
+      "scene_006": true,
+      "scene_007": true,
+      "scene_008": true,
+      "scene_009": true
     }
   },
-  "durationSec": 41.15,
-  "durationInFrames": 1245,
-  "total_frames": 1245,
+  "durationSec": 20,
+  "durationInFrames": 600,
+  "total_frames": 600,
   "fps": 30,
   "common_layers": [
     {
       "layer_id": "background",
       "type": "image",
-      "src": "scene-bg-classroom-daytime.png",
+      "src": "scene-bg-town-evening.png",
       "z_index": 0,
       "fit": "cover",
       "start_frame": 0,
-      "duration_frames": 1245
+      "duration_frames": 600
     },
     {
       "layer_id": "hook-background-scene_001",
@@ -1892,7 +1289,7 @@
       "z_index": 0,
       "fit": "cover",
       "start_frame": 0,
-      "duration_frames": 78
+      "duration_frames": 95
     }
   ],
   "tts_transform": "",
@@ -1900,11 +1297,11 @@
     "audio": {
       "tts_transform": "",
       "bgm": "/audio/bgm/BGM-piano.mp3",
-      "bgm_volume": 0.03,
+      "bgm_volume": 0.04,
       "bgm_loop": true
     },
     "style": {
-      "background": "scene-bg-classroom-daytime.png",
+      "background": "scene-bg-town-evening.png",
       "title_overlay": {
         "enabled": true,
         "bg_color": "#000000",
@@ -1919,18 +1316,18 @@
     },
     "format": {
       "fps": 30,
-      "duration": 45.133,
-      "durationInFrames": 1354
+      "duration": 20,
+      "durationInFrames": 600
     },
-    "title": "お給料まで20日あるけど財布の中にあ"
+    "title": "給料まで20日、財布に300円！"
   },
   "bgm": {
     "src": "/audio/bgm/BGM-piano.mp3",
-    "volume": 0.03,
+    "volume": 0.04,
     "loop": true
   },
-  "background": "scene-bg-classroom-daytime.png",
-  "title": "お給料まで20日あるけど財布の中にあ",
+  "background": "scene-bg-town-evening.png",
+  "title": "給料まで20日、財布に300円！",
   "title_overlay": {
     "enabled": true,
     "bg_color": "#000000",

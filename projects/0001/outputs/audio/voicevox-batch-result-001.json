@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "voicevox_batch_result_v1",
-    "generated_at": "2026-06-06T16:43:31.761Z",
+    "generated_at": "2026-06-15T14:31:20.901Z",
     "run_id": "001",
     "source_spec_path": "C:\\Users\\info\\MyAntigravity\\02_hobby\\20_ショート動画v2\\projects\\0001\\outputs\\video\\render-final-v01.json"
   },
@@ -14,7 +14,7 @@
       "scene_id": "scene_001",
       "source_scene_id": "",
       "speaker_id": 3,
-      "speedScale": 1.25,
+      "voice_speed": 1.25,
       "audio_file": "seg_001.wav",
       "audio_path": "projects/0001/outputs/audio/seg_001.wav",
       "duration_sec": 3.019
@@ -23,7 +23,7 @@
       "scene_id": "scene_002",
       "source_scene_id": "",
       "speaker_id": 3,
-      "speedScale": 1.25,
+      "voice_speed": 1.25,
       "audio_file": "seg_002.wav",
       "audio_path": "projects/0001/outputs/audio/seg_002.wav",
       "duration_sec": 5.579
@@ -32,7 +32,7 @@
       "scene_id": "scene_003",
       "source_scene_id": "",
       "speaker_id": 2,
-      "speedScale": 1.25,
+      "voice_speed": 1.25,
       "audio_file": "seg_003.wav",
       "audio_path": "projects/0001/outputs/audio/seg_003.wav",
       "duration_sec": 5.056
@@ -41,7 +41,7 @@
       "scene_id": "scene_004",
       "source_scene_id": "",
       "speaker_id": 3,
-      "speedScale": 1.25,
+      "voice_speed": 1.25,
       "audio_file": "seg_004.wav",
       "audio_path": "projects/0001/outputs/audio/seg_004.wav",
       "duration_sec": 4.181
@@ -50,7 +50,7 @@
       "scene_id": "scene_005",
       "source_scene_id": "",
       "speaker_id": 2,
-      "speedScale": 1.25,
+      "voice_speed": 1.25,
       "audio_file": "seg_005.wav",
       "audio_path": "projects/0001/outputs/audio/seg_005.wav",
       "duration_sec": 4.587
@@ -58,17 +58,17 @@
     {
       "scene_id": "scene_006",
       "source_scene_id": "",
-      "speaker_id": 76,
-      "speedScale": 1.25,
+      "speaker_id": 3,
+      "voice_speed": 1.25,
       "audio_file": "seg_006.wav",
       "audio_path": "projects/0001/outputs/audio/seg_006.wav",
-      "duration_sec": 5.44
+      "duration_sec": 4.277
     },
     {
       "scene_id": "scene_007",
       "source_scene_id": "",
       "speaker_id": 6,
-      "speedScale": 1.25,
+      "voice_speed": 1.25,
       "audio_file": "seg_007.wav",
       "audio_path": "projects/0001/outputs/audio/seg_007.wav",
       "duration_sec": 5.472
@@ -77,7 +77,7 @@
       "scene_id": "scene_008",
       "source_scene_id": "",
       "speaker_id": 3,
-      "speedScale": 1.25,
+      "voice_speed": 1.25,
       "audio_file": "seg_008.wav",
       "audio_path": "projects/0001/outputs/audio/seg_008.wav",
       "duration_sec": 6.368
@@ -86,7 +86,7 @@
       "scene_id": "scene_009",
       "source_scene_id": "",
       "speaker_id": 2,
-      "speedScale": 1.25,
+      "voice_speed": 1.25,
       "audio_file": "seg_009.wav",
       "audio_path": "projects/0001/outputs/audio/seg_009.wav",
       "duration_sec": 3.168
@@ -95,7 +95,7 @@
       "scene_id": "scene_010",
       "source_scene_id": "",
       "speaker_id": 3,
-      "speedScale": 1.25,
+      "voice_speed": 1.25,
       "audio_file": "seg_010.wav",
       "audio_path": "projects/0001/outputs/audio/seg_010.wav",
       "duration_sec": 4.757

@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WAV Duration Checker</title>
+  <style>
+    :root {
+      --bg: #101417;
+      --panel: #171d21;
+      --surface: #20282d;
+      --line: #344149;
+      --ink: #edf2f4;
+      --sub: #a9b4ba;
+      --accent: #55c7a6;
+      --accent-2: #ffd166;
+      --danger: #ff8f8f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      background: var(--bg);
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: #151b1f;
+    }
+
+    .topbar {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .toolbar,
+    .dropzone,
+    .selector,
+    .output {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .toolbar {
+      padding: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dropzone {
+      padding: 28px;
+      display: grid;
+      place-items: center;
+      min-height: 150px;
+      color: var(--sub);
+      text-align: center;
+      border-style: dashed;
+    }
+
+    .dropzone.dragover {
+      border-color: var(--accent);
+      color: var(--ink);
+      background: #182520;
+    }
+
+    input[type="file"] {
+      max-width: 100%;
+      color: var(--sub);
+    }
+
+    button,
+    .fileButton {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 9px 12px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:hover,
+    .fileButton:hover {
+      border-color: var(--accent);
+    }
+
+    .fileButton input {
+      display: none;
+    }
+
+    .status {
+      margin-left: auto;
+      color: var(--sub);
+      font-size: 13px;
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .selector {
+      padding: 14px;
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(180px, 260px) minmax(220px, 1fr);
+      gap: 12px;
+      align-items: end;
+    }
+
+    .field label {
+      display: block;
+      color: var(--sub);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    select {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 8px 10px;
+      font: inherit;
+    }
+
+    .selectedDuration {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #11181b;
+      padding: 10px 12px;
+      min-height: 40px;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent-2);
+      font-variant-numeric: tabular-nums;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .selectedMeta {
+      color: var(--sub);
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 12px;
+    }
+
+    .metric label {
+      display: block;
+      color: var(--sub);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .metric strong {
+      font-size: 22px;
+      color: var(--accent-2);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--sub);
+      font-weight: 600;
+      background: #151b1f;
+      position: sticky;
+      top: 0;
+    }
+
+    td.num,
+    th.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .tableWrap {
+      max-height: 420px;
+      overflow: auto;
+    }
+
+    .output {
+      overflow: hidden;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      resize: vertical;
+      border: 0;
+      border-top: 1px solid var(--line);
+      background: #0f1417;
+      color: var(--ink);
+      padding: 12px;
+      font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    @media (max-width: 760px) {
+      .topbar,
+      main {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .summary {
+        grid-template-columns: 1fr;
+      }
+
+      .selector {
+        grid-template-columns: 1fr;
+      }
+
+      .status {
+        width: 100%;
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <h1>WAV Duration Checker</h1>
+      <div class="status" id="status">WAVを選択してください</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <label class="fileButton">
+        WAV選択
+        <input id="fileInput" type="file" accept=".wav,audio/wav,audio/x-wav" multiple />
+      </label>
+      <label class="fileButton">
+        フォルダ選択
+        <input id="folderInput" type="file" accept=".wav,audio/wav,audio/x-wav" webkitdirectory directory multiple />
+      </label>
+      <button id="copyJsonButton" type="button">JSONコピー</button>
+      <button id="copyCsvButton" type="button">CSVコピー</button>
+      <button id="downloadCsvButton" type="button">CSV保存</button>
+      <button id="clearButton" type="button">クリア</button>
+    </div>
+
+    <div class="dropzone" id="dropzone">
+      WAVファイルをここにドロップ
+    </div>
+
+    <section class="selector">
+      <div class="field">
+        <label for="wavSelect">フォルダ内WAV</label>
+        <select id="wavSelect"></select>
+      </div>
+      <div class="field">
+        <label>duration_sec</label>
+        <div class="selectedDuration" id="selectedDuration">0.000</div>
+      </div>
+      <div class="selectedMeta" id="selectedMeta">未選択</div>
+    </section>
+
+    <section class="summary">
+      <div class="metric">
+        <label>files</label>
+        <strong id="fileCount">0</strong>
+      </div>
+      <div class="metric">
+        <label>total duration_sec</label>
+        <strong id="totalDuration">0.000</strong>
+      </div>
+      <div class="metric">
+        <label>max duration_sec</label>
+        <strong id="maxDuration">0.000</strong>
+      </div>
+    </section>
+
+    <section class="output">
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>file</th>
+              <th class="num">duration_sec</th>
+              <th class="num">sample_rate</th>
+              <th class="num">channels</th>
+              <th class="num">bits</th>
+              <th>status</th>
+            </tr>
+          </thead>
+          <tbody id="resultBody"></tbody>
+        </table>
+      </div>
+      <textarea id="jsonOutput" spellcheck="false" readonly>[]</textarea>
+    </section>
+  </main>
+
+  <script>
+    const el = {
+      fileInput: document.getElementById("fileInput"),
+      folderInput: document.getElementById("folderInput"),
+      dropzone: document.getElementById("dropzone"),
+      wavSelect: document.getElementById("wavSelect"),
+      selectedDuration: document.getElementById("selectedDuration"),
+      selectedMeta: document.getElementById("selectedMeta"),
+      status: document.getElementById("status"),
+      fileCount: document.getElementById("fileCount"),
+      totalDuration: document.getElementById("totalDuration"),
+      maxDuration: document.getElementById("maxDuration"),
+      resultBody: document.getElementById("resultBody"),
+      jsonOutput: document.getElementById("jsonOutput"),
+      copyJsonButton: document.getElementById("copyJsonButton"),
+      copyCsvButton: document.getElementById("copyCsvButton"),
+      downloadCsvButton: document.getElementById("downloadCsvButton"),
+      clearButton: document.getElementById("clearButton")
+    };
+
+    let results = [];
+    let selectedFileKey = "";
+
+    const collator = new Intl.Collator("ja", {numeric: true, sensitivity: "base"});
+
+    const escapeHtml = (value) => String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+    const formatDuration = (seconds) => {
+      if (seconds == null || seconds === "") return "";
+      const n = Number(seconds);
+      return Number.isFinite(n) ? n.toFixed(3) : "";
+    };
+
+    const readAscii = (view, offset, length) => {
+      let out = "";
+      for (let i = 0; i < length; i += 1) {
+        out += String.fromCharCode(view.getUint8(offset + i));
+      }
+      return out;
+    };
+
+    const parseWavDuration = (arrayBuffer) => {
+      const view = new DataView(arrayBuffer);
+      if (view.byteLength < 44) throw new Error("WAVヘッダが短すぎます");
+
+      const riff = readAscii(view, 0, 4);
+      const wave = readAscii(view, 8, 4);
+      if ((riff !== "RIFF" && riff !== "RF64") || wave !== "WAVE") {
+        throw new Error("RIFF/WAVE形式ではありません");
+      }
+
+      let offset = 12;
+      let fmt = null;
+      let dataBytes = null;
+
+      while (offset + 8 <= view.byteLength) {
+        const chunkId = readAscii(view, offset, 4);
+        const chunkSize = view.getUint32(offset + 4, true);
+        const chunkStart = offset + 8;
+
+        if (chunkId === "fmt ") {
+          if (chunkSize < 16 || chunkStart + 16 > view.byteLength) {
+            throw new Error("fmtチャンクが不正です");
+          }
+          fmt = {
+            audioFormat: view.getUint16(chunkStart, true),
+            channels: view.getUint16(chunkStart + 2, true),
+            sampleRate: view.getUint32(chunkStart + 4, true),
+            byteRate: view.getUint32(chunkStart + 8, true),
+            blockAlign: view.getUint16(chunkStart + 12, true),
+            bitsPerSample: view.getUint16(chunkStart + 14, true)
+          };
+        } else if (chunkId === "data") {
+          dataBytes = Math.min(chunkSize, Math.max(0, view.byteLength - chunkStart));
+        }
+
+        offset = chunkStart + chunkSize + (chunkSize % 2);
+      }
+
+      if (!fmt) throw new Error("fmtチャンクが見つかりません");
+      if (dataBytes == null) throw new Error("dataチャンクが見つかりません");
+      if (!fmt.sampleRate || !fmt.blockAlign) throw new Error("duration計算に必要な値がありません");
+
+      const durationSec = dataBytes / fmt.blockAlign / fmt.sampleRate;
+      return {
+        duration_sec: Number(durationSec.toFixed(3)),
+        sample_rate: fmt.sampleRate,
+        channels: fmt.channels,
+        bits_per_sample: fmt.bitsPerSample,
+        byte_rate: fmt.byteRate,
+        audio_format: fmt.audioFormat,
+        data_bytes: dataBytes
+      };
+    };
+
+    const parseFile = async (file) => {
+      const arrayBuffer = await file.arrayBuffer();
+      try {
+        const parsed = parseWavDuration(arrayBuffer);
+        const path = file.webkitRelativePath || file.name;
+        return {
+          file: file.name,
+          path,
+          size_bytes: file.size,
+          ...parsed,
+          ok: true,
+          error: ""
+        };
+      } catch (error) {
+        return {
+          file: file.name,
+          path: file.webkitRelativePath || file.name,
+          size_bytes: file.size,
+          duration_sec: null,
+          sample_rate: null,
+          channels: null,
+          bits_per_sample: null,
+          ok: false,
+          error: error && error.message ? error.message : "parse failed"
+        };
+      }
+    };
+
+    const toCsv = (rows) => {
+      const headers = ["path", "file", "duration_sec", "sample_rate", "channels", "bits_per_sample", "size_bytes", "ok", "error"];
+      const quote = (value) => {
+        const text = value == null ? "" : String(value);
+        return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+      };
+      return [
+        headers.join(","),
+        ...rows.map((row) => headers.map((key) => quote(row[key])).join(","))
+      ].join("\n");
+    };
+
+    const rowKey = (row, index) => `${index}:${row.path || row.file || ""}`;
+
+    const updateSelectedFile = () => {
+      const selected = results.find((row, index) => rowKey(row, index) === selectedFileKey) || results[0] || null;
+      selectedFileKey = selected ? rowKey(selected, results.indexOf(selected)) : "";
+      el.wavSelect.value = selectedFileKey;
+      el.selectedDuration.textContent = selected && selected.ok ? formatDuration(selected.duration_sec) : "0.000";
+      el.selectedMeta.innerHTML = selected
+        ? [
+            `<div>${escapeHtml(selected.path || selected.file)}</div>`,
+            `<div>${escapeHtml(selected.sample_rate ?? "")} Hz / ${escapeHtml(selected.channels ?? "")} ch / ${escapeHtml(selected.bits_per_sample ?? "")} bit</div>`,
+            selected.ok ? "" : `<div>${escapeHtml(selected.error)}</div>`
+          ].filter(Boolean).join("")
+        : "未選択";
+    };
+
+    const render = () => {
+      const okRows = results.filter((row) => row.ok && Number.isFinite(Number(row.duration_sec)));
+      const total = okRows.reduce((sum, row) => sum + Number(row.duration_sec), 0);
+      const max = okRows.reduce((value, row) => Math.max(value, Number(row.duration_sec)), 0);
+
+      el.fileCount.textContent = String(results.length);
+      el.totalDuration.textContent = formatDuration(total);
+      el.maxDuration.textContent = formatDuration(max);
+      el.wavSelect.innerHTML = results.length
+        ? results.map((row, index) => {
+            const value = rowKey(row, index);
+            const label = `${row.path || row.file} (${row.ok ? formatDuration(row.duration_sec) : "error"}s)`;
+            return `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`;
+          }).join("")
+        : `<option value="">(WAVなし)</option>`;
+      el.resultBody.innerHTML = results.map((row) => `
+        <tr>
+          <td>${escapeHtml(row.path || row.file)}</td>
+          <td class="num">${escapeHtml(formatDuration(row.duration_sec))}</td>
+          <td class="num">${escapeHtml(row.sample_rate ?? "")}</td>
+          <td class="num">${escapeHtml(row.channels ?? "")}</td>
+          <td class="num">${escapeHtml(row.bits_per_sample ?? "")}</td>
+          <td>${row.ok ? "OK" : escapeHtml(row.error)}</td>
+        </tr>
+      `).join("");
+      el.jsonOutput.value = JSON.stringify(results, null, 2);
+      updateSelectedFile();
+    };
+
+    const setStatus = (message, kind = "") => {
+      el.status.textContent = message;
+      el.status.className = kind ? `status ${kind}` : "status";
+    };
+
+    const loadFiles = async (fileList) => {
+      const files = Array.from(fileList || [])
+        .filter((file) => /\.wav$/i.test(file.name))
+        .sort((a, b) => collator.compare(a.webkitRelativePath || a.name, b.webkitRelativePath || b.name));
+
+      if (!files.length) {
+        setStatus("WAVファイルが見つかりません", "error");
+        return;
+      }
+
+      setStatus(`${files.length}件を解析中...`);
+      const parsed = [];
+      for (let i = 0; i < files.length; i += 1) {
+        parsed.push(await parseFile(files[i]));
+      }
+      results = parsed;
+      selectedFileKey = results.length ? rowKey(results[0], 0) : "";
+      render();
+      const failed = results.filter((row) => !row.ok).length;
+      setStatus(failed ? `${results.length}件中${failed}件で失敗` : `${results.length}件を解析しました`, failed ? "error" : "");
+    };
+
+    const copyText = async (text, label) => {
+      await navigator.clipboard.writeText(text);
+      setStatus(`${label}をコピーしました`);
+    };
+
+    el.fileInput.addEventListener("change", (event) => {
+      loadFiles(event.target.files);
+      event.target.value = "";
+    });
+
+    el.folderInput.addEventListener("change", (event) => {
+      loadFiles(event.target.files);
+      event.target.value = "";
+    });
+
+    el.wavSelect.addEventListener("change", (event) => {
+      selectedFileKey = String(event.target.value || "");
+      updateSelectedFile();
+    });
+
+    el.dropzone.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      el.dropzone.classList.add("dragover");
+    });
+
+    el.dropzone.addEventListener("dragleave", () => {
+      el.dropzone.classList.remove("dragover");
+    });
+
+    el.dropzone.addEventListener("drop", (event) => {
+      event.preventDefault();
+      el.dropzone.classList.remove("dragover");
+      loadFiles(event.dataTransfer.files);
+    });
+
+    el.copyJsonButton.addEventListener("click", () => {
+      copyText(JSON.stringify(results, null, 2), "JSON");
+    });
+
+    el.copyCsvButton.addEventListener("click", () => {
+      copyText(toCsv(results), "CSV");
+    });
+
+    el.downloadCsvButton.addEventListener("click", () => {
+      const blob = new Blob([toCsv(results)], {type: "text/csv;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "wav-duration.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    el.clearButton.addEventListener("click", () => {
+      results = [];
+      selectedFileKey = "";
+      render();
+      setStatus("クリアしました");
+    });
+
+    render();
+  </script>
+</body>
+</html>
