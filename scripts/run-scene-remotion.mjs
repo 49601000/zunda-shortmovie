@@ -16,11 +16,11 @@ const AUDIO_EXT_RE = /\.(mp3|wav|m4a|ogg)$/i;
 const SCREEN_TEXT_BOTTOM_RATIO = 0.067;
 const SCREEN_TEXT_ANCHOR_Y_RATIO = 1 - SCREEN_TEXT_BOTTOM_RATIO;
 const RENDER_FORMAT_DEFAULTS = {
-  codec: "h265",
-  video_bitrate: "15M",
-  width: 1080,
-  height: 1920,
-  resolution: "1080x1920"
+  codec: "h264",
+  video_bitrate: "20M",
+  width: 1440,
+  height: 2560,
+  resolution: "1440x2560"
 };
 const ZUNDAMON_REQUIRED = [
   "zundamon-normal-0000.png",
