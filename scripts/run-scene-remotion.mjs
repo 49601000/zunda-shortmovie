@@ -13,6 +13,15 @@ const PROJECT_WORKSPACE_DIR = path.basename(CWD);
 const SHARED_ASSETS_DIR = "shared-assets";
 const IMAGE_EXT_RE = /\.(png|jpe?g|webp|avif)$/i;
 const AUDIO_EXT_RE = /\.(mp3|wav|m4a|ogg)$/i;
+const SCREEN_TEXT_BOTTOM_RATIO = 0.067;
+const SCREEN_TEXT_ANCHOR_Y_RATIO = 1 - SCREEN_TEXT_BOTTOM_RATIO;
+const RENDER_FORMAT_DEFAULTS = {
+  codec: "h265",
+  video_bitrate: "15M",
+  width: 1080,
+  height: 1920,
+  resolution: "1080x1920"
+};
 const ZUNDAMON_REQUIRED = [
   "zundamon-normal-0000.png",
   "zundamon-normal-0001.png",
@@ -111,9 +120,30 @@ function toNumber(value, fallback) {
   return Number.isFinite(n) ? n : fallback;
 }
 
+function isScene1HookSlide01(scene, sceneIndex, role) {
+  const sceneId = String(scene?.scene_id || scene?.id || "").trim().toLowerCase();
+  const slideId = String(scene?.slide_id || "").trim().toLowerCase();
+  const normalizedRole = String(role || scene?.role || scene?.scene_type || "").trim().toLowerCase();
+  return sceneIndex === 0 && sceneId === "scene_001" && slideId === "slide_01" && normalizedRole === "hook";
+}
+
 function resolveFps(spec) {
   const fps = toNumber(spec?.fps ?? spec?.video_spec?.format?.fps, 30);
   return fps > 0 ? fps : 30;
+}
+
+function applyRenderFormatDefaults(spec) {
+  if (!spec || typeof spec !== "object") return spec;
+  spec.width = RENDER_FORMAT_DEFAULTS.width;
+  spec.height = RENDER_FORMAT_DEFAULTS.height;
+  spec.video_spec = spec.video_spec && typeof spec.video_spec === "object" ? spec.video_spec : {};
+  spec.video_spec.format = spec.video_spec.format && typeof spec.video_spec.format === "object" ? spec.video_spec.format : {};
+  spec.video_spec.format.codec = RENDER_FORMAT_DEFAULTS.codec;
+  spec.video_spec.format.video_bitrate = RENDER_FORMAT_DEFAULTS.video_bitrate;
+  spec.video_spec.format.width = RENDER_FORMAT_DEFAULTS.width;
+  spec.video_spec.format.height = RENDER_FORMAT_DEFAULTS.height;
+  spec.video_spec.format.resolution = RENDER_FORMAT_DEFAULTS.resolution;
+  return spec;
 }
 
 function frameToSec(frame, fps) {
@@ -366,8 +396,35 @@ function resolveSceneAssets(scene) {
     character_right: scene?.scene_assets?.character_right || visual.character_right || characters.right?.image_path || "",
     hook_background: scene?.scene_assets?.hook_background || visual.hook_background || hookVisual.background?.image_path || "",
     hook_character: scene?.scene_assets?.hook_character || visual.hook_character || hookVisual.character?.image_path || "",
+    hook_bar: scene?.scene_assets?.hook_bar || visual.hook_bar || hookVisual.bar?.image_path || "",
     hook_bubble: scene?.scene_assets?.hook_bubble || visual.hook_bubble || hookVisual.bubble?.image_path || ""
   };
+}
+
+function sanitizeHookVisual(scene, sceneAssets) {
+  const hookVisual = scene?.hook_visual && typeof scene.hook_visual === "object" ? scene.hook_visual : {};
+  const sanitized = {...hookVisual};
+  delete sanitized.texts;
+  delete sanitized.finalize_to_dialog;
+  sanitized.bar = {
+    ...(hookVisual.bar && typeof hookVisual.bar === "object" ? hookVisual.bar : {}),
+    image_path: sceneAssets.hook_bar || hookVisual.bar?.image_path || ""
+  };
+  return sanitized;
+}
+
+function sanitizeHookFieldsInScenes(spec) {
+  if (!Array.isArray(spec?.scenes)) return;
+  spec.scenes = spec.scenes.map((scene, index) => {
+    if (!scene || typeof scene !== "object") return scene;
+    const hasHookVisual = scene.hook_visual && typeof scene.hook_visual === "object";
+    if (!hasHookVisual && !isHookSceneLike(scene, index)) return scene;
+    const sceneAssets = resolveSceneAssets(scene);
+    return {
+      ...scene,
+      hook_visual: sanitizeHookVisual(scene, sceneAssets)
+    };
+  });
 }
 
 function normalizeStringList(value) {
@@ -486,6 +543,7 @@ function flattenScenesToSegments(spec, projectAudioDir) {
     const sceneAssets = resolveSceneAssets(scene);
     const lipSync = resolveSceneLipSync(scene, sceneAssets, role);
     const audioSrc = resolveSceneAudioSrc(sceneIndex, projectAudioDir);
+    const promoteHookScreenText = isScene1HookSlide01(scene, sceneIndex, role);
 
     subScenes.forEach((sub, subIndex) => {
       const startFrame = Number.isFinite(Number(sub?.start_frame)) ? Math.max(0, Math.round(Number(sub.start_frame))) : null;
@@ -524,7 +582,7 @@ function flattenScenesToSegments(spec, projectAudioDir) {
         effects: Array.isArray(scene?.effects) ? scene.effects : [],
         lip_sync: lipSync,
         hook_texts: scene?.hook_texts,
-        hook_visual: scene?.hook_visual,
+        hook_visual: sanitizeHookVisual(scene, sceneAssets),
         start_frame: startFrame !== null ? startFrame : Math.max(0, Math.round(start * fps)),
         duration_frames: durationFrame !== null ? durationFrame : Math.max(1, Math.round(duration * fps)),
         end_frame: (startFrame !== null ? startFrame : Math.max(0, Math.round(start * fps))) +
@@ -533,6 +591,10 @@ function flattenScenesToSegments(spec, projectAudioDir) {
         end: Number((start + duration).toFixed(3)),
         duration_sec: Number(duration.toFixed(3))
       };
+      if (promoteHookScreenText) {
+        segment.screen_text_promote_layer = true;
+        segment.screen_text_anchor_y_ratio = SCREEN_TEXT_ANCHOR_Y_RATIO;
+      }
       if (subIndex === 0 && audioSrc) segment.audioSrc = audioSrc;
       segments.push(segment);
     });
@@ -555,8 +617,10 @@ function prepareRendererSpec(spec, projectAudioDir) {
     Math.max(1, Math.round(toNumber(nextSpec?.durationSec ?? nextSpec?.video_spec?.format?.duration, 30) * fps));
   nextSpec.total_frames = Math.max(1, Math.round(durationInFrames));
   nextSpec.durationInFrames = Math.max(1, Math.round(durationInFrames));
+  applyRenderFormatDefaults(nextSpec);
   nextSpec.common_layers = buildCommonLayers(nextSpec, nextSpec.durationInFrames);
   stripCommonSceneAssets(nextSpec);
+  sanitizeHookFieldsInScenes(nextSpec);
   if (!Array.isArray(nextSpec.segments) || nextSpec.segments.length === 0) {
     nextSpec.segments = flattenScenesToSegments(nextSpec, projectAudioDir);
   }

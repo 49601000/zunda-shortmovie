@@ -180,6 +180,7 @@
     }
 
     input,
+    select,
     textarea {
       width: 100%;
       border: 1px solid rgba(168, 196, 194, 0.35);
@@ -193,9 +194,24 @@
     }
 
     input:focus,
+    select:focus,
     textarea:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(99, 217, 188, 0.18);
+    }
+
+    select {
+      min-height: 45px;
+      appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, var(--accent) 50%),
+        linear-gradient(135deg, var(--accent) 50%, transparent 50%);
+      background-position:
+        calc(100% - 18px) 19px,
+        calc(100% - 12px) 19px;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+      padding-right: 34px;
     }
 
     textarea {
@@ -245,6 +261,12 @@
       gap: 12px;
     }
 
+    .settingsRow {
+      display: grid;
+      grid-template-columns: minmax(180px, 260px);
+      gap: 12px;
+    }
+
     .field {
       min-width: 0;
     }
@@ -272,6 +294,7 @@
 
     @media (max-width: 700px) {
       .row,
+      .settingsRow,
       .workspace {
         grid-template-columns: 1fr;
       }
@@ -343,6 +366,18 @@
             <input id="sub" placeholder="過度の一般化をする" value="ってだいたいこれ" />
           </div>
         </div>
+
+        <div class="settingsRow">
+          <div class="field">
+            <label for="backgroundColor">背景カラーパターン</label>
+            <select id="backgroundColor">
+              <option value="#F3FFE2">#F3FFE2（淡い若草）</option>
+              <option value="#fff5f5">#fff5f5（淡い桜）</option>
+              <option value="#fff5EE">#fff5EE（淡いピーチ）</option>
+              <option value="#eaf6ff">#eaf6ff（淡い空色）</option>
+            </select>
+          </div>
+        </div>
       </section>
 
       <section class="workspace">
@@ -368,6 +403,7 @@
       const top = $("top").value.trim();
       const main = $("main").value.trim();
       const sub = $("sub").value.trim();
+      const backgroundColor = $("backgroundColor").value;
 
       if (!top || !main || !sub) {
         alert("TOP / MAIN / SUB は全部入れてクレメンス");
@@ -447,7 +483,7 @@ SUB：
 - 影や縁取りを使う場合は極めて薄く、可読性補助の範囲に留める
 
 背景：
-- 背景色は #F3FFE2 として統一する
+- 背景色は ${backgroundColor} として統一する
 - 背景シーン、場所、室内、風景、模様、写真風背景は入れない
 - 紙のスライドや解説動画の入口のように、清潔で余白のある見た目にする
 
@@ -463,7 +499,7 @@ SUB：
 - 派手なYouTubeサムネ風装飾、集中線、爆発、炎、グラデーション文字、過度な発光を使わない
 
 完成イメージ：
- #F3FFE2背景に、上からTOP、赤く大きなMAIN、SUBだけが配置されたシンプルな縦型解説スライド。
+ ${backgroundColor}背景に、上からTOP、赤く大きなMAIN、SUBだけが配置されたシンプルな縦型解説スライド。
 視聴者がスマホ一覧で一瞬見た時、MAINが最初に読める。
 フック文言そのものが主役で、下部40%は完全に空いている。`;
     }

@@ -17,8 +17,10 @@
     "scene-remotion:sync-spec": "node scripts/run-scene-remotion.mjs sync-spec",
     "scene-remotion:render:runid": "node scripts/run-scene-render-by-runid.mjs",
     "scene-remotion:voicevox:batch": "node scripts/run-voicevox-batch.mjs",
+    "scene-remotion:voicevox:rename": "node scripts/rename-voicevox-export-files.mjs",
     "scene-remotion:voicevox": "node scripts/run-scene-remotion.mjs voicevox",
     "scene-remotion:typecheck": "node scripts/run-scene-remotion.mjs typecheck",
-    "voicevox:proxy": "node scripts/voicevox-cors-proxy.mjs"
+    "voicevox:proxy": "node scripts/voicevox-cors-proxy.mjs",
+    "voicevox:rename": "npm run scene-remotion:voicevox:rename --"
   }
 }

@@ -735,6 +735,13 @@
       const DEFAULT_BGM_VOLUME = 0.04;
       const MIN_VOICE_SPEED = 0.5;
       const MAX_VOICE_SPEED = 2.0;
+      const RENDER_FORMAT_DEFAULTS = {
+        codec: "h265",
+        video_bitrate: "15M",
+        width: 1080,
+        height: 1920,
+        resolution: "1080x1920"
+      };
       const DEFAULT_VOICE_CONTROL = {
         speaker_id: DEFAULT_SPEAKER_ID,
         pitchScale: 0,
@@ -776,7 +783,8 @@
         character_right: ["characters/zundamon/zundamon-normal-0001.png"],
         hook_background: ["backgrounds/classroom-daytime.png"],
         hook_character: ["characters/zundamon/zundamon-normal-0001.png"],
-        hook_bubble: ["parts/Hook-speech-balloon.png"]
+        hook_bar: [],
+        hook_bubble: []
       };
       const SHARED_ASSET_SUBDIR_DEFAULTS = {
         background: "images/backgrounds",
@@ -784,7 +792,8 @@
         monolith: "images/monolith",
         dialog_box: "images/logboard",
         character_left: "images/characters/metan",
-        character_right: "images/characters/zundamon, images/frames"
+        character_right: "images/characters/zundamon, images/frames",
+        hook_bar: "images/frames/parts"
       };
       const SCREEN_TEXT_STYLE_DEFAULTS = {
         font_size: 72,
@@ -803,26 +812,20 @@
         { label: "めたん（強調）", value: "#ff46b4" }
       ];
       const HOOK_TEXT_STYLE_DEFAULTS = {
-        top: { font_size: 84, fill_color: "#303030", outline_color: "#ffffff", outline_scale: 1.02, fill_visible: false },
-        main: { font_size: 220, fill_color: "#e60012", outline_color: "transparent", outline_scale: 1.02, fill_visible: true },
-        sub: { font_size: 98, fill_color: "#303030", outline_color: "#ffffff", outline_scale: 1.02, fill_visible: false },
         bubble: { font_size: 64 }
       };
-      const HOOK_OUTLINE_COLOR_OPTIONS = [
-        { label: "transparent", value: "transparent" },
-        { label: "white", value: "#ffffff" },
-        { label: "black", value: "#000000" },
-        { label: "red", value: "#e60012" }
-      ];
-      const HOOK_CHARACTER_LAYOUT_DEFAULTS = {
+      const HOOK_CHARACTER_LAYOUT_PRESET = {
         enabled: true,
-        x: 450,
-        y: 1130,
+        x: 225,
+        y: 730,
         width: 800,
         height: 820,
-        scale: 2,
+        scale: 2.55,
         objectFit: "contain",
         objectPosition: "center top"
+      };
+      const HOOK_CHARACTER_LAYOUT_DEFAULTS = {
+        ...HOOK_CHARACTER_LAYOUT_PRESET
       };
 
       const normalizeSpeed = (speed) => {
@@ -936,7 +939,8 @@
         monolith: [],
         dialog_box: [],
         character_left: [],
-        character_right: []
+        character_right: [],
+        hook_bar: []
       };
       let projectSlideFileCatalog = [];
 
@@ -1018,17 +1022,38 @@
       const normalizeSubSceneStart = (value, fallback = 0) => Math.max(0, roundTimeStep(toNum(value, fallback), 0.001));
       const normalizeSubSceneDuration = (value, fallback = 1) => Math.max(0, roundTimeStep(toNum(value, fallback), 0.001));
 
-      const relayNextSubSceneStart = (subScenes, editedIndex) => {
-        if (!Array.isArray(subScenes) || editedIndex < 0 || editedIndex + 1 >= subScenes.length) return subScenes;
-        const edited = subScenes[editedIndex];
-        if (!edited) return subScenes;
-        const normalizedEdited = normalizeSubSceneFrameTiming(edited);
-        const nextStartFrame = subStartFrame(normalizedEdited) + subDurationFrames(normalizedEdited, 0);
-        return subScenes.map((sub, index) => (
-          index === editedIndex + 1
-            ? withFrameTiming(sub, nextStartFrame, subDurationFrames(sub, 1))
-            : normalizeSubSceneFrameTiming(sub)
-        ));
+      const relaySceneTimelineFrames = (scenes, anchor = {}) => {
+        const nextScenes = (Array.isArray(scenes) ? scenes : []).map((scene) => ({
+          ...scene,
+          sub_scenes: (scene.sub_scenes || []).map((sub) => normalizeSubSceneFrameTiming(sub))
+        }));
+        const refs = [];
+        nextScenes.forEach((scene, sceneIndex) => {
+          (scene.sub_scenes || []).forEach((sub, subIndex) => {
+            refs.push({sceneIndex, subIndex, sub});
+          });
+        });
+        if (!refs.length) return nextScenes;
+
+        const anchorKey = String(anchor.subKey || "");
+        const anchorIndex = refs.findIndex(({sub}) => String(sub.key || sub.sub_scene_id || "") === anchorKey);
+        const useManualAnchor = anchor.mode === "manual_start" && anchorIndex >= 0;
+        let cursor = 0;
+
+        refs.forEach((ref, index) => {
+          const duration = subDurationFrames(ref.sub, 1);
+          let start = cursor;
+          if (useManualAnchor && index < anchorIndex) {
+            start = subStartFrame(ref.sub);
+          } else if (useManualAnchor && index === anchorIndex) {
+            start = subStartFrame(ref.sub);
+          }
+          const timed = withFrameTiming(ref.sub, start, duration);
+          nextScenes[ref.sceneIndex].sub_scenes[ref.subIndex] = timed;
+          cursor = subStartFrame(timed) + subDurationFrames(timed, 0);
+        });
+
+        return nextScenes;
       };
 
       const setStatus = (text, mode) => {
@@ -1648,7 +1673,8 @@
         monolith: String(el.sharedAssetsSubMonolithInput?.value || SHARED_ASSET_SUBDIR_DEFAULTS.monolith),
         dialog_box: String(el.sharedAssetsSubDialogInput?.value || SHARED_ASSET_SUBDIR_DEFAULTS.dialog_box),
         character_left: String(el.sharedAssetsSubLeftCharInput?.value || SHARED_ASSET_SUBDIR_DEFAULTS.character_left),
-        character_right: String(el.sharedAssetsSubRightCharInput?.value || SHARED_ASSET_SUBDIR_DEFAULTS.character_right)
+        character_right: String(el.sharedAssetsSubRightCharInput?.value || SHARED_ASSET_SUBDIR_DEFAULTS.character_right),
+        hook_bar: SHARED_ASSET_SUBDIR_DEFAULTS.hook_bar
       });
 
       const applySharedAssetsSubdirConfigToUi = (cfg) => {
@@ -1717,7 +1743,8 @@
             monolith: String(storedSubdirs.monolith || SHARED_ASSET_SUBDIR_DEFAULTS.monolith),
             dialog_box: String(storedSubdirs.dialog_box || SHARED_ASSET_SUBDIR_DEFAULTS.dialog_box),
             character_left: String(storedSubdirs.character_left || SHARED_ASSET_SUBDIR_DEFAULTS.character_left),
-            character_right: String(storedSubdirs.character_right || SHARED_ASSET_SUBDIR_DEFAULTS.character_right)
+            character_right: String(storedSubdirs.character_right || SHARED_ASSET_SUBDIR_DEFAULTS.character_right),
+            hook_bar: String(storedSubdirs.hook_bar || SHARED_ASSET_SUBDIR_DEFAULTS.hook_bar)
           }
         };
       };
@@ -1733,7 +1760,8 @@
             monolith: String(sharedSubdirs.monolith || SHARED_ASSET_SUBDIR_DEFAULTS.monolith),
             dialog_box: String(sharedSubdirs.dialog_box || SHARED_ASSET_SUBDIR_DEFAULTS.dialog_box),
             character_left: String(sharedSubdirs.character_left || SHARED_ASSET_SUBDIR_DEFAULTS.character_left),
-            character_right: String(sharedSubdirs.character_right || SHARED_ASSET_SUBDIR_DEFAULTS.character_right)
+            character_right: String(sharedSubdirs.character_right || SHARED_ASSET_SUBDIR_DEFAULTS.character_right),
+            hook_bar: String(sharedSubdirs.hook_bar || SHARED_ASSET_SUBDIR_DEFAULTS.hook_bar)
           },
           updated_at: new Date().toISOString()
         };
@@ -2116,7 +2144,8 @@
           monolith: [],
           dialog_box: [],
           character_left: [],
-          character_right: []
+          character_right: [],
+          hook_bar: []
         };
       };
 
@@ -2151,14 +2180,15 @@
           return;
         }
         const cfg = getSharedAssetsSubdirConfigFromUi();
-        const keys = ["background", "bgm", "monolith", "dialog_box", "character_left", "character_right"];
+        const keys = ["background", "bgm", "monolith", "dialog_box", "character_left", "character_right", "hook_bar"];
         const next = {
           background: [],
           bgm: [],
           monolith: [],
           dialog_box: [],
           character_left: [],
-          character_right: []
+          character_right: [],
+          hook_bar: []
         };
         for (let i = 0; i < keys.length; i += 1) {
           const key = keys[i];
@@ -2569,68 +2599,47 @@
           character_right: normalizeImageRef(manual.character_right || chars.right?.image_path || ""),
           hook_background: normalizeImageRef(manual.hook_background || hook.background?.image_path || ""),
           hook_character: normalizeImageRef(manual.hook_character || hook.character?.image_path || ""),
+          hook_bar: normalizeImageRef(manual.hook_bar || hook.bar?.image_path || ""),
           hook_bubble: normalizeImageRef(manual.hook_bubble || hook.bubble?.image_path || "")
         };
       };
 
       const buildDefaultHookTexts = (scene) => {
         const hook = scene?.hook_visual && typeof scene.hook_visual === "object" ? scene.hook_visual : {};
-        const texts = hook.texts && typeof hook.texts === "object" ? hook.texts : {};
-        return {
-          top: String(texts.top?.text || ""),
-          main: String(texts.main?.text || ""),
-          sub: String(texts.sub?.text || ""),
-          bubble: String(hook.bubble?.text || "")
-        };
+        return normalizeHookTexts({
+          bubble: hook.bubble?.text || ""
+        });
       };
 
-      const normalizeHookOutlineScale = (value, fallback) => {
-        const n = Number(value);
-        if (!Number.isFinite(n)) return fallback;
-        return Math.max(1, Math.min(1.3, Math.round(n * 100) / 100));
+      const normalizeHookTexts = (texts = {}) => {
+        return {
+          bubble: String(texts.bubble || "")
+        };
       };
 
       const normalizeHookFontSize = (value, fallback) => {
         return normalizePx(value, fallback, 24, 360);
       };
 
-      const normalizeHookOutlineColor = (value, fallback = "transparent") => {
-        if (typeof value === "string" && value.trim().toLowerCase() === "transparent") {
-          return "transparent";
-        }
-        return normalizeColorHex(value, fallback);
-      };
-
-      const hookOutlineOptionsHtml = (selected) => {
-        const normalized = normalizeHookOutlineColor(selected, HOOK_TEXT_STYLE_DEFAULTS.top.outline_color);
-        const hasOption = HOOK_OUTLINE_COLOR_OPTIONS.some((option) => option.value === normalized);
-        const options = hasOption
-          ? HOOK_OUTLINE_COLOR_OPTIONS
-          : HOOK_OUTLINE_COLOR_OPTIONS.concat([{ label: normalized, value: normalized }]);
-        return options.map((option) => {
-          const sel = option.value === normalized ? " selected" : "";
-          return `<option value="${escapeHtml(option.value)}"${sel}>${escapeHtml(option.label)}</option>`;
-        }).join("");
+      const normalizeHookTextStyles = (styles = {}) => {
+        const bubble = styles.bubble && typeof styles.bubble === "object" ? styles.bubble : {};
+        return {
+          bubble: {
+            font_size: normalizeHookFontSize(
+              bubble.font_size ?? bubble.fontSize,
+              HOOK_TEXT_STYLE_DEFAULTS.bubble.font_size
+            )
+          }
+        };
       };
 
       const buildDefaultHookTextStyles = (scene) => {
         const hook = scene?.hook_visual && typeof scene.hook_visual === "object" ? scene.hook_visual : {};
-        const texts = hook.texts && typeof hook.texts === "object" ? hook.texts : {};
-        const resolveLayer = (node, defaults) => ({
-          font_size: normalizeHookFontSize(node?.fontSize ?? node?.font_size ?? node?.font_size_px, defaults.font_size),
-          fill_color: normalizeColorHex(node?.color, defaults.fill_color),
-          outline_color: normalizeHookOutlineColor(node?.outlineColor ?? node?.strokeColor, defaults.outline_color),
-          outline_scale: normalizeHookOutlineScale(node?.outlineScale, defaults.outline_scale),
-          fill_visible: typeof node?.fillVisible === "boolean" ? node.fillVisible : defaults.fill_visible
-        });
-        return {
-          top: resolveLayer(texts.top, HOOK_TEXT_STYLE_DEFAULTS.top),
-          main: resolveLayer(texts.main, HOOK_TEXT_STYLE_DEFAULTS.main),
-          sub: resolveLayer(texts.sub, HOOK_TEXT_STYLE_DEFAULTS.sub),
+        return normalizeHookTextStyles({
           bubble: {
             font_size: normalizeHookFontSize(hook.bubble?.fontSize ?? hook.bubble?.font_size, HOOK_TEXT_STYLE_DEFAULTS.bubble.font_size)
           }
-        };
+        });
       };
 
       const buildDefaultHookCharacterLayout = (scene) => {
@@ -2769,6 +2778,14 @@
             "(未指定)"
           );
         }
+        if (fieldKey === "hook_bar") {
+          const sharedHookBar = Array.isArray(sharedAssetFileCatalog.hook_bar) ? sharedAssetFileCatalog.hook_bar : [];
+          return buildSelectOptionsHtml(
+            selected,
+            sharedHookBar,
+            "(未指定)"
+          );
+        }
         return buildScenePartOptionsHtml(fieldKey, selected);
       };
 
@@ -2869,10 +2886,10 @@
           : buildDefaultVisualAssets(raw);
         visualAssets.slide = normalizeSlideAssetRef(visualAssets.slide || "");
         const hookTexts = saved.hook_texts && typeof saved.hook_texts === "object"
-          ? saved.hook_texts
+          ? normalizeHookTexts(saved.hook_texts)
           : buildDefaultHookTexts(raw);
         const hookTextStyles = saved.hook_text_styles && typeof saved.hook_text_styles === "object"
-          ? saved.hook_text_styles
+          ? normalizeHookTextStyles(saved.hook_text_styles)
           : buildDefaultHookTextStyles(raw);
         const hookCharacterLayout = saved.hook_character_layout && typeof saved.hook_character_layout === "object"
           ? {
@@ -2887,13 +2904,19 @@
             : typeof raw.text === "string"
               ? raw.text
               : subScenes.map((sub) => sub.screen_text).join("");
+        const normalizedSceneType = sceneIndex === 0
+          ? "hook"
+          : String(raw.scene_type || raw.role || "normal");
+        const normalizedRole = sceneIndex === 0
+          ? "hook"
+          : String(raw.role || raw.scene_type || "normal");
 
         return {
           key: sceneId,
           scene_id: sceneId,
           id: typeof raw.id === "string" && raw.id.trim() ? raw.id.trim() : sceneId,
-          scene_type: String(raw.scene_type || raw.role || (sceneIndex === 0 && raw.hook_visual ? "hook" : "normal")),
-          role: String(raw.role || raw.scene_type || "normal"),
+          scene_type: normalizedSceneType,
+          role: normalizedRole,
           event: String(raw.event || "normal"),
           scene_enabled: normalizeSceneEnabled(raw, saved),
           slide_id: resolvedSlideId,
@@ -2929,7 +2952,6 @@
           hook_texts: deepClone(hookTexts),
           hook_text_styles: deepClone(hookTextStyles),
           hook_character_layout: deepClone(hookCharacterLayout),
-          hook_finalize_to_dialog: !!(saved.hook_finalize_to_dialog ?? raw.hook_visual?.finalize_to_dialog),
           grayscale_filter: saved.grayscale_filter || resolveSceneGrayscaleFilterMode(raw),
           voice_control: normalizeVoiceControl(raw.voice_control || {}),
           sub_scenes: subScenes
@@ -2950,6 +2972,16 @@
           shifted[`scene_${String(n - 1).padStart(3, "0")}${matched[2] || ""}`] = value;
         });
         return shifted;
+      };
+
+      const preferDraftHookVoiceSettings = (savedSettings = {}) => {
+        const next = deepClone(savedSettings || {});
+        const scene = next.scene_001;
+        if (scene && typeof scene === "object") {
+          delete scene.voice;
+          delete scene.voice_override;
+        }
+        return next;
       };
 
       const buildDefaultManualHookScene = () => normalizeSceneForState({
@@ -3099,9 +3131,8 @@
               left_diff_images: [],
               right_diff_images: [],
               hook_diff_images: [],
-              hook_texts: {top: "", main: "", sub: "", bubble: ""},
+              hook_texts: {bubble: ""},
               hook_text_styles: deepClone(HOOK_TEXT_STYLE_DEFAULTS),
-              hook_finalize_to_dialog: false,
               grayscale_filter: "off",
               voice_control: normalizeVoiceControl({speaker_id: speakerId}),
               sub_scenes: []
@@ -3340,6 +3371,7 @@
             character_right: normalizeImageRef(visualAssets.character_right || ""),
             hook_background: normalizeImageRef(visualAssets.hook_background || ""),
             hook_character: normalizeImageRef(visualAssets.hook_character || ""),
+            hook_bar: normalizeImageRef(visualAssets.hook_bar || ""),
             hook_bubble: normalizeImageRef(visualAssets.hook_bubble || "")
           };
           const screenText = String(scene.screen_text || "");
@@ -3349,10 +3381,9 @@
           const screenTextLineBreakMode = normalizeLineBreakMode(scene.screen_text_line_break_mode || SCREEN_TEXT_STYLE_DEFAULTS.line_break_mode);
           const screenTextLineChars = normalizePx(scene.screen_text_line_chars, SCREEN_TEXT_STYLE_DEFAULTS.line_chars, 1, 120);
           const backgroundOverride = scene.use_background_override ? normalizeBackgroundRef(scene.background_override || "") : "";
-          const hookTexts = scene.hook_texts && typeof scene.hook_texts === "object" ? scene.hook_texts : {};
-          const hookTextStyles = scene.hook_text_styles && typeof scene.hook_text_styles === "object" ? scene.hook_text_styles : deepClone(HOOK_TEXT_STYLE_DEFAULTS);
+          const hookTexts = scene.hook_texts && typeof scene.hook_texts === "object" ? normalizeHookTexts(scene.hook_texts) : {};
+          const hookTextStyles = scene.hook_text_styles && typeof scene.hook_text_styles === "object" ? normalizeHookTextStyles(scene.hook_text_styles) : deepClone(HOOK_TEXT_STYLE_DEFAULTS);
           const hookCharacterLayout = resolveHookCharacterLayout(scene);
-          const hookFinalText = [hookTexts.top, hookTexts.main, hookTexts.sub].map((v) => String(v || "").trim()).filter(Boolean).join("\n");
           const lipSync = buildSceneLipSyncConfig(scene, visualAssets, hookPictureScene);
           const output = {
             id: scene.id || scene.scene_id,
@@ -3377,7 +3408,7 @@
             voice_control: voiceControl,
             dialog: {
               voice: typeof scene.voice === "string" ? scene.voice : "",
-              screen_text: scene.hook_finalize_to_dialog && hookFinalText ? hookFinalText : screenText,
+              screen_text: screenText,
               screen_text_font_size: screenTextFontSize,
               screen_text_font_family: screenTextFontFamily,
               screen_text_color: screenTextColor,
@@ -3436,33 +3467,8 @@
           if (lipSync) output.lip_sync = lipSync;
           if (hookPictureScene) {
             output.hook_visual = {
-              texts: {
-                top: {
-                  text: String(hookTexts.top || ""),
-                  fontSize: normalizeHookFontSize(hookTextStyles.top?.font_size, HOOK_TEXT_STYLE_DEFAULTS.top.font_size),
-                  color: normalizeColorHex(hookTextStyles.top?.fill_color, HOOK_TEXT_STYLE_DEFAULTS.top.fill_color),
-                  outlineColor: normalizeHookOutlineColor(hookTextStyles.top?.outline_color, HOOK_TEXT_STYLE_DEFAULTS.top.outline_color),
-                  outlineScale: normalizeHookOutlineScale(hookTextStyles.top?.outline_scale, HOOK_TEXT_STYLE_DEFAULTS.top.outline_scale),
-                  fillVisible: false
-                },
-                main: {
-                  text: String(hookTexts.main || ""),
-                  fontSize: normalizeHookFontSize(hookTextStyles.main?.font_size, HOOK_TEXT_STYLE_DEFAULTS.main.font_size),
-                  color: normalizeColorHex(hookTextStyles.main?.fill_color, HOOK_TEXT_STYLE_DEFAULTS.main.fill_color),
-                  outlineColor: normalizeHookOutlineColor(hookTextStyles.main?.outline_color, HOOK_TEXT_STYLE_DEFAULTS.main.outline_color),
-                  outlineScale: normalizeHookOutlineScale(hookTextStyles.main?.outline_scale, HOOK_TEXT_STYLE_DEFAULTS.main.outline_scale),
-                  fillVisible: true
-                },
-                sub: {
-                  text: String(hookTexts.sub || ""),
-                  fontSize: normalizeHookFontSize(hookTextStyles.sub?.font_size, HOOK_TEXT_STYLE_DEFAULTS.sub.font_size),
-                  color: normalizeColorHex(hookTextStyles.sub?.fill_color, HOOK_TEXT_STYLE_DEFAULTS.sub.fill_color),
-                  outlineColor: normalizeHookOutlineColor(hookTextStyles.sub?.outline_color, HOOK_TEXT_STYLE_DEFAULTS.sub.outline_color),
-                  outlineScale: normalizeHookOutlineScale(hookTextStyles.sub?.outline_scale, HOOK_TEXT_STYLE_DEFAULTS.sub.outline_scale),
-                  fillVisible: false
-                }
-              },
               background: { image_path: outputVisualAssets.hook_background },
+              bar: { image_path: outputVisualAssets.hook_bar },
               character: {
                 ...hookCharacterLayout,
                 image_path: outputVisualAssets.hook_character,
@@ -3476,8 +3482,7 @@
                 width: 520,
                 height: 400,
                 fontSize: normalizeHookFontSize(hookTextStyles.bubble?.font_size, HOOK_TEXT_STYLE_DEFAULTS.bubble.font_size)
-              },
-              finalize_to_dialog: !!scene.hook_finalize_to_dialog
+              }
             };
           }
           return output;
@@ -3613,6 +3618,8 @@
         spec.durationInFrames = durationInFrames;
         spec.total_frames = durationInFrames;
         spec.fps = Math.max(1, fps);
+        spec.width = RENDER_FORMAT_DEFAULTS.width;
+        spec.height = RENDER_FORMAT_DEFAULTS.height;
         spec.common_layers = buildCommonLayers(backgroundPng, commonDialogBox, durationInFrames)
           .concat(buildSceneBackgroundLayers(state.scenes, durationInFrames, backgroundPng));
         spec.tts_transform = state.transformMode === "zundamon" ? "zundamon" : "";
@@ -3626,6 +3633,11 @@
         spec.video_spec.format.fps = Math.max(1, fps);
         spec.video_spec.format.duration = Number(durationSec.toFixed(3));
         spec.video_spec.format.durationInFrames = durationInFrames;
+        spec.video_spec.format.codec = RENDER_FORMAT_DEFAULTS.codec;
+        spec.video_spec.format.video_bitrate = RENDER_FORMAT_DEFAULTS.video_bitrate;
+        spec.video_spec.format.width = RENDER_FORMAT_DEFAULTS.width;
+        spec.video_spec.format.height = RENDER_FORMAT_DEFAULTS.height;
+        spec.video_spec.format.resolution = RENDER_FORMAT_DEFAULTS.resolution;
         spec.video_spec.audio.tts_transform = spec.tts_transform;
 
         const bgmFile = normalizeBgmRef(state.bgmFile);
@@ -3780,14 +3792,13 @@
           const speakerName = scene.voicevox_speaker_name || character?.voice?.voicevox_speaker_name || "";
           const chosenStyle = resolveStyleFromSpeaker(speakerName, scene.voicevox_style_id ?? speakerId, scene.voicevox_style_name);
           const visualAssets = scene.visual_assets && typeof scene.visual_assets === "object" ? scene.visual_assets : {};
-          const hookTexts = scene.hook_texts && typeof scene.hook_texts === "object" ? scene.hook_texts : {};
-          const hookTextStyles = scene.hook_text_styles && typeof scene.hook_text_styles === "object" ? scene.hook_text_styles : deepClone(HOOK_TEXT_STYLE_DEFAULTS);
           const leftDiff1 = (scene.left_diff_images || [])[0] || "";
           const leftDiff2 = (scene.left_diff_images || [])[1] || "";
           const rightDiff1 = (scene.right_diff_images || [])[0] || "";
           const rightDiff2 = (scene.right_diff_images || [])[1] || "";
           const hookDiff1 = (scene.hook_diff_images || [])[0] || "";
           const hookDiff2 = (scene.hook_diff_images || [])[1] || "";
+          const hookCharacterLayout = resolveHookCharacterLayout(scene);
           const ttsPreview = resolvePreviewVoiceText(scene, state.transformMode);
           const rows = (scene.sub_scenes || []).map((sub) => {
             const timed = normalizeSubSceneFrameTiming(sub);
@@ -3901,7 +3912,6 @@
                   <label>TTSプレビュー（voice_override優先 + tts_transform適用後）</label>
                   <div class="readonly">${escapeHtml(ttsPreview || "(empty)")}</div>
                 </div>
-                ${i !== 0 ? `
                 <details class="collapse inner-card substyle-card" open>
                   <summary class="inner-card-title">画面テキスト設定（dialog.screen_text）</summary>
                   <div class="inner-card-body">
@@ -3936,7 +3946,6 @@
                     </div>
                   </div>
                 </details>
-                ` : ""}
                 ${!hookPictureScene ? `
                   <details class="collapse inner-card substyle-card" open>
                     <summary class="inner-card-title">SCENEレイヤー構成</summary>
@@ -3973,28 +3982,49 @@
                     <summary class="inner-card-title">HOOK Picture</summary>
                     <div class="inner-card-body">
                       <div class="grid">
-                        <div class="field span-6"><div class="readonly">scene1(Hook) Picture / hook part x3 + texts.top/main/sub</div></div>
+                        <div class="field span-6"><div class="readonly">scene1(Hook) Picture / hook part x4</div></div>
                         <div class="field span-2"><label>HOOK背景画像（hook part）</label><select name="visual_hook_background" data-scope="scene">${buildHookPartOptionsHtml("hook_background", visualAssets.hook_background || "")}</select></div>
                         <div class="field span-2"><label>HOOKキャラ画像（hook part）</label><select name="visual_hook_character" data-scope="scene">${buildHookPartOptionsHtml("hook_character", visualAssets.hook_character || "")}</select></div>
+                        <div class="field span-2"><label>HOOKBAR画像（hook part）</label><select name="visual_hook_bar" data-scope="scene">${buildHookPartOptionsHtml("hook_bar", visualAssets.hook_bar || "")}</select></div>
                         <div class="field span-2"><label>HOOK吹き出し画像（hook part）</label><select name="visual_hook_bubble" data-scope="scene">${buildHookPartOptionsHtml("hook_bubble", visualAssets.hook_bubble || "")}</select></div>
                         <div class="field span-2"><label>HOOKキャラ差分1</label><select name="hook_character_diff_1" data-scope="scene">${buildHookPartOptionsHtml("hook_character", hookDiff1)}</select></div>
                         <div class="field span-2"><label>HOOKキャラ差分2</label><select name="hook_character_diff_2" data-scope="scene">${buildHookPartOptionsHtml("hook_character", hookDiff2)}</select></div>
-                        <div class="field check-field span-2"><label><input name="hook_finalize_to_dialog" data-scope="scene" type="checkbox"${scene.hook_finalize_to_dialog ? " checked" : ""} />hook文言をdialog/voiceへ反映</label></div>
-                        <div class="field span-2"><label>texts.top</label><textarea name="hook_top_text" data-scope="scene" rows="2">${escapeHtml(hookTexts.top || "")}</textarea></div>
-                        <div class="field span-2"><label>texts.main</label><textarea name="hook_main_text" data-scope="scene" rows="2">${escapeHtml(hookTexts.main || "")}</textarea></div>
-                        <div class="field span-2"><label>texts.sub</label><textarea name="hook_sub_text" data-scope="scene" rows="2">${escapeHtml(hookTexts.sub || "")}</textarea></div>
-                        <div class="field span-2"><label>top font size</label><input name="hook_top_font_size" data-scope="scene" type="number" min="24" max="360" step="1" value="${escapeHtml(hookTextStyles.top?.font_size ?? HOOK_TEXT_STYLE_DEFAULTS.top.font_size)}" /></div>
-                        <div class="field span-2"><label>main font size</label><input name="hook_main_font_size" data-scope="scene" type="number" min="24" max="360" step="1" value="${escapeHtml(hookTextStyles.main?.font_size ?? HOOK_TEXT_STYLE_DEFAULTS.main.font_size)}" /></div>
-                        <div class="field span-2"><label>sub font size</label><input name="hook_sub_font_size" data-scope="scene" type="number" min="24" max="360" step="1" value="${escapeHtml(hookTextStyles.sub?.font_size ?? HOOK_TEXT_STYLE_DEFAULTS.sub.font_size)}" /></div>
-                        <div class="field span-2"><label>top fill</label><input name="hook_top_fill_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.top?.fill_color || HOOK_TEXT_STYLE_DEFAULTS.top.fill_color)}" /></div>
-                        <div class="field span-2"><label>main fill</label><input name="hook_main_fill_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.main?.fill_color || HOOK_TEXT_STYLE_DEFAULTS.main.fill_color)}" /></div>
-                        <div class="field span-2"><label>sub fill</label><input name="hook_sub_fill_color" data-scope="scene" type="text" value="${escapeHtml(hookTextStyles.sub?.fill_color || HOOK_TEXT_STYLE_DEFAULTS.sub.fill_color)}" /></div>
-                        <div class="field span-2"><label>top outline</label><select name="hook_top_outline_color" data-scope="scene">${hookOutlineOptionsHtml(hookTextStyles.top?.outline_color ?? HOOK_TEXT_STYLE_DEFAULTS.top.outline_color)}</select></div>
-                        <div class="field span-2"><label>main outline</label><select name="hook_main_outline_color" data-scope="scene">${hookOutlineOptionsHtml(hookTextStyles.main?.outline_color ?? HOOK_TEXT_STYLE_DEFAULTS.main.outline_color)}</select></div>
-                        <div class="field span-2"><label>sub outline</label><select name="hook_sub_outline_color" data-scope="scene">${hookOutlineOptionsHtml(hookTextStyles.sub?.outline_color ?? HOOK_TEXT_STYLE_DEFAULTS.sub.outline_color)}</select></div>
-                        <div class="field span-2"><label>top outline scale</label><input name="hook_top_outline_scale" data-scope="scene" type="number" min="1" max="1.3" step="0.01" value="${escapeHtml(hookTextStyles.top?.outline_scale ?? HOOK_TEXT_STYLE_DEFAULTS.top.outline_scale)}" /></div>
-                        <div class="field span-2"><label>main outline scale</label><input name="hook_main_outline_scale" data-scope="scene" type="number" min="1" max="1.3" step="0.01" value="${escapeHtml(hookTextStyles.main?.outline_scale ?? HOOK_TEXT_STYLE_DEFAULTS.main.outline_scale)}" /></div>
-                        <div class="field span-2"><label>sub outline scale</label><input name="hook_sub_outline_scale" data-scope="scene" type="number" min="1" max="1.3" step="0.01" value="${escapeHtml(hookTextStyles.sub?.outline_scale ?? HOOK_TEXT_STYLE_DEFAULTS.sub.outline_scale)}" /></div>
+                        <div class="field span-2">
+                          <label>HOOKキャラ配置</label>
+                          <button type="button" class="mini apply-hook-character-layout-preset-btn" data-scene-key="${escapeHtml(sceneKey)}">プリセット上書き</button>
+                        </div>
+                        <div class="field">
+                          <label>HOOKキャラ x</label>
+                          <input name="hook_character_layout_x" data-scope="scene" type="number" min="0" step="1" value="${escapeHtml(hookCharacterLayout.x)}" />
+                        </div>
+                        <div class="field">
+                          <label>HOOKキャラ y</label>
+                          <input name="hook_character_layout_y" data-scope="scene" type="number" min="0" step="1" value="${escapeHtml(hookCharacterLayout.y)}" />
+                        </div>
+                        <div class="field">
+                          <label>HOOKキャラ width</label>
+                          <input name="hook_character_layout_width" data-scope="scene" type="number" min="1" step="1" value="${escapeHtml(hookCharacterLayout.width)}" />
+                        </div>
+                        <div class="field">
+                          <label>HOOKキャラ height</label>
+                          <input name="hook_character_layout_height" data-scope="scene" type="number" min="1" step="1" value="${escapeHtml(hookCharacterLayout.height)}" />
+                        </div>
+                        <div class="field">
+                          <label>HOOKキャラ scale</label>
+                          <input name="hook_character_layout_scale" data-scope="scene" type="number" min="0.1" max="20" step="0.1" value="${escapeHtml(hookCharacterLayout.scale)}" />
+                        </div>
+                        <div class="field">
+                          <label>objectFit</label>
+                          <select name="hook_character_layout_objectFit" data-scope="scene">
+                            <option value="contain"${hookCharacterLayout.objectFit === "contain" ? " selected" : ""}>contain</option>
+                            <option value="cover"${hookCharacterLayout.objectFit === "cover" ? " selected" : ""}>cover</option>
+                            <option value="fill"${hookCharacterLayout.objectFit === "fill" ? " selected" : ""}>fill</option>
+                          </select>
+                        </div>
+                        <div class="field">
+                          <label>objectPosition</label>
+                          <input name="hook_character_layout_objectPosition" data-scope="scene" type="text" value="${escapeHtml(hookCharacterLayout.objectPosition)}" />
+                        </div>
                       </div>
                     </div>
                   </details>
@@ -4124,10 +4154,9 @@
             left_diff_images: normalizeStringList(scene.left_diff_images || []),
             right_diff_images: normalizeStringList(scene.right_diff_images || []),
             hook_diff_images: normalizeStringList(scene.hook_diff_images || []),
-            hook_texts: deepClone(scene.hook_texts || {}),
-            hook_text_styles: deepClone(scene.hook_text_styles || {}),
+            hook_texts: normalizeHookTexts(scene.hook_texts || {}),
+            hook_text_styles: normalizeHookTextStyles(scene.hook_text_styles || {}),
             hook_character_layout: deepClone(scene.hook_character_layout || HOOK_CHARACTER_LAYOUT_DEFAULTS),
-            hook_finalize_to_dialog: !!scene.hook_finalize_to_dialog,
             grayscale_filter: scene.grayscale_filter === "on" ? "on" : "off"
           };
           (scene.sub_scenes || []).forEach((sub) => {
@@ -4222,10 +4251,9 @@
             left_diff_images: Array.isArray(sceneConf.left_diff_images) ? normalizeStringList(sceneConf.left_diff_images) : scene.left_diff_images,
             right_diff_images: Array.isArray(sceneConf.right_diff_images) ? normalizeStringList(sceneConf.right_diff_images) : scene.right_diff_images,
             hook_diff_images: Array.isArray(sceneConf.hook_diff_images) ? normalizeStringList(sceneConf.hook_diff_images) : scene.hook_diff_images,
-            hook_texts: sceneConf.hook_texts && typeof sceneConf.hook_texts === "object" ? deepClone(sceneConf.hook_texts) : scene.hook_texts,
-            hook_text_styles: sceneConf.hook_text_styles && typeof sceneConf.hook_text_styles === "object" ? deepClone(sceneConf.hook_text_styles) : scene.hook_text_styles,
+            hook_texts: sceneConf.hook_texts && typeof sceneConf.hook_texts === "object" ? normalizeHookTexts(sceneConf.hook_texts) : normalizeHookTexts(scene.hook_texts || {}),
+            hook_text_styles: sceneConf.hook_text_styles && typeof sceneConf.hook_text_styles === "object" ? normalizeHookTextStyles(sceneConf.hook_text_styles) : normalizeHookTextStyles(scene.hook_text_styles || {}),
             hook_character_layout: sceneConf.hook_character_layout && typeof sceneConf.hook_character_layout === "object" ? deepClone(sceneConf.hook_character_layout) : scene.hook_character_layout,
-            hook_finalize_to_dialog: typeof sceneConf.hook_finalize_to_dialog === "boolean" ? sceneConf.hook_finalize_to_dialog : scene.hook_finalize_to_dialog,
             grayscale_filter: sceneConf.grayscale_filter === "on" ? "on" : scene.grayscale_filter,
             sub_scenes: (scene.sub_scenes || []).map((sub) => {
               const subConf = saved[sub.sub_scene_id] || {};
@@ -4255,7 +4283,10 @@
 
       const loadSpec = (spec, label, fileName = "", options = {}) => {
         const preserveManualHook = !!options.preserveManualHook;
-        const savedSettings = settingsFromStorage();
+        const preferDraftHookVoice = !!options.preferDraftHookVoice;
+        const savedSettings = preferDraftHookVoice
+          ? preferDraftHookVoiceSettings(settingsFromStorage())
+          : settingsFromStorage();
         const normalizedSpec = normalizeSpecForScenesSoT(
           spec,
           preserveManualHook ? shiftSavedSettingsForDraftScenes(savedSettings) : savedSettings
@@ -4297,7 +4328,7 @@
         el.fpsInput.value = String(state.fps);
         el.timelineDurationInput.value = String(state.timelineDurationFrames);
         renderAll();
-        setStatus(`${label} を読み込みました${preserveManualHook ? "（Scene1 Hookは保持し、draftはScene2以降へ配置）" : ""}。`, "ok");
+        setStatus(`${label} を読み込みました${preserveManualHook ? "（Scene1 Hookは保持し、draftはScene2以降へ配置）" : ""}${preferDraftHookVoice ? "（Scene1 Hookのvoiceはdraft優先）" : ""}。`, "ok");
         updateProjectControls();
       };
 
@@ -4396,7 +4427,7 @@
           const spec = await readJson(renderHandle);
           state.selectedProjectId = projectId;
           await refreshProjectSlideFileCatalog(projectId, {render: false});
-          loadSpec(spec, `projects/${projectId}/outputs/video/${loadedName}`, loadedName, {preserveManualHook: true});
+          loadSpec(spec, `projects/${projectId}/outputs/video/${loadedName}`, loadedName, {preferDraftHookVoice: true});
         } catch (error) {
           setStatus(error && error.message ? error.message : "render draft JSON の読み込みに失敗しました。", "error");
         } finally {
@@ -4494,15 +4525,13 @@
         const subRow = target.closest(".sub-row");
         const subKey = subRow ? subRow.getAttribute("data-sub-key") : "";
 
+        let timelineRelayAnchor = null;
         state.scenes = state.scenes.map((scene) => {
           if ((scene.key || scene.scene_id) !== sceneKey) return scene;
 
           if (subKey) {
-            let editedSubIndex = -1;
-            let shouldRelaySubTime = false;
-            const nextSubScenes = (scene.sub_scenes || []).map((sub, subIndex) => {
+            const nextSubScenes = (scene.sub_scenes || []).map((sub) => {
               if ((sub.key || sub.sub_scene_id) !== subKey) return sub;
-              editedSubIndex = subIndex;
               if (fieldName === "screen_text") {
                 const screenText = String(target.value || "");
                 if (!screenText.trim()) return null;
@@ -4516,26 +4545,26 @@
                 return {...sub, display_mode: normalizeDisplayMode(target.value)};
               }
               if (fieldName === "start_frame") {
-                shouldRelaySubTime = true;
+                timelineRelayAnchor = {mode: "manual_start", subKey};
                 return withFrameTiming(sub, target.value, subDurationFrames(sub, 1));
               }
               if (fieldName === "duration_frames") {
-                shouldRelaySubTime = true;
+                timelineRelayAnchor = {mode: "duration", subKey};
                 return withFrameTiming(sub, subStartFrame(sub), target.value);
               }
               if (fieldName === "start_sec") {
-                shouldRelaySubTime = true;
+                timelineRelayAnchor = {mode: "manual_start", subKey};
                 return withFrameTiming(sub, secToFrame(normalizeSubSceneStart(target.value, sub.start_sec)), subDurationFrames(sub, 1));
               }
               if (fieldName === "duration_sec") {
-                shouldRelaySubTime = true;
+                timelineRelayAnchor = {mode: "duration", subKey};
                 return withFrameTiming(sub, subStartFrame(sub), secToFrame(normalizeSubSceneDuration(target.value, sub.duration_sec)));
               }
               return sub;
             }).filter(Boolean);
             return {
               ...scene,
-              sub_scenes: shouldRelaySubTime ? relayNextSubSceneStart(nextSubScenes, editedSubIndex) : nextSubScenes
+              sub_scenes: nextSubScenes
             };
           }
 
@@ -4636,43 +4665,36 @@
             const hook2 = fieldName === "hook_character_diff_2" ? target.value : card.querySelector('[name="hook_character_diff_2"]')?.value;
             return {...scene, hook_diff_images: normalizeStringList([hook1, hook2])};
           }
-          if (fieldName === "hook_finalize_to_dialog") {
-            return {...scene, hook_finalize_to_dialog: !!target.checked};
+          if (fieldName.indexOf("hook_character_layout_") === 0) {
+            const layout = resolveHookCharacterLayout(scene);
+            const key = fieldName.replace("hook_character_layout_", "");
+            if (key === "enabled") {
+              layout.enabled = !!target.checked;
+            } else if (key === "x" || key === "y") {
+              layout[key] = normalizeFrame(target.value, HOOK_CHARACTER_LAYOUT_DEFAULTS[key]);
+            } else if (key === "width" || key === "height") {
+              layout[key] = Math.max(1, normalizeFrame(target.value, HOOK_CHARACTER_LAYOUT_DEFAULTS[key]));
+            } else if (key === "scale") {
+              const scale = toNum(target.value, HOOK_CHARACTER_LAYOUT_DEFAULTS.scale);
+              layout.scale = Number.isFinite(scale) ? Math.max(0.1, Math.min(20, scale)) : HOOK_CHARACTER_LAYOUT_DEFAULTS.scale;
+            } else if (key === "objectFit") {
+              layout.objectFit = ["contain", "cover", "fill"].includes(target.value) ? target.value : HOOK_CHARACTER_LAYOUT_DEFAULTS.objectFit;
+            } else if (key === "objectPosition") {
+              layout.objectPosition = String(target.value || HOOK_CHARACTER_LAYOUT_DEFAULTS.objectPosition);
+            }
+            return {...scene, hook_character_layout: layout};
           }
-          if (fieldName === "hook_top_text" || fieldName === "hook_main_text" || fieldName === "hook_sub_text" || fieldName === "hook_bubble_text") {
-            const hookTexts = {...(scene.hook_texts || {})};
-            if (fieldName === "hook_top_text") hookTexts.top = String(target.value || "");
-            if (fieldName === "hook_main_text") hookTexts.main = String(target.value || "");
-            if (fieldName === "hook_sub_text") hookTexts.sub = String(target.value || "");
-            if (fieldName === "hook_bubble_text") hookTexts.bubble = String(target.value || "");
+          if (fieldName === "hook_bubble_text") {
+            const hookTexts = normalizeHookTexts(scene.hook_texts || {});
+            hookTexts.bubble = String(target.value || "");
             return {...scene, hook_texts: hookTexts};
           }
           if (fieldName === "hook_bubble_font_size") {
-            const hookTextStyles = deepClone(scene.hook_text_styles || HOOK_TEXT_STYLE_DEFAULTS);
+            const hookTextStyles = normalizeHookTextStyles(scene.hook_text_styles || HOOK_TEXT_STYLE_DEFAULTS);
             hookTextStyles.bubble = {
               ...(hookTextStyles.bubble || HOOK_TEXT_STYLE_DEFAULTS.bubble),
               font_size: normalizeHookFontSize(target.value, HOOK_TEXT_STYLE_DEFAULTS.bubble.font_size)
             };
-            return {...scene, hook_text_styles: hookTextStyles};
-          }
-          if (/^hook_(top|main|sub)_(font_size|fill_color|outline_color|outline_scale)$/.test(fieldName)) {
-            const match = fieldName.match(/^hook_(top|main|sub)_(font_size|fill_color|outline_color|outline_scale)$/);
-            const layer = match ? match[1] : "top";
-            const styleKey = match ? match[2] : "fill_color";
-            const hookTextStyles = deepClone(scene.hook_text_styles || HOOK_TEXT_STYLE_DEFAULTS);
-            const fallbackLayer = HOOK_TEXT_STYLE_DEFAULTS[layer] || HOOK_TEXT_STYLE_DEFAULTS.top;
-            hookTextStyles[layer] = {
-              ...(hookTextStyles[layer] || fallbackLayer)
-            };
-            if (styleKey === "font_size") {
-              hookTextStyles[layer].font_size = normalizeHookFontSize(target.value, fallbackLayer.font_size);
-            } else if (styleKey === "fill_color") {
-              hookTextStyles[layer].fill_color = normalizeColorHex(target.value, fallbackLayer.fill_color);
-            } else if (styleKey === "outline_color") {
-              hookTextStyles[layer].outline_color = normalizeHookOutlineColor(target.value, fallbackLayer.outline_color);
-            } else if (styleKey === "outline_scale") {
-              hookTextStyles[layer].outline_scale = normalizeHookOutlineScale(target.value, fallbackLayer.outline_scale);
-            }
             return {...scene, hook_text_styles: hookTextStyles};
           }
           if (fieldName.indexOf("visual_") === 0) {
@@ -4685,6 +4707,7 @@
               visual_character_right: "character_right",
               visual_hook_background: "hook_background",
               visual_hook_character: "hook_character",
+              visual_hook_bar: "hook_bar",
               visual_hook_bubble: "hook_bubble"
             };
             const mapped = visualKeyMap[fieldName];
@@ -4699,6 +4722,9 @@
           }
           return scene;
         });
+        if (timelineRelayAnchor) {
+          state.scenes = relaySceneTimelineFrames(state.scenes, timelineRelayAnchor);
+        }
 
         renderAll();
       };
@@ -4755,6 +4781,24 @@
 
         renderAll();
         setStatus(`Scene 2の画像構成をScene 3以降の通常scene ${appliedCount}件へ反映しました。`, "ok");
+      };
+
+      const applyHookCharacterLayoutPreset = (sceneKey) => {
+        let applied = false;
+        state.scenes = state.scenes.map((scene) => {
+          if ((scene.key || scene.scene_id) !== sceneKey) return scene;
+          applied = true;
+          return {
+            ...scene,
+            hook_character_layout: deepClone(HOOK_CHARACTER_LAYOUT_PRESET)
+          };
+        });
+        if (!applied) {
+          setStatus("HOOKキャラ配置の反映対象sceneが見つかりません。", "error");
+          return;
+        }
+        renderAll();
+        setStatus("HOOKキャラ配置プリセットを上書きしました。", "ok");
       };
 
       const copyVoiceBySceneKey = async (key) => {
@@ -5011,6 +5055,13 @@
         const applyScene2VisualsButton = event.target.closest(".apply-scene2-visuals-btn");
         if (applyScene2VisualsButton) {
           applyScene2VisualAssetsToFollowingScenes();
+          return;
+        }
+
+        const hookCharacterLayoutPresetButton = event.target.closest(".apply-hook-character-layout-preset-btn");
+        if (hookCharacterLayoutPresetButton) {
+          const sceneKey = hookCharacterLayoutPresetButton.getAttribute("data-scene-key");
+          if (sceneKey) applyHookCharacterLayoutPreset(sceneKey);
           return;
         }
 

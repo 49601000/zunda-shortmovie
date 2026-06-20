@@ -405,6 +405,41 @@
       transition: width 180ms ease;
     }
 
+    .commandCard {
+      display: grid;
+      gap: 10px;
+    }
+
+    .commandBlock {
+      display: grid;
+      gap: 6px;
+      padding: 11px 12px;
+      border: 1px solid var(--line-soft);
+      border-radius: 10px;
+      background: rgba(8, 20, 30, 0.52);
+      min-width: 0;
+    }
+
+    .commandLabel {
+      color: var(--sub);
+      font-size: 0.76rem;
+      font-weight: 800;
+    }
+
+    .commandValue {
+      margin: 0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(5, 14, 22, 0.88);
+      color: #dff9f2;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.8rem;
+      line-height: 1.55;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
     .hidden { display: none; }
 
     @media (max-width: 880px) {
@@ -527,13 +562,35 @@
         </section>
       </div>
 
-      <section class="card stack">
-        <div class="toolbar">
-          <h2>vvproj preview</h2>
-          <button id="copyJsonBtn" type="button" class="ghost" disabled>JSONコピー</button>
-        </div>
-        <textarea id="outputText" spellcheck="false" placeholder="生成後に .vvproj のJSONが入ります。"></textarea>
-      </section>
+      <div class="stack">
+        <section class="card stack">
+          <div class="toolbar">
+            <h2>vvproj preview</h2>
+            <button id="copyJsonBtn" type="button" class="ghost" disabled>JSONコピー</button>
+          </div>
+          <textarea id="outputText" spellcheck="false" placeholder="生成後に .vvproj のJSONが入ります。"></textarea>
+        </section>
+
+        <section class="card commandCard">
+          <div class="toolbar">
+            <h2>wavリネーム補助</h2>
+            <div class="row">
+              <button id="copyRenameDryRunBtn" type="button" class="ghost">dry-runをコピー</button>
+              <button id="copyRenameApplyBtn" type="button" class="ghost">本番コマンドをコピー</button>
+            </div>
+          </div>
+          <p>VOICEVOXの書き出しが <code>001_...</code> の詰め連番になったとき、<code>render-final-v01.json</code> の有効scene番号に合わせて <code>seg_001.wav</code> 形式へそろえます。JSON読込後は <code>project_id</code> を使ってコマンドを自動更新します。</p>
+          <div class="commandBlock">
+            <div class="commandLabel">確認だけ</div>
+            <pre class="commandValue" id="renameDryRunCommand">npm run voicevox:rename -- --project-id 0000 --dry-run</pre>
+          </div>
+          <div class="commandBlock">
+            <div class="commandLabel">本番適用</div>
+            <pre class="commandValue" id="renameApplyCommand">npm run voicevox:rename -- --project-id 0000</pre>
+          </div>
+          <p>まず <code>--dry-run</code> で対応表を見て、問題なければ本番コマンドを実行します。既存の <code>seg_XXX.wav</code> がある場合や、wav数と有効scene数が合わない場合は停止します。</p>
+        </section>
+      </div>
     </section>
   </main>
 
@@ -572,6 +629,8 @@
       copyProxyCommandBtn: document.getElementById("copyProxyCommandBtn"),
       testEngineBtn: document.getElementById("testEngineBtn"),
       copyJsonBtn: document.getElementById("copyJsonBtn"),
+      copyRenameDryRunBtn: document.getElementById("copyRenameDryRunBtn"),
+      copyRenameApplyBtn: document.getElementById("copyRenameApplyBtn"),
       statusbar: document.getElementById("statusbar"),
       progressBar: document.getElementById("progressBar"),
       projectIdMetric: document.getElementById("projectIdMetric"),
@@ -579,7 +638,9 @@
       sceneMetric: document.getElementById("sceneMetric"),
       targetMetric: document.getElementById("targetMetric"),
       sceneList: document.getElementById("sceneList"),
-      outputText: document.getElementById("outputText")
+      outputText: document.getElementById("outputText"),
+      renameDryRunCommand: document.getElementById("renameDryRunCommand"),
+      renameApplyCommand: document.getElementById("renameApplyCommand")
     };
 
     const state = {
@@ -606,6 +667,30 @@
     };
 
     const pad3 = (value) => String(value).padStart(3, "0");
+
+    const getProjectIdForCommand = () => {
+      const raw = String(
+        state.renderSpec?.project_id ||
+        state.renderSpec?.projectId ||
+        el.projectIdMetric.textContent ||
+        ""
+      ).trim();
+      if (!raw || raw === "-") return "0000";
+      if (/^\d+$/.test(raw)) return raw.padStart(4, "0");
+      return raw;
+    };
+
+    const buildRenameCommand = (dryRun) => {
+      const projectId = getProjectIdForCommand();
+      return dryRun
+        ? `npm run voicevox:rename -- --project-id ${projectId} --dry-run`
+        : `npm run voicevox:rename -- --project-id ${projectId}`;
+    };
+
+    const renderRenameCommands = () => {
+      el.renameDryRunCommand.textContent = buildRenameCommand(true);
+      el.renameApplyCommand.textContent = buildRenameCommand(false);
+    };
 
     const deepClone = (value) => JSON.parse(JSON.stringify(value));
 
@@ -758,10 +843,11 @@
       el.sceneMetric.textContent = String(scenes.length);
       el.targetMetric.textContent = String(targets.length);
 
-      const title = String(spec.title || spec.project_id || "").trim();
-      if (title && (!el.filenameInput.dataset.touched || !el.filenameInput.value.trim())) {
-        el.filenameInput.value = safeFilename(title, "voicevox-project.vvproj");
+      const projectFilename = String(spec.project_id || spec.projectId || spec.title || "").trim();
+      if (projectFilename && (!el.filenameInput.dataset.touched || !el.filenameInput.value.trim())) {
+        el.filenameInput.value = safeFilename(projectFilename, "voicevox-project.vvproj");
       }
+      renderRenameCommands();
     };
 
     const renderSceneList = () => {
@@ -877,8 +963,8 @@
       };
       const consonant = pick(mora?.consonant, undefined);
       const consonantLength = pick(mora?.consonantLength, mora?.consonant_length, undefined);
-      if (consonant !== undefined) next.consonant = consonant;
-      if (consonantLength !== undefined) next.consonantLength = consonantLength;
+      if (consonant !== undefined && consonant !== null) next.consonant = consonant;
+      if (consonantLength !== undefined && consonantLength !== null) next.consonantLength = consonantLength;
       return next;
     };
 
@@ -1173,6 +1259,24 @@
       }
     });
 
+    el.copyRenameDryRunBtn.addEventListener("click", async () => {
+      try {
+        await copyTextToClipboard(el.renameDryRunCommand.textContent || buildRenameCommand(true));
+        setStatus("voicevox:rename dry-run コマンドをコピーしました。", "ok");
+      } catch {
+        setStatus("dry-run コマンドのコピーに失敗しました。手動でコピーしてください。", "danger");
+      }
+    });
+
+    el.copyRenameApplyBtn.addEventListener("click", async () => {
+      try {
+        await copyTextToClipboard(el.renameApplyCommand.textContent || buildRenameCommand(false));
+        setStatus("voicevox:rename 本番コマンドをコピーしました。", "ok");
+      } catch {
+        setStatus("本番コマンドのコピーに失敗しました。手動でコピーしてください。", "danger");
+      }
+    });
+
     [
       el.enabledOnlyInput,
       el.skipEmptyInput,
@@ -1194,6 +1298,8 @@
       state.generatedText = el.outputText.value;
       enableVvprojActions();
     });
+
+    renderRenameCommands();
   </script>
 </body>
 </html>
