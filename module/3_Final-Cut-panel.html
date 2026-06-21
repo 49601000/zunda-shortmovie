@@ -786,6 +786,7 @@
         hook_bar: [],
         hook_bubble: []
       };
+      const DEFAULT_DIALOG_BOX_ASSET = SCENE_ASSET_DEFAULTS.dialog_box[0];
       const SHARED_ASSET_SUBDIR_DEFAULTS = {
         background: "images/backgrounds",
         bgm: "audio/bgm",
@@ -802,6 +803,8 @@
         line_break_mode: "auto",
         line_chars: 18
       };
+      const HOOK_SCREEN_TEXT_FONT_SIZE_DEFAULT = 72;
+      const HOOK_SCREEN_TEXT_OFFSET_Y = -25;
       const SCREEN_TEXT_COLOR_PRESETS = [
         { label: "白（標準）", value: "#ffffff" },
         { label: "ずんだもん（ノーマル）", value: "#86d654" },
@@ -816,11 +819,11 @@
       };
       const HOOK_CHARACTER_LAYOUT_PRESET = {
         enabled: true,
-        x: 225,
-        y: 730,
+        x: 480,
+        y: 1075,
         width: 800,
         height: 820,
-        scale: 2.55,
+        scale: 1.33,
         objectFit: "contain",
         objectPosition: "center top"
       };
@@ -2546,6 +2549,12 @@
         return Number(sceneIndex) === 0 || isHookScene(scene);
       };
 
+      const getScreenTextFontSizeDefault = (scene, sceneIndex = -1) => {
+        return isHookPictureScene(scene, sceneIndex)
+          ? HOOK_SCREEN_TEXT_FONT_SIZE_DEFAULT
+          : SCREEN_TEXT_STYLE_DEFAULTS.font_size;
+      };
+
       const normalizeSceneEffectList = (effects) => {
         const out = [];
         const seen = new Set();
@@ -2594,7 +2603,7 @@
           background: normalizeImageRef(manual.background || composition.background?.image_path || ""),
           slide: normalizeSlideAssetRef(manual.slide || composition.slide_area?.image_path || ""),
           monolith: normalizeImageRef(manual.monolith || composition.monolith?.image_path || ""),
-          dialog_box: normalizeImageRef(manual.dialog_box || composition.dialog_box?.image_path || ""),
+          dialog_box: normalizeImageRef(manual.dialog_box || composition.dialog_box?.image_path || DEFAULT_DIALOG_BOX_ASSET),
           character_left: normalizeImageRef(manual.character_left || chars.left?.image_path || ""),
           character_right: normalizeImageRef(manual.character_right || chars.right?.image_path || ""),
           hook_background: normalizeImageRef(manual.hook_background || hook.background?.image_path || ""),
@@ -2885,6 +2894,7 @@
           ? saved.visual_assets
           : buildDefaultVisualAssets(raw);
         visualAssets.slide = normalizeSlideAssetRef(visualAssets.slide || "");
+        visualAssets.dialog_box = normalizeImageRef(visualAssets.dialog_box || DEFAULT_DIALOG_BOX_ASSET);
         const hookTexts = saved.hook_texts && typeof saved.hook_texts === "object"
           ? normalizeHookTexts(saved.hook_texts)
           : buildDefaultHookTexts(raw);
@@ -2910,6 +2920,13 @@
         const normalizedRole = sceneIndex === 0
           ? "hook"
           : String(raw.role || raw.scene_type || "normal");
+        const screenTextFontSizeDefault = getScreenTextFontSizeDefault(
+          { scene_type: normalizedSceneType, role: normalizedRole },
+          sceneIndex
+        );
+        const sourceScreenTextFontSize = isHookPictureScene({ scene_type: normalizedSceneType, role: normalizedRole }, sceneIndex)
+          ? undefined
+          : dialog.screen_text_font_size ?? raw.screen_text_font_size;
 
         return {
           key: sceneId,
@@ -2935,8 +2952,8 @@
           voicevox_style_id: Number(voicevoxStyle.id) || speakerId,
           screen_text: typeof saved.screen_text === "string" ? saved.screen_text : getScreenTextFromSceneLike(raw),
           screen_text_font_size: normalizeScreenTextFontSize(
-            saved.screen_text_font_size ?? dialog.screen_text_font_size ?? raw.screen_text_font_size,
-            SCREEN_TEXT_STYLE_DEFAULTS.font_size
+            saved.screen_text_font_size ?? sourceScreenTextFontSize,
+            screenTextFontSizeDefault
           ),
           screen_text_font_family: String(saved.screen_text_font_family || dialog.screen_text_font_family || raw.font_family || SCREEN_TEXT_STYLE_DEFAULTS.font_family),
           screen_text_color: normalizeScreenTextColor(saved.screen_text_color || dialog.screen_text_color || raw.text_color || SCREEN_TEXT_STYLE_DEFAULTS.color, SCREEN_TEXT_STYLE_DEFAULTS.color),
@@ -3362,6 +3379,7 @@
           const voiceControl = normalizeVoiceControl(scene.voice_control || {});
           voiceControl.speaker_id = Number(style.id) || speakerId;
           const visualAssets = scene.visual_assets && typeof scene.visual_assets === "object" ? scene.visual_assets : {};
+          const screenTextFontSizeDefault = getScreenTextFontSizeDefault(scene, sceneIndex);
           const outputVisualAssets = {
             background: stripCommonAssetValue(visualAssets.background || "", commonBackground),
             slide: normalizeSlideAssetRef(visualAssets.slide || ""),
@@ -3375,11 +3393,12 @@
             hook_bubble: normalizeImageRef(visualAssets.hook_bubble || "")
           };
           const screenText = String(scene.screen_text || "");
-          const screenTextFontSize = normalizeScreenTextFontSize(scene.screen_text_font_size, SCREEN_TEXT_STYLE_DEFAULTS.font_size);
-          const screenTextFontFamily = String(scene.screen_text_font_family || SCREEN_TEXT_STYLE_DEFAULTS.font_family);
-          const screenTextColor = normalizeScreenTextColor(scene.screen_text_color || SCREEN_TEXT_STYLE_DEFAULTS.color, SCREEN_TEXT_STYLE_DEFAULTS.color);
-          const screenTextLineBreakMode = normalizeLineBreakMode(scene.screen_text_line_break_mode || SCREEN_TEXT_STYLE_DEFAULTS.line_break_mode);
-          const screenTextLineChars = normalizePx(scene.screen_text_line_chars, SCREEN_TEXT_STYLE_DEFAULTS.line_chars, 1, 120);
+          const screenTextFontSize = normalizeScreenTextFontSize(scene.screen_text_font_size, screenTextFontSizeDefault);
+          const sceneDialog = scene.dialog && typeof scene.dialog === "object" ? scene.dialog : {};
+          const screenTextFontFamily = String(scene.screen_text_font_family || scene.font_family || sceneDialog.screen_text_font_family || SCREEN_TEXT_STYLE_DEFAULTS.font_family);
+          const screenTextColor = normalizeScreenTextColor(scene.screen_text_color || scene.text_color || sceneDialog.screen_text_color || SCREEN_TEXT_STYLE_DEFAULTS.color, SCREEN_TEXT_STYLE_DEFAULTS.color);
+          const screenTextLineBreakMode = normalizeLineBreakMode(scene.screen_text_line_break_mode || scene.line_break_mode || sceneDialog.screen_text_line_break_mode || SCREEN_TEXT_STYLE_DEFAULTS.line_break_mode);
+          const screenTextLineChars = normalizePx(scene.screen_text_line_chars ?? scene.line_chars ?? sceneDialog.screen_text_line_chars, SCREEN_TEXT_STYLE_DEFAULTS.line_chars, 1, 120);
           const backgroundOverride = scene.use_background_override ? normalizeBackgroundRef(scene.background_override || "") : "";
           const hookTexts = scene.hook_texts && typeof scene.hook_texts === "object" ? normalizeHookTexts(scene.hook_texts) : {};
           const hookTextStyles = scene.hook_text_styles && typeof scene.hook_text_styles === "object" ? normalizeHookTextStyles(scene.hook_text_styles) : deepClone(HOOK_TEXT_STYLE_DEFAULTS);
@@ -3420,6 +3439,7 @@
             text_color: screenTextColor,
             line_break_mode: screenTextLineBreakMode,
             line_chars: screenTextLineChars,
+            ...(hookPictureScene ? { screen_text_offset_y: HOOK_SCREEN_TEXT_OFFSET_Y } : {}),
             visual_assets: outputVisualAssets,
             composition: {
               background: { image_path: outputVisualAssets.background },
@@ -3455,6 +3475,7 @@
                 screen_text: screenText,
                 display_mode: normalizeDisplayMode(sub.display_mode),
                 char_count: charLen(screenText),
+                ...(hookPictureScene ? { screen_text_offset_y: HOOK_SCREEN_TEXT_OFFSET_Y } : {}),
                 start_frame: startFrame,
                 duration_frames: durationFrames,
                 end_frame: startFrame + durationFrames,
@@ -3491,8 +3512,21 @@
 
       const flattenScenesToSegments = (scenes) => {
         const flat = [];
-        cleanScenesForOutput(scenes).forEach((scene) => {
-          scene.sub_scenes.forEach((sub) => {
+        const normalizedScenes = (scenes || []).some((scene) => Array.isArray(scene?.sub_scenes) && (scene?.dialog || scene?.composition || scene?.text_color))
+          ? scenes
+          : cleanScenesForOutput(scenes);
+        const resolveSegmentAudioSrc = (scene, sceneIndex) => {
+          const rawAudioSrc = String(scene?.audioSrc || scene?.audio_src || scene?.audio_file || "").trim();
+          if (rawAudioSrc) return rawAudioSrc;
+          const sceneId = String(scene?.scene_id || scene?.id || "").trim();
+          const matched = sceneId.match(/(\d+)$/);
+          const audioIndex = matched ? Number(matched[1]) : sceneIndex + 1;
+          if (!Number.isFinite(audioIndex) || audioIndex < 1) return "";
+          return `/audio/seg_${String(Math.round(audioIndex)).padStart(3, "0")}.wav`;
+        };
+        normalizedScenes.forEach((scene, sceneIndex) => {
+          const audioSrc = resolveSegmentAudioSrc(scene, sceneIndex);
+          scene.sub_scenes.forEach((sub, subIndex) => {
             const startFrame = subStartFrame(sub);
             const durationFrames = subDurationFrames(sub, 0);
             const start = frameToSec(startFrame);
@@ -3502,14 +3536,34 @@
               sub_scene_id: sub.sub_scene_id,
               scene_id: scene.scene_id,
               slide_id: scene.slide_id,
+              scene_type: scene.scene_type,
+              role: scene.role || scene.scene_type,
+              event: scene.event,
               speaker: scene.speaker,
               screen_text: sub.screen_text,
+              text_color: scene.text_color,
+              screen_text_font_size: scene.screen_text_font_size,
+              font_family: scene.font_family,
+              line_break_mode: scene.line_break_mode,
+              line_chars: scene.line_chars,
               voice: scene.voice,
               voice_override: scene.voice_override,
               speakerId: scene.speakerId,
               voicevox_style_name: scene.voicevox_style_name,
               voicevox_style_id: scene.voicevox_style_id,
               voice_speed: scene.voice_speed,
+              character_id: scene.character_id,
+              background_override: scene.background_override,
+              scene_assets: deepClone(scene.visual_assets || {}),
+              effects: deepClone(scene.effects || []),
+              ...(scene.lip_sync ? { lip_sync: deepClone(scene.lip_sync) } : {}),
+              ...(scene.hook_visual ? { hook_visual: deepClone(scene.hook_visual) } : {}),
+              ...(String(scene.role || scene.scene_type || "").toLowerCase() === "hook" ? {
+                screen_text_promote_layer: true,
+                screen_text_anchor_y_ratio: 0.933
+              } : {}),
+              ...(scene.screen_text_offset_y != null ? { screen_text_offset_y: scene.screen_text_offset_y } : {}),
+              ...(subIndex === 0 && audioSrc ? { audioSrc } : {}),
               start_frame: startFrame,
               duration_frames: durationFrames,
               end_frame: startFrame + durationFrames,
@@ -3609,7 +3663,7 @@
             return acc;
           }, {})
         };
-        delete spec.segments;
+        spec.segments = flatSegments;
         delete spec.sub_scenes;
         delete spec.timeline;
         delete spec.voices;
@@ -3627,9 +3681,7 @@
         if (!spec.video_spec.audio) spec.video_spec.audio = {};
         if (!spec.video_spec.style) spec.video_spec.style = {};
         if (!spec.video_spec.format) spec.video_spec.format = {};
-        if (Object.prototype.hasOwnProperty.call(spec.video_spec, "segments")) {
-          delete spec.video_spec.segments;
-        }
+        spec.video_spec.segments = deepClone(flatSegments);
         spec.video_spec.format.fps = Math.max(1, fps);
         spec.video_spec.format.duration = Number(durationSec.toFixed(3));
         spec.video_spec.format.durationInFrames = durationInFrames;
@@ -3800,6 +3852,7 @@
           const hookDiff2 = (scene.hook_diff_images || [])[1] || "";
           const hookCharacterLayout = resolveHookCharacterLayout(scene);
           const ttsPreview = resolvePreviewVoiceText(scene, state.transformMode);
+          const screenTextFontSizeDefault = getScreenTextFontSizeDefault(scene, i);
           const rows = (scene.sub_scenes || []).map((sub) => {
             const timed = normalizeSubSceneFrameTiming(sub);
             const startFrame = subStartFrame(timed);
@@ -3918,7 +3971,7 @@
                     <div class="grid">
                       <div class="field">
                         <label>文字サイズ(px)</label>
-                        <input name="screen_text_font_size" data-scope="scene" type="number" min="12" max="200" step="1" value="${escapeHtml(scene.screen_text_font_size || SCREEN_TEXT_STYLE_DEFAULTS.font_size)}" />
+                        <input name="screen_text_font_size" data-scope="scene" type="number" min="12" max="200" step="1" value="${escapeHtml(scene.screen_text_font_size || screenTextFontSizeDefault)}" />
                       </div>
                       <div class="field span-2">
                         <label>フォント</label>
@@ -4130,6 +4183,7 @@
         const payload = {};
         state.scenes.forEach((scene, sceneIndex) => {
           const hookPictureScene = isHookPictureScene(scene, sceneIndex);
+          const screenTextFontSizeDefault = getScreenTextFontSizeDefault(scene, sceneIndex);
           const savedVisualAssets = deepClone(scene.visual_assets || {});
           savedVisualAssets.slide = normalizeSlideAssetRef(savedVisualAssets.slide || "");
           payload[scene.scene_id] = {
@@ -4142,7 +4196,7 @@
             character_id: canonicalCharacterId(scene.character_id),
             voicevox_style_id: Number(scene.voicevox_style_id) || undefined,
             screen_text: typeof scene.screen_text === "string" ? scene.screen_text : "",
-            screen_text_font_size: normalizeScreenTextFontSize(scene.screen_text_font_size, SCREEN_TEXT_STYLE_DEFAULTS.font_size),
+            screen_text_font_size: normalizeScreenTextFontSize(scene.screen_text_font_size, screenTextFontSizeDefault),
             screen_text_font_family: String(scene.screen_text_font_family || SCREEN_TEXT_STYLE_DEFAULTS.font_family),
             screen_text_color: normalizeScreenTextColor(scene.screen_text_color || SCREEN_TEXT_STYLE_DEFAULTS.color, SCREEN_TEXT_STYLE_DEFAULTS.color),
             screen_text_line_break_mode: normalizeLineBreakMode(scene.screen_text_line_break_mode),
@@ -4220,8 +4274,9 @@
             : state.timelineDurationFrames;
         }
 
-        state.scenes = state.scenes.map((scene) => {
+        state.scenes = state.scenes.map((scene, sceneIndex) => {
           const sceneConf = saved[scene.scene_id] || {};
+          const screenTextFontSizeDefault = getScreenTextFontSizeDefault(scene, sceneIndex);
           return {
             ...scene,
             voice_speed: sceneConf.voice_speed != null ? normalizeSpeed(sceneConf.voice_speed) : scene.voice_speed,
@@ -4233,7 +4288,7 @@
             character_id: sceneConf.character_id != null ? canonicalCharacterId(sceneConf.character_id) : scene.character_id,
             voicevox_style_id: Number.isFinite(Number(sceneConf.voicevox_style_id)) ? Number(sceneConf.voicevox_style_id) : scene.voicevox_style_id,
             screen_text: typeof sceneConf.screen_text === "string" ? sceneConf.screen_text : scene.screen_text,
-            screen_text_font_size: sceneConf.screen_text_font_size != null ? normalizeScreenTextFontSize(sceneConf.screen_text_font_size, SCREEN_TEXT_STYLE_DEFAULTS.font_size) : scene.screen_text_font_size,
+            screen_text_font_size: sceneConf.screen_text_font_size != null ? normalizeScreenTextFontSize(sceneConf.screen_text_font_size, screenTextFontSizeDefault) : normalizeScreenTextFontSize(scene.screen_text_font_size, screenTextFontSizeDefault),
             screen_text_font_family: typeof sceneConf.screen_text_font_family === "string" ? sceneConf.screen_text_font_family : scene.screen_text_font_family,
             screen_text_color: typeof sceneConf.screen_text_color === "string" ? normalizeScreenTextColor(sceneConf.screen_text_color, SCREEN_TEXT_STYLE_DEFAULTS.color) : scene.screen_text_color,
             screen_text_line_break_mode: sceneConf.screen_text_line_break_mode != null ? normalizeLineBreakMode(sceneConf.screen_text_line_break_mode) : scene.screen_text_line_break_mode,
@@ -4526,8 +4581,9 @@
         const subKey = subRow ? subRow.getAttribute("data-sub-key") : "";
 
         let timelineRelayAnchor = null;
-        state.scenes = state.scenes.map((scene) => {
+        state.scenes = state.scenes.map((scene, sceneIndex) => {
           if ((scene.key || scene.scene_id) !== sceneKey) return scene;
+          const screenTextFontSizeDefault = getScreenTextFontSizeDefault(scene, sceneIndex);
 
           if (subKey) {
             const nextSubScenes = (scene.sub_scenes || []).map((sub) => {
@@ -4620,7 +4676,7 @@
             return {...scene, screen_text: String(target.value || "")};
           }
           if (fieldName === "screen_text_font_size") {
-            return {...scene, screen_text_font_size: normalizeScreenTextFontSize(target.value, SCREEN_TEXT_STYLE_DEFAULTS.font_size)};
+            return {...scene, screen_text_font_size: normalizeScreenTextFontSize(target.value, screenTextFontSizeDefault)};
           }
           if (fieldName === "screen_text_font_family") {
             return {...scene, screen_text_font_family: String(target.value || SCREEN_TEXT_STYLE_DEFAULTS.font_family)};

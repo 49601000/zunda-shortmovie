@@ -343,21 +343,19 @@
 
   <main class="wrap">
     <section class="card hero">
-      <h1>tool1:Hook Viewer Lens</h1>
-      <p>完成済みの会話劇を貼り付けて、ChatGPTに「視聴者目線で刺さる点」を読ませるためのプロンプトを生成します。AI API、JSON読み込み、localStorage、FINAL CUT panel連携は使いません。</p>
+      <h1>tool1:HOOK Viewer Lens v2</h1>
+      <p>会話劇や心理学テーマから「人間のダサさ」を抽出し、めたん命名を軸にYouTube Shorts用HOOKを作るためのプロンプトを生成します。AI API、JSON読み込み、localStorage、FINAL CUT panel連携は使いません。</p>
     </section>
 
     <section class="card">
       <div class="controls">
         <div>
-          <label for="analysisMode">analysis_mode</label>
+          <label for="analysisMode">input_type</label>
           <select id="analysisMode">
-            <option value="viewer_lens">viewer_lens: 視聴者目線で刺さる点を探す</option>
-            <option value="emotion">emotion: 感情トリガーを探す</option>
-            <option value="comment">comment: コメント欄で反応されそうな論点を探す</option>
-            <option value="self_projection">self_projection: 「これ自分やん」と思う点を探す</option>
-            <option value="pain_truth">pain_truth: 痛い真実を探す</option>
-            <option value="hook_candidates">hook_candidates: HOOK候補を作る</option>
+            <option value="conversation">conversation: ずんだもんとめたんの会話</option>
+            <option value="theme">theme: 心理学テーマ</option>
+            <option value="summary">summary: 動画概要</option>
+            <option value="existing_hook">existing_hook: 既存HOOK案</option>
           </select>
         </div>
 
@@ -370,21 +368,21 @@
           <div id="status" class="status" role="status" aria-live="polite"></div>
         </div>
       </div>
-      <div class="hint">生成結果はそのままChatGPT等へ貼り付ける想定です。HOOKを直接量産するより、会話劇を視聴者の目で読み直すための分析依頼に寄せています。</div>
+      <div class="hint">生成結果はそのままChatGPT等へ貼り付ける想定です。心理学用語の説明ではなく、「そういう奴いる」「それ無理ある」と見える人物評HOOKへ変換します。</div>
     </section>
 
     <section class="workspace">
       <div class="card panel">
         <div class="panelHead">
           <div>
-            <h2>raw_conversation</h2>
-            <p>ずんだもん・めたん・天の声の完成済み会話劇を貼り付けます。</p>
+            <h2>source_text</h2>
+            <p>会話劇、心理学テーマ、動画概要、既存HOOK案のいずれかを貼り付けます。</p>
           </div>
         </div>
         <textarea id="rawConversation" spellcheck="false" placeholder="例:
-ずんだもん「また先延ばししてしまったのだ」
-めたん「それ、意志が弱いだけじゃなくて...」
-天の声「人は不安が強いほど、短期的に楽な選択へ逃げやすい」"></textarea>
+ずんだもん「これは失敗じゃないのだ。今回は本気を出してなかっただけなのだ」
+めたん「出た、ノーカン理論」
+天の声「人は自尊心を守るために、失敗の理由を後付けしやすい」"></textarea>
       </div>
 
       <div class="card panel">
@@ -400,52 +398,11 @@
   </main>
 
   <script>
-    const modeGuides = {
-      viewer_lens: [
-        "視聴者が「続き見たい」と思う箇所",
-        "最初の2秒に持ってくるべき違和感",
-        "一番キャッチーなセリフ",
-        "説明ではなく、視聴体験として引っかかる点"
-      ],
-      emotion: [
-        "怒り、後悔、焦り、自己正当化、恥ずかしさなどの感情",
-        "視聴者の防衛反応や共感が起きそうな箇所",
-        "感情が動く前後のセリフ",
-        "強く言いすぎると不正確になる表現の注意点"
-      ],
-      comment: [
-        "コメント欄で割れそうな意見",
-        "ツッコミたくなる点",
-        "自分語りが発生しそうな点",
-        "反論・共感・補足コメントを呼びそうな言い回し"
-      ],
-      self_projection: [
-        "視聴者が「これ自分だ」と思う点",
-        "あるある化できる点",
-        "自分の過去や日常に重ねやすいセリフ",
-        "個人攻撃ではなく自己投影として刺さる表現"
-      ],
-      pain_truth: [
-        "刺さるけど言われたくない真実",
-        "笑えるけど痛い一言",
-        "視聴者が一瞬黙りそうな指摘",
-        "心理学的に断定しすぎず、体験として響く表現"
-      ],
-      hook_candidates: [
-        "冒頭0〜2秒で使えるHOOK案",
-        "短く、強く、説明しすぎない",
-        "できれば15〜25文字程度",
-        "会話劇の中で一番強い違和感や痛点を先に出す"
-      ]
-    };
-
-    const modeNames = {
-      viewer_lens: "視聴者目線で刺さる点を探す",
-      emotion: "感情トリガーを探す",
-      comment: "コメント欄で反応されそうな論点を探す",
-      self_projection: "「これ自分やん」と思う点を探す",
-      pain_truth: "痛い真実を探す",
-      hook_candidates: "HOOK候補を作る"
+    const inputTypeNames = {
+      conversation: "ずんだもんとめたんの会話",
+      theme: "心理学テーマ",
+      summary: "動画概要",
+      existing_hook: "既存HOOK案"
     };
 
     const el = {
@@ -463,45 +420,409 @@
       el.status.className = type ? `status ${type}` : "status";
     }
 
-    function buildPrompt(rawConversation, mode) {
-      const guideLines = (modeGuides[mode] || modeGuides.viewer_lens)
-        .map((item) => `- ${item}`)
-        .join("\n");
-      const modeName = modeNames[mode] || modeNames.viewer_lens;
+    function buildPrompt(rawConversation, inputType) {
+      const inputTypeName = inputTypeNames[inputType] || inputTypeNames.conversation;
 
-      return `あなたは心理学ショート動画の編集者です。
-以下のずんだもん会話劇を、視聴者目線で分析してください。
+      return `# YouTube Shorts HOOK Generator v2
 
-説明の正しさよりも、どこで視聴者の感情が動くかを重視してください。
-ただし心理学的に不正確な断定は避けてください。
-最終的に、FINAL CUT panelへ手打ちするHOOK案の参考にします。
+あなたはYouTube ShortsのHOOK分析・生成担当です。
 
-出力は日本語。
-余計な前置きは不要。
-JSONではなく、自然文と箇条書きで出力してください。
+目的は「心理学用語を説明すること」ではありません。
 
-今回の analysis_mode:
-${mode} - ${modeName}
+目的は、会話やテーマの中に存在する
 
-特に見る分析観点:
-${guideLines}
+- 勘違い
+- 言い訳
+- 強がり
+- 見栄
+- 希望的観測
+- 予防線
 
-共通出力フォーマット:
-1. この会話の一番おいしい点
-2. 視聴者が反応しそうな瞬間
-3. コメントされそうな論点
-4. HOOKに使えそうな短い言葉
-5. FINAL CUTに手打ちするならおすすめのHOOK 3案
+を抽出し、視聴者が
 
-会話劇:
+「そういう奴いるｗ」
+「それ無理あるやろｗ」
+「またやってるｗ」
+
+と思うHOOKへ変換することです。
+
+---
+
+# 入力タイプ
+
+${inputType} - ${inputTypeName}
+
+---
+
+# チャンネル前提
+
+このチャンネルは心理学解説チャンネルではありません。
+ずんだもんキャラチャンネルでもありません。
+
+実際には、
+
+「人間の認知バイアスや勘違いを、ずんだもんというレンズを通して観察するチャンネル」
+
+です。
+
+---
+
+# 最重要思想
+
+ずんだもんは主役ではありません。
+
+ずんだもんは、人間の認知バイアスを拡大して見せるレンズです。
+
+HOOKは「ずんだもんが何を言ったか」ではなく、
+
+「めたんが見抜いている人間のダサさ」
+
+から作ってください。
+
+---
+
+# 視聴者の立ち位置
+
+HOOKでは、視聴者をいきなり当事者席に座らせないでください。
+
+まず視聴者は、
+
+- そういう奴いる
+- それ無理ある
+- また言い訳してる
+- 勘違いしてて草
+- こいつアホやな
+
+という観察者視点・ツッコミ視点で入りたいです。
+
+理想の流れは、
+
+HOOK
+↓
+他人ごととして観察
+↓
+ずんだもんを見る
+↓
+めたんのツッコミで理解
+↓
+最後に「あれ、自分も少しやってるかも」
+
+です。
+
+---
+
+# NG
+
+## NG1: ずんだもんのセリフそのまま
+
+例:
+
+- ボクは特別なのだ！
+- ボクはコミュ力おばけなのだ！
+- ボクは平気なのだ！
+
+## NG2: 心理学用語そのまま
+
+例:
+
+- セルフハンディキャップ
+- 自己高揚バイアス
+- 正常性バイアス
+
+## NG3: 具体状況だけ
+
+例:
+
+- 給料日前カツカツ
+- 社内恋愛
+- FX
+
+状況は素材であり、HOOKの本質ではありません。
+
+---
+
+# 分析手順
+
+入力を読んだら、以下を必ず抽出してください。
+
+## 1. ずんだもんが体現している人間の勘違い
+
+例:
+
+- 希望的観測
+- 根拠なき安心感
+- 自信過剰
+- 言い訳癖
+- 楽観視
+- 都合の良い解釈
+
+## 2. めたんが呆れている理由
+
+例:
+
+- 忠告を聞かない
+- 負けを認めない
+- 根拠がない
+- なぜか自信満々
+- 言い訳している
+
+## 3. 視聴者がツッコミたくなるポイント
+
+例:
+
+- それは無理ある
+- いや勘違いだろ
+- また言い訳してる
+- その自信どこから来た
+- 願望では
+
+## 4. 一言で言うとどんな人か
+
+例:
+
+- 勘違いしてる人
+- 強がる人
+- 予防線を張る人
+- 都合よく考える人
+- 自分だけ特別だと思う人
+
+## 5. 視聴者の立ち位置
+
+以下から判定してください。
+
+- 当事者視点
+- 観察者視点
+- ツッコミ視点
+- 末路観察視点
+
+HOOKは、観察者視点・ツッコミ視点・末路観察視点を優先してください。
+
+## 6. めたん命名
+
+この動画のずんだもんに対して、めたんが皮肉を込めてアダ名を付けるなら何か？
+
+条件:
+
+- 2〜8文字
+- 一瞬で意味が伝わる
+- 少しトゲがある
+- SNSで見たことありそう
+- 心理学用語禁止
+- 学術用語禁止
+- 人間のダサさを要約
+
+まず10個生成してください。
+
+良い例:
+
+- ノーカン理論
+- 願望フィルター
+- 自称エース
+- 脈アリ認定士
+- 根拠ゼロ
+- 都合変換機
+- まだ平気族
+- 無敵理論
+- 勝者宣言
+- 後出し名人
+
+悪い例:
+
+- セルフハンディキャップ
+- 自己高揚バイアス
+- 認知バイアス
+- 楽観視傾向
+- 希望的観測
+
+---
+
+# HOOK生成
+
+## TOP
+
+具体状況を一瞬で伝えてください。
+
+例:
+
+- 寝てないアピール！
+- 勝手に脈アリ判定？
+- そろそろ当たる予感
+- 実質セーフ！？
+- ただしイケメン？
+
+## MAIN
+
+最優先で「めたん命名」を使用してください。
+
+MAINは説明ではありません。
+めたんが付けた皮肉な通称・アダ名です。
+
+理想は、視聴者が「それｗｗｗ」となることです。
+
+良い例:
+
+- ノーカン理論
+- 願望フィルター
+- 自称エース
+- 脈アリ認定士
+- 根拠ゼロ
+- 無敵理論
+- 後出し名人
+- 都合変換機
+
+悪い例:
+
+- 楽観視
+- 心理効果
+- 認知バイアス
+- 正常性バイアス
+- 自己高揚
+
+## MID
+
+ずんだもんが象徴している人間の勘違いを説明してください。
+
+例:
+
+- 予防線を張る脳内
+- 言い訳の頭の中
+- 都合よく考える心理
+- 根拠なく楽観視
+- 忠告を聞けない理由
+- 勘違いする脳内
+
+---
+
+# 出力形式
+
+## 会話分析
+
+人間の勘違い：
+
+めたんが呆れている理由：
+
+視聴者がツッコミたくなるポイント：
+
+一言で言うとどんな人か：
+
+視聴者の立ち位置：
+
+---
+
+## めたん命名候補
+
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+9.
+10.
+
+---
+
+## HOOK案
+
+案1
+
+TOP：
+
+MAIN：
+
+MID：
+
+---
+
+案2
+
+TOP：
+
+MAIN：
+
+MID：
+
+---
+
+案3
+
+TOP：
+
+MAIN：
+
+MID：
+
+---
+
+案4
+
+TOP：
+
+MAIN：
+
+MID：
+
+---
+
+案5
+
+TOP：
+
+MAIN：
+
+MID：
+
+---
+
+## 推奨案
+
+最も強い案を1つ選び、理由も説明してください。
+
+---
+
+# 最終ルール
+
+HOOKは
+
+心理学用語
+↓
+人間のダサさ
+↓
+めたん命名
+
+の順で生成してください。
+
+HOOKは、ずんだもんの主張ではありません。
+HOOKは、めたんによる人物評です。
+
+視聴者はまず、
+
+- そういう奴いる
+- またやってる
+- それ無理ある
+- 勘違いしてて草
+
+で入りたいです。
+
+フックは他人ごと化。
+本編で自分ごと化。
+
+この順番を必ず守ってください。
+
+---
+
+# 入力
+
 ${rawConversation}`;
     }
 
     function generatePrompt() {
       const rawConversation = el.rawConversation.value.trim();
       if (!rawConversation) {
-        setStatus("raw_conversation が空です。会話劇を貼り付けてください。", "error");
-        alert("raw_conversation が空です。会話劇を貼り付けてください。");
+        setStatus("source_text が空です。会話劇・テーマ・概要・既存HOOK案のいずれかを貼り付けてください。", "error");
+        alert("source_text が空です。会話劇・テーマ・概要・既存HOOK案のいずれかを貼り付けてください。");
         el.rawConversation.focus();
         return;
       }
