@@ -12,7 +12,7 @@
 | `module/1_makejson.html` | 会話ログから project を作り、summary / hook / scene / sub_scene / voice_manifest / render draft のJSONを作ります。 |
 | `module/2_slideprompt_builder.html` | 会話ログと lesson_slide_plan から `03-slide_spec` とスライド個別JSONを作ります。 |
 | `module/3_Final-Cut-panel.html` | `06-render-draft` または `render-final` を読み込み、音声・字幕・画像・BGM・演出を最終調整します。 |
-| `module/tool1-hook-viewer-lens.html` | 完成済み会話劇を視聴者目線で分析するためのプロンプト生成ツールです。Final Cut連携はしません。 |
+| `module/tool1-kai-self-relevent-lens.html` | 心理学ショートの冒頭1秒で、視聴者の記憶検索・共感・自己投影・他人想起・脳内回答を発生させる「エンゲージメント文法」を作るためのプロンプト生成ツールです。Final Cut連携はしません。 |
 | `module/tool2-hook-pic-builder.html` | TOP / MAIN / SUB と会話内容から、Shorts冒頭0〜2秒向けのHOOK画像生成プロンプトを作ります。 |
 | `module/tool3-render-final-to-vvproj.html` | `render-final-v01.json` をVOICEVOXで後修正できる `.vvproj` に変換し、話者別スケールも上書きできます。 |
 | `module/tool4-wav-duration-checker.html` | WAVファイルまたはフォルダを読み込み、各音声の再生時間を一覧確認してCSVで出力します。 |
@@ -56,7 +56,7 @@ projects/{id}/outputs/video/psych-short-{run_id}.mp4
 │  ├─ 1_makejson.html
 │  ├─ 2_slideprompt_builder.html
 │  ├─ 3_Final-Cut-panel.html
-│  ├─ tool1-hook-viewer-lens.html
+│  ├─ tool1-kai-self-relevent-lens.html
 │  ├─ tool2-hook-pic-builder.html
 │  ├─ tool3-render-final-to-vvproj.html
 │  ├─ tool4-wav-duration-checker.html
@@ -132,7 +132,7 @@ Chrome / Edge 系ブラウザ推奨です。各moduleは File System Access API 
 - JSON作成: `module/1_makejson.html`
 - スライド用プロンプト生成: `module/2_slideprompt_builder.html`
 - Final Cut Panel: `module/3_Final-Cut-panel.html`
-- Hook Viewer Lens: `module/tool1-hook-viewer-lens.html`
+- エンゲージ文法生成ツール: `module/tool1-kai-self-relevent-lens.html`
 - HOOK画像プロンプト生成: `module/tool2-hook-pic-builder.html`
 - render-final to vvproj: `module/tool3-render-final-to-vvproj.html`
 - WAV Duration Checker: `module/tool4-wav-duration-checker.html`
@@ -263,11 +263,11 @@ npm run voicevox:proxy
 
 ### 5. 補助ツール
 
-`module/tool1-hook-viewer-lens.html`:
+`module/tool1-kai-self-relevent-lens.html`:
 
-- 完成済みの会話劇を貼り付けます。
-- ChatGPT等へ渡す分析プロンプトを生成します。
-- `viewer_lens` と `hook_candidates` の2モードがあります。
+- 心理学テーマ、動画企画・概要、視聴者のあるある場面、既存導入案、ずんだもんとめたんの会話のいずれかを貼り付けます。
+- ChatGPT等へ渡すエンゲージメント文法生成プロンプトを作ります。
+- `theme` / `video_idea` / `target_scene` / `existing_hook` / `conversation` の5つの input_type があります。
 - projectファイル、localStorage、Final Cut Panelとの直接連携はありません。
 
 `module/tool2-hook-pic-builder.html`:
@@ -507,7 +507,7 @@ index   = 入口とコマンドコピー係
 module1 = 会話ログを動画用JSONへ分解する係
 module2 = スライド画像の設計図を作る係
 module3 = 最後に人間が見て整える編集卓
-tool1   = HOOKの視聴者目線チェック係
+tool1   = エンゲージ文法生成プロンプトを作る係
 tool2   = HOOK画像生成プロンプトを作る係
 tool3   = render-finalをvvprojへ変換する係
 tool4   = WAVの長さを確認する係
